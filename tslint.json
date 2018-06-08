@@ -3,7 +3,8 @@
     "rules": {
         "no-console": false,
         "ban-types": false,
-        "object-literal-sort-keys": false
+        "object-literal-sort-keys": false,
+        "no-empty-interface": false
     },
     "linterOptions": {
         "exclude": ["config/**/*.js", "node_modules/**/*.ts"]

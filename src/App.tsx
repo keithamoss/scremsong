@@ -24,7 +24,7 @@ import { IAppModule } from "./redux/modules/interfaces"
 //     height: 32px;
 //     margin-right: 10px;
 // `
-import AboutPage from "./static/About/About"
+import { TriageViewContainer } from "./triage/TriageView/TriageViewContainer"
 
 export interface IProps {
     muiThemePalette: any
@@ -59,7 +59,7 @@ class App extends React.Component<IProps, {}> {
                     <ResponsiveAppBar breakPoint={defaultBreakPoint} title={"Starter Kit"} zDepth={0} />
 
                     <div className="page-content">
-                        <Route path="/" component={AboutPage} />
+                        <Route path="/" component={TriageViewContainer} />
                     </div>
                 </BodyContainer>
             </div>
