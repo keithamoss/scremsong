@@ -1,52 +1,67 @@
+import { BodyContainer, ResponsiveAppBar, ResponsiveDrawer } from "material-ui-responsive-drawer"
+// import AppBar from "material-ui/AppBar"
+// import Snackbar from "material-ui/Snackbar"
+import LinearProgress from "material-ui/LinearProgress"
 import * as React from "react"
-import Tweet from "react-tweet"
-import TwitterLogin from "react-twitter-auth"
+// import styled from "styled-components"
+import { Route } from "react-router-dom"
 import "./App.css"
-import logo from "./logo.svg"
+import { IAppModule } from "./redux/modules/interfaces"
+// import { MapsMap, MapsAddLocation, ActionSearch, ActionStore, ActionInfo, HardwareTv, CommunicationEmail } from "material-ui/svg-icons"
+// import Drawer from "material-ui/Drawer"
+// import { BottomNavigation, BottomNavigationItem } from "material-ui/BottomNavigation"
+// import Paper from "material-ui/Paper"
+// import { List, ListItem } from "material-ui/List"
+// import Subheader from "material-ui/Subheader"
+// import Divider from "material-ui/Divider"
+// const logo = require("./logo.svg")
+// const TitleContainer = styled.div`
+//     display: flex;
+//     align-items: center;
+//     font-size: 20px !important;
+// `
+// const TitleLogo = styled.img`
+//     height: 32px;
+//     margin-right: 10px;
+// `
+import AboutPage from "./static/About/About"
 
-class App extends React.Component<any, any> {
-    constructor(props: any) {
-        super(props)
-        this.state = { tweets: [] }
-    }
+export interface IProps {
+    muiThemePalette: any
+    app: IAppModule
+    defaultBreakPoint: string
+    isResponsiveAndOverBreakPoint: boolean
+    toggleSidebar: any
+}
 
-    public componentDidMount() {
-        const oReq = new XMLHttpRequest()
-        oReq.addEventListener("load", (e: any) => {
-            this.setState({ tweets: JSON.parse(oReq.response).statuses })
-        })
-        oReq.open("GET", "http://localhost:8000/twitter.php")
-        oReq.send()
-    }
+class App extends React.Component<IProps, {}> {
+    render() {
+        const { muiThemePalette, app, defaultBreakPoint, isResponsiveAndOverBreakPoint } = this.props
 
-    public onFailed() {
-        console.log("onFailed")
-    }
-    public onSuccess() {
-        console.log("onSuccess")
-    }
-
-    public render() {
-        const { tweets } = this.state
-        // use linkProps if you want to pass attributes to all links
-        const linkProps = { target: "_blank", rel: "noreferrer" }
+        const styles: any = {
+            linearProgressStyle: {
+                position: "fixed",
+                top: "0px",
+                zIndex: 1200,
+                display: app.requestsInProgress > 0 ? "block" : "none",
+            },
+        }
 
         return (
-            <div className="App">
-                <header className="App-header">
-                    <img src={logo} className="App-logo" alt="logo" />
-                    <h1 className="App-title">Welcome to React</h1>
-                </header>
-                <p className="App-intro">
-                    To get started, edit <code>src/App.tsx</code> and save to reload.
-                </p>
-                <TwitterLogin
-                    loginUrl="http://localhost:3000/api/v1/auth/twitter"
-                    onFailure={this.onFailed}
-                    onSuccess={this.onSuccess}
-                    requestTokenUrl="http://localhost:3000/api/v1/auth/twitter/reverse"
-                />
-                {tweets.map((tweet: any) => <Tweet key={tweet.id_str} data={tweet} linkProps={linkProps} />)}
+            <div className="page">
+                <ResponsiveDrawer breakPoint={defaultBreakPoint}>
+                    {isResponsiveAndOverBreakPoint === true && <div>Item</div>}
+                </ResponsiveDrawer>
+
+                <BodyContainer breakPoint={defaultBreakPoint}>
+                    <LinearProgress mode="indeterminate" color={muiThemePalette.accent3Color} style={styles.linearProgressStyle} />
+
+                    <ResponsiveAppBar breakPoint={defaultBreakPoint} title={"Starter Kit"} zDepth={0} />
+
+                    <div className="page-content">
+                        <Route path="/" component={AboutPage} />
+                    </div>
+                </BodyContainer>
             </div>
         )
     }
