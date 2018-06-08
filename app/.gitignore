@@ -19,16 +19,3 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
-/app/.env
-secrets.php
-secret.txt
-/backend/client_secrets.php
-
-/db/*.sqlite3
-
-/google-api-php-client-2.2.0/*
-/twitteroauth-0.7.4/*
-/sentry-php/*
-/Slim-3.10.0/*
-/flatfilebaby/*
