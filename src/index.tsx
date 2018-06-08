@@ -29,7 +29,7 @@ import reducers from "./redux/modules/reducer"
 
 const ealapi = new APIClient()
 
-let Middleware: Array<any> = []
+const Middleware: any[] = []
 
 // Sentry.io
 // if (getEnvironment() === eAppEnv.PROD && "REACT_APP_RAVEN_URL" in process.env) {

@@ -1,27 +1,29 @@
-export { IStore } from "./reducer"
 export { APIClient, IHttpResponse } from "../../api/APIClient"
-export { IModule as IAppModule, eAppEnv } from "./app"
+export { eAppEnv, IModule as IAppModule } from "./app"
+export { IStore } from "./reducer"
 
 export interface IEnvVars {
-  NODE_ENV: string // development, test, production
-  // REACT_APP_GOOGLE_ANALYTICS_UA: string
-  // REACT_APP_MAPBOX_API_KEY: string
-  // REACT_APP_RAVEN_URL: string
+    NODE_ENV: string // development, test, production
+    // REACT_APP_GOOGLE_ANALYTICS_UA: string
+    // REACT_APP_MAPBOX_API_KEY: string
+    // REACT_APP_RAVEN_URL: string
 }
 
+// tslint:disable-next-line:no-empty-interface
 export interface IConfig {
-  // GOOGLE_ANALYTICS_UA: string
-  // MAPBOX_API_KEY: string
-  // RAVEN_URL: string
+    // GOOGLE_ANALYTICS_UA: string
+    // MAPBOX_API_KEY: string
+    // RAVEN_URL: string
 }
 
 /* Material UI muiThemeable palette object */
-export interface IMUIThemePalette extends __MaterialUI.Styles.ThemePalette { }
+// tslint:disable-next-line:no-empty-interface
+export interface IMUIThemePalette extends __MaterialUI.Styles.ThemePalette {}
 
 export interface IMUITheme {
-  palette: IMUIThemePalette
+    palette: IMUIThemePalette
 }
 
 export interface IMUIThemeProps {
-  muiTheme: IMUITheme
+    muiTheme: IMUITheme
 }

@@ -35,7 +35,7 @@ export interface IProps {
 }
 
 class App extends React.Component<IProps, {}> {
-    render() {
+    public render() {
         const { muiThemePalette, app, defaultBreakPoint, isResponsiveAndOverBreakPoint } = this.props
 
         const styles: any = {

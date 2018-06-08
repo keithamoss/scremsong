@@ -19,7 +19,7 @@ const rootReducer: Redux.Reducer<IStore> = Redux.combineReducers<IStore>({
     routing: routerReducer,
     form: formReducer.plugin({}),
     browser: responsiveStateReducer,
-    responsiveDrawer: responsiveDrawer,
+    responsiveDrawer,
 } as any)
 
 export default rootReducer
