@@ -22,7 +22,7 @@ import * as React from "react"
 import { connect } from "react-redux"
 import App from "./App"
 import { fetchInitialAppState, toggleSidebarState } from "./redux/modules/app"
-import { IAppModule, IStore } from "./redux/modules/interfaces"
+import { IAppModule, IStore, IUser } from "./redux/modules/interfaces"
 
 // const Config: IConfig = require("Config") as any
 
@@ -53,6 +53,7 @@ const muiTheme = getMuiTheme({
 export interface IStoreProps {
     // From Props
     app: IAppModule
+    user: IUser
     browser: any
     responsiveDrawer: any
 }
@@ -78,7 +79,7 @@ export class AppContainer extends React.Component<any, any> {
     }
 
     public render() {
-        const { app, browser, responsiveDrawer, toggleSidebar, children } = this.props
+        const { app, user, browser, responsiveDrawer, toggleSidebar, children } = this.props
 
         if (app.loading === true) {
             return (
@@ -95,6 +96,7 @@ export class AppContainer extends React.Component<any, any> {
                 <App
                     muiThemePalette={muiTheme.palette}
                     app={app}
+                    user={user}
                     defaultBreakPoint={DEFAULT_BREAK_POINT}
                     isResponsiveAndOverBreakPoint={isResponsiveAndOverBreakPoint(browser, responsiveDrawer)}
                     toggleSidebar={toggleSidebar}
@@ -106,10 +108,11 @@ export class AppContainer extends React.Component<any, any> {
 }
 
 const mapStateToProps = (state: IStore): IStoreProps => {
-    const { app, browser, responsiveDrawer } = state
+    const { app, user, browser, responsiveDrawer } = state
 
     return {
         app,
+        user: user.user,
         browser,
         responsiveDrawer,
     }

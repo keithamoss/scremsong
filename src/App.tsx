@@ -6,7 +6,8 @@ import * as React from "react"
 // import styled from "styled-components"
 import { Route } from "react-router-dom"
 import "./App.css"
-import { IAppModule } from "./redux/modules/interfaces"
+import { LoginDialog } from "./authentication/login-dialog/LoginDialog"
+import { IAppModule, IUser } from "./redux/modules/interfaces"
 // import { MapsMap, MapsAddLocation, ActionSearch, ActionStore, ActionInfo, HardwareTv, CommunicationEmail } from "material-ui/svg-icons"
 // import Drawer from "material-ui/Drawer"
 // import { BottomNavigation, BottomNavigationItem } from "material-ui/BottomNavigation"
@@ -29,6 +30,7 @@ import { TriageViewContainer } from "./triage/TriageView/TriageViewContainer"
 export interface IProps {
     muiThemePalette: any
     app: IAppModule
+    user: IUser
     defaultBreakPoint: string
     isResponsiveAndOverBreakPoint: boolean
     toggleSidebar: any
@@ -36,7 +38,7 @@ export interface IProps {
 
 class App extends React.Component<IProps, {}> {
     public render() {
-        const { muiThemePalette, app, defaultBreakPoint, isResponsiveAndOverBreakPoint } = this.props
+        const { muiThemePalette, app, user, defaultBreakPoint, isResponsiveAndOverBreakPoint } = this.props
 
         const styles: any = {
             linearProgressStyle: {
@@ -57,6 +59,8 @@ class App extends React.Component<IProps, {}> {
                     <LinearProgress mode="indeterminate" color={muiThemePalette.accent3Color} style={styles.linearProgressStyle} />
 
                     <ResponsiveAppBar breakPoint={defaultBreakPoint} title={"Starter Kit"} zDepth={0} />
+
+                    <LoginDialog open={user === null} />
 
                     <div className="page-content">
                         <Route path="/" component={TriageViewContainer} />
