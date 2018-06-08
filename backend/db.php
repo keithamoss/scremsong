@@ -1,9 +1,9 @@
 <?php
 date_default_timezone_set("Australia/Perth");
 
-require_once "modules/elections.php";
-require_once "modules/polling_places.php";
-require_once "modules/stalls.php";
+// require_once "modules/elections.php";
+// require_once "modules/polling_places.php";
+// require_once "modules/stalls.php";
 
 // Create (connect to) SQLite database in file
 $file_db = new PDO('sqlite:../db/demsausage.sqlite3');

@@ -3,7 +3,7 @@ require_once "../secrets.php";
 require "../vendor/autoload.php";
 require_once "sessions.php";
 
-header("Content-type: application/json");
+// header("Content-type: application/json");
 header("Access-Control-Allow-Credentials: true");
 
 if(array_key_exists("HTTP_REFERER", $_SERVER)) {
