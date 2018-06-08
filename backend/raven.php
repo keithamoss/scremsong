@@ -5,9 +5,9 @@ ini_set("date.timezone", "Australia/Perth");
 ini_set("error_log", "../php-error.log");
 
 require_once "../secrets.php";
+require "../vendor/autoload.php";
 
 // Sentry.io error logging
-require_once "../sentry-php/lib/Raven/Autoloader.php";
 Raven_Autoloader::register();
 $client = new Raven_Client(RAVEN_URL, array("environment" => ENVIRONMENT));
 $client->install();
