@@ -1,9 +1,7 @@
 {
-  "extends": ["tslint:recommended", "tslint-react", "tslint-config-prettier"],
-  "linterOptions": {
-    "exclude": [
-      "config/**/*.js",
-      "node_modules/**/*.ts"
-    ]
-  }
+    "extends": ["tslint:recommended", "tslint-react", "tslint-config-prettier"],
+    "rules": { "no-console": false },
+    "linterOptions": {
+        "exclude": ["config/**/*.js", "node_modules/**/*.ts"]
+    }
 }
