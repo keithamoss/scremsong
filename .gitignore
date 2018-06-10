@@ -26,7 +26,7 @@ secrets.php
 secret.txt
 /backend/client_secrets.php
 
-/db/*.sqlite
+/db/*.sqlite*
 
 /vendor/*
 /backend/flatfilebaby/*

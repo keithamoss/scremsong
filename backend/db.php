@@ -6,7 +6,7 @@ date_default_timezone_set("Australia/Perth");
 // require_once "modules/stalls.php";
 
 // Create (connect to) SQLite database in file
-$file_db = new PDO('sqlite:../db/demsausage.sqlite3');
+$file_db = new PDO('sqlite:../db/scremsong.sqlite3');
 $file_db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 function failForAPI($msg = "Failed for an unknown reason. Oh dear, Master Luke!") {
