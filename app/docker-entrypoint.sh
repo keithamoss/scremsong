@@ -16,8 +16,14 @@ function dockerwait {
 }
 
 cd /app
-npm install .
-npm run build
+if [[ -z "${PRODUCTION}" ]]; then
+  # Development
+  npm run start
+else
+  # Production
+  npm install .
+  npm run build
+fi
 
 CMD="$1"
 if [ "$CMD" = "nginx" ]; then
