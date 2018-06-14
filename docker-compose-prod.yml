@@ -1,0 +1,12 @@
+version: "2"
+services:
+  nginx:
+    build: app/
+    volumes:
+      - ./app:/app
+      # - ./nginx/web:/var/www/html
+    # depends_on:
+    #   - web
+    ports:
+    - "80:80"
+      # - "8443:443"
