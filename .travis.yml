@@ -21,4 +21,4 @@ before_install:
 - echo -e "Host $SERVER_IP_ADDRESS\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
 - ssh-add ./travis_digitalocean
 # test ssh connection for: https://github.com/dwyl/learn-travis/issues/42
-- ssh -i ./travis_digitalocean root@209.97.166.142 pwd
+- ssh -o StrictHostKeyChecking=no -i ./travis_digitalocean root@209.97.166.142 pwd
