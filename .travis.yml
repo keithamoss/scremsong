@@ -16,6 +16,7 @@ script:
   - base64 --decode --ignore-garbage ~/.ssh/travis_digitalocean_base64 > ~/.ssh/travis_digitalocean
   - chmod 600 ~/.ssh/travis_digitalocean
   - echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+  - ssh-add ~/.ssh/travis_digitalocean
   - ls ~/.ssh/
   - scp -i ~/.ssh/travis_digitalocean -o StrictHostKeyChecking=no -rp root@209.97.166.142:/scremsong/app/build/ ./
   - ls
