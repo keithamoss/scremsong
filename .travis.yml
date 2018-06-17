@@ -15,5 +15,6 @@ script:
 # - scp -i ./travis_digitalocean -o StrictHostKeyChecking=no -rp root@209.97.166.142:/scremsong/app/build/ ./
 # - ls build
 - python backend/do-test.py
+- pwd
 - ls
 - ls logs

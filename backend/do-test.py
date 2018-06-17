@@ -6,17 +6,28 @@ from os.path import isfile, join
 # hostname = "user@remote_system"
 # remote_path = "some/remote/path"
 
-subprocess.call(['pwd'])
-subprocess.call(['ls'])
-subprocess.Popen(['scp', "-i ./travis_digitalocean", "-o StrictHostKeyChecking=no", "-rp", "root@188.166.231.42:/scremsong/logs/", "./"]).wait()
-print(">> scp done")
+out = subprocess.call(['pwd'])
+print(out)
+print(">> pwd done")
 print()
 
-subprocess.call(['ls'])
+out = subprocess.call(['ls'])
+print(out)
 print(">> ls done")
 print()
 
-subprocess.call(['ls', 'logs'])
+out = subprocess.check_output(['scp', "-i ./travis_digitalocean", "-o StrictHostKeyChecking=no", "-rp", "root@139.59.251.69:/scremsong/logs/", "./"])
+print(out)
+print(">> scp done")
+print()
+
+out = subprocess.call(['ls'])
+print(out)
+print(">> ls done")
+print()
+
+out = subprocess.call(['ls', 'logs'])
+print(out)
 print(">> ls logs done")
 print()
 
