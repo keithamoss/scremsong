@@ -6,12 +6,12 @@ from os.path import isfile, join
 # hostname = "user@remote_system"
 # remote_path = "some/remote/path"
 
-out = subprocess.call(['pwd'])
+out = subprocess.check_output(['pwd'])
 print(out)
 print(">> pwd done")
 print()
 
-out = subprocess.call(['ls'])
+out = subprocess.check_output(['ls'])
 print(out)
 print(">> ls done")
 print()
@@ -21,17 +21,17 @@ print(out)
 print(">> scp done")
 print()
 
-out = subprocess.call(['ls'])
+out = subprocess.check_output(['ls'])
 print(out)
 print(">> ls done")
 print()
 
-out = subprocess.call(['ls', 'logs'])
+out = subprocess.check_output(['ls', './logs'])
 print(out)
 print(">> ls logs done")
 print()
 
-mypath = "/scremsong/logs/"
+mypath = "./logs"
 onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
 print(onlyfiles)
 print(">> file listing donne")
