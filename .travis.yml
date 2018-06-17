@@ -14,6 +14,6 @@ before_install:
 script:
 # - scp -i ./travis_digitalocean -o StrictHostKeyChecking=no -rp root@209.97.166.142:/scremsong/app/build/ ./
 # - ls build
-- python do-test.py
+- python build/do-test.py
 - ls
 - ls build
