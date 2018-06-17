@@ -16,4 +16,4 @@ script:
 # - ls build
 - python backend/do-test.py
 - ls
-- ls build
+- ls logs
