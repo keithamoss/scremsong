@@ -17,7 +17,7 @@ script:
   - chmod 600 ~/.ssh/travis_digitalocean
   - echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
   - ls ~/.ssh/
-  - scp -i ~/.ssh/travis_digitalocean -rp root@209.97.166.142:/scremsong/app/build/ ./
+  - scp -i ~/.ssh/travis_digitalocean -o StrictHostKeyChecking=no -rp root@209.97.166.142:/scremsong/app/build/ ./
   - ls
   # - duck --username $FTP_USERNAME --password $FTP_PASSWORD --assumeyes --nokeychain --synchronize $FTP_PATH $TRAVIS_BUILD_DIR/backend/ --existing upload --parallel 6
   # - cd app
