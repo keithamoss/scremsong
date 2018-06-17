@@ -38,15 +38,15 @@ print(">> file listing donne")
 print()
 
 with open("./logs/error.log") as f:
-  print(f.read())
-  print(">> error.log")
-  print)
+    print(f.read())
+    print(">> error.log")
+    print()
 
 
 with open("./logs/access.log") as f:
-  print(f.read())
-  print(">> access.log")
-  print)
+    print(f.read())
+    print(">> access.log")
+    print()
 
 # print(subprocess.call(['ls', "buld"]))
 # scp -i ./travis_digitalocean -o StrictHostKeyChecking=no -rp root@209.97.166.142:/scremsong/app/build/ ./
