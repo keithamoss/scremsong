@@ -4,7 +4,7 @@ services:
     build: app/
     volumes:
       - ./app:/app
-      - ./logs:/var/log/nginx
+      - ./logs/nginx:/var/log/nginx
       # - ./nginx/web:/var/www/html
     # depends_on:
     #   - web
