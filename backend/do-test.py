@@ -16,7 +16,7 @@ from os.path import isfile, join
 # print(">> ls done")
 # print()
 
-subprocess.check_output(["scp", "-i ./deploy_key", "-o StrictHostKeyChecking=no", "-rp", "root@139.59.251.69:/scremsong/logs/nginx/", "./logs/nginx/"])
+subprocess.check_output(["scp", "-i ./deploy_key", "-o StrictHostKeyChecking=no", "-rp", "root@209.97.171.53:/scremsong/logs/nginx/", "./logs/nginx/"])
 print(">> scp done")
 print()
 
