@@ -1,7 +1,7 @@
 version: "2"
 services:
   nginx:
-    build: app/
+    build: keithmoss/scremsong-app:1
     volumes:
       - ./app:/app
       - ./logs/nginx:/var/log/nginx
