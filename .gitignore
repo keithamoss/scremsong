@@ -30,3 +30,7 @@ secret.txt
 
 /vendor/*
 /backend/flatfilebaby/*
+
+deploy_key
+deploy_key.pub
+travis-secrets.txt
