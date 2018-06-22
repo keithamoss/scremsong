@@ -1,7 +1,7 @@
 version: "2"
 services:
   nginx:
-    image: keithmoss/scremsong-app:1
+    image: keithmoss/scremsong-app:2
     volumes:
       - ./app:/app
       - ./logs/nginx:/var/log/nginx
@@ -12,4 +12,4 @@ services:
       - PRODUCTION=1
     ports:
       - "80:80"
-      # - "8443:443"
+      - "443:443"
