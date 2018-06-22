@@ -1,7 +1,7 @@
 version: "2"
 services:
   nginx:
-    image: keithmoss/scremsong-app:2
+    image: keithmoss/scremsong-app:4
     volumes:
       - ./app:/app
       - ./logs/nginx:/var/log/nginx
