@@ -125,16 +125,17 @@ WSGI_APPLICATION = 'scremsong.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': get_env('DB_NAME'),
-        'USER': get_env('DB_USERNAME'),
-        'PASSWORD': get_env('DB_PASSWORD'),
-        'HOST': get_env('DB_HOST'),
-        'PORT': get_env('DB_PORT'),
-    }
-}
+DATABASES = {}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': get_env('DB_NAME'),
+#         'USER': get_env('DB_USERNAME'),
+#         'PASSWORD': get_env('DB_PASSWORD'),
+#         'HOST': get_env('DB_HOST'),
+#         'PORT': get_env('DB_PORT'),
+#     }
+# }
 
 
 # Password validation
