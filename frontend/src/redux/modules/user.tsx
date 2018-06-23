@@ -41,19 +41,29 @@ export interface IAction {
 }
 
 export interface ISelf {
-    success: boolean
+    is_logged_in: boolean
     user: IUser
 }
 
 export interface IUser {
+    username: string
     email: string
+    first_name: string
+    last_name: string
+    date_joined: string // datetime
+    groups: any[]
+    id: number
+    is_active: boolean
+    is_approved: boolean
+    is_staff: boolean
+    url: string
 }
 
 // Side effects, only as applicable
 // e.g. thunks, epics, et cetera
 export function fetchUser() {
-    return async (dispatch: Function, getState: Function, ealapi: APIClient) => {
-        const { response, json } = await ealapi.get("/self.php", dispatch)
+    return async (dispatch: Function, getState: Function, api: APIClient) => {
+        const { response, json } = await api.get("/api/0.1/self", dispatch)
         if (response.status === 200) {
             dispatch(loadUser(json))
             return json
@@ -62,8 +72,8 @@ export function fetchUser() {
 }
 
 export function logoutUser() {
-    return async (dispatch: Function, getState: Function, ealapi: APIClient) => {
-        await ealapi.get("/login.php?nuke_session=1", dispatch)
-        window.location.reload()
+    return async (dispatch: Function, getState: Function, api: APIClient) => {
+        await api.get("/api/0.1/logout", dispatch)
+        // window.location.reload()
     }
 }

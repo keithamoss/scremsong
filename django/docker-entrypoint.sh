@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # wait for a given host:port to become available
 #
@@ -15,19 +15,16 @@ function dockerwait {
     exec 6<&-
 }
 
-cd /app
-if [[ -z "${PRODUCTION}" ]]; then
-  # Development
-  npm run start
-else
-  # Production
-  npm install .
-  npm run build
-fi
+# dockerwait $DB_HOST $DB_PORT
+# sleep 8
+
+django-admin migrate
 
 CMD="$1"
-if [ "$CMD" = "nginx" ]; then
-    nginx -g 'daemon off;'
+echo $CMD
+if [ "$CMD" = "runserver" ]; then
+    django-admin runserver "0.0.0.0:8000"
 fi
 
 exec "$@"
+

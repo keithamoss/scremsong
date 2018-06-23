@@ -27,7 +27,7 @@ import "./polyfills"
 import { IStore } from "./redux/modules/interfaces"
 import reducers from "./redux/modules/reducer"
 
-const ealapi = new APIClient()
+const api = new APIClient()
 
 const Middleware: any[] = []
 
@@ -47,7 +47,7 @@ const composeEnhancers = composeWithDevTools({
 })
 const store: Store<IStore> = createStore(
     reducers,
-    composeEnhancers(responsiveStoreEnhancer, applyMiddleware(thunkMiddleware.withExtraArgument(ealapi), ...Middleware))
+    composeEnhancers(responsiveStoreEnhancer, applyMiddleware(thunkMiddleware.withExtraArgument(api), ...Middleware))
 )
 
 // const history = syncHistoryWithStore(browserHistory as any, store)

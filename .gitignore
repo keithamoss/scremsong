@@ -25,9 +25,11 @@ php-error.log
 secrets.php
 secret.txt
 /backend/client_secrets.php
+*.pyc
 
 /db/*.sqlite*
 
+/venv/*
 /vendor/*
 /backend/flatfilebaby/*
 

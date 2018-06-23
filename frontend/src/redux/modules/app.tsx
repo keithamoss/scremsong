@@ -100,15 +100,15 @@ export function getEnvironment(): eAppEnv {
 }
 
 export function getAPIBaseURL(): string {
-    return getEnvironment() === eAppEnv.DEV ? "http://localhost:8000" : "http://api.democracysausage.org"
+    return getEnvironment() === eAppEnv.DEV ? "https://localhost:8001" : "https://scremsong-api.democracysausage.org"
 }
 
 export function fetchInitialAppState() {
-    return async (dispatch: Function, getState: Function, ealapi: APIClient) => {
+    return async (dispatch: Function, getState: Function, api: APIClient) => {
         dispatch(loading())
 
         const self: ISelf = await dispatch(fetchUser())
-        if (self.success === false) {
+        if (self.is_logged_in === true) {
             // await Promise.all([
             //     dispatch(fetchSomething()),
             // ])
