@@ -20,6 +20,14 @@ function dockerwait {
 
 django-admin migrate
 
+if [ "$ENVIRONMENT" = "PRODUCTION" ]; then
+  mkdir -p logs
+  
+  mkdir -p static
+  rm -rf static/*
+  django-admin collectstatic
+fi
+
 CMD="$1"
 echo $CMD
 if [ "$CMD" = "runserver" ]; then
