@@ -3,4 +3,6 @@ python:
 - 3.6
 script:
   - pwd
+  - echo $TRAVIS_COMMIT
+  - echo $TRAVIS_COMMIT_MESSAGE
   - ./trigger_digitalocean_deploy.sh
