@@ -5,4 +5,6 @@ script:
   - pwd
   - echo $TRAVIS_COMMIT
   - echo $TRAVIS_COMMIT_MESSAGE
+  - export NOT_TRAVIS_API_KEY=FOOBAR
+  - echo $NOT_TRAVIS_API_KEY
   - ./trigger_digitalocean_deploy.sh
