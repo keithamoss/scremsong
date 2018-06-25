@@ -100,7 +100,7 @@ export function getEnvironment(): eAppEnv {
 }
 
 export function getAPIBaseURL(): string {
-    return getEnvironment() === eAppEnv.DEV ? "https://localhost:8001" : "https://scremsong-api.democracysausage.org"
+    return process.env.REACT_APP_API_BASE_URL!
 }
 
 export function fetchInitialAppState() {

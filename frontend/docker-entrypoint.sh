@@ -16,12 +16,10 @@
 # }
 
 cd /app
-if [[ -z "${PRODUCTION}" ]]; then
-  # Development
+if [ "$REACT_APP_ENVIRONMENT" = "DEVELOPMENT" ]; then
 #   HTTPS=true npm run start
   npm run start
-else
-  # Production
+elif [ "$REACT_APP_ENVIRONMENT" = "PRODUCTION" ]; then
   npm install .
   npm run build
 fi
