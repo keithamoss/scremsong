@@ -45,11 +45,17 @@ if get_env("ENVIRONMENT") == "PRODUCTION":
     LOGGING = {
         'version': 1,
         'disable_existing_loggers': False,
+        'formatters': {
+            'verbose': {
+                'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+            },
+        },
         'handlers': {
             'file': {
                 'level': 'WARNING',
                 'class': 'logging.FileHandler',
                 'filename': '/app/logs/django.log',
+                'formatter': 'verbose',
             },
         },
         'loggers': {
