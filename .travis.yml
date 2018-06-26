@@ -20,7 +20,7 @@ deploy:
     region: $AWS_DEFAULT_REGION
     bucket: digitalocean-stack
     skip_cleanup: true
-    local_dir: frontend/build-tmp/
+    # local_dir: frontend/build-tmp/
     # upload-dir: builds
     detect_encoding: true
     # on:
