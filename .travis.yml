@@ -13,6 +13,9 @@ script:
   - tar -zcvf build.tar build/
   - mkdir build-tmp
   - mv build.tar build-tmp/scremsong-frontend.tar
+  - pwd
+  - ls -l
+  - ls -l build-tmp
 deploy:
   - provider: s3
     access_key_id: $AWS_ACCESS_KEY_ID
@@ -20,7 +23,7 @@ deploy:
     region: $AWS_DEFAULT_REGION
     bucket: digitalocean-stack
     skip_cleanup: true
-    # local_dir: frontend/build-tmp/
+    local_dir: frontend/build-tmp
     # upload-dir: builds
     detect_encoding: true
     # on:
