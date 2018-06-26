@@ -21,7 +21,7 @@ deploy:
     bucket: digitalocean-stack
     skip_cleanup: true
     local_dir: frontend/build-tmp/
-    upload-dir: builds
+    # upload-dir: builds
     detect_encoding: true
     # on:
     #   branch: master
