@@ -13,9 +13,7 @@ script:
   - tar -zcvf build.tar build/
   - mkdir build-tmp
   - mv build.tar build-tmp/scremsong-frontend.tar
-  - pwd
-  - ls -l
-  - ls -l build-tmp
+  # We need to go back to the top level directory for our project or the deploy tasks get confused about what `local_dir` refers to.
   - cd ../
 deploy:
   - provider: s3
@@ -27,7 +25,5 @@ deploy:
     local_dir: frontend/build-tmp/
     upload-dir: builds
     detect_encoding: true
-    # on:
-    #   branch: master
 # after_deploy:
 #   - 'curl -s -X POST -H "Content-Type: application/json" -H "Accept: application/json" -H "Travis-API-Version: 3" -H "Authorization: token $TRAVIS_API_KEY" -d "{\"request\": {\"branch\": \"master\", \"message\": \"From Scremsong: $TRAVIS_COMMIT\"}}" https://api.travis-ci.org/repo/keithamoss%2Fdigitalocean-stack/requests'
