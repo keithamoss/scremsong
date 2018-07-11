@@ -4,11 +4,13 @@ MAINTAINER Keith Moss <keithamoss@gmail.com>
 RUN rm -rf /etc/nginx
 COPY nginx /etc/nginx
 
-#EXPOSE 80 443
-EXPOSE 80
+EXPOSE 80 443
+# EXPOSE 80
+# EXPOSE 443
 
 RUN apt-get update
 RUN apt-get install --assume-yes curl gnupg
+
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
 RUN apt-get install --assume-yes nodejs
 
