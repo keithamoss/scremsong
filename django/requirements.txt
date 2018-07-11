@@ -11,3 +11,4 @@ requests==2.19.1
 social-auth-app-django==2.1.0
 social-auth-core==1.7.0
 raven==6.9.0
+tweepy==3.6.0

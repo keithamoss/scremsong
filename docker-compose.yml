@@ -1,14 +1,50 @@
 version: "2"
 services:
-  nginx:
-    build: app/
-    volumes:
-      - ./app:/app
-      # - ./nginx/web:/var/www/html
-    # depends_on:
-    #   - web
-    environment:
-      - DEVELOPMENT=1
+  db:
+    image: mdillon/postgis:10-alpine
+    command: postgres -c 'config_file=/etc/postgresql/postgresql.conf'
     ports:
-      - "80:3000"
-      # - "8443:443"
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=stack
+    volumes:
+      # Enable this mapping to inject the tweaked postgresql.conf file into our PostgreSQL container.
+      - ./db/postgresql.conf:/etc/postgresql/postgresql.conf
+
+      # Enable this mapping and create ./dev/pg_log/ to get easier access to PostgreSQL's log files for debugging.
+      # - ./dev/pg_log/:/var/lib/postgresql/data/pg_log/
+  frontend:
+    image: node:10.5.0-alpine
+    volumes:
+      - ./frontend:/app:delegated
+    entrypoint: /app/docker-entrypoint.sh
+    ports:
+      - "3000:3000"
+    env_file:
+      - secrets/scremsong-frontend.dev.env
+  django:
+    build: django/
+    command: runserver
+    volumes:
+      - ./django/:/app:delegated
+    ports:
+      - "8000:8000"
+    env_file:
+      - secrets/scremsong-web.dev.env
+      - secrets/scremsong-db.env
+    depends_on:
+      - db
+      - frontend
+  nginx:
+    build: nginx/
+    volumes:
+      - ./nginx:/app
+      - ./nginx/nginx/docker.dev.conf:/etc/nginx/conf.d/nginx.conf
+    depends_on:
+      - django
+    links:
+      - django
+    ports:
+      - "443:443"
+      - "8001:8001"

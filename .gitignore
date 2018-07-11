@@ -21,6 +21,8 @@ yarn-debug.log*
 yarn-error.log*
 php-error.log
 
+.vscode/
+
 /app/.env
 secrets.php
 secret.txt
@@ -36,3 +38,12 @@ secret.txt
 deploy_key
 deploy_key.pub
 travis-secrets.txt
+pgbackups3.env
+
+django/static/
+django/logs/
+secrets/
+
+tmp/
+secrets.tar
+nginx/wildcard.democracysausage.org*
