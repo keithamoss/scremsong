@@ -18,7 +18,18 @@ function dockerwait {
 # dockerwait $DB_HOST $DB_PORT
 # sleep 8
 
-django-admin migrate
+CMD="$1"
+# echo $CMD
+
+# django-admin migrate
+
+if [ "$ENVIRONMENT" = "DEVELOPMENT" ]; then
+  export SCREMSONG_DJANGO_MIGRATE=1
+  django-admin migrate
+  export SCREMSONG_DJANGO_MIGRATE=0
+  django-admin runserver "0.0.0.0:8000"
+  exit
+fi
 
 if [ "$ENVIRONMENT" = "PRODUCTION" ]; then
   mkdir -p logs
@@ -28,11 +39,11 @@ if [ "$ENVIRONMENT" = "PRODUCTION" ]; then
   django-admin collectstatic
 fi
 
-CMD="$1"
-echo $CMD
-if [ "$CMD" = "runserver" ]; then
-    django-admin runserver "0.0.0.0:8000"
-fi
+# CMD="$1"
+# echo $CMD
+# if [ "$CMD" = "runserver" ]; then
+#     django-admin runserver "0.0.0.0:8000"
+# fi
 
 exec "$@"
 

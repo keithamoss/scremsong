@@ -23,7 +23,11 @@ import json
 import csv
 # from ealgis_common.db import broker
 # from ealgis.mvt import TileGenerator
-from scremsong.util import get_env
+from tweepy import TweepError
+from scremsong.util import get_env, make_logger
+from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, open_tweet_stream, get_twitter_app, get_uuid
+
+logger = make_logger(__name__)
 
 
 def api_not_found(request):
@@ -83,74 +87,62 @@ class TweetsViewset(viewsets.ViewSet):
     permission_classes = (IsAuthenticated,)
 
     def list(self, request, format=None):
-        import tweepy
+        return Response({"foo": "bar"})
+        # import tweepy
 
-        auth = tweepy.OAuthHandler(get_env("TWITTER_CONSUMER_KEY"), get_env("TWITTER_CONSUMER_SECRET"))
-        auth.set_access_token(get_env("TWITTER_ACCESS_TOKEN"), get_env("TWITTER_ACCESS_TOKEN_SECRET"))
-
-        api = tweepy.API(auth)
-
-        public_tweets = api.search(q="#democracysausage", rpp=10, result_type="recent", tweet_mode="extended")
-        tweets = []
-        for tweet in public_tweets:
-            tweets.append(tweet.full_text)
-
-        response = Response(tweets)
-        return response
-
-    @list_route(methods=['get'])
-    def stream(self, request, format=None):
-        import tweepy
-        # override tweepy.StreamListener to add logic to on_status
-
-        class MyStreamListener(tweepy.StreamListener):
-
-            def on_status(self, status):
-                print(">>> ", status.text)
-
-        auth = tweepy.OAuthHandler(get_env("TWITTER_CONSUMER_KEY"), get_env("TWITTER_CONSUMER_SECRET"))
+        # auth = tweepy.OAuthHandler(get_env("TWITTER_CONSUMER_KEY"), get_env("TWITTER_CONSUMER_SECRET"))
         # auth.set_access_token(get_env("TWITTER_ACCESS_TOKEN"), get_env("TWITTER_ACCESS_TOKEN_SECRET"))
-        auth.set_access_token(request.session["twitter_access_token"], request.session["twitter_access_token_secret"])
 
-        api = tweepy.API(auth)
+        # api = tweepy.API(auth)
 
-        myStreamListener = MyStreamListener()
-        myStream = tweepy.Stream(auth=api.auth, listener=myStreamListener)
+        # public_tweets = api.search(q="#democracysausage", rpp=10, result_type="recent", tweet_mode="extended")
+        # tweets = []
+        # for tweet in public_tweets:
+        #     tweets.append(tweet.full_text)
 
-        myStream.filter(track=["#democracysausage"])
-        return Response({})
+        # response = Response(tweets)
+        # return response
 
     @list_route(methods=['get'])
     def auth1(self, request, format=None):
-        import tweepy
-        auth = tweepy.OAuthHandler(get_env("TWITTER_CONSUMER_KEY"), get_env("TWITTER_CONSUMER_SECRET"))
-
         try:
-            redirect_url = auth.get_authorization_url()
-            request.session["twitter_request_token"] = auth.request_token
-            print(request.session["twitter_request_token"])
-            return Response({"url": redirect_url, "request_token": auth.request_token})
-        except tweepy.TweepError:
-            print('Error! Failed to get request token.')
+            redirect_url = twitter_user_api_auth_stage_1()
+            return Response({"url": redirect_url})
+        except TweepError:
+            return Response({"error": "Error! Failed to get request token."}, status=status.HTTP_400_BAD_REQUEST)
 
     @list_route(methods=['get'])
     def auth2(self, request, format=None):
-        import tweepy
-        auth = tweepy.OAuthHandler(get_env("TWITTER_CONSUMER_KEY"), get_env("TWITTER_CONSUMER_SECRET"))
-
-        token = request.session["twitter_request_token"]
-        # print(request.session["twitter_request_token"])
-        auth.request_token = {'oauth_token': token["oauth_token"],
-                              'oauth_token_secret': request.query_params["oauth_verifier"]}
-        # request.session["twitter_request_token"] = None
-        print(auth.request_token)
         try:
-            print(request.query_params["oauth_verifier"])
-            auth.get_access_token(request.query_params["oauth_verifier"])
-            request.session["twitter_request_token"] = None
-            request.session["twitter_access_token"] = auth.access_token
-            request.session["twitter_access_token_secret"] = auth.access_token_secret
-            return Response({"access_token": auth.access_token, "access_token_secret": auth.access_token_secret})
-        except tweepy.TweepError:
-            print('Error! Failed to get access token.')
-        return Response({"foo"})
+            if twitter_user_api_auth_stage_2(request.query_params) is True:
+                return Response({"OK": True})
+        except TweepError:
+            return Response({"error": "Error! Failed to get access token. TweepyError."}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"error": "Error! Failed to get access token. {}".format(str(e))}, status=status.HTTP_400_BAD_REQUEST)
+
+    @list_route(methods=['get'])
+    def start_stream(self, request, format=None):
+        try:
+            t = get_twitter_app()
+            if t.active_app_uuid is not None:
+                return Response({"error": "Please stop the tweet stream first."}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                open_tweet_stream()
+                logger.warn("Stream started for {}.".format(get_uuid()))
+                return Response({"OK": True})
+        except Exception as e:
+            return Response({"error": "Error! Failed to start tweet stream. {}".format(str(e))}, status=status.HTTP_400_BAD_REQUEST)
+
+    @list_route(methods=['get'])
+    def stop_stream(self, request, format=None):
+        try:
+            t = get_twitter_app()
+            app_uuid = t.active_app_uuid
+            t.active_app_uuid = None
+            t.pid = None
+            t.save()
+            logger.warn("Stream stopped for {}.".format(app_uuid))
+            return Response({"OK": True})
+        except Exception as e:
+            return Response({"error": "Error! Failed to stop tweet stream. {}".format(str(e))}, status=status.HTTP_400_BAD_REQUEST)

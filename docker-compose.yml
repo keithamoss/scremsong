@@ -25,7 +25,8 @@ services:
       - secrets/scremsong-frontend.dev.env
   django:
     build: django/
-    command: runserver
+    # command: runserver
+    entrypoint: /app/docker-entrypoint.sh
     volumes:
       - ./django/:/app:delegated
     ports:
@@ -35,7 +36,6 @@ services:
       - secrets/scremsong-db.env
     depends_on:
       - db
-      - frontend
   nginx:
     build: nginx/
     volumes:
@@ -43,6 +43,7 @@ services:
       - ./nginx/nginx/docker.dev.conf:/etc/nginx/conf.d/nginx.conf
     depends_on:
       - django
+      - frontend
     links:
       - django
     ports:

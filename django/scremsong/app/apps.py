@@ -19,7 +19,10 @@ class MyAppConfig(AppConfig):
             raven_config["dsn"] = None
         self.raven = Client(**raven_config)
 
-        # An Ealgis instance needs admins
-        from scremsong.app.admin import get_admins
-        if len(get_admins()) == 0:
-            logger.error("This Scremsong instance doesn't have any admin users.")
+        # Make us a new UUID if we're booting up for the first time on this instance
+        # But don't bother if this is a `django-admin migrate` calls
+        # c.f. docker-entrypoint.sh
+        if get_env("SCREMSONG_DJANGO_MIGRATE") == "0":
+            from scremsong.app.twitter import make_app_uuid, open_tweet_stream
+            make_app_uuid()
+            open_tweet_stream()

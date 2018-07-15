@@ -42,6 +42,7 @@ pgbackups3.env
 
 django/static/
 django/logs/
+django/uuid
 secrets/
 
 tmp/
