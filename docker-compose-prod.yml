@@ -28,6 +28,7 @@ services:
     command: /usr/bin/supervisord -c /app/supervisord.conf
     volumes:
       - ./django/:/app:delegated
+      - ./logs/django:/app/logs:delegated
     ports:
       - "8000:8000"
     env_file:
@@ -36,6 +37,20 @@ services:
     depends_on:
       - db
       - frontend
+  # celery_worker:
+  #   build: django/
+  #   entrypoint: /app/docker-entrypoint.sh
+  #   command: celery_worker
+  #   volumes:
+  #     - ./django/:/app:delegated
+  #   # ports:
+  #   #   - "8000:8000"
+  #   env_file:
+  #     - secrets/scremsong-web.dev.env
+  #     - secrets/scremsong-db.env
+  #   depends_on:
+  #     - db
+  #     - rabbitmq
   nginx:
     build: nginx/
     volumes:

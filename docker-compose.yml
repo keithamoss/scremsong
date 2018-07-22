@@ -23,9 +23,17 @@ services:
       - "3000:3000"
     env_file:
       - secrets/scremsong-frontend.dev.env
+  rabbitmq:
+    image: rabbitmq:3.7.7-alpine
+    # volumes:
+    #   - ./rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins 
+    ports:
+      - "5672:5672"
+      # - "15672:15672"
+    env_file:
+      - secrets/rabbitmq.env
   django:
     build: django/
-    # command: runserver
     entrypoint: /app/docker-entrypoint.sh
     volumes:
       - ./django/:/app:delegated
@@ -36,6 +44,19 @@ services:
       - secrets/scremsong-db.env
     depends_on:
       - db
+      - rabbitmq
+  celery_worker:
+    build: django/
+    entrypoint: /app/docker-entrypoint.sh
+    command: celery_worker
+    volumes:
+      - ./django/:/app:delegated
+    env_file:
+      - secrets/scremsong-web.dev.env
+      - secrets/scremsong-db.env
+    depends_on:
+      - db
+      - rabbitmq
   nginx:
     build: nginx/
     volumes:

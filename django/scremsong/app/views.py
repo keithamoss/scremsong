@@ -104,6 +104,33 @@ class TweetsViewset(viewsets.ViewSet):
         # return response
 
     @list_route(methods=['get'])
+    def celery(self, request, format=None):
+        from scremsong.celery import task_open_tweet_stream
+        task_id = task_open_tweet_stream.delay()
+        print(task_id)
+        return Response({})
+
+    @list_route(methods=['get'])
+    def celery_kill(self, request, format=None):
+        from celery.task.control import revoke
+        f = revoke("07fa8a7c-9baf-427d-ba9e-772469fa7c48", terminate=True)
+        print(f)
+        return Response({})
+        # return response
+
+    @list_route(methods=['get'])
+    def celery_running_tasks(self, request, format=None):
+        from celery.task.control import inspect
+        i = inspect()
+        return Response(i.active())
+
+    @list_route(methods=['get'])
+    def celery_workers(self, request, format=None):
+        from celery.task.control import inspect
+        i = inspect()
+        return Response(i.ping())
+
+    @list_route(methods=['get'])
     def auth1(self, request, format=None):
         try:
             redirect_url = twitter_user_api_auth_stage_1()

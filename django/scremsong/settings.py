@@ -16,7 +16,6 @@ from scremsong.util import get_env
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
@@ -93,6 +92,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'raven.contrib.django.raven_compat',
+    'django_celery_results',
 ]
 
 MIDDLEWARE = [
@@ -225,3 +225,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Celery
+
+CELERY_BROKER_URL = get_env("CELERY_BROKER_URL")
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_RESULT_BACKEND = "django-db"
+# Fixes "Connection reset by peer" errors. At the time of writing (July 2018) this was an open issue in Celery 4.2.1
+# https://github.com/celery/celery/issues/4226
+CELERY_BROKER_POOL_LIMIT = None

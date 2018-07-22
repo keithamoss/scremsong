@@ -12,3 +12,5 @@ social-auth-app-django==2.1.0
 social-auth-core==1.7.0
 raven==6.9.0
 tweepy==3.6.0
+celery==4.2.1
+django-celery-results==1.0.1

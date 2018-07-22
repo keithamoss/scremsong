@@ -46,5 +46,5 @@ class SocialPlatforms(models.Model):
 class Tweets(models.Model):
     "Tweets we've collected for search terms we care about."
 
-    id = models.TextField(primary_key=True)
+    tweet_id = models.TextField(editable=False, unique=True)
     data = JSONField()

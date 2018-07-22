@@ -23,6 +23,15 @@ CMD="$1"
 
 # django-admin migrate
 
+# celery_worker entrypoint
+if [ "$1" = "celery_worker" ]; then
+    echo "[Run] Starting celery_worker"
+
+    set -x
+    exec celery -A scremsong worker -l info --concurrency=2
+    exit
+fi
+
 if [ "$ENVIRONMENT" = "DEVELOPMENT" ]; then
   export SCREMSONG_DJANGO_MIGRATE=1
   django-admin migrate
