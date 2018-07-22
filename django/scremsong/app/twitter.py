@@ -16,7 +16,7 @@ def get_twitter_app():
     return SocialPlatforms.objects.filter(platform=SocialPlatformChoice.TWITTER).first()
 
 
-def get_tweepy_api_auth():
+def get_tweepy_api_auth(wait_on_rate_limit=False, wait_on_rate_limit_notify=False):
     t = get_twitter_app()
 
     if t.credentials is not None and "access_token" in t.credentials and "access_token_secret" in t.credentials:
@@ -90,7 +90,7 @@ def fill_in_missing_tweets(since_id, max_id):
         logger.warning("since_id {} is out of range of max_id {} - it should be a lower number!")
         return None
 
-    api = get_tweepy_api_auth()
+    api = get_tweepy_api_auth(wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
     if api is None:
         logger.warning("No Twitter credentials available! Please generate them by-hand.")
         return None
@@ -152,7 +152,7 @@ def open_tweet_stream():
         t = get_twitter_app()
 
     # Begin streaming!
-    api = get_tweepy_api_auth()
+    api = get_tweepy_api_auth(wait_on_rate_limit=False, wait_on_rate_limit_notify=False)
     if api is None:
         logger.warning("No Twitter credentials available! Please generate them by-hand.")
         return None
