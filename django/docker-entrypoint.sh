@@ -28,14 +28,12 @@ if [ "$1" = "celery_worker" ]; then
     echo "[Run] Starting celery_worker"
 
     set -x
-    exec celery -A scremsong worker -l info --concurrency=2
+    exec celery -A scremsong worker -l info --concurrency=2 --logfile=logs/celery-worker.log
     exit
 fi
 
 if [ "$ENVIRONMENT" = "DEVELOPMENT" ]; then
-  export SCREMSONG_DJANGO_MIGRATE=1
   django-admin migrate
-  export SCREMSONG_DJANGO_MIGRATE=0
   django-admin runserver "0.0.0.0:8000"
   exit
 fi

@@ -37,10 +37,6 @@ class SocialPlatforms(models.Model):
 
     platform = models.TextField(primary_key=True, choices=[(tag, tag.value) for tag in SocialPlatformChoice])
     credentials = JSONField(default=None, blank=True, null=True)  # Credentials store for long-lived secrets for social platforms
-    active_app_uuid = models.CharField(max_length=36, editable=False, null=True)
-    pid = models.IntegerField(null=True)
-    errors = JSONField(default=list, blank=True, null=True)
-    log = JSONField(default=list, blank=True, null=True)
 
 
 class Tweets(models.Model):

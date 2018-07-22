@@ -18,16 +18,3 @@ class MyAppConfig(AppConfig):
         if is_development():
             raven_config["dsn"] = None
         self.raven = Client(**raven_config)
-
-        # Make us a new UUID if we're booting up for the first time on this instance
-        # But don't bother if this is a `django-admin migrate` calls
-        # c.f. docker-entrypoint.sh
-
-        # if get_env("SCREMSONG_DJANGO_MIGRATE") == "0":
-        #     from scremsong.app.twitter import make_app_uuid, open_tweet_stream
-        #     make_app_uuid()
-        #     open_tweet_stream()
-        # elif get_env("ENVIRONMENT") == "DEVELOPMENT" and get_env("SCREMSONG_DJANGO_MIGRATE") == "1":
-        #     # Hack it to work on dev
-        #     from scremsong.app.twitter import reset_active_app
-        #     reset_active_app()
