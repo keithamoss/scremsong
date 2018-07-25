@@ -35,14 +35,10 @@ def celery_init_tweet_streaming():
     task_open_tweet_stream.apply_async(countdown=2)
 
 
-@celeryd_init.connect
-def configure_workers(sender=None, conf=None, **kwargs):
-    logger.info("Starting up Celery worker")
-
+def celery_kill_running_tasks():
     from celery.task.control import inspect, revoke, broadcast
     i = inspect()
 
-    # Stop any running tasks before we try to kill our workers
     for worker_name, tasks in i.active().items():
         logger.info("Ending tasks for worker {}".format(worker_name))
 
@@ -57,6 +53,22 @@ def configure_workers(sender=None, conf=None, **kwargs):
 
     # Give the tasks time to properly die
     sleep(2)
+
+
+def celery_restart_streaming():
+    # Stop any running tasks before we try to restart
+    celery_kill_running_tasks()
+
+    # And restart!
+    celery_init_tweet_streaming()
+
+
+@celeryd_init.connect
+def configure_workers(sender=None, conf=None, **kwargs):
+    logger.info("Starting up Celery worker")
+
+    # Stop any running tasks before we try to kill our workers
+    celery_kill_running_tasks()
 
     # Shutdown any existing workers before our new worker connects
     for worker_name, ok in i.ping().items():
@@ -101,7 +113,7 @@ def task_fill_missing_tweets(self, since_id):
 
             logger.info("Auto-starting filling in missing tweets since {} and until {} in Celery worker".format(since_id, max_id))
             tweets_added = fill_in_missing_tweets(since_id, max_id)
-            logger.info("Filled in {} missing tweets".format(tweets_added))
+            logger.info("Filled in {} missing tweets in total".format(tweets_added))
         else:
             logger.info("Waiting for streaming to start until we can fill missing tweets...")
             sleep(2)

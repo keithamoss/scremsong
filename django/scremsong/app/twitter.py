@@ -5,9 +5,10 @@ import uuid
 import datetime
 import pytz
 import json
-from scremsong.app.models import SocialPlatforms, SocialPlatformChoice, Tweets
+from scremsong.app.models import SocialPlatforms, SocialPlatformChoice, Tweets, SocialColumns
 from django.db.models import Q
 from scremsong.celery import celery_init_tweet_streaming
+from scremsong.app.social import get_social_columns
 
 logger = make_logger(__name__)
 
@@ -85,6 +86,10 @@ def save_tweet(status):
         logger.error("Exception {}: '{}' for tweet_id {}".format(type(e), e, status.id_str))
 
 
+def column_search_phrase_to_twitter_search_query(social_column):
+    return " OR ".join(social_column.search_phrases)
+
+
 def fill_in_missing_tweets(since_id, max_id):
     if since_id >= max_id:
         logger.warning("since_id {} is out of range of max_id {} - it should be a lower number!")
@@ -95,11 +100,18 @@ def fill_in_missing_tweets(since_id, max_id):
         logger.warning("No Twitter credentials available! Please generate them by-hand.")
         return None
 
-    tweets_added = 0
-    for status in tweepy.Cursor(api.search, q=["#TDF OR #TDF2018"], result_type="recent", tweet_mode="extended", since_id=since_id, max_id=max_id).items():
-        save_tweet(status)
-        tweets_added += 1
-    return tweets_added
+    total_tweets_added = 0
+    for column in get_social_columns(SocialPlatformChoice.TWITTER):
+        tweets_added = 0
+        q = column_search_phrase_to_twitter_search_query(column)
+        for status in tweepy.Cursor(api.search, q=q, result_type="recent", tweet_mode="extended", since_id=since_id, max_id=max_id).items():
+            save_tweet(status)
+            tweets_added += 1
+            total_tweets_added += 1
+
+        logger.info("Filled in {} missing tweets for the query '{}'".format(tweets_added, q))
+
+    return total_tweets_added
 
 
 def open_tweet_stream():
@@ -160,7 +172,11 @@ def open_tweet_stream():
     try:
         myStreamListener = MyStreamListener()
         myStream = tweepy.Stream(auth=api.auth, listener=myStreamListener)
-        myStream.filter(track=["#TDF", "#TDF2018"])
-        logger.warn("Streaming Twitter connection establised successfully.")
+
+        track = []
+        [track.extend(column.search_phrases) for column in get_social_columns(SocialPlatformChoice.TWITTER)]
+
+        myStream.filter(track=track)
+        logger.info("Streaming Twitter connection establised successfully for terms: {}.".format(", ".join(track)))
     except Exception as e:
         logger.error("Exception {}: '{}' during streaming".format(type(e), e))

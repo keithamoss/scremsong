@@ -24,6 +24,7 @@ import csv
 from tweepy import TweepError
 from scremsong.util import get_env, make_logger
 from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2
+from scremsong.celery import celery_restart_streaming
 
 logger = make_logger(__name__)
 
@@ -95,6 +96,11 @@ class TweetsViewset(viewsets.ViewSet):
         from celery.task.control import inspect
         i = inspect()
         return Response(i.ping())
+
+    @list_route(methods=['get'])
+    def restart_streaming(self, request, format=None):
+        celery_restart_streaming()
+        return Response({"OK": True})
 
     @list_route(methods=['get'])
     def auth1(self, request, format=None):
