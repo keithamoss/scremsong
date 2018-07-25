@@ -25,7 +25,7 @@ import { IAppModule, IUser } from "./redux/modules/interfaces"
 //     height: 32px;
 //     margin-right: 10px;
 // `
-import { TriageViewContainer } from "./triage/TriageView/TriageViewContainer"
+import TriageViewContainer from "./triage/TriageView/TriageViewContainer"
 
 export interface IProps {
     muiThemePalette: any
@@ -58,7 +58,7 @@ class App extends React.Component<IProps, {}> {
                 <BodyContainer breakPoint={defaultBreakPoint}>
                     <LinearProgress mode="indeterminate" color={muiThemePalette.accent3Color} style={styles.linearProgressStyle} />
 
-                    <ResponsiveAppBar breakPoint={defaultBreakPoint} title={"Starter Kit"} zDepth={0} />
+                    <ResponsiveAppBar breakPoint={defaultBreakPoint} title={"Scremsong"} zDepth={0} />
 
                     <LoginDialog open={user === null} />
 

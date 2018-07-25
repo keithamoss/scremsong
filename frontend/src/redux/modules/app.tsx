@@ -9,6 +9,7 @@ const LOADED = "ealgis/app/LOADED"
 const BEGIN_FETCH = "ealgis/app/BEGIN_FETCH"
 const FINISH_FETCH = "ealgis/app/FINISH_FETCH"
 const TOGGLE_SIDEBAR = "ealgis/app/TOGGLE_SIDEBAR"
+const LOAD_TWEETS = "ealgis/app/LOAD_TWEETS"
 
 export enum eAppEnv {
     DEV = 1,
@@ -20,6 +21,7 @@ const initialState: IModule = {
     loading: true,
     requestsInProgress: 0,
     sidebarOpen: false,
+    tweets: [],
 }
 
 // Reducer
@@ -37,6 +39,8 @@ export default function reducer(state: IModule = initialState, action: IAction) 
             return dotProp.set(state, "requestsInProgress", --requestsInProgress)
         case TOGGLE_SIDEBAR:
             return dotProp.toggle(state, "sidebarOpen")
+        case LOAD_TWEETS:
+            return dotProp.set(state, "tweets", action.tweets)
         default:
             return state
     }
@@ -77,17 +81,25 @@ export function toggleSidebarState(): IAction {
         },
     }
 }
+export function loadTweets(tweets: object[]) {
+    return {
+        type: LOAD_TWEETS,
+        tweets,
+    }
+}
 
 // Models
 export interface IModule {
     loading: boolean
     requestsInProgress: number
     sidebarOpen: boolean
+    tweets: object[]
 }
 
 export interface IAction {
     type: string
     open?: boolean
+    tweets?: object[]
     meta?: {
         // analytics: IAnalyticsMeta
     }
@@ -109,11 +121,19 @@ export function fetchInitialAppState() {
 
         const self: ISelf = await dispatch(fetchUser())
         if (self.is_logged_in === true) {
-            // await Promise.all([
-            //     dispatch(fetchSomething()),
-            // ])
+            await Promise.all([dispatch(fetchTweets())])
         }
 
         dispatch(loaded())
+    }
+}
+
+export function fetchTweets() {
+    return async (dispatch: Function, getState: Function, api: APIClient) => {
+        const { response, json } = await api.get("/api/0.1/tweets/get_some_tweets/", dispatch)
+        if (response.status === 200) {
+            dispatch(loadTweets(json))
+            return json
+        }
     }
 }

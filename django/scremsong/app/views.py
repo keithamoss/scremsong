@@ -23,8 +23,10 @@ import json
 import csv
 from tweepy import TweepError
 from scremsong.util import get_env, make_logger
-from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2
+from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, get_tweets_for_column
 from scremsong.celery import celery_restart_streaming
+from scremsong.app.social import get_social_columns
+from scremsong.app.models import SocialPlatformChoice
 
 logger = make_logger(__name__)
 
@@ -101,6 +103,11 @@ class TweetsViewset(viewsets.ViewSet):
     def restart_streaming(self, request, format=None):
         celery_restart_streaming()
         return Response({"OK": True})
+
+    @list_route(methods=['get'])
+    def get_some_tweets(self, request, format=None):
+        social_column = get_social_columns(SocialPlatformChoice.TWITTER)[0]
+        return Response(get_tweets_for_column(social_column))
 
     @list_route(methods=['get'])
     def auth1(self, request, format=None):

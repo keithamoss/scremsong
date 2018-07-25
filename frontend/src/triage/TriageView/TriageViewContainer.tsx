@@ -5,7 +5,9 @@ import TriageView from "./TriageView"
 
 export interface IProps {}
 
-export interface IStoreProps {}
+export interface IStoreProps {
+    tweets: object[]
+}
 
 export interface IDispatchProps {}
 
@@ -16,14 +18,16 @@ export interface IDispatchProps {}
 
 export class TriageViewContainer extends React.Component<IProps & IStoreProps & IDispatchProps, {}> {
     public render() {
-        return <TriageView />
+        const { tweets } = this.props
+
+        return <TriageView tweets={tweets} />
     }
 }
 
 const mapStateToProps = (state: IStore, ownProps: any): IStoreProps => {
-    // const { maps, ealgis } = state
+    const { app } = state
 
-    return {}
+    return { tweets: app.tweets }
 }
 
 const mapDispatchToProps = (dispatch: Function): IDispatchProps => {

@@ -1,12 +1,29 @@
 import * as React from "react"
-// import { Link } from "react-router"
-// import styled from "styled-components"
+import Tweet from "react-tweet"
+import styled from "styled-components"
 
-// export interface IProps {}
+const ThinTweet = styled(Tweet)`
+    max-width: 110px !important;
+`
 
-export class TriageView extends React.Component<{}, {}> {
+export interface IProps {
+    tweets: object[]
+}
+
+export class TriageView extends React.Component<IProps, {}> {
     public render() {
-        return <div />
+        const { tweets } = this.props
+        console.log("tweets", tweets)
+
+        const linkProps = { target: "_blank", rel: "noreferrer" }
+
+        return (
+            <React.Fragment>
+                {tweets.map((tweet: any, key: number) => {
+                    return <ThinTweet key={tweet.tweet_id} data={tweet.data} linkProps={linkProps} />
+                })}
+            </React.Fragment>
+        )
     }
 }
 

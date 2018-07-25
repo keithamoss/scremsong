@@ -90,9 +90,27 @@ def column_search_phrase_to_twitter_search_query(social_column):
     return " OR ".join(social_column.search_phrases)
 
 
+def get_tweets_for_column(social_column, since_id=None, max_id=None, limit=10):
+    queryset = Tweets.objects
+
+    if since_id is not None:
+        queryset = queryset.filter(tweet_id__gt=since_id)
+
+    if max_id is not None:
+        queryset = queryset.filter(tweet_id__lte=max_id)
+
+    if since_id is not None and max_id is not None and since_id >= max_id:
+        logger.warning("since_id {} is out of range of max_id {} in get_tweets_for_column - it should be a lower number!")
+        return None
+
+    for phrase in social_column.search_phrases:
+        queryset = queryset.filter(data__extended_tweet__full_text__icontains=phrase)
+    return queryset.order_by("-tweet_id").values()[:limit]
+
+
 def fill_in_missing_tweets(since_id, max_id):
     if since_id >= max_id:
-        logger.warning("since_id {} is out of range of max_id {} - it should be a lower number!")
+        logger.warning("since_id {} is out of range of max_id {} in fill_in_missing_tweets - it should be a lower number!")
         return None
 
     api = get_tweepy_api_auth(wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
