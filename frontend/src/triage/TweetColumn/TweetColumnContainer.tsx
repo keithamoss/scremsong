@@ -67,7 +67,7 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
                 dispatch(unassignAReviewer(item.props["data-tweetid"]))
             }
         },
-        dismissTweet: (tweets: any[], tweetId: string, event: any) => {
+        dismissTweet: (tweetId: string, event: any) => {
             dispatch(dismissATweet(tweetId))
         },
     }
