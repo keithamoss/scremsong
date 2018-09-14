@@ -136,6 +136,9 @@ export class TweetColumn extends React.Component<IProps, {}> {
             if (tweets[tweetId].is_dismissed) {
                 tweetStyle = { ...tweetStyle, backgroundColor: "grey" }
             }
+            if ("review_status" in tweets[tweetId] && tweets[tweetId].review_status === "SocialAssignmentStatus.Processed") {
+                tweetStyle = { ...tweetStyle, backgroundColor: "lightgreen" }
+            }
 
             return (
                 <CellMeasurer key={key} cache={this._cache} columnIndex={0} parent={parent} rowIndex={index}>
