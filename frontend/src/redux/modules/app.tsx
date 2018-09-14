@@ -186,7 +186,7 @@ export function fetchTweets(startIndex: number, stopIndex: number, columns: any[
             startIndex,
             stopIndex,
             columns: columns.join(","),
-        })
+        }, true)
         await dispatch(loadTweets(json))
     }
 }

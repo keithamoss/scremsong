@@ -1,37 +1,60 @@
 import * as React from "react"
 import { connect } from "react-redux"
-import { IStore } from "src/redux/modules/interfaces"
+import { fetchLatestTweets } from "src/redux/modules/app"
+import { IStore, IUser } from "src/redux/modules/interfaces"
 import TriageView from "./TriageView"
 
 export interface IProps {}
 
 export interface IStoreProps {
-    tweets: object[]
+    user: IUser
+    columns: object[]
 }
 
-export interface IDispatchProps {}
-
-// interface IOwnProps {
-//     mapId: number
-//     muiTheme: IMUITheme
-// }
+export interface IDispatchProps {
+    fetchLatestTweets: Function
+}
 
 export class TriageViewContainer extends React.Component<IProps & IStoreProps & IDispatchProps, {}> {
-    public render() {
-        const { tweets } = this.props
+    private fetchLatestTweets: Function
 
-        return <TriageView tweets={tweets} />
+    constructor(props: any) {
+        super(props)
+
+        this.fetchLatestTweets = props.fetchLatestTweets.bind(this, props.columns)
+
+        if (props.user !== null) {
+            window.setInterval(this.fetchLatestTweets, 5000)
+        }
+    }
+
+    public render() {
+        const { user, columns } = this.props
+
+        if (user === null) {
+            return <div />
+        }
+
+        return <TriageView columns={columns} />
     }
 }
 
 const mapStateToProps = (state: IStore, ownProps: any): IStoreProps => {
-    const { app } = state
+    const { user, app } = state
 
-    return { tweets: app.tweets }
+    return {
+        user: user.user,
+        // columns: [app.columns[1]],
+        columns: app.columns,
+    }
 }
 
 const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
-    return {}
+    return {
+        fetchLatestTweets: (columns: any) => {
+            dispatch(fetchLatestTweets(columns))
+        },
+    }
 }
 
 const TriageViewContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(
@@ -39,5 +62,4 @@ const TriageViewContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, 
     mapDispatchToProps
 )(TriageViewContainer)
 
-// @ts-ignore
 export default TriageViewContainerWrapped

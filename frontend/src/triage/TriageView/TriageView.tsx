@@ -1,28 +1,37 @@
 import * as React from "react"
-import Tweet from "react-tweet"
-import styled from "styled-components"
+import styled from "../../../node_modules/styled-components"
+import TweetColumnContainer from "../TweetColumn/TweetColumnContainer"
 
-const ThinTweet = styled(Tweet)`
-    max-width: 110px !important;
+const ColumnContainerContainer = styled.div`
+    display: inline-block;
+    height: 100%;
+`
+
+const ColumnContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    height: 88%;
 `
 
 export interface IProps {
-    tweets: object[]
+    columns: any[]
 }
 
 export class TriageView extends React.Component<IProps, {}> {
     public render() {
-        const { tweets } = this.props
-        console.log("tweets", tweets)
+        const { columns } = this.props
 
-        const linkProps = { target: "_blank", rel: "noreferrer" }
+        // if (columns.length === 0 || (columns.length === 1 && columns[0] === undefined)) {
+        //     console.log("null")
+        //     return null
+        // }
 
         return (
-            <React.Fragment>
-                {tweets.map((tweet: any, key: number) => {
-                    return <ThinTweet key={tweet.tweet_id} data={tweet.data} linkProps={linkProps} />
-                })}
-            </React.Fragment>
+            <ColumnContainerContainer>
+                <ColumnContainer>
+                    {columns.map((column: any, key: number) => <TweetColumnContainer key={column.id} column={column} />)}
+                </ColumnContainer>
+            </ColumnContainerContainer>
         )
     }
 }

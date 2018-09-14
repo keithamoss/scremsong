@@ -12,8 +12,16 @@ export class APIClient {
         this.baseURL = getAPIBaseURL()
     }
 
-    public get(url: string, dispatch: Function, params: object = {}, fetchOptions: object = {}): Promise<IApiResponse> {
-        dispatch(beginFetch())
+    public get(
+        url: string,
+        dispatch: Function,
+        params: object = {},
+        quiet: boolean = false,
+        fetchOptions: object = {}
+    ): Promise<IApiResponse> {
+        if (quiet === false) {
+            dispatch(beginFetch())
+        }
 
         if (Object.keys(params).length > 0) {
             // Yay, a library just to do query string operations for fetch()
@@ -23,7 +31,10 @@ export class APIClient {
 
         return fetch(this.baseURL + url, { ...{ credentials: "include" }, ...fetchOptions })
             .then((response: any) => {
-                dispatch(finishFetch())
+                if (quiet === false) {
+                    dispatch(finishFetch())
+                }
+
                 return response.json().then((json: any) => {
                     if (json.error) {
                         this.handleError(json.messages, url, dispatch)
