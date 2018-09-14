@@ -1,4 +1,4 @@
-import { BodyContainer, ResponsiveAppBar, ResponsiveDrawer } from "material-ui-responsive-drawer"
+import { BodyContainer, ResponsiveDrawer } from "material-ui-responsive-drawer"
 // import AppBar from "material-ui/AppBar"
 // import Snackbar from "material-ui/Snackbar"
 import LinearProgress from "material-ui/LinearProgress"
@@ -58,7 +58,7 @@ class App extends React.Component<IProps, {}> {
                 <BodyContainer breakPoint={defaultBreakPoint}>
                     <LinearProgress mode="indeterminate" color={muiThemePalette.accent3Color} style={styles.linearProgressStyle} />
 
-                    <ResponsiveAppBar breakPoint={defaultBreakPoint} title={"Scremsong"} zDepth={0} />
+                    {/* <ResponsiveAppBar breakPoint={defaultBreakPoint} title={"Scremsong"} zDepth={0} /> */}
 
                     <LoginDialog open={user === null} />
 

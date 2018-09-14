@@ -1,4 +1,5 @@
 import * as dotProp from "dot-prop-immutable"
+import { uniq } from "lodash-es"
 import { APIClient } from "../../redux/modules/interfaces"
 import { fetchUser, ISelf } from "./user"
 // import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
@@ -10,6 +11,8 @@ const BEGIN_FETCH = "ealgis/app/BEGIN_FETCH"
 const FINISH_FETCH = "ealgis/app/FINISH_FETCH"
 const TOGGLE_SIDEBAR = "ealgis/app/TOGGLE_SIDEBAR"
 const LOAD_TWEETS = "ealgis/app/LOAD_TWEETS"
+const LOAD_NEW_TWEETS = "ealgis/app/LOAD_NEW_TWEETS"
+const LOAD_COLUMNS = "ealgis/app/LOAD_COLUMNS"
 
 export enum eAppEnv {
     DEV = 1,
@@ -22,6 +25,8 @@ const initialState: IModule = {
     requestsInProgress: 0,
     sidebarOpen: false,
     tweets: [],
+    columns: [],
+    column_tweets: {},
 }
 
 // Reducer
@@ -40,7 +45,35 @@ export default function reducer(state: IModule = initialState, action: IAction) 
         case TOGGLE_SIDEBAR:
             return dotProp.toggle(state, "sidebarOpen")
         case LOAD_TWEETS:
-            return dotProp.set(state, "tweets", action.tweets)
+            // @ts-ignore
+            action.tweets!.columns.forEach((column: any, index: number) => {
+                if (column.tweets.length === 0 && (!(column.id in state.column_tweets) || state.column_tweets![column.id].length === 0)) {
+                    state = dotProp.set(state, `column_tweets.${column.id}`, [])
+                } else {
+                    state = dotProp.set(state, `column_tweets.${column.id}`, uniq([...state.column_tweets![column.id], ...column.tweets]))
+                }
+            })
+            // @ts-ignore
+            return dotProp.set(state, "tweets", { ...action.tweets.tweets!, ...state.tweets })
+        case LOAD_NEW_TWEETS:
+            // @ts-ignore
+            action.tweets!.columns.forEach((column: any, index: number) => {
+                const columnIndex = state.columns.findIndex((col: any) => {
+                    return col.id === column.id
+                })
+                // @ts-ignore
+                state = dotProp(state, `columns[columnIndex].total_tweets`, state.columns[columnIndex].total_tweets + column.tweets.length)
+            })
+
+            return state
+        case LOAD_COLUMNS:
+            const columnTweets: any = {}
+            action.columns!.forEach((column: any, index: number) => {
+                columnTweets[column.id] = []
+            })
+
+            state = dotProp.set(state, "column_tweets", columnTweets)
+            return dotProp.set(state, "columns", action.columns)
         default:
             return state
     }
@@ -88,18 +121,36 @@ export function loadTweets(tweets: object[]) {
     }
 }
 
+export function loadNewTweets(tweets: object[]) {
+    return {
+        type: LOAD_NEW_TWEETS,
+        tweets,
+    }
+}
+
+export function loadColumns(columns: object[]) {
+    return {
+        type: LOAD_COLUMNS,
+        columns,
+    }
+}
+
 // Models
 export interface IModule {
     loading: boolean
     requestsInProgress: number
     sidebarOpen: boolean
     tweets: object[]
+    columns: object[]
+    column_tweets: any
 }
 
 export interface IAction {
     type: string
     open?: boolean
     tweets?: object[]
+    columns?: object[]
+    column_tweets?: any
     meta?: {
         // analytics: IAnalyticsMeta
     }
@@ -121,18 +172,49 @@ export function fetchInitialAppState() {
 
         const self: ISelf = await dispatch(fetchUser())
         if (self.is_logged_in === true) {
-            await Promise.all([dispatch(fetchTweets())])
+            await dispatch(fetchColumns())
+            await Promise.all([dispatch(fetchTweets(0, 20))])
         }
 
         dispatch(loaded())
     }
 }
 
-export function fetchTweets() {
+export function fetchTweets(startIndex: number, stopIndex: number, columns: any[] = []) {
     return async (dispatch: Function, getState: Function, api: APIClient) => {
-        const { response, json } = await api.get("/api/0.1/tweets/get_some_tweets/", dispatch)
+        const { json } = await api.get("/api/0.1/tweets/get_some_tweets/", dispatch, {
+            startIndex,
+            stopIndex,
+            columns: columns.join(","),
+        })
+        await dispatch(loadTweets(json))
+    }
+}
+
+export function fetchLatestTweets(columns: any) {
+    return async (dispatch: Function, getState: Function, api: APIClient) => {
+        const { json } = await api.get(
+            "/api/0.1/tweets/get_some_tweets/",
+            dispatch,
+            {
+                sinceId: Object.keys(getState().app.tweets)[0],
+                columns: columns.reduce((arr: any, elem: any) => [...arr, ...elem.id], []).join(","),
+            },
+            true
+        )
+        if (json.tweets.length > 0) {
+            await dispatch(loadNewTweets(json))
+            await dispatch(loadTweets(json))
+        }
+    }
+}
+
+export function fetchColumns() {
+    return async (dispatch: Function, getState: Function, api: APIClient) => {
+        const { response, json } = await api.get("/api/0.1/tweets/get_deck_columns/", dispatch)
+
         if (response.status === 200) {
-            dispatch(loadTweets(json))
+            dispatch(loadColumns(json.columns))
             return json
         }
     }
