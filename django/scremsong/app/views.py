@@ -26,7 +26,7 @@ from scremsong.util import get_env, make_logger
 from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, get_tweets_for_column, get_total_tweets_for_column
 from scremsong.celery import celery_restart_streaming
 from scremsong.app.social import get_social_columns
-from scremsong.app.models import SocialPlatformChoice
+from scremsong.app.models import SocialPlatformChoice, Tweets
 
 logger = make_logger(__name__)
 
@@ -139,7 +139,7 @@ class TweetsViewset(viewsets.ViewSet):
             column_tweet_ids = []
 
             for tweet in column_tweets:
-                tweets[tweet["tweet_id"]] = tweet["data"]
+                tweets[tweet["tweet_id"]] = {"data": tweet["data"], "is_dismissed": tweet["is_dismissed"]}
                 column_tweet_ids.append(tweet["tweet_id"])
 
             columns.append({
@@ -151,6 +151,17 @@ class TweetsViewset(viewsets.ViewSet):
             "columns": columns,
             "tweets": tweets,
         })
+
+    @list_route(methods=['get'])
+    def dismiss(self, request, format=None):
+        qp = request.query_params
+        tweetId = qp["tweetId"] if "tweetId" in qp else None
+
+        tweet = Tweets.objects.get(tweet_id=tweetId)
+        tweet.is_dismissed = True
+        tweet.save()
+
+        return Response({})
 
     @list_route(methods=['get'])
     def auth1(self, request, format=None):

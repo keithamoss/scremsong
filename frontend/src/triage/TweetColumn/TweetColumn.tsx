@@ -132,10 +132,16 @@ export class TweetColumn extends React.Component<IProps, {}> {
             )
         } else {
             const tweetId = tweet_ids[index]
+
+            let tweetStyle = style
+            if (tweets[tweetId].is_dismissed) {
+                tweetStyle = { ...tweetStyle, backgroundColor: "grey" }
+            }
+
             return (
                 <CellMeasurer key={key} cache={this._cache} columnIndex={0} parent={parent} rowIndex={index}>
-                    <div style={style}>
-                        <Tweet key={tweetId} data={tweets[tweetId]} />
+                    <div style={tweetStyle}>
+                        <Tweet key={tweetId} data={tweets[tweetId].data} />
                         <div>
                             <IconButton tooltip="Assign this tweet to a reviewer" onClick={this.assignTweet(tweetId)}>
                                 <ActionAssignment />

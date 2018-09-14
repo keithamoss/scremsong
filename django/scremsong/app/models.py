@@ -44,6 +44,7 @@ class Tweets(models.Model):
 
     tweet_id = models.TextField(editable=False, unique=True)
     data = JSONField()
+    is_dismissed = models.BooleanField(default=False)
 
 
 class SocialColumns(models.Model):

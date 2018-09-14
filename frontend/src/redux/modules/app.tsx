@@ -12,6 +12,7 @@ const FINISH_FETCH = "ealgis/app/FINISH_FETCH"
 const TOGGLE_SIDEBAR = "ealgis/app/TOGGLE_SIDEBAR"
 const LOAD_TWEETS = "ealgis/app/LOAD_TWEETS"
 const LOAD_NEW_TWEETS = "ealgis/app/LOAD_NEW_TWEETS"
+const DISMISS_TWEET = "ealgis/app/DISMISS_TWEET"
 const LOAD_COLUMNS = "ealgis/app/LOAD_COLUMNS"
 
 export enum eAppEnv {
@@ -74,6 +75,8 @@ export default function reducer(state: IModule = initialState, action: IAction) 
 
             state = dotProp.set(state, "column_tweets", columnTweets)
             return dotProp.set(state, "columns", action.columns)
+        case DISMISS_TWEET:
+            return dotProp.set(state, `tweets.${action.tweetId}.is_dismissed`, true)
         default:
             return state
     }
@@ -114,6 +117,7 @@ export function toggleSidebarState(): IAction {
         },
     }
 }
+
 export function loadTweets(tweets: object[]) {
     return {
         type: LOAD_TWEETS,
@@ -125,6 +129,13 @@ export function loadNewTweets(tweets: object[]) {
     return {
         type: LOAD_NEW_TWEETS,
         tweets,
+    }
+}
+
+export function dismissTweet(tweetId: string) {
+    return {
+        type: DISMISS_TWEET,
+        tweetId,
     }
 }
 
@@ -149,6 +160,7 @@ export interface IAction {
     type: string
     open?: boolean
     tweets?: object[]
+    tweetId?: string
     columns?: object[]
     column_tweets?: any
     meta?: {
@@ -182,11 +194,16 @@ export function fetchInitialAppState() {
 
 export function fetchTweets(startIndex: number, stopIndex: number, columns: any[] = []) {
     return async (dispatch: Function, getState: Function, api: APIClient) => {
-        const { json } = await api.get("/api/0.1/tweets/get_some_tweets/", dispatch, {
-            startIndex,
-            stopIndex,
-            columns: columns.join(","),
-        }, true)
+        const { json } = await api.get(
+            "/api/0.1/tweets/get_some_tweets/",
+            dispatch,
+            {
+                startIndex,
+                stopIndex,
+                columns: columns.join(","),
+            },
+            true
+        )
         await dispatch(loadTweets(json))
     }
 }
@@ -217,5 +234,14 @@ export function fetchColumns() {
             dispatch(loadColumns(json.columns))
             return json
         }
+    }
+}
+
+export function dismissATweet(tweetId: string) {
+    return async (dispatch: Function, getState: Function, api: APIClient) => {
+        dispatch(dismissTweet(tweetId))
+        await api.get("/api/0.1/tweets/dismiss/", dispatch, {
+            tweetId,
+        })
     }
 }

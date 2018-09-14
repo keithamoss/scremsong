@@ -1,6 +1,6 @@
 import * as React from "react"
 import { connect } from "react-redux"
-import { fetchTweets } from "src/redux/modules/app"
+import { dismissATweet, fetchTweets } from "src/redux/modules/app"
 import { IStore } from "src/redux/modules/interfaces"
 import TweetColumn from "./TweetColumn"
 
@@ -65,7 +65,7 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
             console.log("assignTweet", tweetId, tweets[tweetId])
         },
         dismissTweet: (tweets: any[], tweetId: string, event: any) => {
-            console.log("dismissTweet", tweetId, tweets[tweetId])
+            dispatch(dismissATweet(tweetId))
         },
     }
 }
