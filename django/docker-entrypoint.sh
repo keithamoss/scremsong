@@ -29,6 +29,7 @@ if [ "$1" = "celery_worker" ]; then
 
     set -x
     exec celery -A scremsong worker -l info --concurrency=2 --logfile=logs/celery-worker.log
+    # exec celery -A scremsong worker -l info --concurrency=2
     exit
 fi
 
