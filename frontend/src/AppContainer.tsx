@@ -20,6 +20,7 @@ import MuiThemeProvider from "material-ui/styles/MuiThemeProvider"
 import { fade } from "material-ui/utils/colorManipulator"
 import * as React from "react"
 import { connect } from "react-redux"
+import { withRouter } from "react-router-dom"
 import App from "./App"
 import { fetchInitialAppState, toggleSidebarState } from "./redux/modules/app"
 import { IAppModule, IStore, IUser } from "./redux/modules/interfaces"
@@ -129,9 +130,9 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     }
 }
 
-const AppContainerWrapped = connect(
+const AppContainerWrapped = withRouter(connect(
     mapStateToProps,
     mapDispatchToProps
-)(AppContainer)
+)(AppContainer) as any)
 
 export default AppContainerWrapped

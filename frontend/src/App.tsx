@@ -1,13 +1,15 @@
-import { BodyContainer, ResponsiveDrawer } from "material-ui-responsive-drawer"
+import { MenuItem } from "material-ui";
+import { BodyContainer, ResponsiveDrawer } from "material-ui-responsive-drawer";
 // import AppBar from "material-ui/AppBar"
 // import Snackbar from "material-ui/Snackbar"
-import LinearProgress from "material-ui/LinearProgress"
-import * as React from "react"
+import LinearProgress from "material-ui/LinearProgress";
+import * as React from "react";
 // import styled from "styled-components"
-import { Route } from "react-router-dom"
-import "./App.css"
-import { LoginDialog } from "./authentication/login-dialog/LoginDialog"
-import { IAppModule, IUser } from "./redux/modules/interfaces"
+import { Link, Route } from "react-router-dom";
+import "./App.css";
+import { LoginDialog } from "./authentication/login-dialog/LoginDialog";
+import { IAppModule, IUser } from "./redux/modules/interfaces";
+import { UserReviewQueueViewContainer } from "./review/UserReviewQueueView/UserReviewQueueViewContainer";
 // import { MapsMap, MapsAddLocation, ActionSearch, ActionStore, ActionInfo, HardwareTv, CommunicationEmail } from "material-ui/svg-icons"
 // import Drawer from "material-ui/Drawer"
 // import { BottomNavigation, BottomNavigationItem } from "material-ui/BottomNavigation"
@@ -25,7 +27,7 @@ import { IAppModule, IUser } from "./redux/modules/interfaces"
 //     height: 32px;
 //     margin-right: 10px;
 // `
-import TriageViewContainer from "./triage/TriageView/TriageViewContainer"
+import TriageViewContainer from "./triage/TriageView/TriageViewContainer";
 
 export interface IProps {
     muiThemePalette: any
@@ -50,9 +52,16 @@ class App extends React.Component<IProps, {}> {
         }
 
         return (
+                        // <BrowserRouter>
+                        //     <React.Fragment>
             <div className="page">
                 <ResponsiveDrawer breakPoint={defaultBreakPoint}>
-                    {isResponsiveAndOverBreakPoint === true && <div>Item</div>}
+                    {isResponsiveAndOverBreakPoint === true && (
+                        <React.Fragment>
+                            <MenuItem containerElement={<Link to={"/"} />}>Triage View</MenuItem>
+                            <MenuItem containerElement={<Link to={"/queue"} />}>My Queue</MenuItem>
+                        </React.Fragment>
+                    )}
                 </ResponsiveDrawer>
 
                 <BodyContainer breakPoint={defaultBreakPoint}>
@@ -63,10 +72,11 @@ class App extends React.Component<IProps, {}> {
                     <LoginDialog open={user === null} />
 
                     <div className="page-content">
-                        <Route path="/" component={TriageViewContainer} />
+                                <Route path="/queue" component={UserReviewQueueViewContainer} />
+                                <Route exact={true} path="/" component={TriageViewContainer} />
                     </div>
-                </BodyContainer>
-            </div>
+            //     </BodyContainer>
+            // </div>
         )
     }
 }
