@@ -140,7 +140,7 @@ def fill_in_missing_tweets(since_id, max_id):
     for column in get_social_columns(SocialPlatformChoice.TWITTER):
         tweets_added = 0
         q = column_search_phrase_to_twitter_search_query(column)
-        for status in tweepy.Cursor(api.search, q=q, result_type="recent", tweet_mode="extended", since_id=since_id, max_id=max_id).items():
+        for status in tweepy.Cursor(api.search, q=q, result_type="recent", tweet_mode="extended", include_entities=True, since_id=since_id, max_id=max_id).items():
             save_tweet(status)
             tweets_added += 1
             total_tweets_added += 1
