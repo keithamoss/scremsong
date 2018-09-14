@@ -25,8 +25,8 @@ from tweepy import TweepError
 from scremsong.util import get_env, make_logger
 from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, get_tweets_for_column, get_total_tweets_for_column
 from scremsong.celery import celery_restart_streaming
-from scremsong.app.social import get_social_columns
-from scremsong.app.models import SocialPlatformChoice, Tweets
+from scremsong.app.social import get_social_columns, get_social_assignments
+from scremsong.app.models import SocialPlatformChoice, Tweets, SocialAssignments, SocialAssignmentStatus
 
 logger = make_logger(__name__)
 
@@ -118,6 +118,55 @@ class TweetsViewset(viewsets.ViewSet):
         return Response({"columns": columns})
 
     @list_route(methods=['get'])
+    def get_reviewer_users(self, request, format=None):
+        reviewers = []
+        for reviewer in User.objects.filter(is_staff=False, is_active=True).values():
+            reviewers.append({
+                "id": reviewer["id"],
+                "username": reviewer["username"],
+                "name": "{} {}".format(reviewer["first_name"], reviewer["last_name"]),
+                "initials": "{}{}".format(reviewer["first_name"][:1], reviewer["last_name"][:1]),
+            })
+
+        return Response({"reviewers": reviewers})
+
+    @list_route(methods=['get'])
+    def get_assignments(self, request, format=None):
+        return Response({"assignments": SocialAssignments.objects.values()})
+
+    @list_route(methods=['get'])
+    def dismiss(self, request, format=None):
+        qp = request.query_params
+        tweetId = qp["tweetId"] if "tweetId" in qp else None
+
+        tweet = Tweets.objects.get(tweet_id=tweetId)
+        tweet.is_dismissed = True
+        tweet.save()
+
+        return Response({})
+
+    @list_route(methods=['get'])
+    def assignReviewer(self, request, format=None):
+        qp = request.query_params
+        tweetId = qp["tweetId"] if "tweetId" in qp else None
+        reviewerId = qp["reviewerId"] if "reviewerId" in qp else None
+
+        assignment = SocialAssignments(platform=SocialPlatformChoice.TWITTER, social_id=tweetId, user_id=reviewerId)
+        assignment.save()
+
+        return Response({})
+
+    @list_route(methods=['get'])
+    def unassignReviewer(self, request, format=None):
+        qp = request.query_params
+        tweetId = qp["tweetId"] if "tweetId" in qp else None
+
+        assignment = SocialAssignments.objects.get(platform=SocialPlatformChoice.TWITTER, social_id=tweetId)
+        assignment.delete()
+
+        return Response({})
+
+    @list_route(methods=['get'])
     def get_some_tweets(self, request, format=None):
         qp = request.query_params
 
@@ -147,21 +196,15 @@ class TweetsViewset(viewsets.ViewSet):
                 "tweets": column_tweet_ids,
             })
 
+            social_assignments = get_social_assignments(SocialPlatformChoice.TWITTER, column_tweet_ids)
+            for assignment in social_assignments:
+                tweets[assignment["social_id"]]["reviewer_id"] = assignment["user_id"]
+                tweets[assignment["social_id"]]["review_status"] = assignment["status"]
+
         return Response({
             "columns": columns,
             "tweets": tweets,
         })
-
-    @list_route(methods=['get'])
-    def dismiss(self, request, format=None):
-        qp = request.query_params
-        tweetId = qp["tweetId"] if "tweetId" in qp else None
-
-        tweet = Tweets.objects.get(tweet_id=tweetId)
-        tweet.is_dismissed = True
-        tweet.save()
-
-        return Response({})
 
     @list_route(methods=['get'])
     def auth1(self, request, format=None):

@@ -14,6 +14,9 @@ const LOAD_TWEETS = "ealgis/app/LOAD_TWEETS"
 const LOAD_NEW_TWEETS = "ealgis/app/LOAD_NEW_TWEETS"
 const DISMISS_TWEET = "ealgis/app/DISMISS_TWEET"
 const LOAD_COLUMNS = "ealgis/app/LOAD_COLUMNS"
+const LOAD_REVIEWERS = "ealgis/app/LOAD_REVIEWERS"
+const ASSIGN_REVIEWER = "ealgis/app/ASSIGN_REVIEWER"
+const UNASSIGN_REVIEWER = "ealgis/app/UNASSIGN_REVIEWER"
 
 export enum eAppEnv {
     DEV = 1,
@@ -27,6 +30,7 @@ const initialState: IModule = {
     sidebarOpen: false,
     tweets: [],
     columns: [],
+    reviewers: {},
     column_tweets: {},
 }
 
@@ -77,6 +81,18 @@ export default function reducer(state: IModule = initialState, action: IAction) 
             return dotProp.set(state, "columns", action.columns)
         case DISMISS_TWEET:
             return dotProp.set(state, `tweets.${action.tweetId}.is_dismissed`, true)
+        case LOAD_REVIEWERS:
+            // @ts-ignore
+            action.reviewers.forEach((reviewer: any, index: number) => {
+                state = dotProp.set(state, `reviewers.${reviewer.id}`, reviewer)
+            })
+            return state
+        case ASSIGN_REVIEWER:
+            state = dotProp.set(state, `tweets.${action.tweetId}.reviewer_id`, action.reviewerId)
+            return dotProp.set(state, `tweets.${action.tweetId}.review_status`, "SocialAssignmentStatus.PENDING")
+        case UNASSIGN_REVIEWER:
+            state = dotProp.delete(state, `tweets.${action.tweetId}.reviewer_id`)
+            return dotProp.delete(state, `tweets.${action.tweetId}.review_status`)
         default:
             return state
     }
@@ -139,10 +155,32 @@ export function dismissTweet(tweetId: string) {
     }
 }
 
+export function assignReviewer(tweetId: string, reviewerId: number) {
+    return {
+        type: ASSIGN_REVIEWER,
+        tweetId,
+        reviewerId,
+    }
+}
+
+export function unassignReviewer(tweetId: string) {
+    return {
+        type: UNASSIGN_REVIEWER,
+        tweetId,
+    }
+}
+
 export function loadColumns(columns: object[]) {
     return {
         type: LOAD_COLUMNS,
         columns,
+    }
+}
+
+export function loadReviewers(reviewers: object[]) {
+    return {
+        type: LOAD_REVIEWERS,
+        reviewers,
     }
 }
 
@@ -153,6 +191,7 @@ export interface IModule {
     sidebarOpen: boolean
     tweets: object[]
     columns: object[]
+    reviewers: object
     column_tweets: any
 }
 
@@ -161,7 +200,9 @@ export interface IAction {
     open?: boolean
     tweets?: object[]
     tweetId?: string
+    reviewerId?: number
     columns?: object[]
+    reviewers?: object[]
     column_tweets?: any
     meta?: {
         // analytics: IAnalyticsMeta
@@ -185,7 +226,7 @@ export function fetchInitialAppState() {
         const self: ISelf = await dispatch(fetchUser())
         if (self.is_logged_in === true) {
             await dispatch(fetchColumns())
-            await Promise.all([dispatch(fetchTweets(0, 20))])
+            await Promise.all([dispatch(fetchReviewers()), dispatch(fetchTweets(0, 20))])
         }
 
         dispatch(loaded())
@@ -237,10 +278,40 @@ export function fetchColumns() {
     }
 }
 
+export function fetchReviewers() {
+    return async (dispatch: Function, getState: Function, api: APIClient) => {
+        const { response, json } = await api.get("/api/0.1/tweets/get_reviewer_users/", dispatch)
+
+        if (response.status === 200) {
+            dispatch(loadReviewers(json.reviewers))
+            return json
+        }
+    }
+}
+
 export function dismissATweet(tweetId: string) {
     return async (dispatch: Function, getState: Function, api: APIClient) => {
         dispatch(dismissTweet(tweetId))
         await api.get("/api/0.1/tweets/dismiss/", dispatch, {
+            tweetId,
+        })
+    }
+}
+
+export function assignAReviewer(tweetId: string, reviewerId: number) {
+    return async (dispatch: Function, getState: Function, api: APIClient) => {
+        dispatch(assignReviewer(tweetId, reviewerId))
+        await api.get("/api/0.1/tweets/assignReviewer/", dispatch, {
+            tweetId,
+            reviewerId,
+        })
+    }
+}
+
+export function unassignAReviewer(tweetId: string) {
+    return async (dispatch: Function, getState: Function, api: APIClient) => {
+        dispatch(unassignReviewer(tweetId))
+        await api.get("/api/0.1/tweets/unassignReviewer/", dispatch, {
             tweetId,
         })
     }

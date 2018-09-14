@@ -1,5 +1,5 @@
-import { IconButton } from "material-ui"
-import { ActionAssignment, NavigationClose } from "material-ui/svg-icons"
+import { IconButton, IconMenu, MenuItem } from "material-ui"
+import { ActionAssignment, ActionAssignmentInd, NavigationClose } from "material-ui/svg-icons"
 import * as React from "react"
 import Tweet from "react-tweet"
 import { AutoSizer, CellMeasurer, CellMeasurerCache, InfiniteLoader, List } from "react-virtualized"
@@ -20,13 +20,13 @@ export interface IProps {
     column: any
     tweet_ids: string[]
     tweets: any[]
+    reviewers: object
     loadMoreRows: any
     assignTweet: any
     dismissTweet: any
 }
 
 export class TweetColumn extends React.Component<IProps, {}> {
-    private assignTweet: any
     private dismissTweet: any
 
     private _cache = new CellMeasurerCache({
@@ -43,7 +43,6 @@ export class TweetColumn extends React.Component<IProps, {}> {
 
     public constructor(props: any) {
         super(props)
-        this.assignTweet = (tweetId: any) => () => this.props.assignTweet(tweetId)
         this.dismissTweet = (tweetId: any) => () => this.props.dismissTweet(tweetId)
     }
 
@@ -116,7 +115,7 @@ export class TweetColumn extends React.Component<IProps, {}> {
     }
 
     private _rowRenderer = ({ index, isScrolling, isVisible, key, parent, style }: any) => {
-        const { column, tweet_ids, tweets } = this.props
+        const { column, tweet_ids, tweets, reviewers } = this.props
 
         if (index >= column.total_tweets) {
             return (
@@ -143,9 +142,34 @@ export class TweetColumn extends React.Component<IProps, {}> {
                     <div style={tweetStyle}>
                         <Tweet key={tweetId} data={tweets[tweetId].data} />
                         <div>
-                            <IconButton tooltip="Assign this tweet to a reviewer" onClick={this.assignTweet(tweetId)}>
-                                <ActionAssignment />
-                            </IconButton>
+                            <IconMenu
+                                iconButtonElement={
+                                    <IconButton tooltip="Assign this tweet to a reviewer">
+                                        {!("reviewer_id" in tweets[tweetId]) && <ActionAssignment />}
+                                        {"reviewer_id" in tweets[tweetId] && <ActionAssignmentInd />}
+                                    </IconButton>
+                                }
+                                anchorOrigin={{ horizontal: "left", vertical: "top" }}
+                                targetOrigin={{ horizontal: "left", vertical: "top" }}
+                                onItemClick={this.props.assignTweet}
+                            >
+                                {"reviewer_id" in tweets[tweetId] && <MenuItem primaryText={<em>Unassign</em>} data-tweetid={tweetId} />}
+                                {Object.keys(reviewers).map((reviewerId: any) => {
+                                    const reviewer = reviewers[reviewerId]
+                                    let primaryText = reviewer.name
+                                    if ("reviewer_id" in tweets[tweetId] && tweets[tweetId].reviewer_id === reviewer.id) {
+                                        primaryText += " (Assigned)"
+                                    }
+                                    return (
+                                        <MenuItem
+                                            key={reviewer.id}
+                                            primaryText={primaryText}
+                                            data-reviewerid={reviewer.id}
+                                            data-tweetid={tweetId}
+                                        />
+                                    )
+                                })}
+                            </IconMenu>
                             <IconButton tooltip="Dismiss and hide this tweet" onClick={this.dismissTweet(tweetId)}>
                                 <NavigationClose />
                             </IconButton>
