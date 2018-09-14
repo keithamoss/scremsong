@@ -102,7 +102,8 @@ def task_fill_missing_tweets(self, since_id):
         logger.info("There's no tweets in the database - skipping filling in missing tweets")
         return True
 
-    # We have to wait until streaming starts to begin filling in the gaps - otherwise we won't know when to stop.
+    # We have to wait until streaming starts AND we receive a tweet to fill in the gaps - otherwise we won't know when to stop filling in the gaps.
+    # NB: Well I guess we could take a few "tweet already exists in table" errors in a row as a sign that we're there?
     max_id = None
     while max_id is None:
         max_id = get_next_tweet_id(since_id)
@@ -115,8 +116,8 @@ def task_fill_missing_tweets(self, since_id):
             tweets_added = fill_in_missing_tweets(since_id, max_id)
             logger.info("Filled in {} missing tweets in total".format(tweets_added))
         else:
-            logger.info("Waiting for streaming to start until we can fill missing tweets...")
-            sleep(2)
+            # logger.info("Waiting for streaming to start until we can fill missing tweets...")
+            sleep(5)
 
     logger.info("Done filling missing tweets!")
     return True

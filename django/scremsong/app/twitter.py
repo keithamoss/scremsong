@@ -90,7 +90,20 @@ def column_search_phrase_to_twitter_search_query(social_column):
     return " OR ".join(social_column.search_phrases)
 
 
-def get_tweets_for_column(social_column, since_id=None, max_id=None, limit=10):
+def apply_tweet_filter_criteria(social_column, queryset):
+    for phrase in social_column["search_phrases"]:
+        for phrase_part in phrase.split(" "):
+            queryset = queryset.filter(Q(data__extended_tweet__full_text__icontains=phrase_part) | Q(data__text__icontains=phrase_part) | Q(data__full_text__icontains=phrase_part))
+
+    return queryset.filter(data__retweeted_status__isnull=True)
+
+
+def get_total_tweets_for_column(social_column):
+    queryset = apply_tweet_filter_criteria(social_column, Tweets.objects)
+    return queryset.count()
+
+
+def get_tweets_for_column(social_column, since_id=None, max_id=None, startIndex=None, stopIndex=None):
     queryset = Tweets.objects
 
     if since_id is not None:
@@ -103,14 +116,19 @@ def get_tweets_for_column(social_column, since_id=None, max_id=None, limit=10):
         logger.warning("since_id {} is out of range of max_id {} in get_tweets_for_column - it should be a lower number!")
         return None
 
-    for phrase in social_column.search_phrases:
-        queryset = queryset.filter(data__extended_tweet__full_text__icontains=phrase)
-    return queryset.order_by("-tweet_id").values()[:limit]
+    queryset = apply_tweet_filter_criteria(social_column.__dict__, queryset)
+
+    tweets = queryset.order_by("-tweet_id").values()
+
+    if startIndex is not None and stopIndex is not None:
+        return tweets[int(startIndex):int(stopIndex)]
+    else:
+        return tweets
 
 
 def fill_in_missing_tweets(since_id, max_id):
     if since_id >= max_id:
-        logger.warning("since_id {} is out of range of max_id {} in fill_in_missing_tweets - it should be a lower number!")
+        logger.warning("since_id {} is out of range of max_id {} in fill_in_missing_tweets - it should be a lower number!".format(since_id, max_id))
         return None
 
     api = get_tweepy_api_auth(wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
@@ -151,7 +169,6 @@ def open_tweet_stream():
 
         def on_limit(self, track):
             logger.warn("Received an on limit message from Twitter.")
-            pass
 
         def on_timeout(self):
             logger.error("Streaming connection to Twitter has timed out.")
@@ -174,6 +191,23 @@ def open_tweet_stream():
         def on_warning(self, notice):
             logger.error("Received disconnection warning notice from Twitter. {}".format(notice))
 
+        def on_connect(self):
+            logger.error("on_connect")
+
+        def on_data(self, raw_data):
+            logger.error("on_data")
+            return super(MyStreamListener, self).on_data(raw_data)
+
+        def on_delete(self, status_id, user_id):
+            """Called when a delete notice arrives for a status"""
+            logger.error("on_delete: {}, {}".format(status_id, user_id))
+            return
+
+        def keep_alive(self):
+            """Called when a keep-alive arrived"""
+            logger.error("keep_alive")
+            return
+
     # Create Twitter app credentials + config store if it doesn't exist
     t = get_twitter_app()
     if t is None:
@@ -182,7 +216,7 @@ def open_tweet_stream():
         t = get_twitter_app()
 
     # Begin streaming!
-    api = get_tweepy_api_auth(wait_on_rate_limit=False, wait_on_rate_limit_notify=False)
+    api = get_tweepy_api_auth(wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
     if api is None:
         logger.warning("No Twitter credentials available! Please generate them by-hand.")
         return None
@@ -194,6 +228,8 @@ def open_tweet_stream():
         track = []
         [track.extend(column.search_phrases) for column in get_social_columns(SocialPlatformChoice.TWITTER)]
 
+        logger.info("track")
+        logger.info(track)
         myStream.filter(track=track)
         logger.info("Streaming Twitter connection establised successfully for terms: {}.".format(", ".join(track)))
     except Exception as e:

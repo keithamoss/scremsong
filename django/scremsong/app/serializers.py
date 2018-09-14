@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from .models import (Profile)
+from .models import Profile, SocialColumns
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.validators import UniqueTogetherValidator
@@ -39,3 +39,12 @@ class UserPublicDetailsSerializer(serializers.ModelSerializer):
             'username',
             'first_name',
             'last_name')
+
+
+class SocialColumnsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SocialColumns
+        fields = (
+            'id',
+            'platform',
+            'search_phrases')
