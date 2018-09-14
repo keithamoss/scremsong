@@ -1,3 +1,5 @@
+import { IconButton } from "material-ui"
+import { ActionAssignment, NavigationClose } from "material-ui/svg-icons"
 import * as React from "react"
 import Tweet from "react-tweet"
 import { AutoSizer, CellMeasurer, CellMeasurerCache, InfiniteLoader, List } from "react-virtualized"
@@ -19,9 +21,14 @@ export interface IProps {
     tweet_ids: string[]
     tweets: any[]
     loadMoreRows: any
+    assignTweet: any
+    dismissTweet: any
 }
 
 export class TweetColumn extends React.Component<IProps, {}> {
+    private assignTweet: any
+    private dismissTweet: any
+
     private _cache = new CellMeasurerCache({
         defaultHeight: 175,
         // defaultWidth: 370,
@@ -31,7 +38,14 @@ export class TweetColumn extends React.Component<IProps, {}> {
             return this.props.tweet_ids[rowIndex]
         },
     })
+
     private _list: any
+
+    public constructor(props: any) {
+        super(props)
+        this.assignTweet = (tweetId: any) => () => this.props.assignTweet(tweetId)
+        this.dismissTweet = (tweetId: any) => () => this.props.dismissTweet(tweetId)
+    }
 
     public render() {
         const { column, tweet_ids, loadMoreRows } = this.props
@@ -39,7 +53,8 @@ export class TweetColumn extends React.Component<IProps, {}> {
         return (
             <Column>
                 <ColumnHeading>
-                    {column.search_phrases.join(", ")} (#{column.id})
+                    {column.search_phrases.join(", ")} (#
+                    {column.id})
                 </ColumnHeading>
 
                 {tweet_ids.length > 0 && (
@@ -121,6 +136,14 @@ export class TweetColumn extends React.Component<IProps, {}> {
                 <CellMeasurer key={key} cache={this._cache} columnIndex={0} parent={parent} rowIndex={index}>
                     <div style={style}>
                         <Tweet key={tweetId} data={tweets[tweetId]} />
+                        <div>
+                            <IconButton tooltip="Assign this tweet to a reviewer" onClick={this.assignTweet(tweetId)}>
+                                <ActionAssignment />
+                            </IconButton>
+                            <IconButton tooltip="Dismiss and hide this tweet" onClick={this.dismissTweet(tweetId)}>
+                                <NavigationClose />
+                            </IconButton>
+                        </div>
                     </div>
                 </CellMeasurer>
             )
