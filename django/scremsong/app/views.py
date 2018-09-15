@@ -168,7 +168,14 @@ class TweetsViewset(viewsets.ViewSet):
 
     @list_route(methods=['get'])
     def get_assignments(self, request, format=None):
-        assignments = SocialAssignments.objects.filter(status=SocialAssignmentStatus.PENDING).order_by("-id").values()
+        qp = request.query_params
+        sinceId = qp["sinceId"] if "sinceId" in qp else None
+
+        queryset = SocialAssignments.objects.filter(status=SocialAssignmentStatus.PENDING, user=request.user)
+
+        if sinceId is not None:
+            queryset = queryset.filter(id__gt=sinceId)
+        assignments = queryset.order_by("-id").values()
 
         tweetIds = [a["social_id"] for a in assignments]
         tweets = {}

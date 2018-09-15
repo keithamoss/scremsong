@@ -1,6 +1,6 @@
 import * as React from "react"
 import { connect } from "react-redux"
-import { fetchLatestTweets, markAssignmentDone } from "src/redux/modules/app"
+import { fetchLatestAssignments, markAssignmentDone } from "src/redux/modules/app"
 import { IStore, IUser } from "src/redux/modules/interfaces"
 import UserReviewQueueView from "./UserReviewQueueView"
 
@@ -13,23 +13,23 @@ export interface IStoreProps {
 }
 
 export interface IDispatchProps {
-    fetchLatestTweets: Function
+    fetchLatestAssignments: Function
     onMarkAsDone: Function
 }
 
 const getUserAssignments = (assignments: object[], user: any) => assignments.filter((assignment: any) => assignment.user_id === user.id)
 
 class UserReviewQueueViewContainer extends React.Component<IProps & IStoreProps & IDispatchProps, {}> {
-    // private fetchLatestTweets: Function
+    private fetchLatestAssignments: Function
 
     constructor(props: any) {
         super(props)
 
-        // this.fetchLatestTweets = props.fetchLatestTweets.bind(this, props.columns)
+        this.fetchLatestAssignments = props.fetchLatestAssignments.bind(this, props.user)
 
-        // if (props.user !== null) {
-        //     window.setInterval(this.fetchLatestTweets, 5000)
-        // }
+        if (props.user !== null) {
+            window.setInterval(this.fetchLatestAssignments, 10000)
+        }
     }
 
     public render() {
@@ -55,8 +55,8 @@ const mapStateToProps = (state: IStore, ownProps: any): IStoreProps => {
 
 const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {
-        fetchLatestTweets: (columns: any) => {
-            dispatch(fetchLatestTweets(columns))
+        fetchLatestAssignments: (user: any) => {
+            dispatch(fetchLatestAssignments(user))
         },
         onMarkAsDone: (assignment: any) => {
             dispatch(markAssignmentDone(assignment))
