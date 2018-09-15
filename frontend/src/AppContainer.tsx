@@ -22,7 +22,7 @@ import * as React from "react"
 import { connect } from "react-redux"
 import { withRouter } from "react-router-dom"
 import App from "./App"
-import { fetchInitialAppState, toggleSidebarState } from "./redux/modules/app"
+import { fetchInitialAppState, getUserAssignments, toggleSidebarState } from "./redux/modules/app"
 import { IAppModule, IStore, IUser } from "./redux/modules/interfaces"
 
 // const Config: IConfig = require("Config") as any
@@ -57,6 +57,7 @@ export interface IStoreProps {
     user: IUser
     browser: any
     responsiveDrawer: any
+    userAssignmentCount: number
 }
 
 export interface IDispatchProps {
@@ -80,7 +81,7 @@ export class AppContainer extends React.Component<any, any> {
     }
 
     public render() {
-        const { app, user, browser, responsiveDrawer, toggleSidebar, children } = this.props
+        const { app, user, browser, responsiveDrawer, userAssignmentCount, toggleSidebar, children } = this.props
 
         if (app.loading === true) {
             return (
@@ -100,6 +101,7 @@ export class AppContainer extends React.Component<any, any> {
                     user={user}
                     defaultBreakPoint={DEFAULT_BREAK_POINT}
                     isResponsiveAndOverBreakPoint={isResponsiveAndOverBreakPoint(browser, responsiveDrawer)}
+                    userAssignmentCount={userAssignmentCount}
                     toggleSidebar={toggleSidebar}
                     children={children}
                 />
@@ -116,6 +118,7 @@ const mapStateToProps = (state: IStore): IStoreProps => {
         user: user.user,
         browser,
         responsiveDrawer,
+        userAssignmentCount: getUserAssignments(app.assignments, user.user).length,
     }
 }
 

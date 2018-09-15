@@ -1,6 +1,6 @@
 import * as React from "react"
 import { connect } from "react-redux"
-import { fetchLatestAssignments, markAssignmentDone } from "src/redux/modules/app"
+import { fetchLatestAssignments, getUserAssignments, markAssignmentDone } from "src/redux/modules/app"
 import { IStore, IUser } from "src/redux/modules/interfaces"
 import UserReviewQueueView from "./UserReviewQueueView"
 
@@ -16,8 +16,6 @@ export interface IDispatchProps {
     fetchLatestAssignments: Function
     onMarkAsDone: Function
 }
-
-const getUserAssignments = (assignments: object[], user: any) => assignments.filter((assignment: any) => assignment.user_id === user.id)
 
 class UserReviewQueueViewContainer extends React.Component<IProps & IStoreProps & IDispatchProps, {}> {
     private fetchLatestAssignments: Function

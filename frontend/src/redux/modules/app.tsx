@@ -372,18 +372,16 @@ export function fetchAssignments() {
 
 export function fetchLatestAssignments(user: any) {
     return async (dispatch: Function, getState: Function, api: APIClient) => {
-        const latestAssignment = getState()
-            .app.assignments.filter((assignment: any) => assignment.user_id === user.id)
-            .reduce((prev: any, current: any) => (prev.id > current.id ? prev : current))
-
-        const { json } = await api.get(
-            "/api/0.1/tweets/get_assignments/",
-            dispatch,
-            {
+        let params = {}
+        if (getState().app.assignments.length > 0) {
+            const latestAssignment = getState()
+                .app.assignments.filter((assignment: any) => assignment.user_id === user.id)
+                .reduce((prev: any, current: any) => (prev.id > current.id ? prev : current))
+            params = {
                 sinceId: latestAssignment.id,
-            },
-            true
-        )
+            }
+        }
+        const { json } = await api.get("/api/0.1/tweets/get_assignments/", dispatch, params, true)
 
         if (json.assignments.length > 0) {
             dispatch(loadAssignments(json.assignments))
@@ -400,4 +398,8 @@ export function markAssignmentDone(assignment: any) {
             assignmentId: assignment.id,
         })
     }
+}
+
+export function getUserAssignments(assignments: object[], user: any) {
+    return assignments.filter((assignment: any) => assignment.user_id === user.id)
 }

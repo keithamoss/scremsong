@@ -1,6 +1,5 @@
 import { Card, CardActions, CardText, RaisedButton } from "material-ui"
-import { fullWhite } from "material-ui/styles/colors"
-import ActionAssignmentTurnedIn from "material-ui/SvgIcon"
+import { ActionAssignmentTurnedIn } from "material-ui/svg-icons"
 import * as React from "react"
 import Tweet from "react-tweet"
 import styled from "../../../node_modules/styled-components"
@@ -40,7 +39,7 @@ export class UserReviewQueueView extends React.Component<IProps, {}> {
                                 <RaisedButton
                                     label={"Mark as done"}
                                     primary={true}
-                                    icon={<ActionAssignmentTurnedIn color={fullWhite} />}
+                                    icon={<ActionAssignmentTurnedIn />}
                                     onClick={this.onMarkAsDone(assignment)}
                                 />
                             </CardActions>

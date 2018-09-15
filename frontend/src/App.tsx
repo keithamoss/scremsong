@@ -1,8 +1,10 @@
-import { MenuItem } from "material-ui"
+import { Badge, MenuItem } from "material-ui"
 import { BodyContainer, ResponsiveDrawer } from "material-ui-responsive-drawer"
 // import AppBar from "material-ui/AppBar"
 // import Snackbar from "material-ui/Snackbar"
 import LinearProgress from "material-ui/LinearProgress"
+// import { default as ActionAssignment, default as ActionAssignmentInd } from "material-ui/SvgIcon"
+import { ActionAssignment, ActionAssignmentInd } from "material-ui/svg-icons"
 import * as React from "react"
 // import styled from "styled-components"
 import { Link, Route } from "react-router-dom"
@@ -35,12 +37,13 @@ export interface IProps {
     user: IUser
     defaultBreakPoint: string
     isResponsiveAndOverBreakPoint: boolean
+    userAssignmentCount: number
     toggleSidebar: any
 }
 
 class App extends React.Component<IProps, {}> {
     public render() {
-        const { muiThemePalette, app, user, defaultBreakPoint, isResponsiveAndOverBreakPoint } = this.props
+        const { muiThemePalette, app, user, defaultBreakPoint, isResponsiveAndOverBreakPoint, userAssignmentCount } = this.props
 
         const styles: any = {
             linearProgressStyle: {
@@ -56,8 +59,20 @@ class App extends React.Component<IProps, {}> {
                 <ResponsiveDrawer breakPoint={defaultBreakPoint}>
                     {isResponsiveAndOverBreakPoint === true && (
                         <React.Fragment>
-                            <MenuItem containerElement={<Link to={"/"} />}>Triage View</MenuItem>
-                            <MenuItem containerElement={<Link to={"/queue"} />}>My Queue</MenuItem>
+                            <MenuItem containerElement={<Link to={"/"} />} leftIcon={<ActionAssignment color={"black"} />}>
+                                Triage View
+                            </MenuItem>
+
+                            <MenuItem containerElement={<Link to={"/queue"} />} leftIcon={<ActionAssignmentInd color={"black"} />}>
+                                <Badge
+                                    badgeContent={userAssignmentCount}
+                                    primary={true}
+                                    badgeStyle={{ top: 12, right: -14 }}
+                                    style={{ padding: "0px 16px 0px 0px" }}
+                                >
+                                    My Queue
+                                </Badge>
+                            </MenuItem>
                         </React.Fragment>
                     )}
                 </ResponsiveDrawer>
