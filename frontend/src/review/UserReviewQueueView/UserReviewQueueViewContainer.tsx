@@ -1,6 +1,6 @@
 import * as React from "react"
 import { connect } from "react-redux"
-import { fetchLatestTweets } from "src/redux/modules/app"
+import { fetchLatestTweets, markAssignmentDone } from "src/redux/modules/app"
 import { IStore, IUser } from "src/redux/modules/interfaces"
 import UserReviewQueueView from "./UserReviewQueueView"
 
@@ -8,14 +8,18 @@ export interface IProps {}
 
 export interface IStoreProps {
     user: IUser
-    // columns: object[]
+    assignments: object[]
+    tweets: object[]
 }
 
 export interface IDispatchProps {
     fetchLatestTweets: Function
+    onMarkAsDone: Function
 }
 
-export class UserReviewQueueViewContainer extends React.Component<IProps & IStoreProps & IDispatchProps, {}> {
+const getUserAssignments = (assignments: object[], user: any) => assignments.filter((assignment: any) => assignment.user_id === user.id)
+
+class UserReviewQueueViewContainer extends React.Component<IProps & IStoreProps & IDispatchProps, {}> {
     // private fetchLatestTweets: Function
 
     constructor(props: any) {
@@ -29,23 +33,23 @@ export class UserReviewQueueViewContainer extends React.Component<IProps & IStor
     }
 
     public render() {
-        // const { user, columns } = this.props
+        const { user, assignments, tweets, onMarkAsDone } = this.props
 
-        // if (user === null) {
-        //     return <div />
-        // }
+        if (user === null) {
+            return <div />
+        }
 
-        return <UserReviewQueueView />
+        return <UserReviewQueueView user={user} assignments={assignments} tweets={tweets} onMarkAsDone={onMarkAsDone} />
     }
 }
 
 const mapStateToProps = (state: IStore, ownProps: any): IStoreProps => {
-    const { user } = state
+    const { user, app } = state
 
     return {
         user: user.user,
-        // columns: [app.columns[1]],
-        // columns: app.columns,
+        assignments: getUserAssignments(app.assignments, user.user),
+        tweets: app.tweets,
     }
 }
 
@@ -53,6 +57,9 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {
         fetchLatestTweets: (columns: any) => {
             dispatch(fetchLatestTweets(columns))
+        },
+        onMarkAsDone: (assignment: any) => {
+            dispatch(markAssignmentDone(assignment))
         },
     }
 }

@@ -10,6 +10,7 @@ const LOADED = "ealgis/app/LOADED"
 const BEGIN_FETCH = "ealgis/app/BEGIN_FETCH"
 const FINISH_FETCH = "ealgis/app/FINISH_FETCH"
 const TOGGLE_SIDEBAR = "ealgis/app/TOGGLE_SIDEBAR"
+const LOAD_TWEET_OBJECTS = "ealgis/app/LOAD_TWEET_OBJECTS"
 const LOAD_TWEETS = "ealgis/app/LOAD_TWEETS"
 const LOAD_NEW_TWEETS = "ealgis/app/LOAD_NEW_TWEETS"
 const DISMISS_TWEET = "ealgis/app/DISMISS_TWEET"
@@ -17,6 +18,8 @@ const LOAD_COLUMNS = "ealgis/app/LOAD_COLUMNS"
 const LOAD_REVIEWERS = "ealgis/app/LOAD_REVIEWERS"
 const ASSIGN_REVIEWER = "ealgis/app/ASSIGN_REVIEWER"
 const UNASSIGN_REVIEWER = "ealgis/app/UNASSIGN_REVIEWER"
+const LOAD_ASSIGNMENTS = "ealgis/app/LOAD_ASSIGNMENTS"
+const MARK_ASSIGNMENT_DONE = "ealgis/app/MARK_ASSIGNMENT_DONE"
 
 export enum eAppEnv {
     DEV = 1,
@@ -31,6 +34,7 @@ const initialState: IModule = {
     tweets: [],
     columns: [],
     reviewers: {},
+    assignments: [],
     column_tweets: {},
 }
 
@@ -49,6 +53,8 @@ export default function reducer(state: IModule = initialState, action: IAction) 
             return dotProp.set(state, "requestsInProgress", --requestsInProgress)
         case TOGGLE_SIDEBAR:
             return dotProp.toggle(state, "sidebarOpen")
+        case LOAD_TWEET_OBJECTS:
+            return dotProp.set(state, "tweets", { ...action.tweets, ...state.tweets })
         case LOAD_TWEETS:
             // @ts-ignore
             action.tweets!.columns.forEach((column: any, index: number) => {
@@ -93,6 +99,17 @@ export default function reducer(state: IModule = initialState, action: IAction) 
         case UNASSIGN_REVIEWER:
             state = dotProp.delete(state, `tweets.${action.tweetId}.reviewer_id`)
             return dotProp.delete(state, `tweets.${action.tweetId}.review_status`)
+        case LOAD_ASSIGNMENTS:
+            // @ts-ignore
+            // action.assignments.forEach((assignment: any, index: number) => {
+            //     state = dotProp.set(state, `assignments.${assignment.id}`, assignment)
+            // })
+            // return state
+            return dotProp.set(state, "assignments", action.assignments)
+        case MARK_ASSIGNMENT_DONE:
+            const assignmentIndex = state.assignments.findIndex((assignment: any) => assignment.id === action.assignmentId)
+            // return dotProp.set(state, `assignments.${assignmentIndex}.status`, "SocialAssignmentStatus.DONE")
+            return dotProp.delete(state, `assignments.${assignmentIndex}`)
         default:
             return state
     }
@@ -131,6 +148,13 @@ export function toggleSidebarState(): IAction {
                 category: "App",
             },
         },
+    }
+}
+
+export function loadTweetObjects(tweets: object[]) {
+    return {
+        type: LOAD_TWEET_OBJECTS,
+        tweets,
     }
 }
 
@@ -184,6 +208,20 @@ export function loadReviewers(reviewers: object[]) {
     }
 }
 
+export function loadAssignments(assignments: object[]) {
+    return {
+        type: LOAD_ASSIGNMENTS,
+        assignments,
+    }
+}
+
+export function markAnAssignmentDone(assignmentId: number) {
+    return {
+        type: MARK_ASSIGNMENT_DONE,
+        assignmentId,
+    }
+}
+
 // Models
 export interface IModule {
     loading: boolean
@@ -192,6 +230,7 @@ export interface IModule {
     tweets: object[]
     columns: object[]
     reviewers: object
+    assignments: object[]
     column_tweets: any
 }
 
@@ -203,6 +242,8 @@ export interface IAction {
     reviewerId?: number
     columns?: object[]
     reviewers?: object[]
+    assignments?: object[]
+    assignmentId?: number
     column_tweets?: any
     meta?: {
         // analytics: IAnalyticsMeta
@@ -226,7 +267,7 @@ export function fetchInitialAppState() {
         const self: ISelf = await dispatch(fetchUser())
         if (self.is_logged_in === true) {
             await dispatch(fetchColumns())
-            await Promise.all([dispatch(fetchReviewers()), dispatch(fetchTweets(0, 20))])
+            await Promise.all([dispatch(fetchReviewers()), dispatch(fetchAssignments()), dispatch(fetchTweets(0, 20))])
         }
 
         dispatch(loaded())
@@ -313,6 +354,27 @@ export function unassignAReviewer(tweetId: string) {
         dispatch(unassignReviewer(tweetId))
         await api.get("/api/0.1/tweets/unassignReviewer/", dispatch, {
             tweetId,
+        })
+    }
+}
+
+export function fetchAssignments() {
+    return async (dispatch: Function, getState: Function, api: APIClient) => {
+        const { response, json } = await api.get("/api/0.1/tweets/get_assignments/", dispatch)
+
+        if (response.status === 200) {
+            dispatch(loadAssignments(json.assignments))
+            dispatch(loadTweetObjects(json.tweets))
+            return json
+        }
+    }
+}
+
+export function markAssignmentDone(assignment: any) {
+    return async (dispatch: Function, getState: Function, api: APIClient) => {
+        dispatch(markAnAssignmentDone(assignment.id))
+        await api.get("/api/0.1/tweets/assignment_done/", dispatch, {
+            assignmentId: assignment.id,
         })
     }
 }

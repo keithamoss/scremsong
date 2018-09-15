@@ -103,6 +103,11 @@ def get_total_tweets_for_column(social_column):
     return queryset.count()
 
 
+def get_tweets_by_ids(tweetIds):
+    return Tweets.objects.filter(tweet_id__in=tweetIds).values()
+
+
+
 def get_tweets_for_column(social_column, since_id=None, max_id=None, startIndex=None, stopIndex=None):
     queryset = Tweets.objects
 

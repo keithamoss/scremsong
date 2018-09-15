@@ -18,7 +18,8 @@ class SocialPlatformChoice(Enum):
 
 class SocialAssignmentStatus(Enum):
     PENDING = "Pending"
-    PROCESSED = "Processed"
+    PROCESSED = "Processed" # DO NOT USE
+    DONE = "Done"
 
 # Create your models here.
 

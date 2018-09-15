@@ -136,7 +136,7 @@ export class TweetColumn extends React.Component<IProps, {}> {
             if (tweets[tweetId].is_dismissed) {
                 tweetStyle = { ...tweetStyle, backgroundColor: "grey" }
             }
-            if ("review_status" in tweets[tweetId] && tweets[tweetId].review_status === "SocialAssignmentStatus.Processed") {
+            if ("review_status" in tweets[tweetId] && tweets[tweetId].review_status === "SocialAssignmentStatus.DONE") {
                 tweetStyle = { ...tweetStyle, backgroundColor: "lightgreen" }
             }
 

@@ -23,7 +23,7 @@ import json
 import csv
 from tweepy import TweepError
 from scremsong.util import get_env, make_logger
-from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, get_tweets_for_column, get_total_tweets_for_column
+from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, get_tweets_for_column, get_total_tweets_for_column, get_tweets_by_ids
 from scremsong.celery import celery_restart_streaming
 from scremsong.app.social import get_social_columns, get_social_assignments
 from scremsong.app.models import SocialPlatformChoice, Tweets, SocialAssignments, SocialAssignmentStatus
@@ -163,6 +163,27 @@ class TweetsViewset(viewsets.ViewSet):
 
         assignment = SocialAssignments.objects.get(platform=SocialPlatformChoice.TWITTER, social_id=tweetId)
         assignment.delete()
+
+        return Response({})
+
+    @list_route(methods=['get'])
+    def get_assignments(self, request, format=None):
+        assignments = SocialAssignments.objects.filter(status=SocialAssignmentStatus.PENDING).order_by("-id").values()
+
+        tweetIds = [a["social_id"] for a in assignments]
+        tweets = {}
+        for tweet in get_tweets_by_ids(tweetIds):
+            tweets[tweet["tweet_id"]] = {"data": tweet["data"], "is_dismissed": tweet["is_dismissed"]}
+        return Response({"assignments": assignments, "tweets": tweets})
+
+    @list_route(methods=['get'])
+    def assignment_done(self, request, format=None):
+        qp = request.query_params
+        assignmentId = qp["assignmentId"] if "assignmentId" in qp else None
+
+        assignment = SocialAssignments.objects.get(id=assignmentId)
+        assignment.status = SocialAssignmentStatus.DONE
+        assignment.save()
 
         return Response({})
 

@@ -15,7 +15,7 @@ export interface IDispatchProps {
     fetchLatestTweets: Function
 }
 
-export class TriageViewContainer extends React.Component<IProps & IStoreProps & IDispatchProps, {}> {
+class TriageViewContainer extends React.Component<IProps & IStoreProps & IDispatchProps, {}> {
     private fetchLatestTweets: Function
 
     constructor(props: any) {
