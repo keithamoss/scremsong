@@ -61,7 +61,20 @@ export default function reducer(state: IModule = initialState, action: IAction) 
                 if (column.tweets.length === 0 && (!(column.id in state.column_tweets) || state.column_tweets![column.id].length === 0)) {
                     state = dotProp.set(state, `column_tweets.${column.id}`, [])
                 } else {
-                    state = dotProp.set(state, `column_tweets.${column.id}`, uniq([...state.column_tweets![column.id], ...column.tweets]))
+                    const val = uniq([...state.column_tweets![column.id], ...column.tweets])
+                    // Bodge bodge bodge - sort visible column tweets by their ids to maintain the correct order
+                    // fetchTweets() returns tweets to go on the bottom of the list (older tweets), but fetchLatestTweets()
+                    // returns new tweets to go at the start of the list.
+                    // Refactor later on.
+                    const sorted = val.sort().reverse()
+                    // console.log(
+                    //     `Adding ${column.tweets.length} tweets to column_tweets[${column.id}]. Old length = ${
+                    //         state.column_tweets![column.id]
+                    //     }; New length = ${sorted.length}.`
+                    // )
+                    // console.log(column.tweets)
+
+                    state = dotProp.set(state, `column_tweets.${column.id}`, sorted)
                 }
             })
             // @ts-ignore
@@ -72,8 +85,18 @@ export default function reducer(state: IModule = initialState, action: IAction) 
                 const columnIndex = state.columns.findIndex((col: any) => {
                     return col.id === column.id
                 })
+                // console.log(
+                //     `Incrementing tweet counter for ${column.id} (index = ${columnIndex}). Old value = ${
+                //         state.columns[columnIndex].total_tweets
+                //     }; New value = ${state.columns[columnIndex].total_tweets + column.tweets.length}.`
+                // )
+
                 // @ts-ignore
-                state = dotProp(state, `columns[columnIndex].total_tweets`, state.columns[columnIndex].total_tweets + column.tweets.length)
+                state = dotProp.set(
+                    state,
+                    `columns.${columnIndex}.total_tweets`,
+                    state.columns[columnIndex].total_tweets + column.tweets.length
+                )
             })
 
             return state
@@ -228,7 +251,7 @@ export interface IModule {
     requestsInProgress: number
     sidebarOpen: boolean
     tweets: object[]
-    columns: object[]
+    columns: any[]
     reviewers: object
     assignments: object[]
     column_tweets: any
@@ -240,7 +263,7 @@ export interface IAction {
     tweets?: object[]
     tweetId?: string
     reviewerId?: number
-    columns?: object[]
+    columns?: any[]
     reviewers?: object[]
     assignments?: object[]
     assignmentId?: number
@@ -301,7 +324,7 @@ export function fetchLatestTweets(columns: any) {
             },
             true
         )
-        if (json.tweets.length > 0) {
+        if (Object.keys(json.tweets).length > 0) {
             await dispatch(loadNewTweets(json))
             await dispatch(loadTweets(json))
         }
