@@ -128,7 +128,7 @@ export default function reducer(state: IModule = initialState, action: IAction) 
             //     state = dotProp.set(state, `assignments.${assignment.id}`, assignment)
             // })
             // return state
-            return dotProp.set(state, "assignments", action.assignments)
+            return dotProp.set(state, "assignments", [...action.assignments, ...state.assignments])
         case MARK_ASSIGNMENT_DONE:
             const assignmentIndex = state.assignments.findIndex((assignment: any) => assignment.id === action.assignmentId)
             // return dotProp.set(state, `assignments.${assignmentIndex}.status`, "SocialAssignmentStatus.DONE")
