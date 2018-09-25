@@ -1,6 +1,5 @@
 import * as React from "react"
 import { connect } from "react-redux"
-import { fetchLatestTweets } from "src/redux/modules/app"
 import { IStore, IUser } from "src/redux/modules/interfaces"
 import TriageView from "./TriageView"
 
@@ -16,16 +15,16 @@ export interface IDispatchProps {
 }
 
 class TriageViewContainer extends React.Component<IProps & IStoreProps & IDispatchProps, {}> {
-    private fetchLatestTweets: Function
+    // private fetchLatestTweets: Function
 
     constructor(props: any) {
         super(props)
 
-        this.fetchLatestTweets = props.fetchLatestTweets.bind(this, props.columns)
+        // this.fetchLatestTweets = props.fetchLatestTweets.bind(this, props.columns)
 
-        if (props.user !== null) {
-            window.setInterval(this.fetchLatestTweets, 5000)
-        }
+        // if (props.user !== null) {
+        //     window.setInterval(this.fetchLatestTweets, 5000)
+        // }
     }
 
     public render() {
@@ -52,7 +51,7 @@ const mapStateToProps = (state: IStore, ownProps: any): IStoreProps => {
 const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {
         fetchLatestTweets: (columns: any) => {
-            dispatch(fetchLatestTweets(columns))
+            // dispatch(fetchLatestTweets(columns))
         },
     }
 }

@@ -1,6 +1,6 @@
 import * as React from "react"
 import { connect } from "react-redux"
-import { fetchLatestAssignments, getUserAssignments, markAssignmentDone } from "src/redux/modules/app"
+import { getUserAssignments, markAssignmentDone } from "src/redux/modules/app"
 import { IStore, IUser } from "src/redux/modules/interfaces"
 import UserReviewQueueView from "./UserReviewQueueView"
 
@@ -18,16 +18,16 @@ export interface IDispatchProps {
 }
 
 class UserReviewQueueViewContainer extends React.Component<IProps & IStoreProps & IDispatchProps, {}> {
-    private fetchLatestAssignments: Function
+    // private fetchLatestAssignments: Function
 
     constructor(props: any) {
         super(props)
 
-        this.fetchLatestAssignments = props.fetchLatestAssignments.bind(this, props.user)
+        // this.fetchLatestAssignments = props.fetchLatestAssignments.bind(this, props.user)
 
-        if (props.user !== null) {
-            window.setInterval(this.fetchLatestAssignments, 10000)
-        }
+        // if (props.user !== null) {
+        //     window.setInterval(this.fetchLatestAssignments, 10000)
+        // }
     }
 
     public render() {
@@ -54,7 +54,7 @@ const mapStateToProps = (state: IStore, ownProps: any): IStoreProps => {
 const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {
         fetchLatestAssignments: (user: any) => {
-            dispatch(fetchLatestAssignments(user))
+            // dispatch(fetchLatestAssignments(user))
         },
         onMarkAsDone: (assignment: any) => {
             dispatch(markAssignmentDone(assignment))

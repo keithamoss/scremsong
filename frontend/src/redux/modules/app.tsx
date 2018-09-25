@@ -297,6 +297,14 @@ export function fetchInitialAppState() {
     }
 }
 
+export function fetchLatestAppState(columns: any, user: any) {
+    return async (dispatch: Function, getState: Function, api: APIClient) => {
+        if (user !== null) {
+            await Promise.all([dispatch(fetchLatestTweets(columns)), dispatch(fetchLatestAssignments(user))])
+        }
+    }
+}
+
 export function fetchTweets(startIndex: number, stopIndex: number, columns: any[] = []) {
     return async (dispatch: Function, getState: Function, api: APIClient) => {
         const { json } = await api.get(
