@@ -10,6 +10,10 @@ const ReviewContainer = styled.div`
     padding: 10px;
 `
 
+const PaddedCard = styled(Card)`
+    margin-bottom: 15px;
+`
+
 export interface IProps {
     user: any
     assignments: object[]
@@ -31,7 +35,7 @@ export class UserReviewQueueView extends React.Component<IProps, {}> {
             <ReviewContainer>
                 {assignments.map((assignment: any) => (
                     <React.Fragment key={assignment.id}>
-                        <Card>
+                        <PaddedCard>
                             <CardText>
                                 <Tweet data={tweets[assignment.social_id].data} />
                             </CardText>
@@ -43,7 +47,7 @@ export class UserReviewQueueView extends React.Component<IProps, {}> {
                                     onClick={this.onMarkAsDone(assignment)}
                                 />
                             </CardActions>
-                        </Card>
+                        </PaddedCard>
                     </React.Fragment>
                 ))}
             </ReviewContainer>
