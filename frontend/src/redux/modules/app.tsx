@@ -1,7 +1,7 @@
-import * as dotProp from "dot-prop-immutable"
-import { uniq, uniqBy } from "lodash-es"
-import { APIClient } from "../../redux/modules/interfaces"
-import { fetchUser, ISelf } from "./user"
+import * as dotProp from "dot-prop-immutable";
+import { uniq, uniqBy } from "lodash-es";
+import { APIClient } from "../../redux/modules/interfaces";
+import { fetchUser, ISelf } from "./user";
 // import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 
 // Actions
@@ -21,6 +21,7 @@ const UNASSIGN_REVIEWER = "ealgis/app/UNASSIGN_REVIEWER"
 const LOAD_ASSIGNMENTS = "ealgis/app/LOAD_ASSIGNMENTS"
 const MARK_ASSIGNMENT_DONE = "ealgis/app/MARK_ASSIGNMENT_DONE"
 const SET_CURRENT_REVIEWER = "ealgis/app/SET_CURRENT_REVIEWER"
+const SET_IS_USER_ACCEPTING_ASSIGNMENTS = "ealgis/app/SET_IS_USER_ACCEPTING_ASSIGNMENTS"
 
 export enum eAppEnv {
     DEV = 1,
@@ -136,7 +137,9 @@ export default function reducer(state: IModule = initialState, action: IAction) 
             // return dotProp.set(state, `assignments.${assignmentIndex}.status`, "SocialAssignmentStatus.DONE")
             return dotProp.delete(state, `assignments.${assignmentIndex}`)
         case SET_CURRENT_REVIEWER:
-            return (state = dotProp.set(state, "currentReviewerId", action.reviewerId))
+            return dotProp.set(state, "currentReviewerId", action.reviewerId)
+        case SET_IS_USER_ACCEPTING_ASSIGNMENTS:
+            return dotProp.set(state, `reviewers.${action.userId}.is_accepting_assignments`, action.isAcceptingAssignments)
         default:
             return state
     }
@@ -256,6 +259,14 @@ export function setCurrentReviewer(reviewerId: number) {
     }
 }
 
+export function setIsUserAcceptingAssignments(userId: number, isAcceptingAssignments: boolean) {
+    return {
+        type: SET_IS_USER_ACCEPTING_ASSIGNMENTS,
+        userId,
+        isAcceptingAssignments,
+    }
+}
+
 // Models
 export interface IModule {
     loading: boolean
@@ -280,6 +291,8 @@ export interface IAction {
     assignments?: object[]
     assignmentId?: number
     column_tweets?: any
+    userId?: number
+    isAcceptingAssignments?: boolean
     meta?: {
         // analytics: IAnalyticsMeta
     }
@@ -456,4 +469,15 @@ export function getUserAssignments(assignments: object[], user: any) {
     }
 
     return assignments.filter((assignment: any) => assignment.user_id === user.id)
+}
+
+export function onToggleCurrentReviewerOnlineStatus(isAcceptingAssignments: boolean) {
+    return (dispatch: Function, getState: Function, api: APIClient) => {
+        const currentReviewerId = getState().app.currentReviewerId
+        dispatch(setIsUserAcceptingAssignments(currentReviewerId, isAcceptingAssignments))
+        api.get("/api/0.1/tweets/user_accepting_assignments/", dispatch, {
+            user_id: currentReviewerId,
+            is_accepting_assignments: isAcceptingAssignments,
+        })
+    }
 }

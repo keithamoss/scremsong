@@ -1,5 +1,5 @@
-import { Card, CardActions, CardText, MenuItem, RaisedButton, SelectField, Toolbar, ToolbarGroup } from "material-ui"
-import { ActionAssignmentTurnedIn } from "material-ui/svg-icons"
+import { Card, CardActions, CardText, Checkbox, MenuItem, RaisedButton, SelectField, Toolbar, ToolbarGroup } from "material-ui"
+import { ActionAssignmentTurnedIn, ActionVisibility, ActionVisibilityOff } from "material-ui/svg-icons"
 import * as React from "react"
 import Tweet from "react-tweet"
 import styled from "styled-components"
@@ -18,9 +18,10 @@ export interface IProps {
     assignments: object[]
     tweets: any[]
     reviewers: any[]
-    currentReviewerId: number | null
+    currentReviewer: any | null
     onMarkAsDone: any
     onChangeQueueUser: any
+    onToggleUserOnlineStatus: any
 }
 
 export class UserReviewQueueView extends React.Component<IProps, {}> {
@@ -31,7 +32,7 @@ export class UserReviewQueueView extends React.Component<IProps, {}> {
         this.onMarkAsDone = (assignment: any) => () => this.props.onMarkAsDone(assignment)
     }
     public render() {
-        const { assignments, tweets, reviewers, currentReviewerId, onChangeQueueUser } = this.props
+        const { assignments, tweets, reviewers, currentReviewer, onChangeQueueUser, onToggleUserOnlineStatus } = this.props
 
         return (
             <React.Fragment>
@@ -41,13 +42,25 @@ export class UserReviewQueueView extends React.Component<IProps, {}> {
                             floatingLabelStyle={{ color: "white" }}
                             floatingLabelText="Viewing the queue for"
                             labelStyle={{ color: "white" }}
-                            value={currentReviewerId}
+                            value={currentReviewer.id}
                             onChange={onChangeQueueUser}
                         >
                             {reviewers.map((reviewer: any) => (
                                 <MenuItem key={reviewer.id} value={reviewer.id} primaryText={reviewer.name} />
                             ))}
                         </SelectField>
+                    </ToolbarGroup>
+                    <ToolbarGroup>
+                        <Checkbox
+                            checked={currentReviewer.is_accepting_assignments}
+                            onCheck={onToggleUserOnlineStatus}
+                            checkedIcon={<ActionVisibility />}
+                            uncheckedIcon={<ActionVisibilityOff />}
+                            iconStyle={{ fill: "white" }}
+                            label="Toggle Accepting Assignments"
+                            labelPosition="left"
+                            labelStyle={{ color: "white", width: "140px" }}
+                        />
                     </ToolbarGroup>
                 </Toolbar>
 

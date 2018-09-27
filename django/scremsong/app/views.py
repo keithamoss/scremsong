@@ -4,7 +4,6 @@ from django.db.models import Q
 from django.http.response import HttpResponse, JsonResponse
 from django.http import HttpResponseNotFound
 from django.core.cache import cache
-# from .models import MapDefinition
 
 from rest_framework import viewsets, mixins, status
 from rest_framework.views import APIView
@@ -26,7 +25,7 @@ from scremsong.util import get_env, make_logger
 from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, get_tweets_for_column, get_total_tweets_for_column, get_tweets_by_ids
 from scremsong.celery import celery_restart_streaming
 from scremsong.app.social import get_social_columns, get_social_assignments
-from scremsong.app.models import SocialPlatformChoice, Tweets, SocialAssignments, SocialAssignmentStatus
+from scremsong.app.models import SocialPlatformChoice, Tweets, SocialAssignments, SocialAssignmentStatus, Profile
 
 logger = make_logger(__name__)
 
@@ -120,12 +119,13 @@ class TweetsViewset(viewsets.ViewSet):
     @list_route(methods=['get'])
     def get_reviewer_users(self, request, format=None):
         reviewers = []
-        for reviewer in User.objects.filter(is_staff=False, is_active=True).values():
+        for reviewer in User.objects.filter(is_staff=False, is_active=True):
             reviewers.append({
-                "id": reviewer["id"],
-                "username": reviewer["username"],
-                "name": "{} {}".format(reviewer["first_name"], reviewer["last_name"]),
-                "initials": "{}{}".format(reviewer["first_name"][:1], reviewer["last_name"][:1]),
+                "id": reviewer.id,
+                "username": reviewer.username,
+                "name": "{} {}".format(reviewer.first_name, reviewer.last_name),
+                "initials": "{}{}".format(reviewer.first_name[:1], reviewer.last_name[:1]),
+                "is_accepting_assignments": reviewer.profile.is_accepting_assignments,
             })
 
         return Response({"reviewers": reviewers})
@@ -178,11 +178,11 @@ class TweetsViewset(viewsets.ViewSet):
         tweets = {}
         for tweet in get_tweets_by_ids(tweetIds):
             tweets[tweet["tweet_id"]] = {"data": tweet["data"], "is_dismissed": tweet["is_dismissed"]}
-        
+
         for assignment in assignments:
             tweets[assignment["social_id"]]["reviewer_id"] = assignment["user_id"]
             tweets[assignment["social_id"]]["review_status"] = assignment["status"]
-            
+
         return Response({"assignments": assignments, "tweets": tweets})
 
     @list_route(methods=['get'])
@@ -193,6 +193,18 @@ class TweetsViewset(viewsets.ViewSet):
         assignment = SocialAssignments.objects.get(id=assignmentId)
         assignment.status = SocialAssignmentStatus.DONE
         assignment.save()
+
+        return Response({})
+
+    @list_route(methods=['get'])
+    def user_accepting_assignments(self, request, format=None):
+        qp = request.query_params
+        user_id = int(qp["user_id"]) if "user_id" in qp else None
+        is_accepting_assignments = bool(qp["is_accepting_assignments"]) if "is_accepting_assignments" in qp else None
+
+        profile = Profile.objects.get(user_id=user_id)
+        profile.is_accepting_assignments = is_accepting_assignments
+        profile.save()
 
         return Response({})
 

@@ -1,7 +1,13 @@
 import { values as objectValues } from "core-js/library/fn/object"
 import * as React from "react"
 import { connect } from "react-redux"
-import { fetchAssignments, getUserAssignments, markAssignmentDone, setCurrentReviewer } from "src/redux/modules/app"
+import {
+    fetchAssignments,
+    getUserAssignments,
+    markAssignmentDone,
+    onToggleCurrentReviewerOnlineStatus,
+    setCurrentReviewer,
+} from "src/redux/modules/app"
 import { IStore, IUser } from "src/redux/modules/interfaces"
 import UserReviewQueueView from "./UserReviewQueueView"
 
@@ -12,13 +18,14 @@ export interface IStoreProps {
     assignments: object[]
     tweets: object[]
     reviewers: any[]
-    currentReviewerId: number | null
+    currentReviewer: any | null
 }
 
 export interface IDispatchProps {
     fetchLatestAssignments: Function
     onMarkAsDone: Function
     onChangeQueueUser: Function
+    onToggleUserOnlineStatus: Function
 }
 
 class UserReviewQueueViewContainer extends React.Component<IProps & IStoreProps & IDispatchProps, {}> {
@@ -35,7 +42,16 @@ class UserReviewQueueViewContainer extends React.Component<IProps & IStoreProps 
     }
 
     public render() {
-        const { user, assignments, tweets, reviewers, currentReviewerId, onMarkAsDone, onChangeQueueUser } = this.props
+        const {
+            user,
+            assignments,
+            tweets,
+            reviewers,
+            currentReviewer,
+            onMarkAsDone,
+            onChangeQueueUser,
+            onToggleUserOnlineStatus,
+        } = this.props
 
         if (user === null) {
             return <div />
@@ -46,9 +62,10 @@ class UserReviewQueueViewContainer extends React.Component<IProps & IStoreProps 
                 assignments={assignments}
                 tweets={tweets}
                 reviewers={reviewers}
-                currentReviewerId={currentReviewerId}
+                currentReviewer={currentReviewer}
                 onMarkAsDone={onMarkAsDone}
                 onChangeQueueUser={onChangeQueueUser}
+                onToggleUserOnlineStatus={onToggleUserOnlineStatus}
             />
         )
     }
@@ -64,7 +81,7 @@ const mapStateToProps = (state: IStore, ownProps: any): IStoreProps => {
         assignments: getUserAssignments(app.assignments, reviewer),
         tweets: app.tweets,
         reviewers: objectValues(app.reviewers),
-        currentReviewerId: app.currentReviewerId,
+        currentReviewer: reviewer,
     }
 }
 
@@ -77,9 +94,11 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
             dispatch(markAssignmentDone(assignment))
         },
         onChangeQueueUser: async (event: object, key: number, reviewerId: number) => {
-            console.log("onChangeQueueUser", event, key, reviewerId)
             dispatch(setCurrentReviewer(reviewerId))
             await dispatch(fetchAssignments(reviewerId))
+        },
+        onToggleUserOnlineStatus: (event: object, isInputChecked: boolean) => {
+            dispatch(onToggleCurrentReviewerOnlineStatus(isInputChecked))
         },
     }
 }

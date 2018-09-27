@@ -18,7 +18,7 @@ class SocialPlatformChoice(Enum):
 
 class SocialAssignmentStatus(Enum):
     PENDING = "Pending"
-    PROCESSED = "Processed" # DO NOT USE
+    PROCESSED = "Processed"  # DO NOT USE
     DONE = "Done"
 
 # Create your models here.
@@ -31,6 +31,7 @@ class CompilationError(Exception):
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     is_approved = models.BooleanField(default=False)
+    is_accepting_assignments = models.BooleanField(default=False)
 
     tracker = FieldTracker()
 
