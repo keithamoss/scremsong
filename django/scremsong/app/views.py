@@ -178,6 +178,11 @@ class TweetsViewset(viewsets.ViewSet):
         tweets = {}
         for tweet in get_tweets_by_ids(tweetIds):
             tweets[tweet["tweet_id"]] = {"data": tweet["data"], "is_dismissed": tweet["is_dismissed"]}
+        
+        for assignment in assignments:
+            tweets[assignment["social_id"]]["reviewer_id"] = assignment["user_id"]
+            tweets[assignment["social_id"]]["review_status"] = assignment["status"]
+            
         return Response({"assignments": assignments, "tweets": tweets})
 
     @list_route(methods=['get'])
