@@ -147,7 +147,7 @@ export class TweetColumn extends React.Component<IProps, {}> {
                         <div>
                             <IconMenu
                                 iconButtonElement={
-                                    <IconButton tooltip="Assign this tweet to a reviewer">
+                                    <IconButton tooltip="Assign this tweet to a reviewer" tooltipPosition="bottom-right">
                                         {!("reviewer_id" in tweets[tweetId]) && <ActionAssignment />}
                                         {"reviewer_id" in tweets[tweetId] && <ActionAssignmentInd />}
                                     </IconButton>
@@ -163,6 +163,11 @@ export class TweetColumn extends React.Component<IProps, {}> {
                                     if ("reviewer_id" in tweets[tweetId] && tweets[tweetId].reviewer_id === reviewer.id) {
                                         primaryText += " (Assigned)"
                                     }
+                                    if (reviewer.is_accepting_assignments === false) {
+                                        primaryText += " (Offline)"
+                                        primaryText = <em>{primaryText}</em>
+                                    }
+
                                     return (
                                         <MenuItem
                                             key={reviewer.id}
