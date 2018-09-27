@@ -131,10 +131,6 @@ class TweetsViewset(viewsets.ViewSet):
         return Response({"reviewers": reviewers})
 
     @list_route(methods=['get'])
-    def get_assignments(self, request, format=None):
-        return Response({"assignments": SocialAssignments.objects.values()})
-
-    @list_route(methods=['get'])
     def dismiss(self, request, format=None):
         qp = request.query_params
         tweetId = qp["tweetId"] if "tweetId" in qp else None
@@ -169,9 +165,10 @@ class TweetsViewset(viewsets.ViewSet):
     @list_route(methods=['get'])
     def get_assignments(self, request, format=None):
         qp = request.query_params
+        reviewerId = int(qp["reviewerId"]) if "reviewerId" in qp else None
         sinceId = qp["sinceId"] if "sinceId" in qp else None
 
-        queryset = SocialAssignments.objects.filter(status=SocialAssignmentStatus.PENDING, user=request.user)
+        queryset = SocialAssignments.objects.filter(status=SocialAssignmentStatus.PENDING, user=reviewerId)
 
         if sinceId is not None:
             queryset = queryset.filter(id__gt=sinceId)

@@ -1,5 +1,5 @@
 import * as dotProp from "dot-prop-immutable"
-import { uniq } from "lodash-es"
+import { uniq, uniqBy } from "lodash-es"
 import { APIClient } from "../../redux/modules/interfaces"
 import { fetchUser, ISelf } from "./user"
 // import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
@@ -20,6 +20,7 @@ const ASSIGN_REVIEWER = "ealgis/app/ASSIGN_REVIEWER"
 const UNASSIGN_REVIEWER = "ealgis/app/UNASSIGN_REVIEWER"
 const LOAD_ASSIGNMENTS = "ealgis/app/LOAD_ASSIGNMENTS"
 const MARK_ASSIGNMENT_DONE = "ealgis/app/MARK_ASSIGNMENT_DONE"
+const SET_CURRENT_REVIEWER = "ealgis/app/SET_CURRENT_REVIEWER"
 
 export enum eAppEnv {
     DEV = 1,
@@ -34,6 +35,7 @@ const initialState: IModule = {
     tweets: [],
     columns: [],
     reviewers: {},
+    currentReviewerId: null,
     assignments: [],
     column_tweets: {},
 }
@@ -128,11 +130,13 @@ export default function reducer(state: IModule = initialState, action: IAction) 
             //     state = dotProp.set(state, `assignments.${assignment.id}`, assignment)
             // })
             // return state
-            return dotProp.set(state, "assignments", [...action.assignments, ...state.assignments])
+            return dotProp.set(state, "assignments", uniqBy([...action.assignments, ...state.assignments], "id"))
         case MARK_ASSIGNMENT_DONE:
             const assignmentIndex = state.assignments.findIndex((assignment: any) => assignment.id === action.assignmentId)
             // return dotProp.set(state, `assignments.${assignmentIndex}.status`, "SocialAssignmentStatus.DONE")
             return dotProp.delete(state, `assignments.${assignmentIndex}`)
+        case SET_CURRENT_REVIEWER:
+            return (state = dotProp.set(state, "currentReviewerId", action.reviewerId))
         default:
             return state
     }
@@ -245,6 +249,13 @@ export function markAnAssignmentDone(assignmentId: number) {
     }
 }
 
+export function setCurrentReviewer(reviewerId: number) {
+    return {
+        type: SET_CURRENT_REVIEWER,
+        reviewerId,
+    }
+}
+
 // Models
 export interface IModule {
     loading: boolean
@@ -253,6 +264,7 @@ export interface IModule {
     tweets: object[]
     columns: any[]
     reviewers: object
+    currentReviewerId: number | null
     assignments: object[]
     column_tweets: any
 }
@@ -289,19 +301,26 @@ export function fetchInitialAppState() {
 
         const self: ISelf = await dispatch(fetchUser())
         if (self.is_logged_in === true) {
+            await dispatch(changeCurrentReviewer(self.user))
             await dispatch(fetchColumns())
-            await Promise.all([dispatch(fetchReviewers()), dispatch(fetchAssignments()), dispatch(fetchTweets(0, 20))])
+            await Promise.all([dispatch(fetchReviewers()), dispatch(fetchAssignments(self.user.id)), dispatch(fetchTweets(0, 20))])
         }
 
         dispatch(loaded())
     }
 }
 
-export function fetchLatestAppState(columns: any, user: any) {
+export function changeCurrentReviewer(user: any) {
     return async (dispatch: Function, getState: Function, api: APIClient) => {
         if (user !== null) {
-            await Promise.all([dispatch(fetchLatestTweets(columns)), dispatch(fetchLatestAssignments(user))])
+            dispatch(setCurrentReviewer(user.id))
         }
+    }
+}
+
+export function fetchLatestAppState(columns: any, currentReviewerId: number) {
+    return async (dispatch: Function, getState: Function, api: APIClient) => {
+        await Promise.all([dispatch(fetchLatestTweets(columns)), dispatch(fetchLatestAssignments(currentReviewerId))])
     }
 }
 
@@ -389,9 +408,11 @@ export function unassignAReviewer(tweetId: string) {
     }
 }
 
-export function fetchAssignments() {
+export function fetchAssignments(reviewerId: number) {
     return async (dispatch: Function, getState: Function, api: APIClient) => {
-        const { response, json } = await api.get("/api/0.1/tweets/get_assignments/", dispatch)
+        const { response, json } = await api.get("/api/0.1/tweets/get_assignments/", dispatch, {
+            reviewerId,
+        })
 
         if (response.status === 200) {
             dispatch(loadAssignments(json.assignments))
@@ -401,16 +422,14 @@ export function fetchAssignments() {
     }
 }
 
-export function fetchLatestAssignments(user: any) {
+export function fetchLatestAssignments(reviewerId: number) {
     return async (dispatch: Function, getState: Function, api: APIClient) => {
-        let params = {}
+        const params: any = { reviewerId }
         if (getState().app.assignments.length > 0) {
             const latestAssignment = getState()
-                .app.assignments.filter((assignment: any) => assignment.user_id === user.id)
+                .app.assignments.filter((assignment: any) => assignment.user_id === reviewerId)
                 .reduce((prev: any, current: any) => (prev.id > current.id ? prev : current))
-            params = {
-                sinceId: latestAssignment.id,
-            }
+            params.sinceId = latestAssignment.id
         }
         const { json } = await api.get("/api/0.1/tweets/get_assignments/", dispatch, params, true)
 
@@ -432,5 +451,9 @@ export function markAssignmentDone(assignment: any) {
 }
 
 export function getUserAssignments(assignments: object[], user: any) {
+    if (user === undefined) {
+        return []
+    }
+
     return assignments.filter((assignment: any) => assignment.user_id === user.id)
 }

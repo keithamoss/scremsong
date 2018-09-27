@@ -59,6 +59,7 @@ export interface IStoreProps {
     browser: any
     responsiveDrawer: any
     userAssignmentCount: number
+    currentReviewerId: number | null
     columns: object[]
 }
 
@@ -89,12 +90,15 @@ export class AppContainer extends React.Component<any, any> {
     public componentDidUpdate(prevProps: any) {
         // Bodge bodge bodge
 
-        if (isEqual(prevProps.columns, this.props.columns) === false || isEqual(prevProps.user, this.props.user) === false) {
+        if (
+            isEqual(prevProps.columns, this.props.columns) === false ||
+            isEqual(prevProps.currentReviewerId, this.props.currentReviewerId) === false
+        ) {
             // console.log("Bind new fetchLatestAppState")
-            this.fetchLatestAppState = this.props.fetchLatestAppState.bind(this, this.props.columns, this.props.user)
+            this.fetchLatestAppState = this.props.fetchLatestAppState.bind(this, this.props.columns, this.props.currentReviewerId)
         }
 
-        if (this.props.user !== null) {
+        if (this.props.currentReviewerId !== null) {
             if (this.intervalId !== undefined) {
                 // console.log(`clearInterval ${this.intervalId}`)
                 window.clearInterval(this.intervalId)
@@ -142,6 +146,7 @@ const mapStateToProps = (state: IStore): IStoreProps => {
         browser,
         responsiveDrawer,
         userAssignmentCount: getUserAssignments(app.assignments, user.user).length,
+        currentReviewerId: app.currentReviewerId,
         columns: app.columns,
     }
 }
@@ -151,8 +156,8 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
         fetchInitialAppState: () => {
             dispatch(fetchInitialAppState())
         },
-        fetchLatestAppState: (columns: any, user: any) => {
-            dispatch(fetchLatestAppState(columns, user))
+        fetchLatestAppState: (columns: any, currentReviewerId: number) => {
+            dispatch(fetchLatestAppState(columns, currentReviewerId))
         },
         toggleSidebar: () => {
             dispatch(toggleSidebarState())
