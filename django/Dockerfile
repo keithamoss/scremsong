@@ -7,7 +7,7 @@ ENV PYTHON_PIP_VERSION 9.0.1
 ENV DJANGO_SETTINGS_MODULE scremsong.settings
 
 RUN pyvenv "$VIRTUAL_ENV" && \
-    "$VIRTUAL_ENV"/bin/pip install -U pip==$PYTHON_PIP_VERSION
+  "$VIRTUAL_ENV"/bin/pip install -U pip==$PYTHON_PIP_VERSION
 
 ENV PATH "$VIRTUAL_ENV"/bin:$PATH
 
@@ -29,6 +29,6 @@ ADD requirements.txt /app/
 RUN pip install -r requirements.txt --no-cache-dir
 ADD . /app/
 RUN pip install -e .
-RUN apk --purge del .build-deps
+RUN apk --purge del .build-deps gcc musl-dev
 
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
