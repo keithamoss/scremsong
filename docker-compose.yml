@@ -1,72 +1,77 @@
 version: "2"
 services:
-  db:
-    image: mdillon/postgis:10-alpine
-    command: postgres -c 'config_file=/etc/postgresql/postgresql.conf'
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=stack
-    volumes:
-      # Enable this mapping to inject the tweaked postgresql.conf file into our PostgreSQL container.
-      - ./db/postgresql.conf:/etc/postgresql/postgresql.conf
+    db:
+        image: mdillon/postgis:10-alpine
+        command: postgres -c 'config_file=/etc/postgresql/postgresql.conf'
+        ports:
+            - "5432:5432"
+        environment:
+            - POSTGRES_PASSWORD=postgres
+            - POSTGRES_DB=stack
+        volumes:
+            # Enable this mapping to inject the tweaked postgresql.conf file into our PostgreSQL container.
+            - ./db/postgresql.conf:/etc/postgresql/postgresql.conf
 
-      # Enable this mapping and create ./dev/pg_log/ to get easier access to PostgreSQL's log files for debugging.
-      # - ./dev/pg_log/:/var/lib/postgresql/data/pg_log/
-  frontend:
-    image: node:10.5.0-alpine
-    volumes:
-      - ./frontend:/app:delegated
-    entrypoint: /app/docker-entrypoint.sh
-    ports:
-      - "3000:3000"
-    env_file:
-      - secrets/scremsong-frontend.dev.env
-  rabbitmq:
-    image: rabbitmq:3.7.7-alpine
-    # volumes:
-    #   - ./rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins 
-    ports:
-      - "5672:5672"
-      # - "15672:15672"
-    env_file:
-      - secrets/rabbitmq.env
-  django:
-    build: django/
-    entrypoint: /app/docker-entrypoint.sh
-    volumes:
-      - ./django/:/app:delegated
-    ports:
-      - "8000:8000"
-    env_file:
-      - secrets/scremsong-web.dev.env
-      - secrets/scremsong-db.env
-    depends_on:
-      - db
-      - rabbitmq
-  celery_worker:
-    build: django/
-    entrypoint: /app/docker-entrypoint.sh
-    command: celery_worker
-    volumes:
-      - ./django/:/app:delegated
-    env_file:
-      - secrets/scremsong-web.dev.env
-      - secrets/scremsong-db.env
-    depends_on:
-      - db
-      - rabbitmq
-  nginx:
-    build: nginx/
-    volumes:
-      - ./nginx:/app
-      - ./nginx/nginx/docker.dev.conf:/etc/nginx/conf.d/nginx.conf
-    depends_on:
-      - django
-      - frontend
-    links:
-      - django
-    ports:
-      - "443:443"
-      - "8001:8001"
+            # Enable this mapping and create ./dev/pg_log/ to get easier access to PostgreSQL's log files for debugging.
+            # - ./dev/pg_log/:/var/lib/postgresql/data/pg_log/
+    frontend:
+        image: node:10.5.0-alpine
+        volumes:
+            - ./frontend:/app:delegated
+        entrypoint: /app/docker-entrypoint.sh
+        ports:
+            - "3000:3000"
+        env_file:
+            - secrets/scremsong-frontend.dev.env
+    rabbitmq:
+        image: rabbitmq:3.7.7-alpine
+        # volumes:
+        #   - ./rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
+        ports:
+            - "5672:5672"
+            # - "15672:15672"
+        env_file:
+            - secrets/rabbitmq.env
+    redis:
+        image: redis:5.0.0-alpine3.8
+        ports:
+            - "6379:6379"
+    django:
+        build: django/
+        entrypoint: /app/docker-entrypoint.sh
+        volumes:
+            - ./django/:/app:delegated
+        ports:
+            - "8000:8000"
+        env_file:
+            - secrets/scremsong-web.dev.env
+            - secrets/scremsong-db.env
+        depends_on:
+            - db
+            - rabbitmq
+            - redis
+    celery_worker:
+        build: django/
+        entrypoint: /app/docker-entrypoint.sh
+        command: celery_worker
+        volumes:
+            - ./django/:/app:delegated
+        env_file:
+            - secrets/scremsong-web.dev.env
+            - secrets/scremsong-db.env
+        depends_on:
+            - db
+            - rabbitmq
+    nginx:
+        build: nginx/
+        volumes:
+            - ./nginx:/app
+            - ./nginx/nginx/docker.dev.conf:/etc/nginx/conf.d/nginx.conf
+        depends_on:
+            - django
+            - frontend
+        links:
+            - django
+        ports:
+            - "443:443"
+            - "8001:8001"
