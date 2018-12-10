@@ -30,7 +30,6 @@ secret.txt
 *.pyc
 
 /db/*.sqlite*
-/db/data/
 
 /venv/*
 /vendor/*
