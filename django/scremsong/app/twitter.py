@@ -107,7 +107,6 @@ def get_tweets_by_ids(tweetIds):
     return Tweets.objects.filter(tweet_id__in=tweetIds).values()
 
 
-
 def get_tweets_for_column(social_column, since_id=None, max_id=None, startIndex=None, stopIndex=None):
     queryset = Tweets.objects
 
@@ -232,10 +231,12 @@ def open_tweet_stream():
 
         track = []
         [track.extend(column.search_phrases) for column in get_social_columns(SocialPlatformChoice.TWITTER)]
-
-        logger.info("track")
-        logger.info(track)
-        myStream.filter(track=track)
-        logger.info("Streaming Twitter connection establised successfully for terms: {}.".format(", ".join(track)))
+        if len(track) == 0:
+            logger.info("No search phrases are set - we won't try to stream tweets")
+        else:
+            logger.info("track")
+            logger.info(track)
+            myStream.filter(track=track)
+            logger.info("Streaming Twitter connection establised successfully for terms: {}.".format(", ".join(track)))
     except Exception as e:
         logger.error("Exception {}: '{}' during streaming".format(type(e), e))
