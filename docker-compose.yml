@@ -14,6 +14,9 @@ services:
 
             # Enable this mapping and create ./dev/pg_log/ to get easier access to PostgreSQL's log files for debugging.
             # - ./dev/pg_log/:/var/lib/postgresql/data/pg_log/
+
+            # Enable this to store the PostgreSQL data on the host
+            - ./db/data:/var/lib/postgresql/data
     frontend:
         image: node:10.5.0-alpine
         volumes:
