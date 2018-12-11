@@ -1,5 +1,5 @@
 import * as dotProp from "dot-prop-immutable"
-import { APIClient } from "../../redux/modules/interfaces"
+import { IThunkExtras } from "../../redux/modules/interfaces"
 // import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 
 // Actions
@@ -62,7 +62,7 @@ export interface IUser {
 // Side effects, only as applicable
 // e.g. thunks, epics, et cetera
 export function fetchUser() {
-    return async (dispatch: Function, getState: Function, api: APIClient) => {
+    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
         const { response, json } = await api.get("/api/0.1/self", dispatch)
         if (response.status === 200) {
             dispatch(loadUser(json))
@@ -72,7 +72,7 @@ export function fetchUser() {
 }
 
 export function logoutUser() {
-    return async (dispatch: Function, getState: Function, api: APIClient) => {
+    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
         await api.get("/api/0.1/logout", dispatch)
         // window.location.reload()
     }

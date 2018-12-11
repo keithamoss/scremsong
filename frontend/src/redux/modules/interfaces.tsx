@@ -1,3 +1,5 @@
+import { APIClient } from "src/api/APIClient"
+
 export { APIClient, IApiResponse } from "../../api/APIClient"
 export { eAppEnv, IModule as IAppModule } from "./app"
 export { IStore } from "./reducer"
@@ -18,6 +20,11 @@ export interface IConfig {
     // GOOGLE_ANALYTICS_UA: string
     // MAPBOX_API_KEY: string
     // RAVEN_URL: string
+}
+
+export interface IThunkExtras {
+    api: APIClient
+    emit: Function
 }
 
 /* Material UI muiThemeable palette object */
