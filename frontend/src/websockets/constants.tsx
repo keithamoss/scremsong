@@ -1,4 +1,4 @@
-export const uri = "wss://localhost:8001/ws/chat/test-room/"
+export const uri = process.env.REACT_APP_WEB_SOCKET_URI!
 
 export const REVIEWERS_SET_STATUS = "ws/scremsong/reviewers/SET_STATUS"
 

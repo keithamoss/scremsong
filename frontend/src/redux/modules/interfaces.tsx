@@ -10,6 +10,7 @@ export interface IEnvVars {
     REACT_APP_ENVIRONMENT: string // DEVELOPMENT, PRODUCTION
     REACT_APP_SITE_BASE_URL: string
     REACT_APP_API_BASE_URL: string
+    REACT_APP_WEB_SOCKET_URI: string
     // REACT_APP_GOOGLE_ANALYTICS_UA: string
     // REACT_APP_MAPBOX_API_KEY: string
     // REACT_APP_RAVEN_URL: string
