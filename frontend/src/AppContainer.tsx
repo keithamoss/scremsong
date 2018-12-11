@@ -85,24 +85,6 @@ export class AppContainer extends React.Component<any, any> {
 
     public componentDidMount() {
         this.props.fetchInitialAppState()
-
-        const chatSocket = new WebSocket("wss://localhost:8001/ws/chat/test-room/")
-
-        chatSocket.onmessage = (e: any) => {
-            const data = JSON.parse(e.data)
-            const message = data.message
-            console.log("message received", message)
-        }
-
-        chatSocket.onclose = (e: any) => {
-            console.error("Chat socket closed unexpectedly")
-        }
-
-        // window.setInterval(() => {
-        //     console.log("Sending messsage...")
-        //     // @ts-ignore
-        //     chatSocket.send(JSON.stringify({ message: window.foobar || "a message" }))
-        // }, 3000)
     }
 
     public componentDidUpdate(prevProps: any) {
@@ -121,7 +103,7 @@ export class AppContainer extends React.Component<any, any> {
                 // console.log(`clearInterval ${this.intervalId}`)
                 window.clearInterval(this.intervalId)
             }
-            this.intervalId = window.setInterval(this.fetchLatestAppState, 5000)
+            this.intervalId = window.setInterval(this.fetchLatestAppState, 5000000000)
         }
     }
 

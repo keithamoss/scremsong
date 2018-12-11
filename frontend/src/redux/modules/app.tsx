@@ -1,7 +1,8 @@
-import * as dotProp from "dot-prop-immutable";
-import { uniq, uniqBy } from "lodash-es";
-import { APIClient } from "../../redux/modules/interfaces";
-import { fetchUser, ISelf } from "./user";
+import * as dotProp from "dot-prop-immutable"
+import { uniq, uniqBy } from "lodash-es"
+import { REVIEWERS_SET_STATUS } from "src/websockets/constants"
+import { IThunkExtras } from "../../redux/modules/interfaces"
+import { fetchUser, ISelf } from "./user"
 // import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 
 // Actions
@@ -139,6 +140,10 @@ export default function reducer(state: IModule = initialState, action: IAction) 
         case SET_CURRENT_REVIEWER:
             return dotProp.set(state, "currentReviewerId", action.reviewerId)
         case SET_IS_USER_ACCEPTING_ASSIGNMENTS:
+            console.log("Store got SET_IS_USER_ACCEPTING_ASSIGNMENTS", action)
+            return state
+        case REVIEWERS_SET_STATUS:
+            console.log("Store got REVIEWERS_SET_STATUS", action)
             return dotProp.set(state, `reviewers.${action.userId}.is_accepting_assignments`, action.isAcceptingAssignments)
         default:
             return state
@@ -309,7 +314,7 @@ export function getAPIBaseURL(): string {
 }
 
 export function fetchInitialAppState() {
-    return async (dispatch: Function, getState: Function, api: APIClient) => {
+    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
         dispatch(loading())
 
         const self: ISelf = await dispatch(fetchUser())
@@ -324,7 +329,7 @@ export function fetchInitialAppState() {
 }
 
 export function changeCurrentReviewer(user: any) {
-    return async (dispatch: Function, getState: Function, api: APIClient) => {
+    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
         if (user !== null) {
             dispatch(setCurrentReviewer(user.id))
         }
@@ -332,13 +337,13 @@ export function changeCurrentReviewer(user: any) {
 }
 
 export function fetchLatestAppState(columns: any, currentReviewerId: number) {
-    return async (dispatch: Function, getState: Function, api: APIClient) => {
+    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
         await Promise.all([dispatch(fetchLatestTweets(columns)), dispatch(fetchLatestAssignments(currentReviewerId))])
     }
 }
 
 export function fetchTweets(startIndex: number, stopIndex: number, columns: any[] = []) {
-    return async (dispatch: Function, getState: Function, api: APIClient) => {
+    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
         const { json } = await api.get(
             "/api/0.1/tweets/get_some_tweets/",
             dispatch,
@@ -354,7 +359,7 @@ export function fetchTweets(startIndex: number, stopIndex: number, columns: any[
 }
 
 export function fetchLatestTweets(columns: any) {
-    return async (dispatch: Function, getState: Function, api: APIClient) => {
+    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
         const { json } = await api.get(
             "/api/0.1/tweets/get_some_tweets/",
             dispatch,
@@ -372,7 +377,7 @@ export function fetchLatestTweets(columns: any) {
 }
 
 export function fetchColumns() {
-    return async (dispatch: Function, getState: Function, api: APIClient) => {
+    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
         const { response, json } = await api.get("/api/0.1/tweets/get_deck_columns/", dispatch)
 
         if (response.status === 200) {
@@ -383,7 +388,7 @@ export function fetchColumns() {
 }
 
 export function fetchReviewers() {
-    return async (dispatch: Function, getState: Function, api: APIClient) => {
+    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
         const { response, json } = await api.get("/api/0.1/tweets/get_reviewer_users/", dispatch)
 
         if (response.status === 200) {
@@ -394,7 +399,7 @@ export function fetchReviewers() {
 }
 
 export function dismissATweet(tweetId: string) {
-    return async (dispatch: Function, getState: Function, api: APIClient) => {
+    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
         dispatch(dismissTweet(tweetId))
         await api.get("/api/0.1/tweets/dismiss/", dispatch, {
             tweetId,
@@ -403,7 +408,7 @@ export function dismissATweet(tweetId: string) {
 }
 
 export function assignAReviewer(tweetId: string, reviewerId: number) {
-    return async (dispatch: Function, getState: Function, api: APIClient) => {
+    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
         dispatch(assignReviewer(tweetId, reviewerId))
         await api.get("/api/0.1/tweets/assignReviewer/", dispatch, {
             tweetId,
@@ -413,7 +418,7 @@ export function assignAReviewer(tweetId: string, reviewerId: number) {
 }
 
 export function unassignAReviewer(tweetId: string) {
-    return async (dispatch: Function, getState: Function, api: APIClient) => {
+    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
         dispatch(unassignReviewer(tweetId))
         await api.get("/api/0.1/tweets/unassignReviewer/", dispatch, {
             tweetId,
@@ -422,7 +427,7 @@ export function unassignAReviewer(tweetId: string) {
 }
 
 export function fetchAssignments(reviewerId: number) {
-    return async (dispatch: Function, getState: Function, api: APIClient) => {
+    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
         const { response, json } = await api.get("/api/0.1/tweets/get_assignments/", dispatch, {
             reviewerId,
         })
@@ -436,7 +441,7 @@ export function fetchAssignments(reviewerId: number) {
 }
 
 export function fetchLatestAssignments(reviewerId: number) {
-    return async (dispatch: Function, getState: Function, api: APIClient) => {
+    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
         const params: any = { reviewerId }
         if (getState().app.assignments.length > 0) {
             const latestAssignment = getState()
@@ -455,7 +460,7 @@ export function fetchLatestAssignments(reviewerId: number) {
 }
 
 export function markAssignmentDone(assignment: any) {
-    return async (dispatch: Function, getState: Function, api: APIClient) => {
+    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
         dispatch(markAnAssignmentDone(assignment.id))
         await api.get("/api/0.1/tweets/assignment_done/", dispatch, {
             assignmentId: assignment.id,
@@ -472,12 +477,19 @@ export function getUserAssignments(assignments: object[], user: any) {
 }
 
 export function onToggleCurrentReviewerOnlineStatus(isAcceptingAssignments: boolean) {
-    return (dispatch: Function, getState: Function, api: APIClient) => {
+    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
         const currentReviewerId = getState().app.currentReviewerId
-        dispatch(setIsUserAcceptingAssignments(currentReviewerId, isAcceptingAssignments))
-        api.get("/api/0.1/tweets/user_accepting_assignments/", dispatch, {
+        // const action = setIsUserAcceptingAssignments(currentReviewerId, isAcceptingAssignments)
+        // dispatch(action)
+        // emit(messageTypes.UPDATE_STAGE_TITLE, { currentReviewerId, isAcceptingAssignments })
+        // emit(messageTypes.UPDATE_STAGE_TITLE, setIsUserAcceptingAssignments(currentReviewerId, isAcceptingAssignments))
+        // emit(setIsUserAcceptingAssignments(currentReviewerId, isAcceptingAssignments))
+
+        await api.get("/api/0.1/tweets/user_accepting_assignments/", dispatch, {
             user_id: currentReviewerId,
             is_accepting_assignments: isAcceptingAssignments,
         })
+
+        // emit(setIsUserAcceptingAssignments(currentReviewerId, isAcceptingAssignments))
     }
 }
