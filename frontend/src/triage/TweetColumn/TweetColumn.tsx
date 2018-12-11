@@ -107,6 +107,11 @@ export class TweetColumn extends React.Component<IProps, {}> {
             if (this._list) {
                 this._list.recomputeRowHeights(index)
             }
+        } else if (JSON.stringify(this.props.reviewers) !== JSON.stringify(prevProps.reviewers)) {
+            // Trigger an update if a property of one of our reviewers has changed (e.g. they've gone offline)
+            if (this._list) {
+                this._list.recomputeRowHeights(0)
+            }
         }
     }
 
