@@ -27,6 +27,9 @@ from scremsong.celery import celery_restart_streaming
 from scremsong.app.social import get_social_columns, get_social_assignments
 from scremsong.app.models import SocialPlatformChoice, Tweets, SocialAssignments, SocialAssignmentStatus, Profile
 
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
 logger = make_logger(__name__)
 
 
@@ -198,14 +201,26 @@ class TweetsViewset(viewsets.ViewSet):
 
     @list_route(methods=['get'])
     def user_accepting_assignments(self, request, format=None):
+        def ws_send_message_to_group(msg_type, payload):
+            if msg_type is not None:
+                channel_layer = get_channel_layer()
+                async_to_sync(channel_layer.group_send)("chat_test-room", {
+                    **{"type": msg_type}, **payload
+                })
+
         qp = request.query_params
+        action_type = qp["action_type"] if "action_type" in qp else None
         user_id = int(qp["user_id"]) if "user_id" in qp else None
-        is_accepting_assignments = bool(qp["is_accepting_assignments"]) if "is_accepting_assignments" in qp else None
+        is_accepting_assignments = True if "is_accepting_assignments" in qp and qp["is_accepting_assignments"] == "true" else False
 
         profile = Profile.objects.get(user_id=user_id)
         profile.is_accepting_assignments = is_accepting_assignments
         profile.save()
 
+        ws_send_message_to_group("reviewers.set_status", {
+            "userId": user_id,
+            "isAcceptingAssignments": is_accepting_assignments
+        })
         return Response({})
 
     @list_route(methods=['get'])
