@@ -195,23 +195,9 @@ export function toggleSidebarState(): IAction {
     }
 }
 
-// export function loadTweetObjects(tweets: object[]) {
-//     return {
-//         type: LOAD_TWEET_OBJECTS,
-//         tweets,
-//     }
-// }
-
 export function loadTweets(tweets: object[]) {
     return {
         type: LOAD_TWEETS,
-        tweets,
-    }
-}
-
-export function loadNewTweets(tweets: object[]) {
-    return {
-        type: LOAD_NEW_TWEETS,
         tweets,
     }
 }
@@ -237,27 +223,6 @@ export function unassignReviewer(tweetId: string) {
         tweetId,
     }
 }
-
-// export function loadColumns(columns: object[]) {
-//     return {
-//         type: LOAD_COLUMNS,
-//         columns,
-//     }
-// }
-
-// export function loadReviewers(reviewers: object[]) {
-//     return {
-//         type: LOAD_REVIEWERS,
-//         reviewers,
-//     }
-// }
-
-// export function loadAssignments(assignments: object[]) {
-//     return {
-//         type: LOAD_ASSIGNMENTS,
-//         assignments,
-//     }
-// }
 
 export function markAnAssignmentDone(assignmentId: number) {
     return {
@@ -319,8 +284,6 @@ export function fetchInitialAppState() {
         const self: ISelf = await dispatch(fetchUser())
         if (self.is_logged_in === true) {
             await dispatch(changeCurrentReviewer(self.user))
-            //     await dispatch(fetchColumns())
-            //     await Promise.all([dispatch(fetchReviewers()), dispatch(fetchAssignments(self.user.id)), dispatch(fetchTweets(0, 20))])
         }
 
         dispatch(loaded())
@@ -332,12 +295,6 @@ export function changeCurrentReviewer(user: any) {
         if (user !== null) {
             dispatch(setCurrentReviewer(user.id))
         }
-    }
-}
-
-export function fetchLatestAppState(columns: any, currentReviewerId: number) {
-    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        // await Promise.all([dispatch(fetchLatestTweets(columns)), dispatch(fetchLatestAssignments(currentReviewerId))])
     }
 }
 
@@ -357,46 +314,6 @@ export function fetchTweets(startIndex: number, stopIndex: number, columns: any[
     }
 }
 
-// export function fetchLatestTweets(columns: any) {
-//     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-//         const { json } = await api.get(
-//             "/api/0.1/tweets/get_some_tweets/",
-//             dispatch,
-//             {
-//                 sinceId: Object.keys(getState().app.tweets)[0],
-//                 columns: columns.reduce((arr: any, elem: any) => [...arr, ...elem.id], []).join(","),
-//             },
-//             true
-//         )
-//         if (Object.keys(json.tweets).length > 0) {
-//             await dispatch(loadNewTweets(json))
-//             await dispatch(loadTweets(json))
-//         }
-//     }
-// }
-
-// export function fetchColumns() {
-//     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-//         const { response, json } = await api.get("/api/0.1/tweets/get_deck_columns/", dispatch)
-
-//         if (response.status === 200) {
-//             dispatch(loadColumns(json.columns))
-//             return json
-//         }
-//     }
-// }
-
-// export function fetchReviewers() {
-//     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-//         const { response, json } = await api.get("/api/0.1/tweets/get_reviewer_users/", dispatch)
-
-//         if (response.status === 200) {
-//             dispatch(loadReviewers(json.reviewers))
-//             return json
-//         }
-//     }
-// }
-
 export function dismissATweet(tweetId: string) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
         dispatch(dismissTweet(tweetId))
@@ -409,7 +326,7 @@ export function dismissATweet(tweetId: string) {
 export function assignAReviewer(tweetId: string, reviewerId: number) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
         dispatch(assignReviewer(tweetId, reviewerId))
-        await api.get("/api/0.1/tweets/assignReviewer/", dispatch, {
+        await api.get("/api/0.1/tweets/assign_reviewer/", dispatch, {
             tweetId,
             reviewerId,
         })
@@ -419,44 +336,11 @@ export function assignAReviewer(tweetId: string, reviewerId: number) {
 export function unassignAReviewer(tweetId: string) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
         dispatch(unassignReviewer(tweetId))
-        await api.get("/api/0.1/tweets/unassignReviewer/", dispatch, {
+        await api.get("/api/0.1/tweets/unassign_reviewer/", dispatch, {
             tweetId,
         })
     }
 }
-
-// export function fetchAssignments(reviewerId: number) {
-//     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-//         const { response, json } = await api.get("/api/0.1/tweets/get_assignments/", dispatch, {
-//             reviewerId,
-//         })
-
-//         if (response.status === 200) {
-//             dispatch(loadAssignments(json.assignments))
-//             dispatch(loadTweetObjects(json.tweets))
-//             return json
-//         }
-//     }
-// }
-
-// export function fetchLatestAssignments(reviewerId: number) {
-//     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-//         const params: any = { reviewerId }
-//         if (getState().app.assignments.length > 0) {
-//             const latestAssignment = getState()
-//                 .app.assignments.filter((assignment: any) => assignment.user_id === reviewerId)
-//                 .reduce((prev: any, current: any) => (prev.id > current.id ? prev : current))
-//             params.sinceId = latestAssignment.id
-//         }
-//         const { json } = await api.get("/api/0.1/tweets/get_assignments/", dispatch, params, true)
-
-//         if (json.assignments.length > 0) {
-//             dispatch(loadAssignments(json.assignments))
-//             dispatch(loadTweetObjects(json.tweets))
-//             return json
-//         }
-//     }
-// }
 
 export function markAssignmentDone(assignment: any) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {

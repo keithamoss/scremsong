@@ -1,5 +1,4 @@
 // import CircularProgress from "material-ui/CircularProgress"
-import { isEqual } from "lodash-es"
 import LinearProgress from "material-ui/LinearProgress"
 // import styled from "styled-components"
 import {
@@ -23,7 +22,7 @@ import * as React from "react"
 import { connect } from "react-redux"
 import { withRouter } from "react-router-dom"
 import App from "./App"
-import { fetchInitialAppState, fetchLatestAppState, getUserAssignments, toggleSidebarState } from "./redux/modules/app"
+import { fetchInitialAppState, getUserAssignments, toggleSidebarState } from "./redux/modules/app"
 import { IAppModule, IStore, IUser } from "./redux/modules/interfaces"
 
 // const Config: IConfig = require("Config") as any
@@ -59,13 +58,10 @@ export interface IStoreProps {
     browser: any
     responsiveDrawer: any
     userAssignmentCount: number
-    currentReviewerId: number | null
-    columns: object[]
 }
 
 export interface IDispatchProps {
     fetchInitialAppState: Function
-    fetchLatestAppState: Function
     toggleSidebar: Function
 }
 
@@ -80,31 +76,8 @@ function isResponsiveAndOverBreakPoint(browser: any, responsiveDrawer: any, brea
 }
 
 export class AppContainer extends React.Component<any, any> {
-    private fetchLatestAppState: Function
-    private intervalId: number
-
     public componentDidMount() {
         this.props.fetchInitialAppState()
-    }
-
-    public componentDidUpdate(prevProps: any) {
-        // Bodge bodge bodge
-
-        if (
-            isEqual(prevProps.columns, this.props.columns) === false ||
-            isEqual(prevProps.currentReviewerId, this.props.currentReviewerId) === false
-        ) {
-            // console.log("Bind new fetchLatestAppState")
-            this.fetchLatestAppState = this.props.fetchLatestAppState.bind(this, this.props.columns, this.props.currentReviewerId)
-        }
-
-        if (this.props.currentReviewerId !== null) {
-            if (this.intervalId !== undefined) {
-                // console.log(`clearInterval ${this.intervalId}`)
-                window.clearInterval(this.intervalId)
-            }
-            this.intervalId = window.setInterval(this.fetchLatestAppState, 5000000000)
-        }
     }
 
     public render() {
@@ -146,8 +119,6 @@ const mapStateToProps = (state: IStore): IStoreProps => {
         browser,
         responsiveDrawer,
         userAssignmentCount: getUserAssignments(app.assignments, user.user).length,
-        currentReviewerId: app.currentReviewerId,
-        columns: app.columns,
     }
 }
 
@@ -155,9 +126,6 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {
         fetchInitialAppState: () => {
             dispatch(fetchInitialAppState())
-        },
-        fetchLatestAppState: (columns: any, currentReviewerId: number) => {
-            dispatch(fetchLatestAppState(columns, currentReviewerId))
         },
         toggleSidebar: () => {
             dispatch(toggleSidebarState())

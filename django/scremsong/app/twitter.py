@@ -8,7 +8,8 @@ import json
 from scremsong.app.models import SocialPlatforms, SocialPlatformChoice, Tweets, SocialColumns
 from django.db.models import Q
 from scremsong.celery import celery_init_tweet_streaming
-from scremsong.app.social import get_social_columns
+from scremsong.app.social.columns import get_social_columns
+from scremsong.app.social.assignments import get_social_assignments
 
 logger = make_logger(__name__)
 
@@ -59,6 +60,33 @@ def twitter_user_api_auth_stage_2(query_params):
     return True
 
 
+def fetch_some_tweets(startIndex, stopIndex, sinceId=None, maxId=None, columnIds=[]):
+    columns = []
+    tweets = {}
+    for social_column in get_social_columns(SocialPlatformChoice.TWITTER, columnIds):
+        column_tweets = get_tweets_for_column(social_column, sinceId, maxId, startIndex, stopIndex)
+        column_tweet_ids = []
+
+        for tweet in column_tweets:
+            tweets[tweet["tweet_id"]] = {"data": tweet["data"], "is_dismissed": tweet["is_dismissed"]}
+            column_tweet_ids.append(tweet["tweet_id"])
+
+        columns.append({
+            "id": social_column.id,
+            "tweets": column_tweet_ids,
+        })
+
+        social_assignments = get_social_assignments(SocialPlatformChoice.TWITTER, column_tweet_ids)
+        for assignment in social_assignments:
+            tweets[assignment["social_id"]]["reviewer_id"] = assignment["user_id"]
+            tweets[assignment["social_id"]]["review_status"] = assignment["status"]
+
+    return {
+        "columns": columns,
+        "tweets": tweets,
+    }
+
+
 def get_latest_tweet_id():
     try:
         return Tweets.objects.filter().latest("tweet_id").tweet_id
@@ -96,6 +124,16 @@ def apply_tweet_filter_criteria(social_column, queryset):
             queryset = queryset.filter(Q(data__extended_tweet__full_text__icontains=phrase_part) | Q(data__text__icontains=phrase_part) | Q(data__full_text__icontains=phrase_part))
 
     return queryset.filter(data__retweeted_status__isnull=True)
+
+
+def get_twitter_columns():
+    columns = []
+    for column in get_social_columns(SocialPlatformChoice.TWITTER).values():
+        columns.append({
+            **column,
+            "total_tweets": get_total_tweets_for_column(column),
+        })
+    return columns
 
 
 def get_total_tweets_for_column(social_column):

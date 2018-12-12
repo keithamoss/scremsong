@@ -4,9 +4,9 @@ import { messageTypes, WS_CONNECTED, WS_URI } from "./constants"
 // Web Socket connection and handle dispatching actions for Redux onmessage
 const socket = new WebSocket(WS_URI)
 
-socket.onopen = (e: any) => {
-    console.log("Socket connection opened", e)
-}
+// socket.onopen = (e: any) => {
+//     console.log("Socket connection opened", e)
+// }
 
 socket.onclose = (e: CloseEvent) => {
     if (e.code !== 1000 || e.wasClean === false) {

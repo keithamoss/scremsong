@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.auth import logout
 from django.db.models import Q
-from django.http.response import HttpResponse, JsonResponse
+from django.http.response import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.http import HttpResponseNotFound
 from django.core.cache import cache
 
@@ -22,11 +22,10 @@ import json
 import csv
 from tweepy import TweepError
 from scremsong.util import get_env, make_logger
-from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, get_tweets_for_column, get_total_tweets_for_column, get_tweets_by_ids
+from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, get_tweets_for_column, get_total_tweets_for_column, get_tweets_by_ids, fetch_some_tweets
 from scremsong.celery import celery_restart_streaming
-from scremsong.app.social import get_social_columns, get_social_assignments
 from scremsong.app.models import SocialPlatformChoice, Tweets, SocialAssignments, SocialAssignmentStatus, Profile
-from scremsong.app.ws import ws_send_channel_message
+from scremsong.app import websockets
 
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
@@ -86,7 +85,130 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
 class TweetsViewset(viewsets.ViewSet):
     """
-    API endpoint that returns ...
+    API endpoint that deals with tweets.
+    """
+    permission_classes = (IsAuthenticated,)
+
+    @list_route(methods=['get'])
+    def get_some_tweets(self, request, format=None):
+        qp = request.query_params
+
+        sinceId = qp["sinceId"] if "sinceId" in qp else None
+        sinceId = qp["sinceId"] if "sinceId" in qp else None
+        maxId = qp["maxId"] if "maxId" in qp else None
+        startIndex = qp["startIndex"] if "startIndex" in qp else None
+        stopIndex = qp["stopIndex"] if "stopIndex" in qp else None
+        # Allow for limiting our response to specific columns
+        columnIds = qp["columns"].split(",") if "columns" in qp and qp["columns"] != "" else []
+
+        if sinceId is None and (startIndex is None or stopIndex is None):
+            return Response({"error": "Missing 'startIndex' or 'stopIndex'."}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(fetch_some_tweets(startIndex, stopIndex, sinceId, maxId, columnIds))
+
+    @list_route(methods=['get'])
+    def dismiss(self, request, format=None):
+        qp = request.query_params
+        tweetId = qp["tweetId"] if "tweetId" in qp else None
+
+        tweet = Tweets.objects.get(tweet_id=tweetId)
+        tweet.is_dismissed = True
+        tweet.save()
+
+        return Response({})
+
+
+class SocialAssignmentsViewset(viewsets.ViewSet):
+    """
+    API endpoints for handling assigning things (like tweets) to reviewers.
+    """
+    permission_classes = (IsAuthenticated,)
+
+    @list_route(methods=['get'])
+    def assign_reviewer(self, request, format=None):
+        qp = request.query_params
+        tweetId = qp["tweetId"] if "tweetId" in qp else None
+        reviewerId = qp["reviewerId"] if "reviewerId" in qp else None
+
+        assignment = SocialAssignments(platform=SocialPlatformChoice.TWITTER, social_id=tweetId, user_id=reviewerId)
+        assignment.save()
+
+        return Response({})
+
+    @list_route(methods=['get'])
+    def unassign_reviewer(self, request, format=None):
+        qp = request.query_params
+        tweetId = qp["tweetId"] if "tweetId" in qp else None
+
+        assignment = SocialAssignments.objects.get(platform=SocialPlatformChoice.TWITTER, social_id=tweetId)
+        assignment.delete()
+
+        return Response({})
+
+    @list_route(methods=['get'])
+    def set_assignment_done(self, request, format=None):
+        qp = request.query_params
+        assignmentId = qp["assignmentId"] if "assignmentId" in qp else None
+
+        assignment = SocialAssignments.objects.get(id=assignmentId)
+        assignment.status = SocialAssignmentStatus.DONE
+        assignment.save()
+
+        return Response({})
+
+    @list_route(methods=['get'])
+    def set_user_accepting_assignments(self, request, format=None):
+        qp = request.query_params
+        user_id = int(qp["user_id"]) if "user_id" in qp else None
+        is_accepting_assignments = True if "is_accepting_assignments" in qp and qp["is_accepting_assignments"] == "true" else False
+
+        profile = Profile.objects.get(user_id=user_id)
+        profile.is_accepting_assignments = is_accepting_assignments
+        profile.save()
+
+        websockets.send_channel_message("reviewers.set_status", {
+            "user_id": user_id,
+            "is_accepting_assignments": is_accepting_assignments
+        })
+        return Response({})
+
+
+class SocialPlatformsAuthViewset(viewsets.ViewSet):
+    """
+    API endpoints for handling authenticating against social platforms.
+    """
+    permission_classes = (IsAuthenticated,)
+
+    @list_route(methods=['get'])
+    def twitter_auth_step1(self, request, format=None):
+        # 1. Login to https://developer.twitter.com/en/apps as @DemSausage
+        # 2. Register an app and set these callback URLs:
+        #   - https://localhost:8001/api/0.1/social_auth/twitter_auth_step2/
+        #   - https://scremsong-api.democracysausage.org/api/0.1/social_auth/twitter_auth_step2/
+        # 3. In a new tab, go to Twitter and login as @DemSausage
+        # 3. Navigate to https://localhost:8001/api/0.1/social_auth/twitter_auth_step1/?format=json
+        # 4. It will send you to Twitter and prompt you to Authorize Scremsong to use your account. (Important: Make sure you're logged in as @DemSausage before continuing!)
+        # 5. You'll be returned to a page called "Social Platforms Auth Viewset" that says '"OK": true'
+        try:
+            redirect_url = twitter_user_api_auth_stage_1()
+            return HttpResponseRedirect(redirect_to=redirect_url)
+        except TweepError:
+            return Response({"error": "Error! Failed to get request token."}, status=status.HTTP_400_BAD_REQUEST)
+
+    @list_route(methods=['get'])
+    def twitter_auth_step2(self, request, format=None):
+        try:
+            if twitter_user_api_auth_stage_2(request.query_params) is True:
+                return Response({"OK": True})
+        except TweepError:
+            return Response({"error": "Error! Failed to get access token. TweepyError."}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"error": "Error! Failed to get access token. {}".format(str(e))}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CeleryAdminViewset(viewsets.ViewSet):
+    """
+    API endpoint that lets us manage our celery instance.
     """
     permission_classes = (IsAuthenticated,)
 
@@ -106,170 +228,3 @@ class TweetsViewset(viewsets.ViewSet):
     def restart_streaming(self, request, format=None):
         celery_restart_streaming()
         return Response({"OK": True})
-
-    @list_route(methods=['get'])
-    def get_deck_columns(self, request, format=None):
-        # return JsonResponse({"columns": list(get_social_columns(SocialPlatformChoice.TWITTER).values())})
-
-        columns = []
-        for column in get_social_columns(SocialPlatformChoice.TWITTER).values():
-            columns.append({
-                **column,
-                "total_tweets": get_total_tweets_for_column(column),
-            })
-
-        return Response({"columns": columns})
-
-    @list_route(methods=['get'])
-    def get_reviewer_users(self, request, format=None):
-        reviewers = []
-        for reviewer in User.objects.filter(is_staff=False, is_active=True):
-            reviewers.append({
-                "id": reviewer.id,
-                "username": reviewer.username,
-                "name": "{} {}".format(reviewer.first_name, reviewer.last_name),
-                "initials": "{}{}".format(reviewer.first_name[:1], reviewer.last_name[:1]),
-                "is_accepting_assignments": reviewer.profile.is_accepting_assignments,
-            })
-
-        return Response({"reviewers": reviewers})
-
-    @list_route(methods=['get'])
-    def dismiss(self, request, format=None):
-        qp = request.query_params
-        tweetId = qp["tweetId"] if "tweetId" in qp else None
-
-        tweet = Tweets.objects.get(tweet_id=tweetId)
-        tweet.is_dismissed = True
-        tweet.save()
-
-        return Response({})
-
-    @list_route(methods=['get'])
-    def assignReviewer(self, request, format=None):
-        qp = request.query_params
-        tweetId = qp["tweetId"] if "tweetId" in qp else None
-        reviewerId = qp["reviewerId"] if "reviewerId" in qp else None
-
-        assignment = SocialAssignments(platform=SocialPlatformChoice.TWITTER, social_id=tweetId, user_id=reviewerId)
-        assignment.save()
-
-        return Response({})
-
-    @list_route(methods=['get'])
-    def unassignReviewer(self, request, format=None):
-        qp = request.query_params
-        tweetId = qp["tweetId"] if "tweetId" in qp else None
-
-        assignment = SocialAssignments.objects.get(platform=SocialPlatformChoice.TWITTER, social_id=tweetId)
-        assignment.delete()
-
-        return Response({})
-
-    @list_route(methods=['get'])
-    def get_assignments(self, request, format=None):
-        qp = request.query_params
-        reviewerId = int(qp["reviewerId"]) if "reviewerId" in qp else None
-        sinceId = qp["sinceId"] if "sinceId" in qp else None
-
-        queryset = SocialAssignments.objects.filter(status=SocialAssignmentStatus.PENDING, user=reviewerId)
-
-        if sinceId is not None:
-            queryset = queryset.filter(id__gt=sinceId)
-        assignments = queryset.order_by("-id").values()
-
-        tweetIds = [a["social_id"] for a in assignments]
-        tweets = {}
-        for tweet in get_tweets_by_ids(tweetIds):
-            tweets[tweet["tweet_id"]] = {"data": tweet["data"], "is_dismissed": tweet["is_dismissed"]}
-
-        for assignment in assignments:
-            tweets[assignment["social_id"]]["reviewer_id"] = assignment["user_id"]
-            tweets[assignment["social_id"]]["review_status"] = assignment["status"]
-
-        return Response({"assignments": assignments, "tweets": tweets})
-
-    @list_route(methods=['get'])
-    def assignment_done(self, request, format=None):
-        qp = request.query_params
-        assignmentId = qp["assignmentId"] if "assignmentId" in qp else None
-
-        assignment = SocialAssignments.objects.get(id=assignmentId)
-        assignment.status = SocialAssignmentStatus.DONE
-        assignment.save()
-
-        return Response({})
-
-    @list_route(methods=['get'])
-    def user_accepting_assignments(self, request, format=None):
-        qp = request.query_params
-        user_id = int(qp["user_id"]) if "user_id" in qp else None
-        is_accepting_assignments = True if "is_accepting_assignments" in qp and qp["is_accepting_assignments"] == "true" else False
-
-        profile = Profile.objects.get(user_id=user_id)
-        profile.is_accepting_assignments = is_accepting_assignments
-        profile.save()
-
-        ws_send_channel_message("reviewers.set_status", {
-            "user_id": user_id,
-            "is_accepting_assignments": is_accepting_assignments
-        })
-        return Response({})
-
-    @list_route(methods=['get'])
-    def get_some_tweets(self, request, format=None):
-        qp = request.query_params
-
-        sinceId = qp["sinceId"] if "sinceId" in qp else None
-        sinceId = qp["sinceId"] if "sinceId" in qp else None
-        maxId = qp["maxId"] if "maxId" in qp else None
-        startIndex = qp["startIndex"] if "startIndex" in qp else None
-        stopIndex = qp["stopIndex"] if "stopIndex" in qp else None
-        # Allow for limiting our response to specific columns
-        columnIds = qp["columns"].split(",") if "columns" in qp and qp["columns"] != "" else []
-
-        if sinceId is None and (startIndex is None or stopIndex is None):
-            return Response({"error": "Missing 'startIndex' or 'stopIndex'."}, status=status.HTTP_400_BAD_REQUEST)
-
-        columns = []
-        tweets = {}
-        for social_column in get_social_columns(SocialPlatformChoice.TWITTER, columnIds):
-            column_tweets = get_tweets_for_column(social_column, sinceId, maxId, startIndex, stopIndex)
-            column_tweet_ids = []
-
-            for tweet in column_tweets:
-                tweets[tweet["tweet_id"]] = {"data": tweet["data"], "is_dismissed": tweet["is_dismissed"]}
-                column_tweet_ids.append(tweet["tweet_id"])
-
-            columns.append({
-                "id": social_column.id,
-                "tweets": column_tweet_ids,
-            })
-
-            social_assignments = get_social_assignments(SocialPlatformChoice.TWITTER, column_tweet_ids)
-            for assignment in social_assignments:
-                tweets[assignment["social_id"]]["reviewer_id"] = assignment["user_id"]
-                tweets[assignment["social_id"]]["review_status"] = assignment["status"]
-
-        return Response({
-            "columns": columns,
-            "tweets": tweets,
-        })
-
-    @list_route(methods=['get'])
-    def auth1(self, request, format=None):
-        try:
-            redirect_url = twitter_user_api_auth_stage_1()
-            return Response({"url": redirect_url})
-        except TweepError:
-            return Response({"error": "Error! Failed to get request token."}, status=status.HTTP_400_BAD_REQUEST)
-
-    @list_route(methods=['get'])
-    def auth2(self, request, format=None):
-        try:
-            if twitter_user_api_auth_stage_2(request.query_params) is True:
-                return Response({"OK": True})
-        except TweepError:
-            return Response({"error": "Error! Failed to get access token. TweepyError."}, status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            return Response({"error": "Error! Failed to get access token. {}".format(str(e))}, status=status.HTTP_400_BAD_REQUEST)

@@ -10,23 +10,9 @@ export interface IStoreProps {
     columns: object[]
 }
 
-export interface IDispatchProps {
-    fetchLatestTweets: Function
-}
+export interface IDispatchProps {}
 
 class TriageViewContainer extends React.Component<IProps & IStoreProps & IDispatchProps, {}> {
-    // private fetchLatestTweets: Function
-
-    constructor(props: any) {
-        super(props)
-
-        // this.fetchLatestTweets = props.fetchLatestTweets.bind(this, props.columns)
-
-        // if (props.user !== null) {
-        //     window.setInterval(this.fetchLatestTweets, 5000)
-        // }
-    }
-
     public render() {
         const { user, columns } = this.props
 
@@ -43,17 +29,12 @@ const mapStateToProps = (state: IStore, ownProps: any): IStoreProps => {
 
     return {
         user: user.user,
-        // columns: [app.columns[1]],
         columns: app.columns,
     }
 }
 
 const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
-    return {
-        fetchLatestTweets: (columns: any) => {
-            // dispatch(fetchLatestTweets(columns))
-        },
-    }
+    return {}
 }
 
 const TriageViewContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(

@@ -16,25 +16,12 @@ export interface IStoreProps {
 }
 
 export interface IDispatchProps {
-    fetchLatestAssignments: Function
     onMarkAsDone: Function
     onChangeQueueUser: Function
     onToggleUserOnlineStatus: Function
 }
 
 class UserReviewQueueViewContainer extends React.Component<IProps & IStoreProps & IDispatchProps, {}> {
-    // private fetchLatestAssignments: Function
-
-    constructor(props: any) {
-        super(props)
-
-        // this.fetchLatestAssignments = props.fetchLatestAssignments.bind(this, props.user)
-
-        // if (props.user !== null) {
-        //     window.setInterval(this.fetchLatestAssignments, 10000)
-        // }
-    }
-
     public render() {
         const {
             user,
@@ -81,15 +68,11 @@ const mapStateToProps = (state: IStore, ownProps: any): IStoreProps => {
 
 const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {
-        fetchLatestAssignments: (user: any) => {
-            // dispatch(fetchLatestAssignments(user))
-        },
         onMarkAsDone: (assignment: any) => {
             dispatch(markAssignmentDone(assignment))
         },
         onChangeQueueUser: async (event: object, key: number, reviewerId: number) => {
             dispatch(setCurrentReviewer(reviewerId))
-            // await dispatch(fetchAssignments(reviewerId))
         },
         onToggleUserOnlineStatus: (event: object, isInputChecked: boolean) => {
             dispatch(onToggleCurrentReviewerOnlineStatus(isInputChecked))
