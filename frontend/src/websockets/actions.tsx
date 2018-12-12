@@ -1,6 +1,7 @@
 import { includes as arrayIncludes } from "core-js/library/fn/array"
 import { messageTypes, uri } from "./constants"
 
+// Web Socket connection and handle dispatching actions for Redux onmessage
 const socket = new WebSocket(uri)
 
 socket.onopen = (e: any) => {
@@ -28,3 +29,13 @@ export const init = (store: any) => {
     }
 }
 export const emit = (action: any) => socket.send(JSON.stringify(action))
+
+// Models
+export interface IActionWebSocketBase {
+    msg_type: string
+}
+
+export interface IActionReviewerSetStatus extends IActionWebSocketBase {
+    userId: number
+    isAcceptingAssignments: boolean
+}
