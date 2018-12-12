@@ -1,8 +1,9 @@
 import { includes as arrayIncludes } from "core-js/library/fn/array"
+import ReconnectingWebSocket from "reconnecting-websocket"
 import { messageTypes, WS_CONNECTED, WS_URI } from "./constants"
 
 // Web Socket connection and handle dispatching actions for Redux onmessage
-const socket = new WebSocket(WS_URI)
+const socket = new ReconnectingWebSocket(WS_URI)
 
 // socket.onopen = (e: any) => {
 //     console.log("Socket connection opened", e)
