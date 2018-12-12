@@ -11,6 +11,7 @@ logger = make_logger(__name__)
 class ScremsongConsumer(JsonWebsocketConsumer):
     def connect(self):
         self.group_name = 'scremsong_%s' % self.scope['url_route']['kwargs']['group_name']
+        self.user = self.scope["user"]
 
         # Join room group
         async_to_sync(self.channel_layer.group_add)(
@@ -23,7 +24,7 @@ class ScremsongConsumer(JsonWebsocketConsumer):
         # Send a message back to the client on a successful connection
         # self.send_json({"type": "connected", "channel_name": self.channel_name})
 
-        logger.debug('scremsong connect channel=%s user=%s', self.channel_name, self.scope["user"])
+        logger.debug('scremsong connect channel=%s group=%s user=%s', self.channel_name, self.group_name, self.user)
 
     def disconnect(self, close_code):
         # Leave the group
@@ -36,12 +37,12 @@ class ScremsongConsumer(JsonWebsocketConsumer):
         # async_to_sync(self.channel_layer.group_send)(
         #     self.group_name,
         #     {
-        #         "userId": self.scope["user"].id,
+        #         "userId": self.user.id,
         #         "isAcceptingAssignments": False
         #     }
         # )
 
-        logger.debug('scremsong disconnect channel=%s user=%s', self.channel_name, self.scope["user"])
+        logger.debug('scremsong disconnect channel=%s user=%s', self.channel_name, self.user)
 
     # Handlers for messages sent over the channel layer
     # c.f. https://github.com/andrewgodwin/channels-examples/blob/master/multichat/chat/consumers.py

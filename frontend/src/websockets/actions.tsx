@@ -4,12 +4,10 @@ import { messageTypes, uri } from "./constants"
 // Web Socket connection and handle dispatching actions for Redux onmessage
 const socket = new WebSocket(uri)
 
-socket.onopen = (e: any) => {
-    console.log("Socket connection opened", e)
-}
-
-socket.onclose = (e: any) => {
-    console.error("Socket closed unexpectedly", e)
+socket.onclose = (e: CloseEvent) => {
+    if (e.code !== 1000 || e.wasClean === false) {
+        console.error("Socket closed unexpectedly", e)
+    }
 }
 
 socket.onerror = (e: any) => {
