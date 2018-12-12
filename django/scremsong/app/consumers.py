@@ -14,7 +14,7 @@ class ScremsongConsumer(JsonWebsocketConsumer):
         self.group_name = 'scremsong_%s' % self.scope['url_route']['kwargs']['group_name']
         self.user = self.scope["user"]
 
-        if self.user.is_anonymous == False and self.user.is_authenticated():
+        if self.user.is_anonymous == False and self.user.is_authenticated:
             # Join room group
             async_to_sync(self.channel_layer.group_add)(
                 self.group_name,
