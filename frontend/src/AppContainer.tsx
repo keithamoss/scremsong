@@ -55,7 +55,7 @@ const muiTheme = getMuiTheme({
 export interface IStoreProps {
     // From Props
     app: IAppModule
-    user: IUser
+    user: IUser | null
     browser: any
     responsiveDrawer: any
     userAssignmentCount: number

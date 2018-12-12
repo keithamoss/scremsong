@@ -1,6 +1,12 @@
 import * as dotProp from "dot-prop-immutable"
 import { uniq, uniqBy } from "lodash-es"
-import { WS_REVIEWERS_SET_STATUS } from "src/websockets/constants"
+import {
+    WS_ASSIGNMENTS_FOR_USER,
+    WS_REVIEWERS_LIST,
+    WS_REVIEWERS_SET_STATUS,
+    WS_SOCIAL_COLUMNS_LIST,
+    WS_TWEETS_FETCH_SOME,
+} from "src/websockets/constants"
 import { IThunkExtras } from "../../redux/modules/interfaces"
 import { fetchUser, ISelf } from "./user"
 // import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
@@ -11,15 +17,15 @@ const LOADED = "ealgis/app/LOADED"
 const BEGIN_FETCH = "ealgis/app/BEGIN_FETCH"
 const FINISH_FETCH = "ealgis/app/FINISH_FETCH"
 const TOGGLE_SIDEBAR = "ealgis/app/TOGGLE_SIDEBAR"
-const LOAD_TWEET_OBJECTS = "ealgis/app/LOAD_TWEET_OBJECTS"
+// const LOAD_TWEET_OBJECTS = "ealgis/app/LOAD_TWEET_OBJECTS"
 const LOAD_TWEETS = "ealgis/app/LOAD_TWEETS"
 const LOAD_NEW_TWEETS = "ealgis/app/LOAD_NEW_TWEETS"
 const DISMISS_TWEET = "ealgis/app/DISMISS_TWEET"
-const LOAD_COLUMNS = "ealgis/app/LOAD_COLUMNS"
-const LOAD_REVIEWERS = "ealgis/app/LOAD_REVIEWERS"
+// const LOAD_COLUMNS = "ealgis/app/LOAD_COLUMNS"
+// const LOAD_REVIEWERS = "ealgis/app/LOAD_REVIEWERS"
 const ASSIGN_REVIEWER = "ealgis/app/ASSIGN_REVIEWER"
 const UNASSIGN_REVIEWER = "ealgis/app/UNASSIGN_REVIEWER"
-const LOAD_ASSIGNMENTS = "ealgis/app/LOAD_ASSIGNMENTS"
+// const LOAD_ASSIGNMENTS = "ealgis/app/LOAD_ASSIGNMENTS"
 const MARK_ASSIGNMENT_DONE = "ealgis/app/MARK_ASSIGNMENT_DONE"
 const SET_CURRENT_REVIEWER = "ealgis/app/SET_CURRENT_REVIEWER"
 
@@ -57,11 +63,12 @@ export default function reducer(state: IModule = initialState, action /*: IActio
             return dotProp.set(state, "requestsInProgress", --requestsInProgress)
         case TOGGLE_SIDEBAR:
             return dotProp.toggle(state, "sidebarOpen")
-        case LOAD_TWEET_OBJECTS:
-            return dotProp.set(state, "tweets", { ...action.tweets, ...state.tweets })
+        // case LOAD_TWEET_OBJECTS:
+        //     return dotProp.set(state, "tweets", { ...action.tweets, ...state.tweets })
         case LOAD_TWEETS:
+        case WS_TWEETS_FETCH_SOME:
             // @ts-ignore
-            action.tweets!.columns.forEach((column: any, index: number) => {
+            action.columns.forEach((column: any, index: number) => {
                 if (column.tweets.length === 0 && (!(column.id in state.column_tweets) || state.column_tweets![column.id].length === 0)) {
                     state = dotProp.set(state, `column_tweets.${column.id}`, [])
                 } else {
@@ -82,7 +89,7 @@ export default function reducer(state: IModule = initialState, action /*: IActio
                 }
             })
             // @ts-ignore
-            return dotProp.set(state, "tweets", { ...action.tweets.tweets!, ...state.tweets })
+            return dotProp.set(state, "tweets", { ...action.tweets, ...state.tweets })
         case LOAD_NEW_TWEETS:
             // @ts-ignore
             action.tweets!.columns.forEach((column: any, index: number) => {
@@ -104,7 +111,8 @@ export default function reducer(state: IModule = initialState, action /*: IActio
             })
 
             return state
-        case LOAD_COLUMNS:
+        // case LOAD_COLUMNS:
+        case WS_SOCIAL_COLUMNS_LIST:
             const columnTweets: any = {}
             action.columns!.forEach((column: any, index: number) => {
                 columnTweets[column.id] = []
@@ -114,7 +122,8 @@ export default function reducer(state: IModule = initialState, action /*: IActio
             return dotProp.set(state, "columns", action.columns)
         case DISMISS_TWEET:
             return dotProp.set(state, `tweets.${action.tweetId}.is_dismissed`, true)
-        case LOAD_REVIEWERS:
+        // case LOAD_REVIEWERS:
+        case WS_REVIEWERS_LIST:
             // @ts-ignore
             action.reviewers.forEach((reviewer: any, index: number) => {
                 state = dotProp.set(state, `reviewers.${reviewer.id}`, reviewer)
@@ -126,12 +135,15 @@ export default function reducer(state: IModule = initialState, action /*: IActio
         case UNASSIGN_REVIEWER:
             state = dotProp.delete(state, `tweets.${action.tweetId}.reviewer_id`)
             return dotProp.delete(state, `tweets.${action.tweetId}.review_status`)
-        case LOAD_ASSIGNMENTS:
+        // case LOAD_ASSIGNMENTS:
+        case WS_ASSIGNMENTS_FOR_USER:
             // @ts-ignore
             // action.assignments.forEach((assignment: any, index: number) => {
             //     state = dotProp.set(state, `assignments.${assignment.id}`, assignment)
             // })
             // return state
+
+            state = dotProp.set(state, "tweets", { ...action.tweets, ...state.tweets })
             return dotProp.set(state, "assignments", uniqBy([...action.assignments, ...state.assignments], "id"))
         case MARK_ASSIGNMENT_DONE:
             const assignmentIndex = state.assignments.findIndex((assignment: any) => assignment.id === action.assignmentId)
@@ -183,12 +195,12 @@ export function toggleSidebarState(): IAction {
     }
 }
 
-export function loadTweetObjects(tweets: object[]) {
-    return {
-        type: LOAD_TWEET_OBJECTS,
-        tweets,
-    }
-}
+// export function loadTweetObjects(tweets: object[]) {
+//     return {
+//         type: LOAD_TWEET_OBJECTS,
+//         tweets,
+//     }
+// }
 
 export function loadTweets(tweets: object[]) {
     return {
@@ -226,26 +238,26 @@ export function unassignReviewer(tweetId: string) {
     }
 }
 
-export function loadColumns(columns: object[]) {
-    return {
-        type: LOAD_COLUMNS,
-        columns,
-    }
-}
+// export function loadColumns(columns: object[]) {
+//     return {
+//         type: LOAD_COLUMNS,
+//         columns,
+//     }
+// }
 
-export function loadReviewers(reviewers: object[]) {
-    return {
-        type: LOAD_REVIEWERS,
-        reviewers,
-    }
-}
+// export function loadReviewers(reviewers: object[]) {
+//     return {
+//         type: LOAD_REVIEWERS,
+//         reviewers,
+//     }
+// }
 
-export function loadAssignments(assignments: object[]) {
-    return {
-        type: LOAD_ASSIGNMENTS,
-        assignments,
-    }
-}
+// export function loadAssignments(assignments: object[]) {
+//     return {
+//         type: LOAD_ASSIGNMENTS,
+//         assignments,
+//     }
+// }
 
 export function markAnAssignmentDone(assignmentId: number) {
     return {
@@ -307,8 +319,8 @@ export function fetchInitialAppState() {
         const self: ISelf = await dispatch(fetchUser())
         if (self.is_logged_in === true) {
             await dispatch(changeCurrentReviewer(self.user))
-            await dispatch(fetchColumns())
-            await Promise.all([dispatch(fetchReviewers()), dispatch(fetchAssignments(self.user.id)), dispatch(fetchTweets(0, 20))])
+            //     await dispatch(fetchColumns())
+            //     await Promise.all([dispatch(fetchReviewers()), dispatch(fetchAssignments(self.user.id)), dispatch(fetchTweets(0, 20))])
         }
 
         dispatch(loaded())
@@ -325,7 +337,7 @@ export function changeCurrentReviewer(user: any) {
 
 export function fetchLatestAppState(columns: any, currentReviewerId: number) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        await Promise.all([dispatch(fetchLatestTweets(columns)), dispatch(fetchLatestAssignments(currentReviewerId))])
+        // await Promise.all([dispatch(fetchLatestTweets(columns)), dispatch(fetchLatestAssignments(currentReviewerId))])
     }
 }
 
@@ -345,45 +357,45 @@ export function fetchTweets(startIndex: number, stopIndex: number, columns: any[
     }
 }
 
-export function fetchLatestTweets(columns: any) {
-    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        const { json } = await api.get(
-            "/api/0.1/tweets/get_some_tweets/",
-            dispatch,
-            {
-                sinceId: Object.keys(getState().app.tweets)[0],
-                columns: columns.reduce((arr: any, elem: any) => [...arr, ...elem.id], []).join(","),
-            },
-            true
-        )
-        if (Object.keys(json.tweets).length > 0) {
-            await dispatch(loadNewTweets(json))
-            await dispatch(loadTweets(json))
-        }
-    }
-}
+// export function fetchLatestTweets(columns: any) {
+//     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
+//         const { json } = await api.get(
+//             "/api/0.1/tweets/get_some_tweets/",
+//             dispatch,
+//             {
+//                 sinceId: Object.keys(getState().app.tweets)[0],
+//                 columns: columns.reduce((arr: any, elem: any) => [...arr, ...elem.id], []).join(","),
+//             },
+//             true
+//         )
+//         if (Object.keys(json.tweets).length > 0) {
+//             await dispatch(loadNewTweets(json))
+//             await dispatch(loadTweets(json))
+//         }
+//     }
+// }
 
-export function fetchColumns() {
-    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        const { response, json } = await api.get("/api/0.1/tweets/get_deck_columns/", dispatch)
+// export function fetchColumns() {
+//     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
+//         const { response, json } = await api.get("/api/0.1/tweets/get_deck_columns/", dispatch)
 
-        if (response.status === 200) {
-            dispatch(loadColumns(json.columns))
-            return json
-        }
-    }
-}
+//         if (response.status === 200) {
+//             dispatch(loadColumns(json.columns))
+//             return json
+//         }
+//     }
+// }
 
-export function fetchReviewers() {
-    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        const { response, json } = await api.get("/api/0.1/tweets/get_reviewer_users/", dispatch)
+// export function fetchReviewers() {
+//     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
+//         const { response, json } = await api.get("/api/0.1/tweets/get_reviewer_users/", dispatch)
 
-        if (response.status === 200) {
-            dispatch(loadReviewers(json.reviewers))
-            return json
-        }
-    }
-}
+//         if (response.status === 200) {
+//             dispatch(loadReviewers(json.reviewers))
+//             return json
+//         }
+//     }
+// }
 
 export function dismissATweet(tweetId: string) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
@@ -413,38 +425,38 @@ export function unassignAReviewer(tweetId: string) {
     }
 }
 
-export function fetchAssignments(reviewerId: number) {
-    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        const { response, json } = await api.get("/api/0.1/tweets/get_assignments/", dispatch, {
-            reviewerId,
-        })
+// export function fetchAssignments(reviewerId: number) {
+//     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
+//         const { response, json } = await api.get("/api/0.1/tweets/get_assignments/", dispatch, {
+//             reviewerId,
+//         })
 
-        if (response.status === 200) {
-            dispatch(loadAssignments(json.assignments))
-            dispatch(loadTweetObjects(json.tweets))
-            return json
-        }
-    }
-}
+//         if (response.status === 200) {
+//             dispatch(loadAssignments(json.assignments))
+//             dispatch(loadTweetObjects(json.tweets))
+//             return json
+//         }
+//     }
+// }
 
-export function fetchLatestAssignments(reviewerId: number) {
-    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        const params: any = { reviewerId }
-        if (getState().app.assignments.length > 0) {
-            const latestAssignment = getState()
-                .app.assignments.filter((assignment: any) => assignment.user_id === reviewerId)
-                .reduce((prev: any, current: any) => (prev.id > current.id ? prev : current))
-            params.sinceId = latestAssignment.id
-        }
-        const { json } = await api.get("/api/0.1/tweets/get_assignments/", dispatch, params, true)
+// export function fetchLatestAssignments(reviewerId: number) {
+//     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
+//         const params: any = { reviewerId }
+//         if (getState().app.assignments.length > 0) {
+//             const latestAssignment = getState()
+//                 .app.assignments.filter((assignment: any) => assignment.user_id === reviewerId)
+//                 .reduce((prev: any, current: any) => (prev.id > current.id ? prev : current))
+//             params.sinceId = latestAssignment.id
+//         }
+//         const { json } = await api.get("/api/0.1/tweets/get_assignments/", dispatch, params, true)
 
-        if (json.assignments.length > 0) {
-            dispatch(loadAssignments(json.assignments))
-            dispatch(loadTweetObjects(json.tweets))
-            return json
-        }
-    }
-}
+//         if (json.assignments.length > 0) {
+//             dispatch(loadAssignments(json.assignments))
+//             dispatch(loadTweetObjects(json.tweets))
+//             return json
+//         }
+//     }
+// }
 
 export function markAssignmentDone(assignment: any) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {

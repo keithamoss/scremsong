@@ -19,7 +19,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         model = User
         fields = (
             'id',
-            'url',
+            # 'url',
             'username',
             'first_name',
             'last_name',

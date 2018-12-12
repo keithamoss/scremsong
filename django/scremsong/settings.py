@@ -250,4 +250,9 @@ CELERY_BROKER_POOL_LIMIT = None
 
 # Project-specific settings
 # c.f. https://github.com/andrewgodwin/channels-examples/blob/9e6a26c8e6404483695cbd96ebf12fc4ed9956b2/multichat/multichat/settings.py
+MSG_TYPE_CONNECTED = "ws/scremsong/CONNECTED"
+MSG_TYPE_SOCIAL_COLUMNS_LIST = "ws/scremsong/social_columns/LIST"
+MSG_TYPE_REVIEWERS_LIST = "ws/scremsong/reviewers/LIST"
 MSG_TYPE_REVIEWERS_SET_STATUS = "ws/scremsong/reviewers/SET_STATUS"
+MSG_TYPE_ASSIGNMENTS_FOR_USER = "ws/scremsong/assignments/FOR_USER"
+MSG_TYPE_TWEETS_FETCH_SOME = "ws/scremsong/tweets/FETCH_SOME"

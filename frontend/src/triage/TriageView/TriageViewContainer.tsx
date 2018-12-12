@@ -6,7 +6,7 @@ import TriageView from "./TriageView"
 export interface IProps {}
 
 export interface IStoreProps {
-    user: IUser
+    user: IUser | null
     columns: object[]
 }
 

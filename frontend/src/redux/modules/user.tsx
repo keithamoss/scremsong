@@ -6,7 +6,7 @@ import { IThunkExtras } from "../../redux/modules/interfaces"
 const LOAD_USER = "scremsong/user/LOAD_USER"
 
 const initialState: IModule = {
-    user: {} as IUser,
+    user: null,
 }
 
 // Reducer
@@ -29,7 +29,7 @@ export function loadUser(self: ISelf) {
 
 // Models
 export interface IModule {
-    user: IUser
+    user: IUser | null
 }
 
 export interface IAction {
@@ -56,7 +56,6 @@ export interface IUser {
     is_active: boolean
     is_approved: boolean
     is_staff: boolean
-    url: string
 }
 
 // Side effects, only as applicable

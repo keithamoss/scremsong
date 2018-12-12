@@ -1,20 +1,14 @@
 import { values as objectValues } from "core-js/library/fn/object"
 import * as React from "react"
 import { connect } from "react-redux"
-import {
-    fetchAssignments,
-    getUserAssignments,
-    markAssignmentDone,
-    onToggleCurrentReviewerOnlineStatus,
-    setCurrentReviewer,
-} from "src/redux/modules/app"
+import { getUserAssignments, markAssignmentDone, onToggleCurrentReviewerOnlineStatus, setCurrentReviewer } from "src/redux/modules/app"
 import { IStore, IUser } from "src/redux/modules/interfaces"
 import UserReviewQueueView from "./UserReviewQueueView"
 
 export interface IProps {}
 
 export interface IStoreProps {
-    user: IUser
+    user: IUser | null
     assignments: object[]
     tweets: object[]
     reviewers: any[]
@@ -53,7 +47,7 @@ class UserReviewQueueViewContainer extends React.Component<IProps & IStoreProps 
             onToggleUserOnlineStatus,
         } = this.props
 
-        if (user === null) {
+        if (user === null || currentReviewer === undefined) {
             return <div />
         }
 
@@ -95,7 +89,7 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
         },
         onChangeQueueUser: async (event: object, key: number, reviewerId: number) => {
             dispatch(setCurrentReviewer(reviewerId))
-            await dispatch(fetchAssignments(reviewerId))
+            // await dispatch(fetchAssignments(reviewerId))
         },
         onToggleUserOnlineStatus: (event: object, isInputChecked: boolean) => {
             dispatch(onToggleCurrentReviewerOnlineStatus(isInputChecked))
