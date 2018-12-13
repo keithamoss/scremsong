@@ -7,6 +7,7 @@ import { IActionReviewersList, IActionReviewersListAssignments, IActionReviewers
 import { WS_REVIEWERS_LIST_ASSIGNMENTS, WS_REVIEWERS_LIST_USERS, WS_REVIEWERS_SET_STATUS } from "src/websockets/constants"
 import { IStore, IThunkExtras } from "../../redux/modules/interfaces"
 import { eSocialPlatformChoice } from "./triage"
+import { IUser } from "./user"
 
 // Actions
 const ASSIGN_REVIEWER = "ealgis/app/ASSIGN_REVIEWER"
@@ -44,7 +45,7 @@ export default function reducer(state: IModule = initialState, action: IAction) 
             state = dotProp.delete(state, `tweets.${action.tweetId}.reviewer_id`)
             return dotProp.delete(state, `tweets.${action.tweetId}.review_status`)
         case MARK_ASSIGNMENT_DONE:
-            const assignmentIndex = state.assignments.findIndex((assignment: any) => assignment.id === action.assignmentId)
+            const assignmentIndex = state.assignments.findIndex((assignment: IReviewerAssignment) => assignment.id === action.assignmentId)
             // return dotProp.set(state, `assignments.${assignmentIndex}.status`, "SocialAssignmentStatus.DONE")
             return dotProp.delete(state, `assignments.${assignmentIndex}`)
         case WS_REVIEWERS_SET_STATUS:
@@ -154,7 +155,7 @@ export interface IActionReviewersSetCurrentReviewer extends Action<typeof SET_CU
 // Side effects, only as applicable
 // e.g. thunks, epics, et cetera
 
-export function changeCurrentReviewer(user: any) {
+export function changeCurrentReviewer(user: IUser) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
         if (user !== null) {
             dispatch(setCurrentReviewer(user.id))
@@ -181,7 +182,7 @@ export function unassignAReviewer(tweetId: string) {
     }
 }
 
-export function markAssignmentDone(assignment: any) {
+export function markAssignmentDone(assignment: IReviewerAssignment) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
         dispatch(markAnAssignmentDone(assignment.id))
         await api.get("/api/0.1/social_assignments/assignment_done/", dispatch, {

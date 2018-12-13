@@ -1,6 +1,6 @@
 import * as dotProp from "dot-prop-immutable"
 import { uniq } from "lodash-es"
-import { IActionSocialColumnsList, IActionsTweetsFetch } from "src/websockets/actions"
+import { IActionSocialColumnsList, IActionsTweetsFetch, ITweetFetchColumn } from "src/websockets/actions"
 import { WS_SOCIAL_COLUMNS_LIST, WS_TWEETS_FETCH_SOME } from "src/websockets/constants"
 // import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 
@@ -20,7 +20,7 @@ type IAction = IActionsTweetsFetch | IActionSocialColumnsList
 export default function reducer(state: IModule = initialState, action: IAction) {
     switch (action.type) {
         case WS_TWEETS_FETCH_SOME:
-            action.columns.forEach((column: any, index: number) => {
+            action.columns.forEach((column: ITweetFetchColumn, index: number) => {
                 // Merge and then sort column tweetIds to maintain the correct order chronological order
                 const val = uniq([...state.column_tweets![column.id], ...column.tweet_ids])
                 const sorted = val.sort().reverse()
@@ -29,14 +29,14 @@ export default function reducer(state: IModule = initialState, action: IAction) 
             return state
         // case WS_TWEETS_FETCH_SOME_NEW_TWEETS:
         //     console.log("triage.WS_TWEETS_FETCH_SOME_NEW_TWEETS", action)
-        //     action.columns.forEach((column: any, index: number) => {
+        //     action.columns.forEach((column: ITriageColumn, index: number) => {
         //         // Merge and then sort column tweetIds to maintain the correct order chronological order
         //         const val = uniq([...state.column_tweets![column.id], ...column.tweets])
         //         const sorted = val.sort().reverse()
         //         state = dotProp.set(state, `column_tweets.${column.id}`, sorted)
 
         //         // Update the total number of tweets in the database for this column
-        //         const columnIndex = state.columns.findIndex((col: any) => {
+        //         const columnIndex = state.columns.findIndex((col: ITriageColumn) => {
         //             return col.id === column.id
         //         })
         //         state = dotProp.set(
@@ -50,8 +50,8 @@ export default function reducer(state: IModule = initialState, action: IAction) 
             // Initialise our store for the tweetIds associated with each column
             // Map our list of columns to an object of empty arrays indexed by columnId
             // e.g. {1: [], 2: []}
-            const columnTweets: any = {}
-            action.columns.forEach((column: any, index: number) => {
+            const columnTweets: object = {}
+            action.columns.forEach((column: ITriageColumn, index: number) => {
                 columnTweets[column.id] = []
             })
 

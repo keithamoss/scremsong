@@ -71,7 +71,7 @@ export interface ISocialTweetData {}
 
 // Side effects, only as applicable
 // e.g. thunks, epics, et cetera
-export function fetchTweets(startIndex: number, stopIndex: number, columns: any[] = []) {
+export function fetchTweets(startIndex: number, stopIndex: number, columns: number[] = []) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
         const { json } = await api.get(
             "/api/0.1/tweets/get_some_tweets/",

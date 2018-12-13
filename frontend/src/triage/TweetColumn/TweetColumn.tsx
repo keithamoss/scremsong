@@ -5,6 +5,8 @@ import Tweet from "react-tweet"
 import { AutoSizer, CellMeasurer, CellMeasurerCache, InfiniteLoader, List } from "react-virtualized"
 import "react-virtualized/styles.css"
 import { IReviewerUser } from "src/redux/modules/reviewers"
+import { ISocialTweet } from "src/redux/modules/social"
+import { ITriageColumn } from "src/redux/modules/triage"
 import styled from "styled-components"
 
 const Column = styled.div`
@@ -18,9 +20,9 @@ const ColumnHeading = styled.h3`
 `
 
 export interface IProps {
-    column: any
+    column: ITriageColumn
     tweet_ids: string[]
-    tweets: any[]
+    tweets: ISocialTweet[]
     reviewers: IReviewerUser[]
     loadMoreRows: any
     assignTweet: any
@@ -42,9 +44,9 @@ export class TweetColumn extends React.Component<IProps, {}> {
 
     private _list: any
 
-    public constructor(props: any) {
+    public constructor(props: IProps) {
         super(props)
-        this.dismissTweet = (tweetId: any) => () => this.props.dismissTweet(tweetId)
+        this.dismissTweet = (tweetId: string) => () => this.props.dismissTweet(tweetId)
     }
 
     public render() {
@@ -90,7 +92,7 @@ export class TweetColumn extends React.Component<IProps, {}> {
         )
     }
 
-    public componentDidUpdate(prevProps: any, prevState: any) {
+    public componentDidUpdate(prevProps: IProps, prevState: IProps) {
         if (this.props.tweet_ids !== prevProps.tweet_ids) {
             let index
 
@@ -163,8 +165,8 @@ export class TweetColumn extends React.Component<IProps, {}> {
                                 onItemClick={this.props.assignTweet}
                             >
                                 {"reviewer_id" in tweets[tweetId] && <MenuItem primaryText={<em>Unassign</em>} data-tweetid={tweetId} />}
-                                {reviewers.map((reviewer: any) => {
-                                    let primaryText = reviewer.name
+                                {reviewers.map((reviewer: IReviewerUser) => {
+                                    let primaryText: string | JSX.Element = reviewer.name
                                     if ("reviewer_id" in tweets[tweetId] && tweets[tweetId].reviewer_id === reviewer.id) {
                                         primaryText += " (Assigned)"
                                     }

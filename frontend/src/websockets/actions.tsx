@@ -72,7 +72,7 @@ export const init = (store: any) => {
         }
     }
 }
-export const emit = (action: any) => socket.send(JSON.stringify(action))
+export const emit = (action: Action) => socket.send(JSON.stringify(action))
 
 // Models
 export interface IActionWebSocketBase {
@@ -103,12 +103,12 @@ export interface IActionReviewersSetStatus extends Action<typeof WS_REVIEWERS_SE
     is_accepting_assignments: boolean
 }
 
+export interface ITweetFetchColumn {
+    id: number
+    tweet_ids: string[]
+}
+
 export interface IActionsTweetsFetch extends Action<typeof WS_TWEETS_FETCH_SOME> {
-    columns: [
-        {
-            id: number
-            tweet_ids: string[]
-        }
-    ]
+    columns: ITweetFetchColumn[]
     tweets: ISocialTweetList
 }

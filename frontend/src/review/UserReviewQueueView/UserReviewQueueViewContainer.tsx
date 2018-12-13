@@ -5,10 +5,12 @@ import {
     getCurrentReviewer,
     getCurrentReviewerAssignments,
     IReviewerAssignment,
+    IReviewerUser,
     markAssignmentDone,
     onToggleCurrentReviewerOnlineStatus,
     setCurrentReviewer,
 } from "src/redux/modules/reviewers"
+import { ISocialTweet } from "src/redux/modules/social"
 import UserReviewQueueView from "./UserReviewQueueView"
 
 export interface IProps {}
@@ -16,9 +18,9 @@ export interface IProps {}
 export interface IStoreProps {
     user: IUser | null
     assignments: IReviewerAssignment[]
-    tweets: object[]
-    reviewers: any[]
-    currentReviewer: any | null
+    tweets: ISocialTweet[]
+    reviewers: IReviewerUser[]
+    currentReviewer: IReviewerUser | null | undefined
 }
 
 export interface IDispatchProps {
@@ -27,7 +29,8 @@ export interface IDispatchProps {
     onToggleUserOnlineStatus: Function
 }
 
-class UserReviewQueueViewContainer extends React.Component<IProps & IStoreProps & IDispatchProps, {}> {
+type TComponentProps = IProps & IStoreProps & IDispatchProps
+class UserReviewQueueViewContainer extends React.Component<TComponentProps, {}> {
     public render() {
         const {
             user,
@@ -58,7 +61,7 @@ class UserReviewQueueViewContainer extends React.Component<IProps & IStoreProps 
     }
 }
 
-const mapStateToProps = (state: IStore, ownProps: any): IStoreProps => {
+const mapStateToProps = (state: IStore, ownProps: TComponentProps): IStoreProps => {
     const { user, reviewers, social } = state
 
     return {
@@ -72,7 +75,7 @@ const mapStateToProps = (state: IStore, ownProps: any): IStoreProps => {
 
 const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {
-        onMarkAsDone: (assignment: any) => {
+        onMarkAsDone: (assignment: IReviewerAssignment) => {
             dispatch(markAssignmentDone(assignment))
         },
         onChangeQueueUser: async (event: object, key: number, reviewerId: number) => {

@@ -1,4 +1,5 @@
 import * as React from "react"
+import { ITriageColumn } from "src/redux/modules/triage"
 import styled from "../../../node_modules/styled-components"
 import TweetColumnContainer from "../TweetColumn/TweetColumnContainer"
 
@@ -14,7 +15,7 @@ const ColumnContainer = styled.div`
 `
 
 export interface IProps {
-    columns: any[]
+    columns: ITriageColumn[]
 }
 
 export class TriageView extends React.Component<IProps, {}> {
@@ -29,7 +30,9 @@ export class TriageView extends React.Component<IProps, {}> {
         return (
             <ColumnContainerContainer>
                 <ColumnContainer>
-                    {columns.map((column: any, key: number) => <TweetColumnContainer key={column.id} column={column} />)}
+                    {columns.map((column: ITriageColumn, key: number) => (
+                        <TweetColumnContainer key={column.id} column={column} />
+                    ))}
                 </ColumnContainer>
             </ColumnContainerContainer>
         )
