@@ -5,7 +5,7 @@ import Tweet from "react-tweet"
 import { AutoSizer, CellMeasurer, CellMeasurerCache, InfiniteLoader, List } from "react-virtualized"
 import "react-virtualized/styles.css"
 import { IReviewerUser } from "src/redux/modules/reviewers"
-import { ISocialTweet } from "src/redux/modules/social"
+import { ISocialTweetList } from "src/redux/modules/social"
 import { ITriageColumn } from "src/redux/modules/triage"
 import styled from "styled-components"
 
@@ -22,7 +22,7 @@ const ColumnHeading = styled.h3`
 export interface IProps {
     column: ITriageColumn
     tweet_ids: string[]
-    tweets: ISocialTweet[]
+    tweets: ISocialTweetList
     reviewers: IReviewerUser[]
     loadMoreRows: any
     assignTweet: any

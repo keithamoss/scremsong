@@ -44,7 +44,8 @@ export const dismissTweet = (tweetId: string): IActionDismissTweet => ({
 
 // Models
 export interface IModule {
-    tweets: ISocialTweet[]
+    tweets: ISocialTweetList
+    tweet_assignments: ISocialTweetAssignment
 }
 
 export interface IActionLoadTweets extends Action<typeof LOAD_TWEETS> {
@@ -57,6 +58,10 @@ export interface IActionDismissTweet extends Action<typeof DISMISS> {
 
 export interface ISocialTweetList {
     [key: string]: ISocialTweet
+}
+
+export interface ISocialTweetAssignment {
+    [key: string]: number
 }
 
 export interface ISocialTweet {

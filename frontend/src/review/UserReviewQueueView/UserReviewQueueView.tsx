@@ -3,7 +3,7 @@ import { ActionAssignmentTurnedIn, ActionVisibility, ActionVisibilityOff } from 
 import * as React from "react"
 import Tweet from "react-tweet"
 import { IReviewerAssignment, IReviewerUser } from "src/redux/modules/reviewers"
-import { ISocialTweet } from "src/redux/modules/social"
+import { ISocialTweetList } from "src/redux/modules/social"
 import styled from "styled-components"
 
 const ReviewContainer = styled.div`
@@ -18,7 +18,7 @@ const PaddedCard = styled(Card)`
 
 export interface IProps {
     assignments: IReviewerAssignment[]
-    tweets: ISocialTweet[]
+    tweets: ISocialTweetList
     reviewers: IReviewerUser[]
     currentReviewer: IReviewerUser
     onMarkAsDone: any

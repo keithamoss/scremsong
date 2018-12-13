@@ -2,7 +2,7 @@ import * as React from "react"
 import { connect } from "react-redux"
 import { IStore } from "src/redux/modules/interfaces"
 import { assignAReviewer, IReviewerUser, unassignAReviewer } from "src/redux/modules/reviewers"
-import { dismissATweet, fetchTweets, ISocialTweet } from "src/redux/modules/social"
+import { dismissATweet, fetchTweets, ISocialTweetList } from "src/redux/modules/social"
 import { ITriageColumn } from "src/redux/modules/triage"
 import TweetColumn from "./TweetColumn"
 
@@ -12,7 +12,7 @@ export interface IProps {
 
 export interface IStoreProps {
     tweet_ids: string[]
-    tweets: ISocialTweet[]
+    tweets: ISocialTweetList
     reviewers: IReviewerUser[]
 }
 

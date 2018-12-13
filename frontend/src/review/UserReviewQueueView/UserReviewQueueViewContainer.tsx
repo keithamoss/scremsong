@@ -10,7 +10,7 @@ import {
     setCurrentReviewer,
     toggleReviewerOnlineStatus,
 } from "src/redux/modules/reviewers"
-import { ISocialTweet } from "src/redux/modules/social"
+import { ISocialTweetList } from "src/redux/modules/social"
 import UserReviewQueueView from "./UserReviewQueueView"
 
 export interface IProps {}
@@ -18,7 +18,7 @@ export interface IProps {}
 export interface IStoreProps {
     user: IUser | null
     assignments: IReviewerAssignment[]
-    tweets: ISocialTweet[]
+    tweets: ISocialTweetList
     reviewers: IReviewerUser[]
     currentReviewer: IReviewerUser | null | undefined
 }
