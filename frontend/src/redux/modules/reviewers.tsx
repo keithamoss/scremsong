@@ -1,9 +1,11 @@
 import * as dotProp from "dot-prop-immutable"
+import { memoize } from "lodash-es"
 // import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 import { Action } from "redux"
+import { createSelector } from "reselect"
 import { IActionReviewersList, IActionReviewersListAssignments, IActionReviewersSetStatus } from "src/websockets/actions"
 import { WS_REVIEWERS_LIST_ASSIGNMENTS, WS_REVIEWERS_LIST_USERS, WS_REVIEWERS_SET_STATUS } from "src/websockets/constants"
-import { IThunkExtras } from "../../redux/modules/interfaces"
+import { IStore, IThunkExtras } from "../../redux/modules/interfaces"
 import { eSocialPlatformChoice } from "./triage"
 
 // Actions
@@ -51,6 +53,34 @@ export default function reducer(state: IModule = initialState, action: IAction) 
             return state
     }
 }
+
+// Selectors
+
+const getAssignments = (state: IStore) => state.reviewers.assignments
+const getCurrentReviewerUserId = (state: IStore) => (state.reviewers.currentReviewerId ? state.reviewers.currentReviewerId : null)
+const getReviewers = (state: IStore) => state.reviewers.users
+
+export const getUserAssignments = createSelector(
+    [getAssignments],
+    assignments =>
+        memoize((userId: number | undefined) => {
+            return userId === undefined ? [] : assignments.filter((assignment: IReviewerAssignment) => assignment.user_id === userId)
+        })
+)
+
+export const getCurrentReviewerAssignments = createSelector(
+    [getAssignments, getCurrentReviewerUserId],
+    (assignments: IReviewerAssignment[], userId: number | null) => {
+        return userId === null ? [] : assignments.filter((assignment: IReviewerAssignment) => assignment.user_id === userId)
+    }
+)
+
+export const getCurrentReviewer = createSelector(
+    [getReviewers, getCurrentReviewerUserId],
+    (users: IReviewerUser[], userId: number | null) => {
+        return userId === null ? null : users.find((reviewer: IReviewerUser) => reviewer.id === userId)
+    }
+)
 
 // Action Creators
 
@@ -158,14 +188,6 @@ export function markAssignmentDone(assignment: any) {
             assignmentId: assignment.id,
         })
     }
-}
-
-export function getUserAssignments(assignments: object[], user: any) {
-    if (user === undefined) {
-        return []
-    }
-
-    return assignments.filter((assignment: any) => assignment.user_id === user.id)
 }
 
 export function onToggleCurrentReviewerOnlineStatus(isAcceptingAssignments: boolean) {

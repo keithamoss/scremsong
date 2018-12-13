@@ -4,6 +4,7 @@ import * as React from "react"
 import Tweet from "react-tweet"
 import { AutoSizer, CellMeasurer, CellMeasurerCache, InfiniteLoader, List } from "react-virtualized"
 import "react-virtualized/styles.css"
+import { IReviewerUser } from "src/redux/modules/reviewers"
 import styled from "styled-components"
 
 const Column = styled.div`
@@ -20,7 +21,7 @@ export interface IProps {
     column: any
     tweet_ids: string[]
     tweets: any[]
-    reviewers: object
+    reviewers: IReviewerUser[]
     loadMoreRows: any
     assignTweet: any
     dismissTweet: any
@@ -162,8 +163,7 @@ export class TweetColumn extends React.Component<IProps, {}> {
                                 onItemClick={this.props.assignTweet}
                             >
                                 {"reviewer_id" in tweets[tweetId] && <MenuItem primaryText={<em>Unassign</em>} data-tweetid={tweetId} />}
-                                {Object.keys(reviewers).map((reviewerId: any) => {
-                                    const reviewer = reviewers[reviewerId]
+                                {reviewers.map((reviewer: any) => {
                                     let primaryText = reviewer.name
                                     if ("reviewer_id" in tweets[tweetId] && tweets[tweetId].reviewer_id === reviewer.id) {
                                         primaryText += " (Assigned)"

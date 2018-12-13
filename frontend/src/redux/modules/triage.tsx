@@ -20,8 +20,6 @@ type IAction = IActionsTweetsFetch | IActionSocialColumnsList
 export default function reducer(state: IModule = initialState, action: IAction) {
     switch (action.type) {
         case WS_TWEETS_FETCH_SOME:
-            // console.log("triage.WS_TWEETS_FETCH_SOME", action)
-            // @ts-ignore
             action.columns.forEach((column: any, index: number) => {
                 // Merge and then sort column tweetIds to maintain the correct order chronological order
                 const val = uniq([...state.column_tweets![column.id], ...column.tweet_ids])
@@ -31,7 +29,6 @@ export default function reducer(state: IModule = initialState, action: IAction) 
             return state
         // case WS_TWEETS_FETCH_SOME_NEW_TWEETS:
         //     console.log("triage.WS_TWEETS_FETCH_SOME_NEW_TWEETS", action)
-        //     // @ts-ignore
         //     action.columns.forEach((column: any, index: number) => {
         //         // Merge and then sort column tweetIds to maintain the correct order chronological order
         //         const val = uniq([...state.column_tweets![column.id], ...column.tweets])
@@ -54,7 +51,7 @@ export default function reducer(state: IModule = initialState, action: IAction) 
             // Map our list of columns to an object of empty arrays indexed by columnId
             // e.g. {1: [], 2: []}
             const columnTweets: any = {}
-            action.columns!.forEach((column: any, index: number) => {
+            action.columns.forEach((column: any, index: number) => {
                 columnTweets[column.id] = []
             })
 

@@ -112,14 +112,17 @@ export class AppContainer extends React.Component<any, any> {
 }
 
 const mapStateToProps = (state: IStore): IStoreProps => {
-    const { app, user, browser, responsiveDrawer, reviewers } = state
+    const { app, user, browser, responsiveDrawer } = state
+
+    const getUserAssignmentsFilter = getUserAssignments(state)
+    const userAssignmentCount = user.user ? getUserAssignmentsFilter(user.user!.id).length : 0
 
     return {
         app,
         user: user.user,
         browser,
         responsiveDrawer,
-        userAssignmentCount: getUserAssignments(reviewers.assignments, user.user).length,
+        userAssignmentCount,
     }
 }
 

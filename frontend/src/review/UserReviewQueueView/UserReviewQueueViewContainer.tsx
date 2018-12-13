@@ -2,8 +2,9 @@ import * as React from "react"
 import { connect } from "react-redux"
 import { IStore, IUser } from "src/redux/modules/interfaces"
 import {
-    getUserAssignments,
-    IReviewerUser,
+    getCurrentReviewer,
+    getCurrentReviewerAssignments,
+    IReviewerAssignment,
     markAssignmentDone,
     onToggleCurrentReviewerOnlineStatus,
     setCurrentReviewer,
@@ -14,7 +15,7 @@ export interface IProps {}
 
 export interface IStoreProps {
     user: IUser | null
-    assignments: object[]
+    assignments: IReviewerAssignment[]
     tweets: object[]
     reviewers: any[]
     currentReviewer: any | null
@@ -39,7 +40,7 @@ class UserReviewQueueViewContainer extends React.Component<IProps & IStoreProps 
             onToggleUserOnlineStatus,
         } = this.props
 
-        if (user === null || currentReviewer === undefined) {
+        if (user === null || currentReviewer === null || currentReviewer === undefined) {
             return <div />
         }
 
@@ -60,14 +61,12 @@ class UserReviewQueueViewContainer extends React.Component<IProps & IStoreProps 
 const mapStateToProps = (state: IStore, ownProps: any): IStoreProps => {
     const { user, reviewers, social } = state
 
-    const currentReviewer = reviewers.users.find((reviewer: IReviewerUser) => reviewer.id === reviewers.currentReviewerId)
-
     return {
         user: user.user,
-        assignments: getUserAssignments(reviewers.assignments, currentReviewer),
+        assignments: getCurrentReviewerAssignments(state),
         tweets: social.tweets,
         reviewers: reviewers.users,
-        currentReviewer,
+        currentReviewer: getCurrentReviewer(state),
     }
 }
 
