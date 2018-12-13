@@ -1,18 +1,14 @@
-Django==2.0.8
-psycopg2==2.7.5
-djangorestframework==3.8.2
-django-cors-headers==2.2.0
+Django==2.1.4
+psycopg2==2.7.6.1
+djangorestframework==3.9.0
+django-cors-headers==2.4.0
 django-model-utils==3.1.2
-channels==2.1.5
-channels_redis==2.3.1
-# git+git://github.com/tiran/defusedxml
-SQLAlchemy==1.2.8
-# pyparsing==2.1.10
-# requests==2.19.1
-# python-memcached==1.59
-social-auth-app-django==2.1.0
-social-auth-core==1.7.0
+channels==2.1.6
+channels_redis==2.3.2
+SQLAlchemy==1.2.15
+social-auth-app-django==3.1.0
+social-auth-core==2.0.0
 raven==6.9.0
-tweepy==3.6.0
+tweepy==3.7.0
 celery==4.2.1
-django-celery-results==1.0.1
+django-celery-results==1.0.4
