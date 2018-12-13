@@ -10,10 +10,15 @@ before_install:
 before_install:
     - sudo apt-get -y install python3-pip python-dev
 install:
-    # - pip3 install -r django/dev-requirements.txt
-    - pip3 install flake8 autopep8 --user
-script:
+    - pip3 install -r django/dev-requirements.txt --user
+    # - pip3 install flake8 autopep8 --user
+before_script:
     - flake8 --ignore=E501,E731,W504 django/scremsong
+script:
+    - python --version
+    - pip3 --version
+    - node --version
+    - npm --version
     - cd frontend
     - npm install .
     - npm run build
