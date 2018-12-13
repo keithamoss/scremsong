@@ -1,5 +1,4 @@
 from django.contrib.auth.models import User
-from django.forms.models import model_to_dict
 from scremsong.app.models import SocialAssignments, SocialAssignmentStatus
 from scremsong.app.twitter import get_tweets_by_ids
 from scremsong.app.serializers import ReviewerUserSerializer, TweetsSerializer, SocialAssignmentSerializer

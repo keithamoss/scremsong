@@ -1,34 +1,21 @@
-from django.contrib.auth.models import User, AnonymousUser
+from django.contrib.auth.models import User
 from django.contrib.auth import logout
-from django.db.models import Q
-from django.http.response import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http.response import HttpResponseRedirect
 from django.http import HttpResponseNotFound
-from django.core.cache import cache
 
-from rest_framework import viewsets, mixins, status
+from rest_framework import viewsets, status
 from rest_framework.views import APIView
-from rest_framework.decorators import detail_route, list_route
-from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.decorators import list_route
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
-# from .permissions import AllowAnyIfPublicSite, IsAuthenticatedAndApproved, IsMapOwnerOrReadOnly, IsMapOwner, CanViewOrCloneMap
 
-from .serializers import UserSerializer, ProfileSerializer, SocialColumnsSerializer
-
-import time
-import copy
-import urllib.parse
-import json
-import csv
 from tweepy import TweepError
-from scremsong.util import get_env, make_logger
-from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, get_tweets_for_column, get_tweets_by_ids, fetch_some_tweets
+from scremsong.app.serializers import UserSerializer, ProfileSerializer
+from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, fetch_some_tweets
 from scremsong.celery import celery_restart_streaming
 from scremsong.app.models import SocialPlatformChoice, Tweets, SocialAssignments, SocialAssignmentStatus, Profile
 from scremsong.app import websockets
-
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
+from scremsong.util import make_logger
 
 logger = make_logger(__name__)
 

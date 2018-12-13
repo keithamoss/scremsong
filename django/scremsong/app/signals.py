@@ -1,5 +1,5 @@
 from django.dispatch import receiver
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 from scremsong.app.models import Profile
 # from .mailgun import send_new_user_welcome_mail, send_new_user_signed_up_admin_mail, send_new_user_welcome_awaiting_approval_mail, send_new_user_admin_awaiting_approval_mail, send_new_user_approved_mail

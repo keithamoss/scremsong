@@ -1,10 +1,8 @@
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import JsonWebsocketConsumer
-import json
-from scremsong.app.models import SocialPlatformChoice, Tweets, SocialAssignments, SocialAssignmentStatus, Profile
 from django.conf import settings
 from scremsong.app.websockets import build_on_connect_data_payload
-from scremsong.util import get_env, make_logger
+from scremsong.util import make_logger
 
 logger = make_logger(__name__)
 
@@ -14,7 +12,7 @@ class ScremsongConsumer(JsonWebsocketConsumer):
         self.group_name = 'scremsong_%s' % self.scope['url_route']['kwargs']['group_name']
         self.user = self.scope["user"]
 
-        if self.user.is_anonymous == False and self.user.is_authenticated:
+        if self.user.is_anonymous is False and self.user.is_authenticated:
             # Join room group
             async_to_sync(self.channel_layer.group_add)(
                 self.group_name,

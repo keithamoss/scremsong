@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.models import User
 from django.db import connection
-from django.apps import apps
 from .models import Profile
 from scremsong.util import get_env
 

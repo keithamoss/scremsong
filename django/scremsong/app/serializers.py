@@ -1,9 +1,6 @@
 from django.contrib.auth.models import User
 from .models import Profile, SocialColumns, Tweets, SocialAssignments
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
-from rest_framework.validators import UniqueTogetherValidator
-from urllib.parse import quote_plus
 
 
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):

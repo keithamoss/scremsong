@@ -2,7 +2,6 @@ from __future__ import absolute_import, unicode_literals
 from scremsong.util import make_logger
 import os
 from celery import Celery
-from celery.contrib.abortable import AbortableTask, AbortableAsyncResult
 from celery.signals import celeryd_init, worker_ready
 from time import sleep
 
@@ -36,7 +35,7 @@ def celery_init_tweet_streaming():
 
 
 def celery_kill_running_tasks():
-    from celery.task.control import inspect, revoke, broadcast
+    from celery.task.control import inspect, revoke
     i = inspect()
 
     for worker_name, tasks in i.active().items():
@@ -65,6 +64,8 @@ def celery_restart_streaming():
 
 @celeryd_init.connect
 def configure_workers(sender=None, conf=None, **kwargs):
+    from celery.task.control import inspect, broadcast
+    i = inspect()
     logger.info("Starting up Celery worker")
 
     # Stop any running tasks before we try to kill our workers

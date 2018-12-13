@@ -1,15 +1,8 @@
 import tweepy
 from scremsong.util import make_logger, get_env
-import os
-import uuid
-import datetime
-import pytz
-import json
-from scremsong.app.models import SocialPlatforms, SocialPlatformChoice, Tweets, SocialColumns
-from django.db.models import Q
+from scremsong.app.models import SocialPlatforms, SocialPlatformChoice, Tweets
 from scremsong.celery import celery_init_tweet_streaming
 from scremsong.app.social.columns import get_social_columns
-from scremsong.app.social.assignments import get_social_assignments
 from scremsong.app.social.twitter_utils import apply_tweet_filter_criteria, column_search_phrase_to_twitter_search_query
 from .serializers import SocialColumnsSerializerWithTweetCountSerializer, TweetsSerializer
 

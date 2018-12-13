@@ -1,8 +1,6 @@
-import itertools
 import logging
 import os
 import time
-from math import pow
 
 
 def make_logger(name):
