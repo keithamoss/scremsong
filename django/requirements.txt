@@ -1,4 +1,4 @@
-Django==2.0.6
+Django==2.0.8
 psycopg2==2.7.5
 djangorestframework==3.8.2
 django-cors-headers==2.2.0
@@ -8,7 +8,7 @@ channels_redis==2.3.1
 # git+git://github.com/tiran/defusedxml
 SQLAlchemy==1.2.8
 # pyparsing==2.1.10
-requests==2.19.1
+# requests==2.19.1
 # python-memcached==1.59
 social-auth-app-django==2.1.0
 social-auth-core==1.7.0
