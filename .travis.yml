@@ -13,6 +13,7 @@ before_install:
     - sudo apt-get -y install python3.6
     - python3.6 --version
     - pip --version
+    - pyenv shell
     - pip3.6 --version
 install:
     - pip3.6 install -r django/dev-requirements.txt --user
