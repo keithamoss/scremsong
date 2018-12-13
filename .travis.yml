@@ -11,24 +11,12 @@ before_install:
     - sudo add-apt-repository ppa:jonathonf/python-3.6 -y
     - sudo apt-get update
     - sudo apt-get -y install python3.6
-    - python3.6 --version
-    - pip --version
-    - pyenv shell
     - pyenv shell 3.6
-    - pip --version
-    - pip3 --version
-    # - pip3.6 --version
 install:
-    - pip3.6 install -r django/dev-requirements.txt --user
-    # - pip3 install flake8 autopep8 --user
+    - pip install -r django/dev-requirements.txt --user
 before_script:
-    - flake8 --version
     - flake8 --ignore=E501,E731,W504 django/scremsong
 script:
-    - python --version
-    - pip3 --version
-    - node --version
-    - npm --version
     - cd frontend
     - npm install .
     - npm run build
