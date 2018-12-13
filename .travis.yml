@@ -13,8 +13,9 @@ before_install:
     - sudo apt-get -y install python3.6
     - python3.6 --version
     - pip --version
+    - pip3.6 --version
 install:
-    - pip3 install -r django/dev-requirements.txt --user
+    - pip3.6 install -r django/dev-requirements.txt --user
     # - pip3 install flake8 autopep8 --user
 before_script:
     - flake8 --version
