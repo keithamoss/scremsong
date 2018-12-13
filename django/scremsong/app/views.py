@@ -22,7 +22,7 @@ import json
 import csv
 from tweepy import TweepError
 from scremsong.util import get_env, make_logger
-from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, get_tweets_for_column, get_total_tweets_for_column, get_tweets_by_ids, fetch_some_tweets
+from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, get_tweets_for_column, get_tweets_by_ids, fetch_some_tweets
 from scremsong.celery import celery_restart_streaming
 from scremsong.app.models import SocialPlatformChoice, Tweets, SocialAssignments, SocialAssignmentStatus, Profile
 from scremsong.app import websockets

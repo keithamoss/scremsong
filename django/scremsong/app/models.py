@@ -8,6 +8,7 @@ from scremsong.util import make_logger
 import hashlib
 import copy
 from enum import Enum
+from scremsong.app.social.twitter_utils import apply_tweet_filter_criteria
 
 logger = make_logger(__name__)
 
@@ -56,6 +57,23 @@ class SocialColumns(models.Model):
     # https://developer.twitter.com/en/docs/tweets/filter-realtime/guides/basic-stream-parameters#track
     search_phrases = JSONField(default=None, blank=True, null=False)
 
+    def tweet_count(self):
+        """
+        Count the number of tweets for the object
+        """
+        count = apply_tweet_filter_criteria(self, Tweets.objects).count()
+        if count is None:
+            return 0
+        return count
+
+
+class Tweets(models.Model):
+    "Tweets we've collected for search terms we care about."
+
+    tweet_id = models.TextField(editable=False, unique=True)
+    data = JSONField()
+    is_dismissed = models.BooleanField(default=False)
+
 
 class SocialAssignments(models.Model):
     "Columns configuring what to display for each social platform."
@@ -65,11 +83,3 @@ class SocialAssignments(models.Model):
     social_id = models.TextField(editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     status = models.TextField(choices=[(tag, tag.value) for tag in SocialAssignmentStatus], default=SocialAssignmentStatus.PENDING)
-
-
-class Tweets(models.Model):
-    "Tweets we've collected for search terms we care about."
-
-    tweet_id = models.TextField(editable=False, unique=True)
-    data = JSONField()
-    is_dismissed = models.BooleanField(default=False)

@@ -10,6 +10,8 @@ from django.db.models import Q
 from scremsong.celery import celery_init_tweet_streaming
 from scremsong.app.social.columns import get_social_columns
 from scremsong.app.social.assignments import get_social_assignments
+from scremsong.app.social.twitter_utils import apply_tweet_filter_criteria, column_search_phrase_to_twitter_search_query
+from .serializers import SocialColumnsSerializerWithTweetCountSerializer, TweetsSerializer
 
 logger = make_logger(__name__)
 
@@ -68,7 +70,7 @@ def fetch_some_tweets(startIndex, stopIndex, sinceId=None, maxId=None, columnIds
         column_tweet_ids = []
 
         for tweet in column_tweets:
-            tweets[tweet["tweet_id"]] = {"id": tweet["tweet_id"], "data": tweet["data"], "is_dismissed": tweet["is_dismissed"]}
+            tweets[tweet["tweet_id"]] = TweetsSerializer(tweet).data
             column_tweet_ids.append(tweet["tweet_id"])
 
         columns.append({
@@ -109,31 +111,9 @@ def save_tweet(status):
         logger.error("Exception {}: '{}' for tweet_id {}".format(type(e), e, status.id_str))
 
 
-def column_search_phrase_to_twitter_search_query(social_column):
-    return " OR ".join(social_column.search_phrases)
-
-
-def apply_tweet_filter_criteria(social_column, queryset):
-    for phrase in social_column["search_phrases"]:
-        for phrase_part in phrase.split(" "):
-            queryset = queryset.filter(Q(data__extended_tweet__full_text__icontains=phrase_part) | Q(data__text__icontains=phrase_part) | Q(data__full_text__icontains=phrase_part))
-
-    return queryset.filter(data__retweeted_status__isnull=True)
-
-
 def get_twitter_columns():
-    columns = []
-    for column in get_social_columns(SocialPlatformChoice.TWITTER).values():
-        columns.append({
-            **column,
-            "total_tweets": get_total_tweets_for_column(column),
-        })
-    return columns
-
-
-def get_total_tweets_for_column(social_column):
-    queryset = apply_tweet_filter_criteria(social_column, Tweets.objects)
-    return queryset.count()
+    cols = get_social_columns(SocialPlatformChoice.TWITTER).all()
+    return SocialColumnsSerializerWithTweetCountSerializer(cols, many=True).data
 
 
 def get_tweets_by_ids(tweetIds):
@@ -153,7 +133,7 @@ def get_tweets_for_column(social_column, since_id=None, max_id=None, startIndex=
         logger.warning("since_id {} is out of range of max_id {} in get_tweets_for_column - it should be a lower number!")
         return None
 
-    queryset = apply_tweet_filter_criteria(social_column.__dict__, queryset)
+    queryset = apply_tweet_filter_criteria(social_column, queryset)
 
     tweets = queryset.order_by("-tweet_id").values()
 
