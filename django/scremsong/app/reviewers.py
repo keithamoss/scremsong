@@ -32,8 +32,5 @@ def get_all_pending_assignments(user=None):
 
     for assignment in assignments:
         assignmentsById[assignment["id"]] = assignment
-        
-        tweets[assignment["social_id"]]["reviewer_id"] = assignment["user_id"]
-        tweets[assignment["social_id"]]["review_status"] = assignment["status"]
 
     return {"assignments": assignmentsById, "tweets": tweets}

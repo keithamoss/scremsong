@@ -39,12 +39,12 @@ export default function reducer(state: IModule = initialState, action: IAction) 
             return dotProp.set(state, "assignments", action.assignments)
         case SET_CURRENT_REVIEWER:
             return dotProp.set(state, "currentReviewerId", action.reviewerId)
-        case ASSIGN_REVIEWER:
-            state = dotProp.set(state, `tweets.${action.tweetId}.reviewer_id`, action.reviewerId)
-            return dotProp.set(state, `tweets.${action.tweetId}.review_status`, "SocialAssignmentStatus.PENDING")
-        case UNASSIGN_REVIEWER:
-            state = dotProp.delete(state, `tweets.${action.tweetId}.reviewer_id`)
-            return dotProp.delete(state, `tweets.${action.tweetId}.review_status`)
+        // case ASSIGN_REVIEWER:
+        //     state = dotProp.set(state, `tweets.${action.tweetId}.reviewer_id`, action.reviewerId)
+        //     return dotProp.set(state, `tweets.${action.tweetId}.review_status`, "SocialAssignmentStatus.PENDING")
+        // case UNASSIGN_REVIEWER:
+        //     state = dotProp.delete(state, `tweets.${action.tweetId}.reviewer_id`)
+        //     return dotProp.delete(state, `tweets.${action.tweetId}.review_status`)
         case MARK_ASSIGNMENT_DONE:
             // return dotProp.set(state, `assignments.${assignmentIndex}.status`, "SocialAssignmentStatus.DONE")
             return dotProp.delete(state, `assignments.${action.assignmentId}`)

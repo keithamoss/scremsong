@@ -4,8 +4,8 @@ import * as React from "react"
 import Tweet from "react-tweet"
 import { AutoSizer, CellMeasurer, CellMeasurerCache, InfiniteLoader, List } from "react-virtualized"
 import "react-virtualized/styles.css"
-import { IReviewerUser } from "src/redux/modules/reviewers"
-import { ISocialTweetList } from "src/redux/modules/social"
+import { eSocialAssignmentStatus, IReviewerAssignment, IReviewerUser } from "src/redux/modules/reviewers"
+import { ISocialTweetAssignments, ISocialTweetList } from "src/redux/modules/social"
 import { ITriageColumn } from "src/redux/modules/triage"
 import styled from "styled-components"
 
@@ -23,7 +23,9 @@ export interface IProps {
     column: ITriageColumn
     tweet_ids: string[]
     tweets: ISocialTweetList
+    tweet_assignments: ISocialTweetAssignments
     reviewers: IReviewerUser[]
+    assignments: IReviewerAssignment[]
     loadMoreRows: any
     assignTweet: any
     dismissTweet: any
@@ -123,7 +125,7 @@ export class TweetColumn extends React.Component<IProps, {}> {
     }
 
     private _rowRenderer = ({ index, isScrolling, isVisible, key, parent, style }: any) => {
-        const { column, tweet_ids, tweets, reviewers } = this.props
+        const { column, tweet_ids, tweets, tweet_assignments, reviewers, assignments } = this.props
 
         if (index >= column.total_tweets) {
             return (
@@ -144,8 +146,14 @@ export class TweetColumn extends React.Component<IProps, {}> {
             if (tweets[tweetId].is_dismissed) {
                 tweetStyle = { ...tweetStyle, backgroundColor: "grey" }
             }
-            if ("review_status" in tweets[tweetId] && tweets[tweetId].review_status === "SocialAssignmentStatus.DONE") {
-                tweetStyle = { ...tweetStyle, backgroundColor: "lightgreen" }
+
+            let assignment: IReviewerAssignment | null = null
+            if (tweetId in tweet_assignments) {
+                const assignmentId = tweet_assignments[tweetId]
+                assignment = assignments[assignmentId]
+                if (assignment.status === eSocialAssignmentStatus.DONE) {
+                    tweetStyle = { ...tweetStyle, backgroundColor: "lightgreen" }
+                }
             }
 
             return (
@@ -156,18 +164,17 @@ export class TweetColumn extends React.Component<IProps, {}> {
                             <IconMenu
                                 iconButtonElement={
                                     <IconButton tooltip="Assign this tweet to a reviewer" tooltipPosition="bottom-right">
-                                        {!("reviewer_id" in tweets[tweetId]) && <ActionAssignment />}
-                                        {"reviewer_id" in tweets[tweetId] && <ActionAssignmentInd />}
+                                        {assignment !== null ? <ActionAssignmentInd /> : <ActionAssignment />}
                                     </IconButton>
                                 }
                                 anchorOrigin={{ horizontal: "left", vertical: "top" }}
                                 targetOrigin={{ horizontal: "left", vertical: "top" }}
                                 onItemClick={this.props.assignTweet}
                             >
-                                {"reviewer_id" in tweets[tweetId] && <MenuItem primaryText={<em>Unassign</em>} data-tweetid={tweetId} />}
+                                {assignment !== null && <MenuItem primaryText={<em>Unassign</em>} data-tweetid={tweetId} />}
                                 {reviewers.map((reviewer: IReviewerUser) => {
                                     let primaryText: string | JSX.Element = reviewer.name
-                                    if ("reviewer_id" in tweets[tweetId] && tweets[tweetId].reviewer_id === reviewer.id) {
+                                    if (assignment !== null && assignment.user_id === reviewer.id) {
                                         primaryText += " (Assigned)"
                                     }
                                     if (reviewer.is_accepting_assignments === false) {

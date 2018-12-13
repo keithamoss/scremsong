@@ -1,8 +1,8 @@
 import * as React from "react"
 import { connect } from "react-redux"
 import { IStore } from "src/redux/modules/interfaces"
-import { assignAReviewer, IReviewerUser, unassignAReviewer } from "src/redux/modules/reviewers"
-import { dismissATweet, fetchTweets, ISocialTweetList } from "src/redux/modules/social"
+import { assignAReviewer, IReviewerAssignment, IReviewerUser, unassignAReviewer } from "src/redux/modules/reviewers"
+import { dismissATweet, fetchTweets, ISocialTweetAssignments, ISocialTweetList } from "src/redux/modules/social"
 import { ITriageColumn } from "src/redux/modules/triage"
 import TweetColumn from "./TweetColumn"
 
@@ -13,7 +13,9 @@ export interface IProps {
 export interface IStoreProps {
     tweet_ids: string[]
     tweets: ISocialTweetList
+    tweet_assignments: ISocialTweetAssignments
     reviewers: IReviewerUser[]
+    assignments: IReviewerAssignment[]
 }
 
 export interface IDispatchProps {
@@ -32,14 +34,16 @@ export class TweetColumnContainer extends React.Component<TComponentProps, {}> {
         this.loadMoreRows = props.loadMoreRows.bind(this, props.column)
     }
     public render() {
-        const { column, tweet_ids, tweets, reviewers, assignTweet, dismissTweet } = this.props
+        const { column, tweet_ids, tweets, tweet_assignments, reviewers, assignments, assignTweet, dismissTweet } = this.props
 
         return (
             <TweetColumn
                 column={column}
                 tweet_ids={tweet_ids}
                 tweets={tweets}
+                tweet_assignments={tweet_assignments}
                 reviewers={reviewers}
+                assignments={assignments}
                 loadMoreRows={this.loadMoreRows}
                 assignTweet={assignTweet}
                 dismissTweet={dismissTweet}
@@ -54,7 +58,9 @@ const mapStateToProps = (state: IStore, ownProps: TComponentProps): IStoreProps 
     return {
         tweet_ids: triage.column_tweets[ownProps.column.id],
         tweets: social.tweets,
+        tweet_assignments: social.tweet_assignments,
         reviewers: reviewers.users,
+        assignments: reviewers.assignments,
     }
 }
 

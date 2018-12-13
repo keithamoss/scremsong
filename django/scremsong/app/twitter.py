@@ -76,11 +76,6 @@ def fetch_some_tweets(startIndex, stopIndex, sinceId=None, maxId=None, columnIds
             "tweet_ids": column_tweet_ids,
         })
 
-        social_assignments = get_social_assignments(SocialPlatformChoice.TWITTER, column_tweet_ids)
-        for assignment in social_assignments:
-            tweets[assignment["social_id"]]["reviewer_id"] = assignment["user_id"]
-            tweets[assignment["social_id"]]["review_status"] = assignment["status"]
-
     return {
         "columns": columns,
         "tweets": tweets,

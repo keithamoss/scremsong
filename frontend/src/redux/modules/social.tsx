@@ -1,17 +1,19 @@
 import * as dotProp from "dot-prop-immutable"
+// import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
+import { values as objectValues } from "lodash-es/"
 import { Action } from "redux"
 import { IActionReviewersListAssignments, IActionsTweetsFetch } from "src/websockets/actions"
 import { WS_REVIEWERS_LIST_ASSIGNMENTS, WS_TWEETS_FETCH_SOME } from "src/websockets/constants"
 import { IThunkExtras } from "../../redux/modules/interfaces"
-import { eSocialAssignmentStatus } from "./reviewers"
-// import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
+import { IReviewerAssignment } from "./reviewers"
 
 // Actions
 const LOAD_TWEETS = "scremsong/tweets/LOAD_TWEETS"
 const DISMISS = "scremsong/tweets/DISMISS"
 
 const initialState: IModule = {
-    tweets: [],
+    tweets: {},
+    tweet_assignments: {},
 }
 
 // Reducer
@@ -20,9 +22,13 @@ export default function reducer(state: IModule = initialState, action: IAction) 
     switch (action.type) {
         case LOAD_TWEETS:
         case WS_TWEETS_FETCH_SOME:
-        // case WS_TWEETS_FETCH_SOME_NEW_TWEETS:
-        case WS_REVIEWERS_LIST_ASSIGNMENTS:
+            // case WS_TWEETS_FETCH_SOME_NEW_TWEETS:
             // console.log("social.WS_TWEETS_FETCH_SOME_NEW_TWEETS or social.WS_TWEETS_FETCH_SOME or social.LOAD_TWEETS", action)
+            return dotProp.set(state, "tweets", { ...state.tweets, ...action.tweets })
+        case WS_REVIEWERS_LIST_ASSIGNMENTS:
+            objectValues(action.assignments).forEach((assignment: IReviewerAssignment, index: number) => {
+                state = dotProp.set(state, `tweet_assignments.${assignment.social_id}`, assignment.id)
+            })
             return dotProp.set(state, "tweets", { ...state.tweets, ...action.tweets })
         case DISMISS:
             return dotProp.set(state, `tweets.${action.tweetId}.is_dismissed`, true)
@@ -45,7 +51,7 @@ export const dismissTweet = (tweetId: string): IActionDismissTweet => ({
 // Models
 export interface IModule {
     tweets: ISocialTweetList
-    tweet_assignments: ISocialTweetAssignment
+    tweet_assignments: ISocialTweetAssignments
 }
 
 export interface IActionLoadTweets extends Action<typeof LOAD_TWEETS> {
@@ -60,7 +66,7 @@ export interface ISocialTweetList {
     [key: string]: ISocialTweet
 }
 
-export interface ISocialTweetAssignment {
+export interface ISocialTweetAssignments {
     [key: string]: number
 }
 
@@ -68,8 +74,6 @@ export interface ISocialTweet {
     id: number
     data: ISocialTweetData
     is_dismissed: boolean
-    review_status?: eSocialAssignmentStatus
-    reviewer_id?: number
 }
 
 export interface ISocialTweetData {}
