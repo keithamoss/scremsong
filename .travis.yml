@@ -14,7 +14,10 @@ before_install:
     - python3.6 --version
     - pip --version
     - pyenv shell
-    - pip3.6 --version
+    - pyenv shell 3.6
+    - pip --version
+    - pip3 --version
+    # - pip3.6 --version
 install:
     - pip3.6 install -r django/dev-requirements.txt --user
     # - pip3 install flake8 autopep8 --user
