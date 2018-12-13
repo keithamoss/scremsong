@@ -191,11 +191,10 @@ export function markAssignmentDone(assignment: IReviewerAssignment) {
     }
 }
 
-export function onToggleCurrentReviewerOnlineStatus(isAcceptingAssignments: boolean) {
+export function toggleReviewerOnlineStatus(isAcceptingAssignments: boolean, userId: number) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        const currentReviewerId = getState().reviewers.currentReviewerId
         await api.get("/api/0.1/social_assignments/set_user_accepting_assignments/", dispatch, {
-            user_id: currentReviewerId,
+            user_id: userId,
             is_accepting_assignments: isAcceptingAssignments,
         })
     }

@@ -7,8 +7,8 @@ import {
     IReviewerAssignment,
     IReviewerUser,
     markAssignmentDone,
-    onToggleCurrentReviewerOnlineStatus,
     setCurrentReviewer,
+    toggleReviewerOnlineStatus,
 } from "src/redux/modules/reviewers"
 import { ISocialTweet } from "src/redux/modules/social"
 import UserReviewQueueView from "./UserReviewQueueView"
@@ -81,8 +81,8 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
         onChangeQueueUser: async (event: object, key: number, reviewerId: number) => {
             dispatch(setCurrentReviewer(reviewerId))
         },
-        onToggleUserOnlineStatus: (event: object, isInputChecked: boolean) => {
-            dispatch(onToggleCurrentReviewerOnlineStatus(isInputChecked))
+        onToggleUserOnlineStatus: (event: MouseEvent, isInputChecked: boolean, currentReviewerId: number) => {
+            dispatch(toggleReviewerOnlineStatus(isInputChecked, currentReviewerId))
         },
     }
 }

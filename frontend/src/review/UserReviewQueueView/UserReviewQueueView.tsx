@@ -28,13 +28,17 @@ export interface IProps {
 
 export class UserReviewQueueView extends React.Component<IProps, {}> {
     private onMarkAsDone: Function
+    private onToggleUserOnlineStatus: any
 
     public constructor(props: IProps) {
         super(props)
         this.onMarkAsDone = (assignment: IReviewerAssignment) => () => this.props.onMarkAsDone(assignment)
+        this.onToggleUserOnlineStatus = (event: MouseEvent, isInputChecked: boolean) => {
+            props.onToggleUserOnlineStatus(event, isInputChecked, props.currentReviewer.id)
+        }
     }
     public render() {
-        const { assignments, tweets, reviewers, currentReviewer, onChangeQueueUser, onToggleUserOnlineStatus } = this.props
+        const { assignments, tweets, reviewers, currentReviewer, onChangeQueueUser } = this.props
 
         return (
             <React.Fragment>
@@ -55,7 +59,7 @@ export class UserReviewQueueView extends React.Component<IProps, {}> {
                     <ToolbarGroup>
                         <Checkbox
                             checked={currentReviewer.is_accepting_assignments}
-                            onCheck={onToggleUserOnlineStatus}
+                            onCheck={this.onToggleUserOnlineStatus}
                             checkedIcon={<ActionVisibility />}
                             uncheckedIcon={<ActionVisibilityOff />}
                             iconStyle={{ fill: "white" }}
