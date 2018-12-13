@@ -6,6 +6,8 @@ before_install:
     - tar xvf secrets.tar
     - source ./secrets/travis.env
     - source ./secrets/scremsong-frontend.prod.env
+before_install:
+    - sudo apt-get -y install python3-pip
 install:
     - pip3 install -r django/dev-requirements.txt
 script:
