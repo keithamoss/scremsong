@@ -23,6 +23,7 @@ def get_all_pending_assignments(user=None):
         queryset = queryset.filter(user=user)
     queryset = queryset.order_by("-id").values()
     assignments = [a for a in queryset]
+    assignmentsById = {}
 
     tweetIds = [a["social_id"] for a in assignments]
     tweets = {}
@@ -30,7 +31,9 @@ def get_all_pending_assignments(user=None):
         tweets[tweet["tweet_id"]] = {"id": tweet["tweet_id"], "data": tweet["data"], "is_dismissed": tweet["is_dismissed"]}
 
     for assignment in assignments:
+        assignmentsById[assignment["id"]] = assignment
+        
         tweets[assignment["social_id"]]["reviewer_id"] = assignment["user_id"]
         tweets[assignment["social_id"]]["review_status"] = assignment["status"]
 
-    return {"assignments": assignments, "tweets": tweets}
+    return {"assignments": assignmentsById, "tweets": tweets}

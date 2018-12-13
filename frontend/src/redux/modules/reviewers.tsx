@@ -1,5 +1,6 @@
 import * as dotProp from "dot-prop-immutable"
 import { memoize } from "lodash-es"
+import { values as objectValues } from "lodash-es/"
 // import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 import { Action } from "redux"
 import { createSelector } from "reselect"
@@ -45,9 +46,8 @@ export default function reducer(state: IModule = initialState, action: IAction) 
             state = dotProp.delete(state, `tweets.${action.tweetId}.reviewer_id`)
             return dotProp.delete(state, `tweets.${action.tweetId}.review_status`)
         case MARK_ASSIGNMENT_DONE:
-            const assignmentIndex = state.assignments.findIndex((assignment: IReviewerAssignment) => assignment.id === action.assignmentId)
             // return dotProp.set(state, `assignments.${assignmentIndex}.status`, "SocialAssignmentStatus.DONE")
-            return dotProp.delete(state, `assignments.${assignmentIndex}`)
+            return dotProp.delete(state, `assignments.${action.assignmentId}`)
         case WS_REVIEWERS_SET_STATUS:
             return dotProp.set(state, `users.${action.user_id}.is_accepting_assignments`, action.is_accepting_assignments)
         default:
@@ -57,7 +57,7 @@ export default function reducer(state: IModule = initialState, action: IAction) 
 
 // Selectors
 
-const getAssignments = (state: IStore) => state.reviewers.assignments
+const getAssignments = (state: IStore) => objectValues(state.reviewers.assignments)
 const getCurrentReviewerUserId = (state: IStore) => (state.reviewers.currentReviewerId ? state.reviewers.currentReviewerId : null)
 const getReviewers = (state: IStore) => state.reviewers.users
 
