@@ -1,4 +1,4 @@
-language: node
+language: generic
 node_js:
     - 9
 before_install:
@@ -6,7 +6,10 @@ before_install:
     - tar xvf secrets.tar
     - source ./secrets/travis.env
     - source ./secrets/scremsong-frontend.prod.env
+install:
+    - pip3 install -r django/dev-requirements.txt
 script:
+    - flake8 --ignore=E501,E731,W504 django/scremsong
     - cd frontend
     - npm install .
     - npm run build
