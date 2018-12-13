@@ -8,7 +8,7 @@ before_install:
     - source ./secrets/travis.env
     - source ./secrets/scremsong-frontend.prod.env
 before_install:
-    - sudo add-apt-repository ppa:deadsnakes/ppa
+    - sudo add-apt-repository ppa:deadsnakes/ppa -y
     - sudo apt-get update
     - sudo apt-get -y install python3.6
     - python3.6 -m pip install --user pipenv
