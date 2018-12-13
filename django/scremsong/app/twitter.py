@@ -68,12 +68,12 @@ def fetch_some_tweets(startIndex, stopIndex, sinceId=None, maxId=None, columnIds
         column_tweet_ids = []
 
         for tweet in column_tweets:
-            tweets[tweet["tweet_id"]] = {"data": tweet["data"], "is_dismissed": tweet["is_dismissed"]}
+            tweets[tweet["tweet_id"]] = {"id": tweet["tweet_id"], "data": tweet["data"], "is_dismissed": tweet["is_dismissed"]}
             column_tweet_ids.append(tweet["tweet_id"])
 
         columns.append({
             "id": social_column.id,
-            "tweets": column_tweet_ids,
+            "tweet_ids": column_tweet_ids,
         })
 
         social_assignments = get_social_assignments(SocialPlatformChoice.TWITTER, column_tweet_ids)

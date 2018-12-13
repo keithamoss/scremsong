@@ -1,6 +1,9 @@
 import * as dotProp from "dot-prop-immutable"
-import { WS_REVIEWERS_LIST_ASSIGNMENTS, WS_TWEETS_FETCH_SOME, WS_TWEETS_FETCH_SOME_NEW_TWEETS } from "src/websockets/constants"
+import { Action } from "redux"
+import { IActionReviewersListAssignments, IActionsTweetsFetch } from "src/websockets/actions"
+import { WS_REVIEWERS_LIST_ASSIGNMENTS, WS_TWEETS_FETCH_SOME } from "src/websockets/constants"
 import { IThunkExtras } from "../../redux/modules/interfaces"
+import { eSocialAssignmentStatus } from "./reviewers"
 // import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 
 // Actions
@@ -12,11 +15,12 @@ const initialState: IModule = {
 }
 
 // Reducer
+type IAction = IActionDismissTweet | IActionLoadTweets | IActionsTweetsFetch | IActionReviewersListAssignments
 export default function reducer(state: IModule = initialState, action: IAction) {
     switch (action.type) {
         case LOAD_TWEETS:
         case WS_TWEETS_FETCH_SOME:
-        case WS_TWEETS_FETCH_SOME_NEW_TWEETS:
+        // case WS_TWEETS_FETCH_SOME_NEW_TWEETS:
         case WS_REVIEWERS_LIST_ASSIGNMENTS:
             // console.log("social.WS_TWEETS_FETCH_SOME_NEW_TWEETS or social.WS_TWEETS_FETCH_SOME or social.LOAD_TWEETS", action)
             return dotProp.set(state, "tweets", { ...state.tweets, ...action.tweets })
@@ -28,39 +32,45 @@ export default function reducer(state: IModule = initialState, action: IAction) 
 }
 
 // Action Creators
-export function loadTweets(tweets: object[]) {
-    return {
-        type: LOAD_TWEETS,
-        tweets,
-    }
-}
+export const loadTweets = (tweets: ISocialTweetList): IActionLoadTweets => ({
+    type: LOAD_TWEETS,
+    tweets,
+})
 
-export function dismissTweet(tweetId: string) {
-    return {
-        type: DISMISS,
-        tweetId,
-    }
-}
+export const dismissTweet = (tweetId: string): IActionDismissTweet => ({
+    type: DISMISS,
+    tweetId,
+})
 
 // Models
 export interface IModule {
-    tweets: object[]
+    tweets: ISocialTweet[]
 }
 
-export interface IAction {
-    type: string
-    tweets?: object[]
-    tweetId?: string
-    // columns?: any[]
-    // column_tweets?: any
-    meta?: {
-        // analytics: IAnalyticsMeta
-    }
+export interface IActionLoadTweets extends Action<typeof LOAD_TWEETS> {
+    tweets: ISocialTweetList
 }
+
+export interface IActionDismissTweet extends Action<typeof DISMISS> {
+    tweetId: string
+}
+
+export interface ISocialTweetList {
+    [key: string]: ISocialTweet
+}
+
+export interface ISocialTweet {
+    id: number
+    data: ISocialTweetData
+    is_dismissed: boolean
+    review_status?: eSocialAssignmentStatus
+    reviewer_id?: number
+}
+
+export interface ISocialTweetData {}
 
 // Side effects, only as applicable
 // e.g. thunks, epics, et cetera
-
 export function fetchTweets(startIndex: number, stopIndex: number, columns: any[] = []) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
         const { json } = await api.get(

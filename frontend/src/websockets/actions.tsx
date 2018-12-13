@@ -1,6 +1,20 @@
 import { includes as arrayIncludes } from "core-js/library/fn/array"
 import ReconnectingWebSocket from "reconnecting-websocket"
-import { messageTypes, WS_CONNECTED, WS_URI } from "./constants"
+import { Action } from "redux"
+import { IReviewerAssignment, IReviewerUser } from "src/redux/modules/reviewers"
+import { ISocialTweetList } from "src/redux/modules/social"
+import { ITriageColumn } from "src/redux/modules/triage"
+import { IUser } from "src/redux/modules/user"
+import {
+    messageTypes,
+    WS_CONNECTED,
+    WS_REVIEWERS_LIST_ASSIGNMENTS,
+    WS_REVIEWERS_LIST_USERS,
+    WS_REVIEWERS_SET_STATUS,
+    WS_SOCIAL_COLUMNS_LIST,
+    WS_TWEETS_FETCH_SOME,
+    WS_URI,
+} from "./constants"
 
 // Web Socket connection and handle dispatching actions for Redux onmessage
 const socket = new ReconnectingWebSocket(WS_URI)
@@ -34,6 +48,7 @@ export const init = (store: any) => {
         const data = JSON.parse(e.data)
 
         if ("msg_type" in data) {
+            console.log(data.msg_type, data)
             let actions
             if (data.msg_type === WS_CONNECTED && "actions" in data) {
                 // Handle the initial payload of actions from Web Socket onopen
@@ -66,33 +81,34 @@ export interface IActionWebSocketBase {
 
 export interface IActionConnected extends IActionWebSocketBase {
     is_logged_in: boolean
-    user: any
-    actions: any[]
+    user: IUser
+    actions: Action[]
 }
 
-export interface IActionSocialColumnsList extends IActionWebSocketBase {
-    columns: any[]
+export interface IActionSocialColumnsList extends Action<typeof WS_SOCIAL_COLUMNS_LIST> {
+    columns: ITriageColumn[]
 }
 
-export interface IActionReviewersList extends IActionWebSocketBase {
-    reviewers: any[]
+export interface IActionReviewersList extends Action<typeof WS_REVIEWERS_LIST_USERS> {
+    users: IReviewerUser[]
 }
 
-export interface IActionReviewersListAssignments extends IActionWebSocketBase {
-    assignments: any[]
-    tweets: {
-        key: string
-    }
+export interface IActionReviewersListAssignments extends Action<typeof WS_REVIEWERS_LIST_ASSIGNMENTS> {
+    assignments: IReviewerAssignment[]
+    tweets: ISocialTweetList
 }
 
-export interface IActionReviewersSetStatus extends IActionWebSocketBase {
-    userId: number
-    isAcceptingAssignments: boolean
+export interface IActionReviewersSetStatus extends Action<typeof WS_REVIEWERS_SET_STATUS> {
+    user_id: number
+    is_accepting_assignments: boolean
 }
 
-export interface IActionsTweetsFetch extends IActionWebSocketBase {
-    columns: any[]
-    tweets: {
-        key: string
-    }
+export interface IActionsTweetsFetch extends Action<typeof WS_TWEETS_FETCH_SOME> {
+    columns: [
+        {
+            id: number
+            tweet_ids: string[]
+        }
+    ]
+    tweets: ISocialTweetList
 }

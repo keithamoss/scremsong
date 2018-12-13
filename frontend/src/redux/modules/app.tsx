@@ -1,4 +1,5 @@
 import * as dotProp from "dot-prop-immutable"
+import { Action } from "redux"
 import { IThunkExtras } from "../../redux/modules/interfaces"
 import { changeCurrentReviewer } from "./reviewers"
 import { fetchUser, ISelf } from "./user"
@@ -24,6 +25,7 @@ const initialState: IModule = {
 }
 
 // Reducer
+type IAction = IActionLoading | IActionLoaded | IActionBeginFetch | IActionFinishFetch | IActionToggleSidebar
 export default function reducer(state: IModule = initialState, action: IAction) {
     let requestsInProgress = dotProp.get(state, "requestsInProgress")
 
@@ -44,40 +46,25 @@ export default function reducer(state: IModule = initialState, action: IAction) 
 }
 
 // Action Creators
-export function loading(): IAction {
-    return {
-        type: LOADING,
-    }
-}
+export const loading = (): IActionLoading => ({
+    type: LOADING,
+})
 
-export function loaded(): IAction {
-    return {
-        type: LOADED,
-    }
-}
+export const loaded = (): IActionLoaded => ({
+    type: LOADED,
+})
 
-export function beginFetch(): IAction {
-    return {
-        type: BEGIN_FETCH,
-    }
-}
+export const beginFetch = (): IActionBeginFetch => ({
+    type: BEGIN_FETCH,
+})
 
-export function finishFetch(): IAction {
-    return {
-        type: FINISH_FETCH,
-    }
-}
+export const finishFetch = (): IActionFinishFetch => ({
+    type: FINISH_FETCH,
+})
 
-export function toggleSidebarState(): IAction {
-    return {
-        type: TOGGLE_SIDEBAR,
-        meta: {
-            analytics: {
-                category: "App",
-            },
-        },
-    }
-}
+export const toggleSidebarState = (): IActionToggleSidebar => ({
+    type: TOGGLE_SIDEBAR,
+})
 
 // Models
 export interface IModule {
@@ -86,13 +73,15 @@ export interface IModule {
     sidebarOpen: boolean
 }
 
-export interface IAction {
-    type: string
-    open?: boolean
-    meta?: {
-        // analytics: IAnalyticsMeta
-    }
-}
+export interface IActionLoading extends Action<typeof LOADING> {}
+
+export interface IActionLoaded extends Action<typeof LOADED> {}
+
+export interface IActionBeginFetch extends Action<typeof BEGIN_FETCH> {}
+
+export interface IActionFinishFetch extends Action<typeof FINISH_FETCH> {}
+
+export interface IActionToggleSidebar extends Action<typeof TOGGLE_SIDEBAR> {}
 
 // Side effects, only as applicable
 // e.g. thunks, epics, et cetera

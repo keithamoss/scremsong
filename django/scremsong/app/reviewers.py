@@ -27,7 +27,7 @@ def get_all_pending_assignments(user=None):
     tweetIds = [a["social_id"] for a in assignments]
     tweets = {}
     for tweet in get_tweets_by_ids(tweetIds):
-        tweets[tweet["tweet_id"]] = {"data": tweet["data"], "is_dismissed": tweet["is_dismissed"]}
+        tweets[tweet["tweet_id"]] = {"id": tweet["tweet_id"], "data": tweet["data"], "is_dismissed": tweet["is_dismissed"]}
 
     for assignment in assignments:
         tweets[assignment["social_id"]]["reviewer_id"] = assignment["user_id"]

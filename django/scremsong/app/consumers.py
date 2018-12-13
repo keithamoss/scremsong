@@ -43,8 +43,8 @@ class ScremsongConsumer(JsonWebsocketConsumer):
         # async_to_sync(self.channel_layer.group_send)(
         #     self.group_name,
         #     {
-        #         "userId": self.user.id,
-        #         "isAcceptingAssignments": False
+        #         "user_id": self.user.id,
+        #         "is_accepting_assignments": False
         #     }
         # )
 
@@ -61,6 +61,6 @@ class ScremsongConsumer(JsonWebsocketConsumer):
         # Send a message down to the client
         self.send_json({
             "msg_type": settings.MSG_TYPE_REVIEWERS_SET_STATUS,
-            "userId": event["user_id"],
-            "isAcceptingAssignments": event["is_accepting_assignments"],
+            "user_id": event["user_id"],
+            "is_accepting_assignments": event["is_accepting_assignments"],
         })

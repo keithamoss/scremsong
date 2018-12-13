@@ -1,4 +1,5 @@
 import * as dotProp from "dot-prop-immutable"
+import { Action } from "redux"
 import { IThunkExtras } from "../../redux/modules/interfaces"
 // import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 
@@ -11,6 +12,7 @@ const initialState: IModule = {
 }
 
 // Reducer
+type IAction = IActionLoaderUser
 export default function reducer(state: IModule = initialState, action: IAction) {
     switch (action.type) {
         case LOAD_USER:
@@ -22,12 +24,10 @@ export default function reducer(state: IModule = initialState, action: IAction) 
 }
 
 // Action Creators
-export function loadUser(self: ISelf) {
-    return {
-        type: LOAD_USER,
-        ...self,
-    }
-}
+export const loadUser = (self: ISelf): IActionLoaderUser => ({
+    type: LOAD_USER,
+    ...self,
+})
 
 // Models
 export interface IModule {
@@ -35,13 +35,9 @@ export interface IModule {
     user: IUser | null
 }
 
-export interface IAction {
-    type: string
-    is_logged_in?: boolean
-    user?: IUser
-    meta?: {
-        // analytics: IAnalyticsMeta
-    }
+export interface IActionLoaderUser extends Action<typeof LOAD_USER> {
+    is_logged_in: boolean
+    user: IUser
 }
 
 export interface ISelf {
@@ -55,7 +51,7 @@ export interface IUser {
     first_name: string
     last_name: string
     date_joined: string // datetime
-    groups: any[]
+    groups: string[]
     id: number
     is_active: boolean
     is_approved: boolean

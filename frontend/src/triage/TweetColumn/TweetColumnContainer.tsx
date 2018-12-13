@@ -1,7 +1,7 @@
 import * as React from "react"
 import { connect } from "react-redux"
 import { IStore } from "src/redux/modules/interfaces"
-import { assignAReviewer, unassignAReviewer } from "src/redux/modules/reviewers"
+import { assignAReviewer, IReviewerUser, unassignAReviewer } from "src/redux/modules/reviewers"
 import { dismissATweet, fetchTweets } from "src/redux/modules/social"
 import TweetColumn from "./TweetColumn"
 
@@ -12,7 +12,7 @@ export interface IProps {
 export interface IStoreProps {
     tweet_ids: string[]
     tweets: any[]
-    reviewers: object
+    reviewers: IReviewerUser[]
 }
 
 export interface IDispatchProps {
