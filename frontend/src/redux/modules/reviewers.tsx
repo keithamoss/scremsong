@@ -49,7 +49,8 @@ export default function reducer(state: IModule = initialState, action: IAction) 
             // return dotProp.set(state, `assignments.${assignmentIndex}.status`, "SocialAssignmentStatus.DONE")
             return dotProp.delete(state, `assignments.${action.assignmentId}`)
         case WS_REVIEWERS_SET_STATUS:
-            return dotProp.set(state, `users.${action.user_id}.is_accepting_assignments`, action.is_accepting_assignments)
+            const userIndex = state.users.findIndex((user: IReviewerUser) => user.id === action.user_id)
+            return dotProp.set(state, `users.${userIndex}.is_accepting_assignments`, action.is_accepting_assignments)
         default:
             return state
     }
