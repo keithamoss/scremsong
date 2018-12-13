@@ -13,6 +13,7 @@ install:
     - pip3 install -r django/dev-requirements.txt --user
     # - pip3 install flake8 autopep8 --user
 before_script:
+    - flake8 --version
     - flake8 --ignore=E501,E731,W504 django/scremsong
 script:
     - python --version
