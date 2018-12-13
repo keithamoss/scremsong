@@ -1,5 +1,5 @@
 sudo: required
-language: generic
+language: node
 node_js:
     - 9
 before_install:
