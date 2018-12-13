@@ -62,7 +62,7 @@ class SocialColumnsSerializer(serializers.ModelSerializer):
 
 
 class SocialColumnsSerializerWithTweetCountSerializer(SocialColumnsSerializer):
-    tweet_count = serializers.IntegerField(read_only=True)
+    total_tweets = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = SocialColumns
@@ -70,7 +70,7 @@ class SocialColumnsSerializerWithTweetCountSerializer(SocialColumnsSerializer):
             'id',
             'platform',
             'search_phrases',
-            'tweet_count')
+            'total_tweets')
 
 
 class SocialAssignmentSerializer(serializers.ModelSerializer):

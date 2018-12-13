@@ -53,7 +53,7 @@ class SocialColumns(models.Model):
     # https://developer.twitter.com/en/docs/tweets/filter-realtime/guides/basic-stream-parameters#track
     search_phrases = JSONField(default=None, blank=True, null=False)
 
-    def tweet_count(self):
+    def total_tweets(self):
         """
         Count the number of tweets for the object
         """
