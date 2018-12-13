@@ -1,8 +1,13 @@
 import { values as objectValues } from "core-js/library/fn/object"
 import * as React from "react"
 import { connect } from "react-redux"
-import { getUserAssignments, markAssignmentDone, onToggleCurrentReviewerOnlineStatus, setCurrentReviewer } from "src/redux/modules/app"
 import { IStore, IUser } from "src/redux/modules/interfaces"
+import {
+    getUserAssignments,
+    markAssignmentDone,
+    onToggleCurrentReviewerOnlineStatus,
+    setCurrentReviewer,
+} from "src/redux/modules/reviewers"
 import UserReviewQueueView from "./UserReviewQueueView"
 
 export interface IProps {}
@@ -53,15 +58,15 @@ class UserReviewQueueViewContainer extends React.Component<IProps & IStoreProps 
 }
 
 const mapStateToProps = (state: IStore, ownProps: any): IStoreProps => {
-    const { user, app } = state
+    const { user, reviewers, social } = state
 
-    const reviewer = app.reviewers[app.currentReviewerId!]
+    const reviewer = reviewers.users[reviewers.currentReviewerId!]
 
     return {
         user: user.user,
-        assignments: getUserAssignments(app.assignments, reviewer),
-        tweets: app.tweets,
-        reviewers: objectValues(app.reviewers),
+        assignments: getUserAssignments(reviewers.assignments, reviewer),
+        tweets: social.tweets,
+        reviewers: objectValues(reviewers.users),
         currentReviewer: reviewer,
     }
 }

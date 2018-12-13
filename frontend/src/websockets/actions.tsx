@@ -78,17 +78,16 @@ export interface IActionReviewersList extends IActionWebSocketBase {
     reviewers: any[]
 }
 
-export interface IActionReviewersSetStatus extends IActionWebSocketBase {
-    userId: number
-    isAcceptingAssignments: boolean
-}
-
-export interface IActionAssignmentsForUser extends IActionWebSocketBase {
-    user_id: number
+export interface IActionReviewersListAssignments extends IActionWebSocketBase {
     assignments: any[]
     tweets: {
         key: string
     }
+}
+
+export interface IActionReviewersSetStatus extends IActionWebSocketBase {
+    userId: number
+    isAcceptingAssignments: boolean
 }
 
 export interface IActionsTweetsFetch extends IActionWebSocketBase {

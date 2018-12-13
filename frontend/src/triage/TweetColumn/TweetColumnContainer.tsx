@@ -1,7 +1,8 @@
 import * as React from "react"
 import { connect } from "react-redux"
-import { assignAReviewer, dismissATweet, fetchTweets, unassignAReviewer } from "src/redux/modules/app"
 import { IStore } from "src/redux/modules/interfaces"
+import { assignAReviewer, unassignAReviewer } from "src/redux/modules/reviewers"
+import { dismissATweet, fetchTweets } from "src/redux/modules/social"
 import TweetColumn from "./TweetColumn"
 
 export interface IProps {
@@ -46,12 +47,12 @@ export class TweetColumnContainer extends React.Component<IProps & IStoreProps &
 }
 
 const mapStateToProps = (state: IStore, ownProps: any): IStoreProps => {
-    const { app } = state
+    const { triage, social, reviewers } = state
 
     return {
-        tweet_ids: app.column_tweets[ownProps.column.id],
-        tweets: app.tweets,
-        reviewers: app.reviewers,
+        tweet_ids: triage.column_tweets[ownProps.column.id],
+        tweets: social.tweets,
+        reviewers: reviewers.users,
     }
 }
 

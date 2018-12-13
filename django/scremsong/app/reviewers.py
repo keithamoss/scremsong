@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.forms.models import model_to_dict
 from scremsong.app.models import SocialAssignments, SocialAssignmentStatus
 from scremsong.app.twitter import get_tweets_by_ids
 
@@ -16,8 +17,11 @@ def get_reviewer_users():
     return reviewers
 
 
-def get_user_assignments(user):
-    queryset = SocialAssignments.objects.filter(status=SocialAssignmentStatus.PENDING, user=user).order_by("-id")
+def get_all_pending_assignments(user=None):
+    queryset = SocialAssignments.objects.filter(status=SocialAssignmentStatus.PENDING)
+    if user is not None:
+        queryset = queryset.filter(user=user)
+    queryset = queryset.order_by("-id").values()
     assignments = [a for a in queryset]
 
     tweetIds = [a["social_id"] for a in assignments]
@@ -29,4 +33,4 @@ def get_user_assignments(user):
         tweets[assignment["social_id"]]["reviewer_id"] = assignment["user_id"]
         tweets[assignment["social_id"]]["review_status"] = assignment["status"]
 
-    return {"user_id": user.id, "assignments": assignments, "tweets": tweets}
+    return {"assignments": assignments, "tweets": tweets}

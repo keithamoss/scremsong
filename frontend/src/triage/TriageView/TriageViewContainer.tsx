@@ -25,11 +25,11 @@ class TriageViewContainer extends React.Component<IProps & IStoreProps & IDispat
 }
 
 const mapStateToProps = (state: IStore, ownProps: any): IStoreProps => {
-    const { user, app } = state
+    const { user, triage } = state
 
     return {
         user: user.user,
-        columns: app.columns,
+        columns: triage.columns,
     }
 }
 

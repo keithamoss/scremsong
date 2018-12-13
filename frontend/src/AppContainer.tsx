@@ -22,8 +22,9 @@ import * as React from "react"
 import { connect } from "react-redux"
 import { withRouter } from "react-router-dom"
 import App from "./App"
-import { fetchInitialAppState, getUserAssignments, toggleSidebarState } from "./redux/modules/app"
+import { fetchInitialAppState, toggleSidebarState } from "./redux/modules/app"
 import { IAppModule, IStore, IUser } from "./redux/modules/interfaces"
+import { getUserAssignments } from "./redux/modules/reviewers"
 
 // const Config: IConfig = require("Config") as any
 
@@ -111,14 +112,14 @@ export class AppContainer extends React.Component<any, any> {
 }
 
 const mapStateToProps = (state: IStore): IStoreProps => {
-    const { app, user, browser, responsiveDrawer } = state
+    const { app, user, browser, responsiveDrawer, reviewers } = state
 
     return {
         app,
         user: user.user,
         browser,
         responsiveDrawer,
-        userAssignmentCount: getUserAssignments(app.assignments, user.user).length,
+        userAssignmentCount: getUserAssignments(reviewers.assignments, user.user).length,
     }
 }
 

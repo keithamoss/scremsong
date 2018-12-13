@@ -6,6 +6,7 @@ import { IThunkExtras } from "../../redux/modules/interfaces"
 const LOAD_USER = "scremsong/user/LOAD_USER"
 
 const initialState: IModule = {
+    is_logged_in: false,
     user: null,
 }
 
@@ -13,6 +14,7 @@ const initialState: IModule = {
 export default function reducer(state: IModule = initialState, action: IAction) {
     switch (action.type) {
         case LOAD_USER:
+            state = dotProp.set(state, "is_logged_in", action.is_logged_in)
             return dotProp.set(state, "user", action.user)
         default:
             return state
@@ -23,17 +25,19 @@ export default function reducer(state: IModule = initialState, action: IAction) 
 export function loadUser(self: ISelf) {
     return {
         type: LOAD_USER,
-        user: self.user || null,
+        ...self,
     }
 }
 
 // Models
 export interface IModule {
+    is_logged_in: boolean
     user: IUser | null
 }
 
 export interface IAction {
     type: string
+    is_logged_in?: boolean
     user?: IUser
     meta?: {
         // analytics: IAnalyticsMeta
