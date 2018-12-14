@@ -5,7 +5,9 @@ import { IActionWebSocketBase } from "./actions"
 import { messageTypes, WS_CONNECTED, WS_URI } from "./constants"
 
 // Web Socket connection and handle dispatching actions for Redux onmessage
-const socket = new ReconnectingWebSocket(WS_URI)
+const socket = new ReconnectingWebSocket(WS_URI, [], {
+    connectionTimeout: 10000,
+})
 
 // socket.onopen = (e: any) => {
 //     console.log("Socket connection opened", e)
