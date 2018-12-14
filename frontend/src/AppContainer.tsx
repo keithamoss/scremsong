@@ -21,6 +21,7 @@ import { fade } from "material-ui/utils/colorManipulator"
 import * as React from "react"
 import { connect } from "react-redux"
 import { withRouter } from "react-router-dom"
+import styled from "styled-components"
 import App from "./App"
 import { fetchInitialAppState, toggleSidebarState } from "./redux/modules/app"
 import { IAppModule, IStore, IUser } from "./redux/modules/interfaces"
@@ -52,6 +53,36 @@ const muiTheme = getMuiTheme({
     },
 })
 
+const FlexboxCentredContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+`
+
+const FlexboxCentredBox = styled.div`
+    width: 70%;
+    max-width: 300px;
+    text-align: center;
+    align-items: start;
+
+    & > div:last-child {
+        margin-top: -25px;
+    }
+
+    & img {
+        width: 100%;
+        height: 100%;
+        mix-blend-mode: luminosity;
+    }
+
+    & h1 {
+        font-size: 38px;
+        color: white;
+    }
+`
+
 export interface IStoreProps {
     // From Props
     app: IAppModule
@@ -77,6 +108,25 @@ function isResponsiveAndOverBreakPoint(browser: any, responsiveDrawer: any, brea
 }
 
 export class AppContainer extends React.Component<any, any> {
+    public constructor(props: any) {
+        super(props)
+        this.playAudio = this.playAudio.bind(this)
+        this.stopAudio = this.stopAudio.bind(this)
+    }
+    public playAudio() {
+        const audio = document.getElementById("scremsong-sound") as HTMLMediaElement
+        if (this.canPlayAudio(audio)) {
+            audio.play()
+        }
+    }
+    public stopAudio() {
+        const audio = document.getElementById("scremsong-sound") as HTMLMediaElement
+        if (this.canPlayAudio(audio)) {
+            audio.pause()
+            audio.currentTime = 0
+        }
+    }
+
     public componentDidMount() {
         this.props.fetchInitialAppState()
     }
@@ -89,6 +139,19 @@ export class AppContainer extends React.Component<any, any> {
                 <MuiThemeProvider muiTheme={muiTheme}>
                     <div style={{ backgroundColor: muiTheme.palette!.primary1Color, width: "100%", height: "100%" }}>
                         <LinearProgress mode="indeterminate" color={muiTheme.palette!.accent3Color} />
+                        <FlexboxCentredContainer>
+                            <FlexboxCentredBox>
+                                <div>
+                                    <img id="alex" src="/alex.jpg" onMouseEnter={this.playAudio} onMouseOut={this.stopAudio} />
+                                </div>
+                                <div>
+                                    <h1>Screm song! Screm song!</h1>
+                                </div>
+                                <audio preload="auto" id="scremsong-sound">
+                                    <source src="dominic_screm_song.mp3" />
+                                </audio>
+                            </FlexboxCentredBox>
+                        </FlexboxCentredContainer>
                     </div>
                 </MuiThemeProvider>
             )
@@ -108,6 +171,10 @@ export class AppContainer extends React.Component<any, any> {
                 />
             </MuiThemeProvider>
         )
+    }
+    private canPlayAudio(audio: HTMLMediaElement) {
+        // https://stackoverflow.com/a/8469184/7368493
+        return audio && "play" in audio && audio.canPlayType && audio.canPlayType("audio/mpeg;").replace(/no/, "") !== ""
     }
 }
 
