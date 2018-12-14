@@ -1,4 +1,4 @@
-FROM python:alpine3.6
+FROM python:3.7-alpine3.8
 MAINTAINER Keith Moss <keithamoss@gmail.com>
 
 ENV PYTHONUNBUFFERED 1

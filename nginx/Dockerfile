@@ -1,4 +1,4 @@
-FROM nginx:1.15.0-alpine
+FROM nginx:1.15.7-alpine
 MAINTAINER Keith Moss <keithamoss@gmail.com>
 
 RUN cp /etc/nginx/uwsgi_params /var/tmp/uwsgi_params

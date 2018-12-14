@@ -18,7 +18,7 @@ services:
             # Enable this to store the PostgreSQL data on the host
             - ./db/data:/var/lib/postgresql/data
     frontend:
-        image: node:10.5.0-alpine
+        image: node:10.14.2-alpine
         volumes:
             - ./frontend:/app:delegated
         entrypoint: /app/docker-entrypoint.sh
@@ -27,7 +27,7 @@ services:
         env_file:
             - secrets/scremsong-frontend.dev.env
     rabbitmq:
-        image: rabbitmq:3.7.7-alpine
+        image: rabbitmq:3.7.8-alpine
         # volumes:
         #   - ./rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
         ports:
@@ -36,7 +36,7 @@ services:
         env_file:
             - secrets/rabbitmq.env
     redis:
-        image: redis:5.0.0-alpine3.8
+        image: redis:5.0.3-alpine3.8
         ports:
             - "6379:6379"
     django:
