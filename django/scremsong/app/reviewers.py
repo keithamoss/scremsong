@@ -9,11 +9,16 @@ def get_reviewer_users():
     return ReviewerUserSerializer(users, many=True).data
 
 
-def get_all_pending_assignments(user=None):
-    queryset = SocialAssignments.objects.filter(status=SocialAssignmentStatus.PENDING)
+def get_assignments(status=None, user=None):
+    queryset = SocialAssignments.objects
+    if status is not None:
+        queryset = queryset.filter(status=status)
+
     if user is not None:
         queryset = queryset.filter(user=user)
+
     queryset = queryset.order_by("-id").values()
+
     assignments = [a for a in queryset]
     assignmentsById = {}
 

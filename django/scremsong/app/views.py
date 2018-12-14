@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
 from tweepy import TweepError
-from scremsong.app.serializers import UserSerializer, ProfileSerializer
+from scremsong.app.serializers import UserSerializer, ProfileSerializer, SocialAssignmentSerializer
 from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, fetch_some_tweets
 from scremsong.celery import celery_restart_streaming
 from scremsong.app.models import SocialPlatformChoice, Tweets, SocialAssignments, SocialAssignmentStatus, Profile
@@ -120,26 +120,39 @@ class SocialAssignmentsViewset(viewsets.ViewSet):
         assignment = SocialAssignments(platform=SocialPlatformChoice.TWITTER, social_id=tweetId, user_id=reviewerId)
         assignment.save()
 
+        websockets.send_channel_message("reviewers.assign", {
+            "assignment": SocialAssignmentSerializer(assignment).data,
+        })
+
         return Response({})
 
     @list_route(methods=['get'])
     def unassign_reviewer(self, request, format=None):
         qp = request.query_params
-        tweetId = qp["tweetId"] if "tweetId" in qp else None
+        assignmentId = int(qp["assignmentId"]) if "assignmentId" in qp else None
 
-        assignment = SocialAssignments.objects.get(platform=SocialPlatformChoice.TWITTER, social_id=tweetId)
+        assignment = SocialAssignments.objects.get(id=assignmentId)
         assignment.delete()
+
+        websockets.send_channel_message("reviewers.unassign", {
+            "assignmentId": assignmentId,
+        })
 
         return Response({})
 
     @list_route(methods=['get'])
-    def set_assignment_done(self, request, format=None):
+    def assignment_done(self, request, format=None):
         qp = request.query_params
-        assignmentId = qp["assignmentId"] if "assignmentId" in qp else None
+        assignmentId = int(qp["assignmentId"]) if "assignmentId" in qp else None
 
         assignment = SocialAssignments.objects.get(id=assignmentId)
         assignment.status = SocialAssignmentStatus.DONE
         assignment.save()
+
+        websockets.send_channel_message("reviewers.assignment_status_changed", {
+            "assignmentId": assignmentId,
+            "status": str(SocialAssignmentStatus.DONE),
+        })
 
         return Response({})
 
@@ -157,6 +170,7 @@ class SocialAssignmentsViewset(viewsets.ViewSet):
             "user_id": user_id,
             "is_accepting_assignments": is_accepting_assignments
         })
+
         return Response({})
 
 

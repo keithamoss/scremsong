@@ -1,7 +1,7 @@
 import * as React from "react"
 import { connect } from "react-redux"
 import { IStore } from "src/redux/modules/interfaces"
-import { assignAReviewer, IReviewerAssignment, IReviewerUser, unassignAReviewer } from "src/redux/modules/reviewers"
+import { assignReviewer, IReviewerAssignment, IReviewerUser, unassignReviewer } from "src/redux/modules/reviewers"
 import { dismissATweet, fetchTweets, ISocialTweetAssignments, ISocialTweetList } from "src/redux/modules/social"
 import { ITriageColumn } from "src/redux/modules/triage"
 import TweetColumn from "./TweetColumn"
@@ -20,7 +20,7 @@ export interface IStoreProps {
 
 export interface IDispatchProps {
     loadMoreRows: any
-    assignTweet: any
+    assignOrUnassignTweet: any
     dismissTweet: any
 }
 
@@ -34,7 +34,7 @@ export class TweetColumnContainer extends React.Component<TComponentProps, {}> {
         this.loadMoreRows = props.loadMoreRows.bind(this, props.column)
     }
     public render() {
-        const { column, tweet_ids, tweets, tweet_assignments, reviewers, assignments, assignTweet, dismissTweet } = this.props
+        const { column, tweet_ids, tweets, tweet_assignments, reviewers, assignments, assignOrUnassignTweet, dismissTweet } = this.props
 
         return (
             <TweetColumn
@@ -45,7 +45,7 @@ export class TweetColumnContainer extends React.Component<TComponentProps, {}> {
                 reviewers={reviewers}
                 assignments={assignments}
                 loadMoreRows={this.loadMoreRows}
-                assignTweet={assignTweet}
+                assignOrUnassignTweet={assignOrUnassignTweet}
                 dismissTweet={dismissTweet}
             />
         )
@@ -69,12 +69,11 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
         loadMoreRows: (column: ITriageColumn, indexes: { startIndex: number; stopIndex: number }) => {
             return dispatch(fetchTweets(indexes.startIndex, indexes.stopIndex, [column.id]))
         },
-        assignTweet: (event: any, item: any) => {
-            console.log("assignTweet.item", item)
+        assignOrUnassignTweet: (event: any, item: any) => {
             if ("data-reviewerid" in item.props) {
-                dispatch(assignAReviewer(item.props["data-tweetid"], item.props["data-reviewerid"]))
-            } else {
-                dispatch(unassignAReviewer(item.props["data-tweetid"]))
+                dispatch(assignReviewer(item.props["data-tweetid"], item.props["data-reviewerid"]))
+            } else if ("data-assignmentid" in item.props) {
+                dispatch(unassignReviewer(item.props["data-assignmentid"]))
             }
         },
         dismissTweet: (tweetId: string, event: any) => {

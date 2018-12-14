@@ -27,7 +27,7 @@ export interface IProps {
     reviewers: IReviewerUser[]
     assignments: IReviewerAssignment[]
     loadMoreRows: any
-    assignTweet: any
+    assignOrUnassignTweet: any
     dismissTweet: any
 }
 
@@ -125,7 +125,7 @@ export class TweetColumn extends React.Component<IProps, {}> {
     }
 
     private _rowRenderer = ({ index, isScrolling, isVisible, key, parent, style }: any) => {
-        const { column, tweet_ids, tweets, tweet_assignments, reviewers, assignments } = this.props
+        const { column, tweet_ids, tweets, tweet_assignments, reviewers, assignments, assignOrUnassignTweet } = this.props
 
         if (index >= column.total_tweets) {
             return (
@@ -169,9 +169,11 @@ export class TweetColumn extends React.Component<IProps, {}> {
                                 }
                                 anchorOrigin={{ horizontal: "left", vertical: "top" }}
                                 targetOrigin={{ horizontal: "left", vertical: "top" }}
-                                onItemClick={this.props.assignTweet}
+                                onItemClick={assignOrUnassignTweet}
                             >
-                                {assignment !== null && <MenuItem primaryText={<em>Unassign</em>} data-tweetid={tweetId} />}
+                                {assignment !== null && (
+                                    <MenuItem primaryText={<em>Unassign</em>} data-tweetid={tweetId} data-assignmentid={assignment.id} />
+                                )}
                                 {reviewers.map((reviewer: IReviewerUser) => {
                                     let primaryText: string | JSX.Element = reviewer.name
                                     if (assignment !== null && assignment.user_id === reviewer.id) {
@@ -186,8 +188,8 @@ export class TweetColumn extends React.Component<IProps, {}> {
                                         <MenuItem
                                             key={reviewer.id}
                                             primaryText={primaryText}
-                                            data-reviewerid={reviewer.id}
                                             data-tweetid={tweetId}
+                                            data-reviewerid={reviewer.id}
                                         />
                                     )
                                 })}

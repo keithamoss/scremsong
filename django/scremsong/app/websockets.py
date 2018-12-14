@@ -3,7 +3,7 @@ from asgiref.sync import async_to_sync
 from django.conf import settings
 from .serializers import UserSerializer
 from scremsong.app.twitter import get_twitter_columns, fetch_some_tweets
-from scremsong.app.reviewers import get_reviewer_users, get_all_pending_assignments
+from scremsong.app.reviewers import get_reviewer_users, get_assignments
 
 # group-name_room-name
 WS_GROUP_NAME = "scremsong_scremsong"
@@ -25,7 +25,7 @@ def build_on_connect_data_payload(user):
             },
             {
                 **{"msg_type": settings.MSG_TYPE_REVIEWERS_LIST_ASSIGNMENTS},
-                **get_all_pending_assignments()
+                **get_assignments()
             },
             {
                 **{"msg_type": settings.MSG_TYPE_TWEETS_FETCH_SOME},

@@ -1,16 +1,19 @@
 import { includes as arrayIncludes } from "core-js/library/fn/array"
 import ReconnectingWebSocket from "reconnecting-websocket"
 import { Action } from "redux"
-import { IReviewerAssignment, IReviewerUser } from "src/redux/modules/reviewers"
+import { eSocialAssignmentStatus, IReviewerAssignment, IReviewerUser } from "src/redux/modules/reviewers"
 import { ISocialTweetList } from "src/redux/modules/social"
 import { ITriageColumn } from "src/redux/modules/triage"
 import { IUser } from "src/redux/modules/user"
 import {
     messageTypes,
     WS_CONNECTED,
+    WS_REVIEWERS_ASSIGN,
+    WS_REVIEWERS_ASSIGNMENT_STATUS_CHANGE,
     WS_REVIEWERS_LIST_ASSIGNMENTS,
     WS_REVIEWERS_LIST_USERS,
     WS_REVIEWERS_SET_STATUS,
+    WS_REVIEWERS_UNASSIGN,
     WS_SOCIAL_COLUMNS_LIST,
     WS_TWEETS_FETCH_SOME,
     WS_URI,
@@ -96,6 +99,19 @@ export interface IActionReviewersList extends Action<typeof WS_REVIEWERS_LIST_US
 export interface IActionReviewersListAssignments extends Action<typeof WS_REVIEWERS_LIST_ASSIGNMENTS> {
     assignments: IReviewerAssignment[]
     tweets: ISocialTweetList
+}
+
+export interface IActionReviewersAssign extends Action<typeof WS_REVIEWERS_ASSIGN> {
+    assignment: IReviewerAssignment
+}
+
+export interface IActionReviewersUnassign extends Action<typeof WS_REVIEWERS_UNASSIGN> {
+    assignmentId: number
+}
+
+export interface IActionReviewersAssignmentStatusChange extends Action<typeof WS_REVIEWERS_ASSIGNMENT_STATUS_CHANGE> {
+    assignmentId: number
+    status: eSocialAssignmentStatus
 }
 
 export interface IActionReviewersSetStatus extends Action<typeof WS_REVIEWERS_SET_STATUS> {

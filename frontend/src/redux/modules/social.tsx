@@ -1,9 +1,14 @@
 import * as dotProp from "dot-prop-immutable"
 // import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
-import { values as objectValues } from "lodash-es/"
+import { entries as objectEntries, values as objectValues } from "lodash-es/"
 import { Action } from "redux"
-import { IActionReviewersListAssignments, IActionsTweetsFetch } from "src/websockets/actions"
-import { WS_REVIEWERS_LIST_ASSIGNMENTS, WS_TWEETS_FETCH_SOME } from "src/websockets/constants"
+import {
+    IActionReviewersAssign,
+    IActionReviewersListAssignments,
+    IActionReviewersUnassign,
+    IActionsTweetsFetch,
+} from "src/websockets/actions"
+import { WS_REVIEWERS_ASSIGN, WS_REVIEWERS_LIST_ASSIGNMENTS, WS_REVIEWERS_UNASSIGN, WS_TWEETS_FETCH_SOME } from "src/websockets/constants"
 import { IThunkExtras } from "../../redux/modules/interfaces"
 import { IReviewerAssignment } from "./reviewers"
 
@@ -17,7 +22,13 @@ const initialState: IModule = {
 }
 
 // Reducer
-type IAction = IActionDismissTweet | IActionLoadTweets | IActionsTweetsFetch | IActionReviewersListAssignments
+type IAction =
+    | IActionDismissTweet
+    | IActionLoadTweets
+    | IActionsTweetsFetch
+    | IActionReviewersListAssignments
+    | IActionReviewersAssign
+    | IActionReviewersUnassign
 export default function reducer(state: IModule = initialState, action: IAction) {
     switch (action.type) {
         case LOAD_TWEETS:
@@ -30,6 +41,15 @@ export default function reducer(state: IModule = initialState, action: IAction) 
                 state = dotProp.set(state, `tweet_assignments.${assignment.social_id}`, assignment.id)
             })
             return dotProp.set(state, "tweets", { ...state.tweets, ...action.tweets })
+        case WS_REVIEWERS_ASSIGN:
+            return dotProp.set(state, `tweet_assignments.${action.assignment.social_id}`, action.assignment.id)
+        case WS_REVIEWERS_UNASSIGN:
+            for (const [tweetId, assignmentId] of objectEntries(state.tweet_assignments)) {
+                if (assignmentId === action.assignmentId) {
+                    state = dotProp.delete(state, `tweet_assignments.${tweetId}`)
+                }
+            }
+            return state
         case DISMISS:
             return dotProp.set(state, `tweets.${action.tweetId}.is_dismissed`, true)
         default:

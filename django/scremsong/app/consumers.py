@@ -52,11 +52,38 @@ class ScremsongConsumer(JsonWebsocketConsumer):
     # c.f. https://github.com/andrewgodwin/channels-examples/blob/master/multichat/chat/consumers.py
 
     # These helper methods are named by the types we send - so chat.join becomes chat_join
+    def reviewers_assign(self, event):
+        """
+        Called when someone has been assigned a new item.
+        """
+        self.send_json({
+            "msg_type": settings.MSG_TYPE_REVIEWERS_ASSIGN,
+            "assignment": event["assignment"],
+        })
+
+    def reviewers_unassign(self, event):
+        """
+        Called when someone has been unassigned from an item.
+        """
+        self.send_json({
+            "msg_type": settings.MSG_TYPE_REVIEWERS_UNASSIGN,
+            "assignmentId": event["assignmentId"],
+        })
+
+    def reviewers_assignment_status_changed(self, event):
+        """
+        Called when the status of an assignment has been changed (e.g. it's been completed).
+        """
+        self.send_json({
+            "msg_type": settings.MSG_TYPE_REVIEWERS_ASSIGNMENT_STATUS_CHANGE,
+            "assignmentId": event["assignmentId"],
+            "status": event["status"],
+        })
+        
     def reviewers_set_status(self, event):
         """
-        Called when someone has joined our chat.
+        Called when someone has changed their assignment status (accepting assignments or not).
         """
-        # Send a message down to the client
         self.send_json({
             "msg_type": settings.MSG_TYPE_REVIEWERS_SET_STATUS,
             "user_id": event["user_id"],
