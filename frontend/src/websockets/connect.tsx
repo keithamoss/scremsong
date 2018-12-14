@@ -1,4 +1,3 @@
-import { includes as arrayIncludes } from "core-js/library/fn/array"
 import ReconnectingWebSocket from "reconnecting-websocket"
 import { Action } from "redux"
 import { loaded } from "src/redux/modules/app"
@@ -50,7 +49,7 @@ export const init = (store: any) => {
             }
 
             actions.forEach((action: IActionWebSocketBase, index: number) => {
-                if (arrayIncludes(messageTypes, action.msg_type)) {
+                if (messageTypes.includes(action.msg_type)) {
                     const { msg_type, ...payload } = action
                     store.dispatch({ type: msg_type, ...payload })
                 } else {

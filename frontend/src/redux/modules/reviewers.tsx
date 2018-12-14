@@ -1,6 +1,5 @@
 import * as dotProp from "dot-prop-immutable"
 import { memoize } from "lodash-es"
-import { values as objectValues } from "lodash-es/"
 // import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 import { Action } from "redux"
 import { createSelector } from "reselect"
@@ -67,7 +66,7 @@ export default function reducer(state: IModule = initialState, action: IAction) 
 // Selectors
 
 const getPendingAssignments = (state: IStore) =>
-    objectValues(state.reviewers.assignments).filter(
+    Object.values(state.reviewers.assignments).filter(
         (assignment: IReviewerAssignment, index: number) => assignment.status === eSocialAssignmentStatus.PENDING
     )
 const getCurrentReviewerUserId = (state: IStore) => (state.reviewers.currentReviewerId ? state.reviewers.currentReviewerId : null)

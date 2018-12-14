@@ -1,6 +1,5 @@
 import * as dotProp from "dot-prop-immutable"
 // import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
-import { entries as objectEntries, values as objectValues } from "lodash-es/"
 import { Action } from "redux"
 import {
     IActionReviewersAssign,
@@ -37,14 +36,14 @@ export default function reducer(state: IModule = initialState, action: IAction) 
             // console.log("social.WS_TWEETS_FETCH_SOME_NEW_TWEETS or social.WS_TWEETS_FETCH_SOME or social.LOAD_TWEETS", action)
             return dotProp.set(state, "tweets", { ...state.tweets, ...action.tweets })
         case WS_REVIEWERS_LIST_ASSIGNMENTS:
-            objectValues(action.assignments).forEach((assignment: IReviewerAssignment, index: number) => {
+            Object.values(action.assignments).forEach((assignment: IReviewerAssignment, index: number) => {
                 state = dotProp.set(state, `tweet_assignments.${assignment.social_id}`, assignment.id)
             })
             return dotProp.set(state, "tweets", { ...state.tweets, ...action.tweets })
         case WS_REVIEWERS_ASSIGN:
             return dotProp.set(state, `tweet_assignments.${action.assignment.social_id}`, action.assignment.id)
         case WS_REVIEWERS_UNASSIGN:
-            for (const [tweetId, assignmentId] of objectEntries(state.tweet_assignments)) {
+            for (const [tweetId, assignmentId] of Object.entries(state.tweet_assignments)) {
                 if (assignmentId === action.assignmentId) {
                     state = dotProp.delete(state, `tweet_assignments.${tweetId}`)
                 }
