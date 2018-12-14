@@ -56,26 +56,28 @@ class App extends React.Component<IProps, {}> {
 
         return (
             <div className="page">
-                <ResponsiveDrawer breakPoint={defaultBreakPoint}>
-                    {isResponsiveAndOverBreakPoint === true && (
-                        <React.Fragment>
-                            <MenuItem containerElement={<Link to={"/"} />} leftIcon={<ActionAssignment color={"black"} />}>
-                                Triage View
-                            </MenuItem>
+                {user !== null && (
+                    <ResponsiveDrawer breakPoint={defaultBreakPoint}>
+                        {isResponsiveAndOverBreakPoint === true && (
+                            <React.Fragment>
+                                <MenuItem containerElement={<Link to={"/"} />} leftIcon={<ActionAssignment color={"black"} />}>
+                                    Triage View
+                                </MenuItem>
 
-                            <MenuItem containerElement={<Link to={"/queue"} />} leftIcon={<ActionAssignmentInd color={"black"} />}>
-                                <Badge
-                                    badgeContent={userAssignmentCount}
-                                    primary={true}
-                                    badgeStyle={{ top: 12, right: -14 }}
-                                    style={{ padding: "0px 16px 0px 0px" }}
-                                >
-                                    My Queue
-                                </Badge>
-                            </MenuItem>
-                        </React.Fragment>
-                    )}
-                </ResponsiveDrawer>
+                                <MenuItem containerElement={<Link to={"/queue"} />} leftIcon={<ActionAssignmentInd color={"black"} />}>
+                                    <Badge
+                                        badgeContent={userAssignmentCount}
+                                        primary={true}
+                                        badgeStyle={{ top: 12, right: -14 }}
+                                        style={{ padding: "0px 16px 0px 0px" }}
+                                    >
+                                        My Queue
+                                    </Badge>
+                                </MenuItem>
+                            </React.Fragment>
+                        )}
+                    </ResponsiveDrawer>
+                )}
 
                 <BodyContainer breakPoint={defaultBreakPoint}>
                     <LinearProgress mode="indeterminate" color={muiThemePalette.accent3Color} style={styles.linearProgressStyle} />
