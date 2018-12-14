@@ -1,6 +1,6 @@
 import * as React from "react"
 import { ITriageColumn } from "src/redux/modules/triage"
-import styled from "../../../node_modules/styled-components"
+import styled from "styled-components"
 import TweetColumnContainer from "../TweetColumn/TweetColumnContainer"
 
 const ColumnContainerContainer = styled.div`

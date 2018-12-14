@@ -14,7 +14,7 @@ const ReviewContainer = styled.div`
 
 const PaddedCard = styled(Card)`
     margin-bottom: 15px;
-`
+` as any
 
 export interface IProps {
     assignments: IReviewerAssignment[]
