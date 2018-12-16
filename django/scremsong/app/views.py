@@ -117,8 +117,9 @@ class SocialAssignmentsViewset(viewsets.ViewSet):
         tweetId = qp["tweetId"] if "tweetId" in qp else None
         reviewerId = qp["reviewerId"] if "reviewerId" in qp else None
 
-        assignment = SocialAssignments(platform=SocialPlatformChoice.TWITTER, social_id=tweetId, user_id=reviewerId)
-        assignment.save()
+        assignment, created = SocialAssignments.objects.update_or_create(
+            platform=SocialPlatformChoice.TWITTER, social_id=tweetId, defaults={"user_id": reviewerId}
+        )
 
         websockets.send_channel_message("reviewers.assign", {
             "assignment": SocialAssignmentSerializer(assignment).data,

@@ -79,3 +79,6 @@ class SocialAssignments(models.Model):
     social_id = models.TextField(editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     status = models.TextField(choices=[(tag, tag.value) for tag in SocialAssignmentStatus], default=SocialAssignmentStatus.PENDING)
+
+    class Meta:
+        unique_together = ("platform", "social_id")
