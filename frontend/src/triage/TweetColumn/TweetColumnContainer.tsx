@@ -25,7 +25,7 @@ export interface IDispatchProps {
 }
 
 type TComponentProps = IProps & IStoreProps & IDispatchProps
-export class TweetColumnContainer extends React.Component<TComponentProps, {}> {
+class TweetColumnContainer extends React.Component<TComponentProps, {}> {
     private loadMoreRows: any
 
     public constructor(props: TComponentProps) {

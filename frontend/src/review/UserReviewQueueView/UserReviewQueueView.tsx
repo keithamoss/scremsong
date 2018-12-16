@@ -59,7 +59,7 @@ export interface IProps {
     classes: any
 }
 
-export class UserReviewQueueView extends React.Component<IProps, {}> {
+class UserReviewQueueView extends React.Component<IProps, {}> {
     private onChangeQueueUser: any
     private onToggleUserOnlineStatus: any
 

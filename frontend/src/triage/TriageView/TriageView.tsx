@@ -29,7 +29,7 @@ export interface IState {
     assignment: IReviewerAssignment | null
 }
 
-export class TriageView extends React.Component<IProps, IState> {
+class TriageView extends React.Component<IProps, IState> {
     private onOpenAssigner: any
     private onCloseAssigner: any
     public constructor(props: IProps) {

@@ -39,7 +39,7 @@ export interface IProps {
     classes: any
 }
 
-export class TweetColumn extends React.Component<IProps, {}> {
+class TweetColumn extends React.Component<IProps, {}> {
     private onDismissTweet: any
     private onOpenAssigner: any
 

@@ -1,9 +1,9 @@
-import { Avatar, Dialog, DialogTitle, Divider, List, ListItem, ListItemAvatar, ListItemText, Theme, withStyles } from "@material-ui/core"
-import blue from "@material-ui/core/colors/blue"
-import AssignmentReturnIcon from "@material-ui/icons/AssignmentReturn"
-import PersonIcon from "@material-ui/icons/Person"
-import * as React from "react"
-import { IReviewerAssignment, IReviewerUser } from "../../redux/modules/reviewers"
+import { Avatar, Dialog, DialogTitle, Divider, List, ListItem, ListItemAvatar, ListItemText, Theme, withStyles } from "@material-ui/core";
+import blue from "@material-ui/core/colors/blue";
+import AssignmentReturnIcon from "@material-ui/icons/AssignmentReturn";
+import PersonIcon from "@material-ui/icons/Person";
+import * as React from "react";
+import { IReviewerAssignment, IReviewerUser } from "../../redux/modules/reviewers";
 
 const styles = (theme: Theme) => ({
     selectedAvatar: {
@@ -26,7 +26,7 @@ export interface IProps {
     classes: any
 }
 
-export class TweetColumnAssigner extends React.Component<IProps, {}> {
+class TweetColumnAssigner extends React.Component<IProps, {}> {
     private onAssignTweet: any
     private onUnassignTweet: any
     public constructor(props: IProps) {
