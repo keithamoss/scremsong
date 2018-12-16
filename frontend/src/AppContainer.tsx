@@ -111,7 +111,6 @@ export class AppContainer extends React.Component<any, any> {
         if (isAppLoading === true) {
             component = (
                 <div className={classes.loaderBackground}>
-                    >
                     <LinearProgress />
                     <div className={classes.flexboxCentredContainer}>
                         <div className={classes.flexboxCentredBox}>
