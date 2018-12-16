@@ -45,7 +45,7 @@ export interface IProps {
     classes: any
 }
 
-class App extends React.PureComponent<IProps, {}> {
+class App extends React.Component<IProps, {}> {
     public render() {
         const { userAssignmentCount, classes } = this.props
 
