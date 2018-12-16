@@ -102,6 +102,10 @@ class TweetsViewset(viewsets.ViewSet):
         tweet.is_dismissed = True
         tweet.save()
 
+        websockets.send_channel_message("tweets.dismiss", {
+            "tweetId": tweetId,
+        })
+
         return Response({})
 
 

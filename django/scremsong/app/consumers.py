@@ -89,3 +89,12 @@ class ScremsongConsumer(JsonWebsocketConsumer):
             "user_id": event["user_id"],
             "is_accepting_assignments": event["is_accepting_assignments"],
         })
+        
+    def tweets_dismiss(self, event):
+        """
+        Called when someone has dismissed a tweet (set it to be ignored).
+        """
+        self.send_json({
+            "msg_type": settings.MSG_TYPE_TWEETS_DISMISS,
+            "tweetId": event["tweetId"],
+        })
