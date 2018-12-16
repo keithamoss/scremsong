@@ -1,6 +1,8 @@
 import * as dotProp from "dot-prop-immutable"
+import { memoize } from "lodash-es"
 // import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 import { Action } from "redux"
+import { createSelector } from "reselect"
 import { IThunkExtras } from "../../redux/modules/interfaces"
 import {
     IActionReviewersAssign,
@@ -16,6 +18,7 @@ import {
     WS_TWEETS_DISMISS,
     WS_TWEETS_FETCH_SOME,
 } from "../../websockets/constants"
+import { IStore } from "./reducer"
 import { IReviewerAssignment } from "./reviewers"
 
 // Actions
@@ -61,6 +64,28 @@ export default function reducer(state: IModule = initialState, action: IAction) 
             return state
     }
 }
+
+// Selectors
+
+const getTweetAssignments = (state: IStore) => state.social.tweet_assignments
+const getTweets = (state: IStore) => state.social.tweets
+
+export const getTweetIdsForAssignement = createSelector(
+    [getTweetAssignments, getTweets],
+    (tweetAssignments, tweets) =>
+        memoize((assignment: IReviewerAssignment) => {
+            const tweetIds: string[] = []
+            for (const [tweetId, assignmentId] of Object.entries(tweetAssignments)) {
+                if (assignmentId === assignment.id) {
+                    tweetIds.push(tweetId)
+                }
+            }
+
+            const myTweets: any = {}
+            tweetIds.map((tweetId: string) => (myTweets[tweetId] = tweets[tweetId]))
+            return myTweets
+        })
+)
 
 // Action Creators
 export const loadTweets = (tweets: ISocialTweetList): IActionLoadTweets => ({

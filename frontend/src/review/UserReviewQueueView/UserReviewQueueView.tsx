@@ -7,8 +7,7 @@ import PowerOff from "@material-ui/icons/PowerOff"
 import classNames from "classnames"
 import * as React from "react"
 import { IReviewerAssignment, IReviewerUser } from "../../redux/modules/reviewers"
-import { ISocialTweetList } from "../../redux/modules/social"
-import ReviewCard from "./ReviewCard"
+import ReviewCardContainer from "../ReviewCard/ReviewCardContainer"
 
 const styles = (theme: Theme) => ({
     white: {
@@ -44,9 +43,6 @@ const styles = (theme: Theme) => ({
     iconSmall: {
         fontSize: 20,
     },
-    paddedCard: {
-        marginBottom: "15px",
-    },
     reviewerContainer: {
         display: "inline-block",
         padding: 10,
@@ -55,7 +51,6 @@ const styles = (theme: Theme) => ({
 
 export interface IProps {
     assignments: IReviewerAssignment[]
-    tweets: ISocialTweetList
     reviewers: IReviewerUser[]
     currentReviewer: IReviewerUser
     onMarkAsDone: any
@@ -77,8 +72,9 @@ export class UserReviewQueueView extends React.Component<IProps, {}> {
             props.onToggleUserOnlineStatus(event, this.props.currentReviewer)
         }
     }
+
     public render() {
-        const { assignments, tweets, reviewers, currentReviewer, onMarkAsDone, classes } = this.props
+        const { assignments, reviewers, currentReviewer, onMarkAsDone, classes } = this.props
 
         return (
             <React.Fragment>
@@ -127,7 +123,7 @@ export class UserReviewQueueView extends React.Component<IProps, {}> {
 
                 <div className={classes.reviewerContainer}>
                     {assignments.map((assignment: IReviewerAssignment) => (
-                        <ReviewCard key={assignment.id} assignment={assignment} tweets={tweets} onMarkAsDone={onMarkAsDone} />
+                        <ReviewCardContainer key={assignment.id} assignment={assignment} onMarkAsDone={onMarkAsDone} />
                     ))}
                 </div>
             </React.Fragment>

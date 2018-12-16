@@ -8,30 +8,6 @@ import { IReviewerAssignment } from "../../redux/modules/reviewers"
 import { ISocialTweetList } from "../../redux/modules/social"
 
 const styles = (theme: Theme) => ({
-    white: {
-        color: theme.palette.common.white,
-    },
-    formControl: {
-        minWidth: 165,
-    },
-    focusedInputLabel: {
-        color: "white !important",
-    },
-    underline: {
-        "&:before": {
-            borderBottomColor: "rgba(255, 255, 255, 0.4)",
-        },
-        "&:hover:not($disabled)::before": {
-            borderBottomColor: "rgba(255, 255, 255, 0.87) !important",
-        },
-        "&:after": {
-            borderBottomColor: "rgba(255, 255, 255, 0.4)",
-        },
-    },
-    disabled: {},
-    grow: {
-        flexGrow: 1,
-    },
     button: {
         margin: theme.spacing.unit,
     },
@@ -44,10 +20,6 @@ const styles = (theme: Theme) => ({
     paddedCard: {
         marginBottom: "15px",
     },
-    reviewerContainer: {
-        display: "inline-block",
-        padding: 10,
-    },
 })
 
 export interface IProps {
@@ -57,7 +29,7 @@ export interface IProps {
     classes: any
 }
 
-class ReviewCard extends React.Component<IProps, { shown: boolean }> {
+class ReviewCard extends React.PureComponent<IProps, { shown: boolean }> {
     private onMarkAsDone: ExitHandler
 
     public constructor(props: IProps) {
@@ -76,7 +48,6 @@ class ReviewCard extends React.Component<IProps, { shown: boolean }> {
 
     public render() {
         const { assignment, tweets, classes } = this.props
-        // console.log("ReviewCard.render()", assignment.id)
 
         return (
             <Collapse in={this.state.shown} onExited={this.onMarkAsDone}>

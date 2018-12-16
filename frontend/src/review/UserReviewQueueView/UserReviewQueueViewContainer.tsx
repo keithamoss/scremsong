@@ -10,7 +10,6 @@ import {
     setCurrentReviewer,
     setReviewerOnlineStatus,
 } from "../../redux/modules/reviewers"
-import { ISocialTweetList } from "../../redux/modules/social"
 import { IUser } from "../../redux/modules/user"
 import UserReviewQueueView from "./UserReviewQueueView"
 
@@ -19,7 +18,6 @@ export interface IProps {}
 export interface IStoreProps {
     user: IUser | null
     assignments: IReviewerAssignment[]
-    tweets: ISocialTweetList
     reviewers: IReviewerUser[]
     currentReviewer: IReviewerUser | null | undefined
 }
@@ -33,16 +31,7 @@ export interface IDispatchProps {
 type TComponentProps = IProps & IStoreProps & IDispatchProps
 class UserReviewQueueViewContainer extends React.Component<TComponentProps, {}> {
     public render() {
-        const {
-            user,
-            assignments,
-            tweets,
-            reviewers,
-            currentReviewer,
-            onMarkAsDone,
-            onChangeQueueUser,
-            onToggleUserOnlineStatus,
-        } = this.props
+        const { user, assignments, reviewers, currentReviewer, onMarkAsDone, onChangeQueueUser, onToggleUserOnlineStatus } = this.props
 
         if (user === null || currentReviewer === null || currentReviewer === undefined) {
             return <div />
@@ -51,7 +40,6 @@ class UserReviewQueueViewContainer extends React.Component<TComponentProps, {}> 
         return (
             <UserReviewQueueView
                 assignments={assignments}
-                tweets={tweets}
                 reviewers={reviewers}
                 currentReviewer={currentReviewer}
                 onMarkAsDone={onMarkAsDone}
@@ -63,12 +51,11 @@ class UserReviewQueueViewContainer extends React.Component<TComponentProps, {}> 
 }
 
 const mapStateToProps = (state: IStore, ownProps: TComponentProps): IStoreProps => {
-    const { user, reviewers, social } = state
+    const { user, reviewers } = state
 
     return {
         user: user.user,
         assignments: getCurrentReviewerAssignments(state),
-        tweets: social.tweets,
         reviewers: reviewers.users,
         currentReviewer: getCurrentReviewer(state),
     }
