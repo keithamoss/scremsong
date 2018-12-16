@@ -1,5 +1,6 @@
-import { IconButton, IconMenu, MenuItem } from "material-ui"
-import { ActionAssignment, ActionAssignmentInd, NavigationClose } from "material-ui/svg-icons"
+import { Button, Divider, Theme, Tooltip, withStyles } from "@material-ui/core"
+import AssignmentIcon from "@material-ui/icons/Assignment"
+import DeleteIcon from "@material-ui/icons/Delete"
 import * as React from "react"
 import Tweet from "react-tweet"
 import { AutoSizer, CellMeasurer, CellMeasurerCache, InfiniteLoader, List } from "react-virtualized"
@@ -7,32 +8,40 @@ import "react-virtualized/styles.css"
 import { eSocialAssignmentStatus, IReviewerAssignment, IReviewerUser } from "src/redux/modules/reviewers"
 import { ISocialTweetAssignments, ISocialTweetList } from "src/redux/modules/social"
 import { ITriageColumn } from "src/redux/modules/triage"
-import styled from "styled-components"
 
-const Column = styled.div`
-    width: 370px;
-    height: 100%;
-    margin: 5px;
-`
-
-const ColumnHeading = styled.h3`
-    margin-top: 8px;
-`
+const styles = (theme: Theme) => ({
+    button: {
+        margin: theme.spacing.unit,
+    },
+    rightIcon: {
+        marginLeft: theme.spacing.unit,
+    },
+    column: {
+        width: "370px",
+        height: "100%",
+        margin: "5px",
+    },
+    columnHeading: {
+        marginTop: "8px",
+    },
+})
 
 export interface IProps {
     column: ITriageColumn
+    onOpenAssigner: any
     tweet_ids: string[]
     tweets: ISocialTweetList
     tweet_assignments: ISocialTweetAssignments
     reviewers: IReviewerUser[]
     assignments: IReviewerAssignment[]
     loadMoreRows: any
-    assignOrUnassignTweet: any
-    dismissTweet: any
+    onDismissTweet: any
+    classes: any
 }
 
 export class TweetColumn extends React.Component<IProps, {}> {
-    private dismissTweet: any
+    private onDismissTweet: any
+    private onOpenAssigner: any
 
     private _cache = new CellMeasurerCache({
         defaultHeight: 175,
@@ -48,18 +57,21 @@ export class TweetColumn extends React.Component<IProps, {}> {
 
     public constructor(props: IProps) {
         super(props)
-        this.dismissTweet = (tweetId: string) => () => this.props.dismissTweet(tweetId)
+
+        this.onOpenAssigner = (tweetId: string, assignment: IReviewerAssignment | null) => () =>
+            this.props.onOpenAssigner(tweetId, assignment)
+        this.onDismissTweet = (tweetId: string) => () => this.props.onDismissTweet(tweetId)
     }
 
     public render() {
-        const { column, tweet_ids, loadMoreRows } = this.props
+        const { column, tweet_ids, loadMoreRows, classes } = this.props
 
         return (
-            <Column>
-                <ColumnHeading>
+            <div className={classes.column}>
+                <div className={classes.columnHeading}>
                     {column.search_phrases.join(", ")} (#
                     {column.id})
-                </ColumnHeading>
+                </div>
 
                 {tweet_ids.length > 0 && (
                     <InfiniteLoader
@@ -90,7 +102,7 @@ export class TweetColumn extends React.Component<IProps, {}> {
                         )}
                     </InfiniteLoader>
                 )}
-            </Column>
+            </div>
         )
     }
 
@@ -125,7 +137,7 @@ export class TweetColumn extends React.Component<IProps, {}> {
     }
 
     private _rowRenderer = ({ index, isScrolling, isVisible, key, parent, style }: any) => {
-        const { column, tweet_ids, tweets, tweet_assignments, reviewers, assignments, assignOrUnassignTweet } = this.props
+        const { column, tweet_ids, tweets, tweet_assignments, assignments, classes } = this.props
 
         if (index >= column.total_tweets) {
             return (
@@ -144,14 +156,16 @@ export class TweetColumn extends React.Component<IProps, {}> {
 
             let tweetStyle = style
             if (tweets[tweetId].is_dismissed) {
-                tweetStyle = { ...tweetStyle, backgroundColor: "grey" }
+                tweetStyle = { ...tweetStyle, backgroundColor: "lightgrey" }
             }
 
             let assignment: IReviewerAssignment | null = null
             if (tweetId in tweet_assignments) {
                 const assignmentId = tweet_assignments[tweetId]
                 assignment = assignments[assignmentId]
-                if (assignment.status === eSocialAssignmentStatus.DONE) {
+                if (assignment.status === eSocialAssignmentStatus.PENDING) {
+                    tweetStyle = { ...tweetStyle, backgroundColor: "lightyellow" }
+                } else if (assignment.status === eSocialAssignmentStatus.DONE) {
                     tweetStyle = { ...tweetStyle, backgroundColor: "lightgreen" }
                 }
             }
@@ -160,44 +174,23 @@ export class TweetColumn extends React.Component<IProps, {}> {
                 <CellMeasurer key={key} cache={this._cache} columnIndex={0} parent={parent} rowIndex={index}>
                     <div style={tweetStyle}>
                         <Tweet key={tweetId} data={tweets[tweetId].data} />
-                        <div>
-                            <IconMenu
-                                iconButtonElement={
-                                    <IconButton tooltip="Assign this tweet to a reviewer" tooltipPosition="bottom-right">
-                                        {assignment !== null ? <ActionAssignmentInd /> : <ActionAssignment />}
-                                    </IconButton>
-                                }
-                                anchorOrigin={{ horizontal: "left", vertical: "top" }}
-                                targetOrigin={{ horizontal: "left", vertical: "top" }}
-                                onItemClick={assignOrUnassignTweet}
-                            >
-                                {assignment !== null && (
-                                    <MenuItem primaryText={<em>Unassign</em>} data-tweetid={tweetId} data-assignmentid={assignment.id} />
-                                )}
-                                {reviewers.map((reviewer: IReviewerUser) => {
-                                    let primaryText: string | JSX.Element = reviewer.name
-                                    if (assignment !== null && assignment.user_id === reviewer.id) {
-                                        primaryText += " (Assigned)"
-                                    }
-                                    if (reviewer.is_accepting_assignments === false) {
-                                        primaryText += " (Offline)"
-                                        primaryText = <em>{primaryText}</em>
-                                    }
+                        <Divider />
+                        <Button
+                            color="primary"
+                            className={classes.button}
+                            aria-label="Assign tweet"
+                            onClick={this.onOpenAssigner(tweetId, assignment)}
+                        >
+                            Assign
+                            <AssignmentIcon className={classes.rightIcon} />
+                        </Button>
 
-                                    return (
-                                        <MenuItem
-                                            key={reviewer.id}
-                                            primaryText={primaryText}
-                                            data-tweetid={tweetId}
-                                            data-reviewerid={reviewer.id}
-                                        />
-                                    )
-                                })}
-                            </IconMenu>
-                            <IconButton tooltip="Dismiss and hide this tweet" onClick={this.dismissTweet(tweetId)}>
-                                <NavigationClose />
-                            </IconButton>
-                        </div>
+                        <Tooltip title="Dismiss and hide this tweet" aria-label="Dismiss tweet">
+                            <Button className={classes.button} aria-label="Dismiss tweet" onClick={this.onDismissTweet(tweetId)}>
+                                Dismiss
+                                <DeleteIcon className={classes.rightIcon} />
+                            </Button>
+                        </Tooltip>
                     </div>
                 </CellMeasurer>
             )
@@ -209,4 +202,4 @@ export class TweetColumn extends React.Component<IProps, {}> {
     }
 }
 
-export default TweetColumn
+export default withStyles(styles)(TweetColumn)

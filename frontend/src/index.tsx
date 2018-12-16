@@ -10,7 +10,7 @@ import { composeWithDevTools } from "redux-devtools-extension"
 // import { syncHistoryWithStore } from "react-router-redux"
 // import getRoutes from "./routes"
 // Redux Responsive
-import { responsiveStoreEnhancer } from "redux-responsive"
+// import { responsiveStoreEnhancer } from "redux-responsive"
 import thunkMiddleware from "redux-thunk"
 import { APIClient } from "./api/APIClient"
 import AppContainer from "./AppContainer"
@@ -48,7 +48,7 @@ const composeEnhancers = composeWithDevTools({
 })
 const store: Store<IStore> = createStore(
     reducers,
-    composeEnhancers(responsiveStoreEnhancer, applyMiddleware(thunkMiddleware.withExtraArgument({ api, emit }), ...Middleware))
+    composeEnhancers(applyMiddleware(thunkMiddleware.withExtraArgument({ api, emit }), ...Middleware))
 )
 websocketInit(store)
 

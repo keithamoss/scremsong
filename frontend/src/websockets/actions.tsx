@@ -11,6 +11,7 @@ import {
     WS_REVIEWERS_SET_STATUS,
     WS_REVIEWERS_UNASSIGN,
     WS_SOCIAL_COLUMNS_LIST,
+    WS_TWEETS_DISMISS,
     WS_TWEETS_FETCH_SOME,
 } from "./constants"
 
@@ -59,6 +60,10 @@ export interface IActionReviewersSetStatus extends Action<typeof WS_REVIEWERS_SE
 export interface ITweetFetchColumn {
     id: number
     tweet_ids: string[]
+}
+
+export interface IActionsTweetsDismiss extends Action<typeof WS_TWEETS_DISMISS> {
+    tweetId: string
 }
 
 export interface IActionsTweetsFetch extends Action<typeof WS_TWEETS_FETCH_SOME> {

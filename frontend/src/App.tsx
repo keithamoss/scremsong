@@ -1,99 +1,104 @@
-import { Badge, MenuItem } from "material-ui"
-import { BodyContainer, ResponsiveDrawer } from "material-ui-responsive-drawer"
-// import AppBar from "material-ui/AppBar"
-// import Snackbar from "material-ui/Snackbar"
-import LinearProgress from "material-ui/LinearProgress"
-// import { default as ActionAssignment, default as ActionAssignmentInd } from "material-ui/SvgIcon"
-import { ActionAssignment, ActionAssignmentInd } from "material-ui/svg-icons"
+import { Badge, CssBaseline, Drawer, IconButton, List, ListItem, Theme, Tooltip, withStyles } from "@material-ui/core"
+import AssignmentIndIcon from "@material-ui/icons/AssignmentInd"
+import ViewColumnIcon from "@material-ui/icons/ViewColumn"
+import classNames from "classnames"
 import * as React from "react"
-// import styled from "styled-components"
 import { Link, Route } from "react-router-dom"
 import "./App.css"
 import { LoginDialog } from "./authentication/login-dialog/LoginDialog"
-import { IAppModule, IUser } from "./redux/modules/interfaces"
+import { IUser } from "./redux/modules/interfaces"
 import UserReviewQueueViewContainer from "./review/UserReviewQueueView/UserReviewQueueViewContainer"
-// import { MapsMap, MapsAddLocation, ActionSearch, ActionStore, ActionInfo, HardwareTv, CommunicationEmail } from "material-ui/svg-icons"
-// import Drawer from "material-ui/Drawer"
-// import { BottomNavigation, BottomNavigationItem } from "material-ui/BottomNavigation"
-// import Paper from "material-ui/Paper"
-// import { List, ListItem } from "material-ui/List"
-// import Subheader from "material-ui/Subheader"
-// import Divider from "material-ui/Divider"
-// const logo = require("./logo.svg")
-// const TitleContainer = styled.div`
-//     display: flex;
-//     align-items: center;
-//     font-size: 20px !important;
-// `
-// const TitleLogo = styled.img`
-//     height: 32px;
-//     margin-right: 10px;
-// `
 import TriageViewContainer from "./triage/TriageView/TriageViewContainer"
 
+const drawerWidth = 100
+
+const styles = (theme: Theme) => ({
+    root: {
+        display: "flex",
+        height: "100%",
+    },
+    drawer: {
+        width: drawerWidth,
+        flexShrink: 0,
+    },
+    drawerPaper: {
+        width: drawerWidth,
+    },
+    content: {
+        flexGrow: 1,
+        // padding: theme.spacing.unit * 3,
+        transition: theme.transitions.create("margin", {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        }),
+        marginLeft: -drawerWidth,
+    },
+    contentShift: {
+        transition: theme.transitions.create("margin", {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+        marginLeft: 0,
+    },
+})
+
 export interface IProps {
-    muiThemePalette: any
-    app: IAppModule
     user: IUser
-    defaultBreakPoint: string
-    isResponsiveAndOverBreakPoint: boolean
     userAssignmentCount: number
-    toggleSidebar: any
+    classes: any
 }
 
 class App extends React.Component<IProps, {}> {
     public render() {
-        const { muiThemePalette, app, user, defaultBreakPoint, isResponsiveAndOverBreakPoint, userAssignmentCount } = this.props
+        const { user, userAssignmentCount, classes } = this.props
 
-        const styles: any = {
-            linearProgressStyle: {
-                position: "fixed",
-                top: "0px",
-                zIndex: 1200,
-                display: app.requestsInProgress > 0 ? "block" : "none",
-            },
-        }
+        const QueueLink = (props: any) => <Link to="/queue" {...props} />
+        const TriageLink = (props: any) => <Link to="/" {...props} />
 
         return (
-            <div className="page">
-                {user !== null && (
-                    <ResponsiveDrawer breakPoint={defaultBreakPoint}>
-                        {isResponsiveAndOverBreakPoint === true && (
-                            <React.Fragment>
-                                <MenuItem containerElement={<Link to={"/"} />} leftIcon={<ActionAssignment color={"black"} />}>
-                                    Triage View
-                                </MenuItem>
-
-                                <MenuItem containerElement={<Link to={"/queue"} />} leftIcon={<ActionAssignmentInd color={"black"} />}>
-                                    <Badge
-                                        badgeContent={userAssignmentCount}
-                                        primary={true}
-                                        badgeStyle={{ top: 12, right: -14 }}
-                                        style={{ padding: "0px 16px 0px 0px" }}
-                                    >
-                                        My Queue
+            <div className={classes.root}>
+                <CssBaseline />
+                <Drawer
+                    className={classes.drawer}
+                    variant="persistent"
+                    anchor="left"
+                    open={true}
+                    classes={{
+                        paper: classes.drawerPaper,
+                    }}
+                >
+                    <List>
+                        <ListItem button={false} component={QueueLink}>
+                            <Tooltip title="Go to your queue">
+                                <IconButton aria-label="Your queue">
+                                    <Badge badgeContent={userAssignmentCount} color="primary">
+                                        <AssignmentIndIcon />
                                     </Badge>
-                                </MenuItem>
-                            </React.Fragment>
-                        )}
-                    </ResponsiveDrawer>
-                )}
+                                </IconButton>
+                            </Tooltip>
+                        </ListItem>
+                        <ListItem button={false} component={TriageLink}>
+                            <Tooltip title="Go to triage view">
+                                <IconButton aria-label="Triage view">
+                                    <ViewColumnIcon />
+                                </IconButton>
+                            </Tooltip>
+                        </ListItem>
+                    </List>
+                </Drawer>
+                <main
+                    className={classNames(classes.content, {
+                        [classes.contentShift]: true,
+                    })}
+                >
+                    <Route path="/queue" component={UserReviewQueueViewContainer} />
+                    <Route exact={true} path="/" component={TriageViewContainer} />
+                </main>
 
-                <BodyContainer breakPoint={defaultBreakPoint}>
-                    <LinearProgress mode="indeterminate" color={muiThemePalette.accent3Color} style={styles.linearProgressStyle} />
-
-                    {/* <ResponsiveAppBar breakPoint={defaultBreakPoint} title={"Scremsong"} zDepth={0} /> */}
-
-                    <LoginDialog open={user === null} />
-
-                    <div className="page-content">
-                        <Route path="/queue" component={UserReviewQueueViewContainer} />
-                        <Route exact={true} path="/" component={TriageViewContainer} />
-                    </div>
-                </BodyContainer>
+                <LoginDialog open={user === null} />
             </div>
         )
     }
 }
 
-export default App
+export default withStyles(styles)(App)

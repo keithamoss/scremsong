@@ -1,8 +1,6 @@
-import { responsiveDrawer } from "material-ui-responsive-drawer"
 import { routerReducer } from "react-router-redux"
 import * as Redux from "redux"
 import { reducer as formReducer } from "redux-form"
-import { responsiveStateReducer } from "redux-responsive"
 import { default as app, IModule as IAppModule } from "./app"
 import { default as reviewers, IModule as IReviewersModule } from "./reviewers"
 import { default as social, IModule as ISocialModule } from "./social"
@@ -18,8 +16,6 @@ export interface IStore {
     reviewers: IReviewersModule
     user: IUserModule
     form: any
-    browser: any
-    responsiveDrawer: any
 }
 
 const rootReducer: Redux.Reducer<IStore> = Redux.combineReducers<IStore>({
@@ -30,8 +26,6 @@ const rootReducer: Redux.Reducer<IStore> = Redux.combineReducers<IStore>({
     user,
     routing: routerReducer,
     form: formReducer.plugin({}),
-    browser: responsiveStateReducer,
-    responsiveDrawer,
 } as any)
 
 export default rootReducer

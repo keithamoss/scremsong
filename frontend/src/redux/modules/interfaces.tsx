@@ -30,12 +30,12 @@ export interface IThunkExtras {
 
 /* Material UI muiThemeable palette object */
 // tslint:disable-next-line:no-empty-interface
-export interface IMUIThemePalette extends __MaterialUI.Styles.ThemePalette {}
+// export interface IMUIThemePalette extends __MaterialUI.Styles.ThemePalette {}
 
-export interface IMUITheme {
-    palette: IMUIThemePalette
-}
+// export interface IMUITheme {
+//     palette: IMUIThemePalette
+// }
 
-export interface IMUIThemeProps {
-    muiTheme: IMUITheme
-}
+// export interface IMUIThemeProps {
+//     muiTheme: IMUITheme
+// }

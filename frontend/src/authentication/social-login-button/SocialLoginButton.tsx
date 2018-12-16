@@ -1,5 +1,13 @@
-import RaisedButton from "material-ui/RaisedButton"
+import Button from "@material-ui/core/Button"
+import style from "jss-material-ui"
 import * as React from "react"
+
+const LoginButton = style(Button)((theme: any, { colour }: any) => ({
+    root: {
+        backgroundColor: colour,
+        color: "#FFFFFF",
+    },
+}))
 
 export interface ISocialLoginButtonProps {
     providerName: string
@@ -16,16 +24,9 @@ export class SocialLoginButton extends React.Component<ISocialLoginButtonProps, 
         const { providerName, colour } = this.props
 
         return (
-            <RaisedButton
-                label={providerName}
-                style={{
-                    margin: 12,
-                    display: "block",
-                }}
-                backgroundColor={colour}
-                labelColor={"#ffffff"}
-                onClick={this.handleClick}
-            />
+            <LoginButton variant="contained" colour={colour} fullWidth={true} onClick={this.handleClick}>
+                {providerName}
+            </LoginButton>
         )
     }
 }

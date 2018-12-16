@@ -11,6 +11,7 @@ export const WS_REVIEWERS_UNASSIGN = "ws/scremsong/reviewers/UNASSIGN"
 export const WS_REVIEWERS_ASSIGNMENT_STATUS_CHANGE = "ws/scremsong/reviewers/ASSIGNMENT_STATUS_CHANGE"
 export const WS_REVIEWERS_SET_STATUS = "ws/scremsong/reviewers/SET_STATUS"
 
+export const WS_TWEETS_DISMISS = "ws/scremsong/tweets/DISMISS"
 export const WS_TWEETS_FETCH_SOME = "ws/scremsong/tweets/FETCH_SOME"
 export const WS_TWEETS_FETCH_SOME_NEW_TWEETS = "ws/scremsong/tweets/FETCH_SOME_NEW_TWEETS"
 
@@ -22,6 +23,7 @@ export const messageTypes = [
     WS_REVIEWERS_UNASSIGN,
     WS_REVIEWERS_ASSIGNMENT_STATUS_CHANGE,
     WS_REVIEWERS_SET_STATUS,
+    WS_TWEETS_DISMISS,
     WS_TWEETS_FETCH_SOME,
     WS_TWEETS_FETCH_SOME_NEW_TWEETS,
 ]

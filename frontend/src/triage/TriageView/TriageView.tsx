@@ -1,42 +1,71 @@
+import { withStyles } from "@material-ui/core"
 import * as React from "react"
+import { IReviewerAssignment } from "src/redux/modules/reviewers"
 import { ITriageColumn } from "src/redux/modules/triage"
-import styled from "styled-components"
+import TweetColumnAssignerContainer from "../../triage/TweetColumnAssigner/TweetColumnAssignerContainer"
 import TweetColumnContainer from "../TweetColumn/TweetColumnContainer"
 
-const ColumnContainerContainer = styled.div`
-    display: inline-block;
-    height: 100%;
-`
-
-const ColumnContainer = styled.div`
-    display: flex;
-    flex-direction: row;
-    height: 88%;
-`
+const styles = () =>
+    ({
+        columnContainerContainer: {
+            display: "inline-block",
+            height: "100%",
+        },
+        columnContainer: {
+            display: "flex",
+            flexDirection: "row",
+            height: "88%",
+        },
+    } as any)
 
 export interface IProps {
     columns: ITriageColumn[]
+    classes: any
 }
 
-export class TriageView extends React.Component<IProps, {}> {
-    public render() {
-        const { columns } = this.props
+export interface IState {
+    assignerOpen: boolean
+    tweetId: string | null
+    assignment: IReviewerAssignment | null
+}
 
-        // if (columns.length === 0 || (columns.length === 1 && columns[0] === undefined)) {
-        //     console.log("null")
-        //     return null
-        // }
+export class TriageView extends React.Component<IProps, IState> {
+    private onOpenAssigner: any
+    private onCloseAssigner: any
+    public constructor(props: IProps) {
+        super(props)
+
+        this.state = { assignerOpen: false, assignment: null, tweetId: null }
+
+        this.onOpenAssigner = (tweetId: string, assignment: IReviewerAssignment | null) => {
+            this.setState({ assignerOpen: true, tweetId, assignment })
+        }
+        this.onCloseAssigner = () => {
+            this.setState({ assignerOpen: false, tweetId: null, assignment: null })
+        }
+    }
+    public render() {
+        const { columns, classes } = this.props
+        const { tweetId, assignment, assignerOpen } = this.state
 
         return (
-            <ColumnContainerContainer>
-                <ColumnContainer>
-                    {columns.map((column: ITriageColumn, key: number) => (
-                        <TweetColumnContainer key={column.id} column={column} />
-                    ))}
-                </ColumnContainer>
-            </ColumnContainerContainer>
+            <React.Fragment>
+                <TweetColumnAssignerContainer
+                    open={assignerOpen}
+                    assignment={assignment}
+                    tweetId={tweetId}
+                    onCloseAssigner={this.onCloseAssigner}
+                />
+                <div className={classes.columnContainerContainer}>
+                    <div className={classes.columnContainer}>
+                        {columns.map((column: ITriageColumn, key: number) => (
+                            <TweetColumnContainer key={column.id} column={column} onOpenAssigner={this.onOpenAssigner} />
+                        ))}
+                    </div>
+                </div>
+            </React.Fragment>
         )
     }
 }
 
-export default TriageView
+export default withStyles(styles)(TriageView)

@@ -5,15 +5,21 @@ import {
     IActionReviewersAssign,
     IActionReviewersListAssignments,
     IActionReviewersUnassign,
+    IActionsTweetsDismiss,
     IActionsTweetsFetch,
 } from "src/websockets/actions"
-import { WS_REVIEWERS_ASSIGN, WS_REVIEWERS_LIST_ASSIGNMENTS, WS_REVIEWERS_UNASSIGN, WS_TWEETS_FETCH_SOME } from "src/websockets/constants"
+import {
+    WS_REVIEWERS_ASSIGN,
+    WS_REVIEWERS_LIST_ASSIGNMENTS,
+    WS_REVIEWERS_UNASSIGN,
+    WS_TWEETS_DISMISS,
+    WS_TWEETS_FETCH_SOME,
+} from "src/websockets/constants"
 import { IThunkExtras } from "../../redux/modules/interfaces"
 import { IReviewerAssignment } from "./reviewers"
 
 // Actions
 const LOAD_TWEETS = "scremsong/tweets/LOAD_TWEETS"
-const DISMISS = "scremsong/tweets/DISMISS"
 
 const initialState: IModule = {
     tweets: {},
@@ -22,12 +28,12 @@ const initialState: IModule = {
 
 // Reducer
 type IAction =
-    | IActionDismissTweet
     | IActionLoadTweets
     | IActionsTweetsFetch
     | IActionReviewersListAssignments
     | IActionReviewersAssign
     | IActionReviewersUnassign
+    | IActionsTweetsDismiss
 export default function reducer(state: IModule = initialState, action: IAction) {
     switch (action.type) {
         case LOAD_TWEETS:
@@ -49,7 +55,7 @@ export default function reducer(state: IModule = initialState, action: IAction) 
                 }
             }
             return state
-        case DISMISS:
+        case WS_TWEETS_DISMISS:
             return dotProp.set(state, `tweets.${action.tweetId}.is_dismissed`, true)
         default:
             return state
@@ -62,11 +68,6 @@ export const loadTweets = (tweets: ISocialTweetList): IActionLoadTweets => ({
     tweets,
 })
 
-export const dismissTweet = (tweetId: string): IActionDismissTweet => ({
-    type: DISMISS,
-    tweetId,
-})
-
 // Models
 export interface IModule {
     tweets: ISocialTweetList
@@ -75,10 +76,6 @@ export interface IModule {
 
 export interface IActionLoadTweets extends Action<typeof LOAD_TWEETS> {
     tweets: ISocialTweetList
-}
-
-export interface IActionDismissTweet extends Action<typeof DISMISS> {
-    tweetId: string
 }
 
 export interface ISocialTweetList {
@@ -115,9 +112,8 @@ export function fetchTweets(startIndex: number, stopIndex: number, columns: numb
     }
 }
 
-export function dismissATweet(tweetId: string) {
+export function dismissTweet(tweetId: string) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        dispatch(dismissTweet(tweetId))
         await api.get("/api/0.1/tweets/dismiss/", dispatch, {
             tweetId,
         })
