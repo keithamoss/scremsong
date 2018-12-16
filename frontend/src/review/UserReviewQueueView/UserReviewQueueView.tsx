@@ -21,8 +21,8 @@ import PowerOff from "@material-ui/icons/PowerOff"
 import classNames from "classnames"
 import * as React from "react"
 import Tweet from "react-tweet"
-import { IReviewerAssignment, IReviewerUser } from "src/redux/modules/reviewers"
-import { ISocialTweetList } from "src/redux/modules/social"
+import { IReviewerAssignment, IReviewerUser } from "../../redux/modules/reviewers"
+import { ISocialTweetList } from "../../redux/modules/social"
 
 const styles = (theme: Theme) => ({
     white: {

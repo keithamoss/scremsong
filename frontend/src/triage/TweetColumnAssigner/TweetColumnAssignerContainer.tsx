@@ -1,7 +1,7 @@
 import * as React from "react"
 import { connect } from "react-redux"
-import { IStore } from "src/redux/modules/interfaces"
-import { assignReviewer, IReviewerAssignment, IReviewerUser, unassignReviewer } from "src/redux/modules/reviewers"
+import { IStore } from "../../redux/modules/reducer"
+import { assignReviewer, IReviewerAssignment, IReviewerUser, unassignReviewer } from "../../redux/modules/reviewers"
 import TweetColumnAssigner from "./TweetColumnAssigner"
 
 export interface IProps {
@@ -55,7 +55,7 @@ class TweetColumnAssignerContainer extends React.Component<TComponentProps, {}> 
     }
 }
 
-const mapStateToProps = (state: IStore, ownProps: TComponentProps): IStoreProps => {
+const mapStateToProps = (state: IStore, ownProps: IProps): IStoreProps => {
     const { reviewers } = state
 
     return {
@@ -74,9 +74,7 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     }
 }
 
-const TweetColumnAssignerContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(
+export default connect<IStoreProps, IDispatchProps, IProps, IStore>(
     mapStateToProps,
     mapDispatchToProps
 )(TweetColumnAssignerContainer)
-
-export default TweetColumnAssignerContainerWrapped

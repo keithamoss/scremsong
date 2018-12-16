@@ -1,5 +1,4 @@
 import * as qs from "qs"
-import "whatwg-fetch"
 import { beginFetch, finishFetch, getAPIBaseURL } from "../redux/modules/app"
 
 // Uncomment if required for CORS X-CSRFToken

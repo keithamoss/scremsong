@@ -5,9 +5,9 @@ import * as React from "react"
 import Tweet from "react-tweet"
 import { AutoSizer, CellMeasurer, CellMeasurerCache, InfiniteLoader, List } from "react-virtualized"
 import "react-virtualized/styles.css"
-import { eSocialAssignmentStatus, IReviewerAssignment, IReviewerUser } from "src/redux/modules/reviewers"
-import { ISocialTweetAssignments, ISocialTweetList } from "src/redux/modules/social"
-import { ITriageColumn } from "src/redux/modules/triage"
+import { eSocialAssignmentStatus, IReviewerAssignment, IReviewerUser } from "../../redux/modules/reviewers"
+import { ISocialTweetAssignments, ISocialTweetList } from "../../redux/modules/social"
+import { ITriageColumn } from "../../redux/modules/triage"
 
 const styles = (theme: Theme) => ({
     button: {

@@ -1,8 +1,8 @@
 import { Action } from "redux"
-import { eSocialAssignmentStatus, IReviewerAssignment, IReviewerUser } from "src/redux/modules/reviewers"
-import { ISocialTweetList } from "src/redux/modules/social"
-import { ITriageColumn } from "src/redux/modules/triage"
-import { IUser } from "src/redux/modules/user"
+import { eSocialAssignmentStatus, IReviewerAssignment, IReviewerUser } from "../redux/modules/reviewers"
+import { ISocialTweetList } from "../redux/modules/social"
+import { ITriageColumn } from "../redux/modules/triage"
+import { IUser } from "../redux/modules/user"
 import {
     WS_REVIEWERS_ASSIGN,
     WS_REVIEWERS_ASSIGNMENT_STATUS_CHANGE,

@@ -1,6 +1,6 @@
 import * as React from "react"
 import { connect } from "react-redux"
-import { IStore, IUser } from "src/redux/modules/interfaces"
+import { IStore } from "../../redux/modules/reducer"
 import {
     getCurrentReviewer,
     getCurrentReviewerAssignments,
@@ -9,8 +9,9 @@ import {
     markAssignmentDone,
     setCurrentReviewer,
     setReviewerOnlineStatus,
-} from "src/redux/modules/reviewers"
-import { ISocialTweetList } from "src/redux/modules/social"
+} from "../../redux/modules/reviewers"
+import { ISocialTweetList } from "../../redux/modules/social"
+import { IUser } from "../../redux/modules/user"
 import UserReviewQueueView from "./UserReviewQueueView"
 
 export interface IProps {}
@@ -87,9 +88,7 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     }
 }
 
-const UserReviewQueueViewContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(
+export default connect(
     mapStateToProps,
     mapDispatchToProps
 )(UserReviewQueueViewContainer)
-
-export default UserReviewQueueViewContainerWrapped

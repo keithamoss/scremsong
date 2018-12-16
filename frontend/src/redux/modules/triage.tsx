@@ -1,7 +1,7 @@
 import * as dotProp from "dot-prop-immutable"
 import { uniq } from "lodash-es"
-import { IActionSocialColumnsList, IActionsTweetsFetch, ITweetFetchColumn } from "src/websockets/actions"
-import { WS_SOCIAL_COLUMNS_LIST, WS_TWEETS_FETCH_SOME } from "src/websockets/constants"
+import { IActionSocialColumnsList, IActionsTweetsFetch, ITweetFetchColumn } from "../../websockets/actions"
+import { WS_SOCIAL_COLUMNS_LIST, WS_TWEETS_FETCH_SOME } from "../../websockets/constants"
 // import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 
 // Actions
@@ -50,7 +50,7 @@ export default function reducer(state: IModule = initialState, action: IAction) 
             // Initialise our store for the tweetIds associated with each column
             // Map our list of columns to an object of empty arrays indexed by columnId
             // e.g. {1: [], 2: []}
-            const columnTweets: object = {}
+            const columnTweets: any = {}
             action.columns.forEach((column: ITriageColumn, index: number) => {
                 columnTweets[column.id] = []
             })

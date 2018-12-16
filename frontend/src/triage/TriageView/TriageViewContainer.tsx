@@ -1,7 +1,8 @@
 import * as React from "react"
 import { connect } from "react-redux"
-import { IStore, IUser } from "src/redux/modules/interfaces"
-import { ITriageColumn } from "src/redux/modules/triage"
+import { IStore } from "../../redux/modules/reducer"
+import { ITriageColumn } from "../../redux/modules/triage"
+import { IUser } from "../../redux/modules/user"
 import TriageView from "./TriageView"
 
 export interface IProps {}
@@ -39,9 +40,7 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {}
 }
 
-const TriageViewContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(
+export default connect(
     mapStateToProps,
     mapDispatchToProps
 )(TriageViewContainer)
-
-export default TriageViewContainerWrapped

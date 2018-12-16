@@ -1,6 +1,6 @@
 import * as dotProp from "dot-prop-immutable"
 import { Action } from "redux"
-import { IThunkExtras } from "../../redux/modules/interfaces"
+import { IThunkExtras } from "./interfaces"
 import { changeCurrentReviewer } from "./reviewers"
 import { fetchUser, ISelf } from "./user"
 // import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"

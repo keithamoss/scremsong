@@ -6,7 +6,7 @@ import * as React from "react"
 import { Link, Route } from "react-router-dom"
 import "./App.css"
 import { LoginDialog } from "./authentication/login-dialog/LoginDialog"
-import { IUser } from "./redux/modules/interfaces"
+import { IUser } from "./redux/modules/user"
 import UserReviewQueueViewContainer from "./review/UserReviewQueueView/UserReviewQueueViewContainer"
 import TriageViewContainer from "./triage/TriageView/TriageViewContainer"
 

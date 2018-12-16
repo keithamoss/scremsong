@@ -3,7 +3,7 @@ import blue from "@material-ui/core/colors/blue"
 import AssignmentReturnIcon from "@material-ui/icons/AssignmentReturn"
 import PersonIcon from "@material-ui/icons/Person"
 import * as React from "react"
-import { IReviewerAssignment, IReviewerUser } from "src/redux/modules/reviewers"
+import { IReviewerAssignment, IReviewerUser } from "../../redux/modules/reviewers"
 
 const styles = (theme: Theme) => ({
     selectedAvatar: {

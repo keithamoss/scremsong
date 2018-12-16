@@ -10,7 +10,7 @@ import {
     IActionReviewersListAssignments,
     IActionReviewersSetStatus,
     IActionReviewersUnassign,
-} from "src/websockets/actions"
+} from "../../websockets/actions"
 import {
     WS_REVIEWERS_ASSIGN,
     WS_REVIEWERS_ASSIGNMENT_STATUS_CHANGE,
@@ -18,8 +18,9 @@ import {
     WS_REVIEWERS_LIST_USERS,
     WS_REVIEWERS_SET_STATUS,
     WS_REVIEWERS_UNASSIGN,
-} from "src/websockets/constants"
-import { IStore, IThunkExtras } from "../../redux/modules/interfaces"
+} from "../../websockets/constants"
+import { IThunkExtras } from "./interfaces"
+import { IStore } from "./reducer"
 import { eSocialPlatformChoice } from "./triage"
 import { IUser } from "./user"
 

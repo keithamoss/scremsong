@@ -1,21 +1,21 @@
 import * as dotProp from "dot-prop-immutable"
 // import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 import { Action } from "redux"
+import { IThunkExtras } from "../../redux/modules/interfaces"
 import {
     IActionReviewersAssign,
     IActionReviewersListAssignments,
     IActionReviewersUnassign,
     IActionsTweetsDismiss,
     IActionsTweetsFetch,
-} from "src/websockets/actions"
+} from "../../websockets/actions"
 import {
     WS_REVIEWERS_ASSIGN,
     WS_REVIEWERS_LIST_ASSIGNMENTS,
     WS_REVIEWERS_UNASSIGN,
     WS_TWEETS_DISMISS,
     WS_TWEETS_FETCH_SOME,
-} from "src/websockets/constants"
-import { IThunkExtras } from "../../redux/modules/interfaces"
+} from "../../websockets/constants"
 import { IReviewerAssignment } from "./reviewers"
 
 // Actions

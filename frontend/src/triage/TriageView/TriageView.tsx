@@ -1,7 +1,7 @@
 import { withStyles } from "@material-ui/core"
 import * as React from "react"
-import { IReviewerAssignment } from "src/redux/modules/reviewers"
-import { ITriageColumn } from "src/redux/modules/triage"
+import { IReviewerAssignment } from "../../redux/modules/reviewers"
+import { ITriageColumn } from "../../redux/modules/triage"
 import TweetColumnAssignerContainer from "../../triage/TweetColumnAssigner/TweetColumnAssignerContainer"
 import TweetColumnContainer from "../TweetColumn/TweetColumnContainer"
 

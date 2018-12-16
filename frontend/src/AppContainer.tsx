@@ -5,8 +5,9 @@ import { withRouter } from "react-router-dom"
 import App from "./App"
 import { LoginDialog } from "./authentication/login-dialog/LoginDialog"
 import { fetchInitialAppState } from "./redux/modules/app"
-import { IStore, IUser } from "./redux/modules/interfaces"
+import { IStore } from "./redux/modules/reducer"
 import { getUserAssignments } from "./redux/modules/reviewers"
+import { IUser } from "./redux/modules/user"
 
 // const Config: IConfig = require("Config") as any
 

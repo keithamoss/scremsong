@@ -24,8 +24,7 @@ import "./polyfills"
 // Service Workers
 // import registerServiceWorker from "./registerServiceWorker"
 // import { getEnvironment, eAppEnv } from "./redux/modules/app"
-import { IStore } from "./redux/modules/interfaces"
-import reducers from "./redux/modules/reducer"
+import reducers, { IStore } from "./redux/modules/reducer"
 import { emit, init as websocketInit } from "./websockets/connect"
 
 const api = new APIClient()

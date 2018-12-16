@@ -1,6 +1,6 @@
 import ReconnectingWebSocket from "reconnecting-websocket"
 import { Action } from "redux"
-import { loaded } from "src/redux/modules/app"
+import { loaded } from "../redux/modules/app"
 import { IActionWebSocketBase } from "./actions"
 import { messageTypes, WS_CONNECTED, WS_URI } from "./constants"
 

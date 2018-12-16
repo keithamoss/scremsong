@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogTitle } from "@material-ui/core"
 import * as React from "react"
-import { getAPIBaseURL } from "src/redux/modules/app"
+import { getAPIBaseURL } from "../../redux/modules/app"
 import { SocialLoginButton } from "../social-login-button/SocialLoginButton"
 
 export interface ILoginDialogProps {

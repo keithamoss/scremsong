@@ -1,9 +1,9 @@
 import * as React from "react"
 import { connect } from "react-redux"
-import { IStore } from "src/redux/modules/interfaces"
-import { IReviewerAssignment, IReviewerUser } from "src/redux/modules/reviewers"
-import { dismissTweet, fetchTweets, ISocialTweetAssignments, ISocialTweetList } from "src/redux/modules/social"
-import { ITriageColumn } from "src/redux/modules/triage"
+import { IStore } from "../../redux/modules/reducer"
+import { IReviewerAssignment, IReviewerUser } from "../../redux/modules/reviewers"
+import { dismissTweet, fetchTweets, ISocialTweetAssignments, ISocialTweetList } from "../../redux/modules/social"
+import { ITriageColumn } from "../../redux/modules/triage"
 import TweetColumn from "./TweetColumn"
 
 export interface IProps {
@@ -52,7 +52,7 @@ export class TweetColumnContainer extends React.Component<TComponentProps, {}> {
     }
 }
 
-const mapStateToProps = (state: IStore, ownProps: TComponentProps): IStoreProps => {
+const mapStateToProps = (state: IStore, ownProps: IProps): IStoreProps => {
     const { triage, social, reviewers } = state
 
     return {
@@ -75,9 +75,7 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     }
 }
 
-const TweetColumnContainerWrapped = connect<IStoreProps, IDispatchProps, IProps, IStore>(
+export default connect<IStoreProps, IDispatchProps, IProps, IStore>(
     mapStateToProps,
     mapDispatchToProps
 )(TweetColumnContainer)
-
-export default TweetColumnContainerWrapped
