@@ -5,8 +5,6 @@ import classNames from "classnames"
 import * as React from "react"
 import { Link, Route } from "react-router-dom"
 import "./App.css"
-import { LoginDialog } from "./authentication/login-dialog/LoginDialog"
-import { IUser } from "./redux/modules/user"
 import UserReviewQueueViewContainer from "./review/UserReviewQueueView/UserReviewQueueViewContainer"
 import TriageViewContainer from "./triage/TriageView/TriageViewContainer"
 
@@ -43,14 +41,13 @@ const styles = (theme: Theme) => ({
 })
 
 export interface IProps {
-    user: IUser
     userAssignmentCount: number
     classes: any
 }
 
-class App extends React.Component<IProps, {}> {
+class App extends React.PureComponent<IProps, {}> {
     public render() {
-        const { user, userAssignmentCount, classes } = this.props
+        const { userAssignmentCount, classes } = this.props
 
         const QueueLink = (props: any) => <Link to="/queue" {...props} />
         const TriageLink = (props: any) => <Link to="/" {...props} />
@@ -94,8 +91,6 @@ class App extends React.Component<IProps, {}> {
                     <Route path="/queue" component={UserReviewQueueViewContainer} />
                     <Route exact={true} path="/" component={TriageViewContainer} />
                 </main>
-
-                <LoginDialog open={user === null} />
             </div>
         )
     }

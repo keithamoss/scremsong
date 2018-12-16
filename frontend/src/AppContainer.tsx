@@ -7,7 +7,6 @@ import { LoginDialog } from "./authentication/login-dialog/LoginDialog"
 import { fetchInitialAppState } from "./redux/modules/app"
 import { IStore } from "./redux/modules/reducer"
 import { getUserAssignments } from "./redux/modules/reviewers"
-import { IUser } from "./redux/modules/user"
 
 // const Config: IConfig = require("Config") as any
 
@@ -65,7 +64,7 @@ export interface IProps {
 
 export interface IStoreProps {
     isAppLoading: boolean
-    user: IUser | null
+    userLoggedIn: boolean
     userAssignmentCount: number
 }
 
@@ -85,6 +84,7 @@ export class AppContainer extends React.Component<any, any> {
         this.playAudio = this.playAudio.bind(this)
         this.stopAudio = this.stopAudio.bind(this)
     }
+
     public playAudio() {
         const audio = document.getElementById("scremsong-sound") as HTMLMediaElement
         if (this.canPlayAudio(audio)) {
@@ -105,7 +105,7 @@ export class AppContainer extends React.Component<any, any> {
     }
 
     public render() {
-        const { isAppLoading, user, userAssignmentCount, children, classes } = this.props
+        const { isAppLoading, userLoggedIn, userAssignmentCount, children, classes } = this.props
 
         let component
         if (isAppLoading === true) {
@@ -127,10 +127,10 @@ export class AppContainer extends React.Component<any, any> {
                     </div>
                 </div>
             )
-        } else if (user === null) {
-            component = <LoginDialog open={user === null} />
+        } else if (userLoggedIn === false) {
+            component = <LoginDialog open={true} />
         } else {
-            component = <App user={user} userAssignmentCount={userAssignmentCount} children={children} />
+            component = <App userAssignmentCount={userAssignmentCount} children={children} />
         }
 
         return <MuiThemeProvider theme={theme}>{component}</MuiThemeProvider>
@@ -149,7 +149,7 @@ const mapStateToProps = (state: IStore): IStoreProps => {
 
     return {
         isAppLoading: app.loading,
-        user: user.user,
+        userLoggedIn: user.user !== null,
         userAssignmentCount,
     }
 }
