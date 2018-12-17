@@ -1,4 +1,4 @@
-import { withStyles } from "@material-ui/core"
+import { withStyles, WithStyles } from "@material-ui/core"
 import * as React from "react"
 import { IReviewerAssignment } from "../../redux/modules/reviewers"
 import { ITriageColumn } from "../../redux/modules/triage"
@@ -20,7 +20,6 @@ const styles = () =>
 
 export interface IProps {
     columns: ITriageColumn[]
-    classes: any
 }
 
 export interface IState {
@@ -29,10 +28,11 @@ export interface IState {
     assignment: IReviewerAssignment | null
 }
 
-class TriageView extends React.Component<IProps, IState> {
+type TComponentProps = IProps & WithStyles
+class TriageView extends React.Component<TComponentProps, IState> {
     private onOpenAssigner: any
     private onCloseAssigner: any
-    public constructor(props: IProps) {
+    public constructor(props: TComponentProps) {
         super(props)
 
         this.state = { assignerOpen: false, assignment: null, tweetId: null }

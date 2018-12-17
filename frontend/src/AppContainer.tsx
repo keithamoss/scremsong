@@ -1,4 +1,4 @@
-import { createMuiTheme, LinearProgress, MuiThemeProvider, Theme, withStyles } from "@material-ui/core"
+import { createMuiTheme, LinearProgress, MuiThemeProvider, Theme, withStyles, WithStyles } from "@material-ui/core"
 import * as React from "react"
 import { connect } from "react-redux"
 import { withRouter } from "react-router-dom"
@@ -58,9 +58,7 @@ const styles = (theme: Theme) =>
         },
     } as any)
 
-export interface IProps {
-    classes: any
-}
+export interface IProps {}
 
 export interface IStoreProps {
     isAppLoading: boolean
@@ -77,8 +75,9 @@ export interface IRouteProps {
     location: any
 }
 
-export class AppContainer extends React.Component<any, any> {
-    public constructor(props: any) {
+type TComponentProps = IProps & IStoreProps & IDispatchProps & IRouteProps & WithStyles
+export class AppContainer extends React.Component<TComponentProps, {}> {
+    public constructor(props: TComponentProps) {
         super(props)
 
         this.playAudio = this.playAudio.bind(this)

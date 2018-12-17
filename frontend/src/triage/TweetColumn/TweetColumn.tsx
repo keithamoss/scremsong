@@ -1,4 +1,4 @@
-import { Button, Divider, Theme, Tooltip, withStyles } from "@material-ui/core"
+import { Button, Divider, Theme, Tooltip, withStyles, WithStyles } from "@material-ui/core"
 import AssignmentIcon from "@material-ui/icons/Assignment"
 import DeleteIcon from "@material-ui/icons/Delete"
 import * as React from "react"
@@ -36,10 +36,10 @@ export interface IProps {
     assignments: IReviewerAssignment[]
     loadMoreRows: any
     onDismissTweet: any
-    classes: any
 }
 
-class TweetColumn extends React.Component<IProps, {}> {
+type TComponentProps = IProps & WithStyles
+class TweetColumn extends React.Component<TComponentProps, {}> {
     private onDismissTweet: any
     private onOpenAssigner: any
 
@@ -55,7 +55,7 @@ class TweetColumn extends React.Component<IProps, {}> {
 
     private _list: any
 
-    public constructor(props: IProps) {
+    public constructor(props: TComponentProps) {
         super(props)
 
         this.onOpenAssigner = (tweetId: string, assignment: IReviewerAssignment | null) => () =>

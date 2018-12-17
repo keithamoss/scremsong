@@ -1,4 +1,4 @@
-import { Button, Card, CardActions, CardContent, Collapse, Theme, withStyles } from "@material-ui/core"
+import { Button, Card, CardActions, CardContent, Collapse, Theme, withStyles, WithStyles } from "@material-ui/core"
 import AssignmentTurnedIn from "@material-ui/icons/AssignmentTurnedIn"
 import classNames from "classnames"
 import * as React from "react"
@@ -26,13 +26,17 @@ export interface IProps {
     assignment: IReviewerAssignment
     tweets: ISocialTweetList
     onMarkAsDone: any
-    classes: any
 }
 
-class ReviewCard extends React.PureComponent<IProps, { shown: boolean }> {
+export interface IState {
+    shown: boolean
+}
+
+type TComponentProps = IProps & WithStyles
+class ReviewCard extends React.PureComponent<TComponentProps, IState> {
     private onMarkAsDone: ExitHandler
 
-    public constructor(props: IProps) {
+    public constructor(props: TComponentProps) {
         super(props)
 
         this.state = { shown: true }

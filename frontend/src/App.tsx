@@ -1,4 +1,4 @@
-import { Badge, CssBaseline, Drawer, IconButton, List, ListItem, Theme, Tooltip, withStyles } from "@material-ui/core"
+import { Badge, CssBaseline, Drawer, IconButton, List, ListItem, Theme, Tooltip, withStyles, WithStyles } from "@material-ui/core"
 import AssignmentIndIcon from "@material-ui/icons/AssignmentInd"
 import ViewColumnIcon from "@material-ui/icons/ViewColumn"
 import classNames from "classnames"
@@ -45,10 +45,9 @@ const styles = (theme: Theme) =>
 
 export interface IProps {
     userAssignmentCount: number
-    classes: any
 }
 
-class App extends React.Component<IProps, {}> {
+class App extends React.Component<IProps & WithStyles, {}> {
     public render() {
         const { userAssignmentCount, classes } = this.props
 

@@ -1,4 +1,4 @@
-import { AppBar, Button, FormControl, Input, InputLabel, Theme, Tooltip, Typography, withStyles } from "@material-ui/core"
+import { AppBar, Button, FormControl, Input, InputLabel, Theme, Tooltip, Typography, withStyles, WithStyles } from "@material-ui/core"
 import MenuItem from "@material-ui/core/MenuItem"
 import Select from "@material-ui/core/Select"
 import Toolbar from "@material-ui/core/Toolbar"
@@ -56,15 +56,17 @@ export interface IProps {
     onMarkAsDone: any
     onChangeQueueUser: any
     onToggleUserOnlineStatus: any
-    classes: any
 }
 
-class UserReviewQueueView extends React.Component<IProps, {}> {
+type TComponentProps = IProps & WithStyles
+
+class UserReviewQueueView extends React.Component<TComponentProps, {}> {
     private onChangeQueueUser: any
     private onToggleUserOnlineStatus: any
 
-    public constructor(props: IProps) {
+    public constructor(props: TComponentProps) {
         super(props)
+
         this.onChangeQueueUser = (event: any) => {
             props.onChangeQueueUser(event, event.target.value)
         }
