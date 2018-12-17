@@ -97,11 +97,14 @@ def get_next_tweet_id(tweet_id):
 def save_tweet(status):
     try:
         # Handle the occasional duplicate tweet that Twitter sends us
-        t = Tweets(tweet_id=status.id_str, data=status._json)
-        t.save()
+        t, created = Tweets.objects.update_or_create(
+            tweet_id=status.id_str, defaults={"data": status._json}
+        )
         logger.info(status.id_str)
+        return created
     except Exception as e:
         logger.error("Exception {}: '{}' for tweet_id {}".format(type(e), e, status.id_str))
+    return None
 
 
 def get_twitter_columns():
@@ -164,7 +167,10 @@ def open_tweet_stream():
     # https://stackoverflow.com/a/33660005/7368493
     class MyStreamListener(tweepy.StreamListener):
         def on_status(self, status):
-            save_tweet(status)
+            created = save_tweet(status)
+            if(created is True):
+                # Send data out via web sockets
+                pass
 
         def on_error(self, status_code):
             if status_code == 420:
