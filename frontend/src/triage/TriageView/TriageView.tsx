@@ -1,6 +1,5 @@
 import { withStyles, WithStyles } from "@material-ui/core"
 import * as React from "react"
-import { IReviewerAssignment } from "../../redux/modules/reviewers"
 import { ITriageColumn } from "../../redux/modules/triage"
 import TweetColumnAssignerContainer from "../../triage/TweetColumnAssigner/TweetColumnAssignerContainer"
 import TweetColumnContainer from "../TweetColumn/TweetColumnContainer"
@@ -25,7 +24,7 @@ export interface IProps {
 export interface IState {
     assignerOpen: boolean
     tweetId: string | null
-    assignment: IReviewerAssignment | null
+    assignmentId: number | null
 }
 
 type TComponentProps = IProps & WithStyles
@@ -35,24 +34,24 @@ class TriageView extends React.Component<TComponentProps, IState> {
     public constructor(props: TComponentProps) {
         super(props)
 
-        this.state = { assignerOpen: false, assignment: null, tweetId: null }
+        this.state = { assignerOpen: false, assignmentId: null, tweetId: null }
 
-        this.onOpenAssigner = (tweetId: string, assignment: IReviewerAssignment | null) => {
-            this.setState({ assignerOpen: true, tweetId, assignment })
+        this.onOpenAssigner = (tweetId: string, assignmentId: number | null) => {
+            this.setState({ assignerOpen: true, tweetId, assignmentId })
         }
         this.onCloseAssigner = () => {
-            this.setState({ assignerOpen: false, tweetId: null, assignment: null })
+            this.setState({ assignerOpen: false, tweetId: null, assignmentId: null })
         }
     }
     public render() {
         const { columns, classes } = this.props
-        const { tweetId, assignment, assignerOpen } = this.state
+        const { tweetId, assignmentId, assignerOpen } = this.state
 
         return (
             <React.Fragment>
                 <TweetColumnAssignerContainer
                     open={assignerOpen}
-                    assignment={assignment}
+                    assignmentId={assignmentId}
                     tweetId={tweetId}
                     onCloseAssigner={this.onCloseAssigner}
                 />

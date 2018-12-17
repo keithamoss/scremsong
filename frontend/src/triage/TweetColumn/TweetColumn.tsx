@@ -58,8 +58,7 @@ class TweetColumn extends React.Component<TComponentProps, {}> {
     public constructor(props: TComponentProps) {
         super(props)
 
-        this.onOpenAssigner = (tweetId: string, assignment: IReviewerAssignment | null) => () =>
-            this.props.onOpenAssigner(tweetId, assignment)
+        this.onOpenAssigner = (tweetId: string, assignmentId: number | null) => () => this.props.onOpenAssigner(tweetId, assignmentId)
         this.onDismissTweet = (tweetId: string) => () => this.props.onDismissTweet(tweetId)
     }
 
@@ -160,8 +159,9 @@ class TweetColumn extends React.Component<TComponentProps, {}> {
             }
 
             let assignment: IReviewerAssignment | null = null
+            let assignmentId = null
             if (tweetId in tweet_assignments) {
-                const assignmentId = tweet_assignments[tweetId]
+                assignmentId = tweet_assignments[tweetId]
                 assignment = assignments[assignmentId]
                 if (assignment.status === eSocialAssignmentStatus.PENDING) {
                     tweetStyle = { ...tweetStyle, backgroundColor: "lightyellow" }
@@ -179,7 +179,7 @@ class TweetColumn extends React.Component<TComponentProps, {}> {
                             color="primary"
                             className={classes.button}
                             aria-label="Assign tweet"
-                            onClick={this.onOpenAssigner(tweetId, assignment)}
+                            onClick={this.onOpenAssigner(tweetId, assignmentId)}
                         >
                             Assign
                             <AssignmentIcon className={classes.rightIcon} />

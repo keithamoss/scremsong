@@ -13,7 +13,7 @@ import TweetColumnAssigner from "./TweetColumnAssigner"
 
 export interface IProps {
     open: boolean
-    assignment: IReviewerAssignment | null
+    assignmentId: number | null
     tweetId: string | null
     onCloseAssigner: any
 }
@@ -21,6 +21,7 @@ export interface IProps {
 export interface IStoreProps {
     reviewers: IReviewerUser[]
     reviewerAssignmentCounts: IReviewerAssignmentCounts
+    assignment: IReviewerAssignment | null
 }
 
 export interface IDispatchProps {
@@ -47,7 +48,7 @@ class TweetColumnAssignerContainer extends React.Component<TComponentProps, {}> 
     }
 
     public render() {
-        const { open, assignment, tweetId, reviewers, reviewerAssignmentCounts, onCloseAssigner } = this.props
+        const { open, tweetId, reviewers, reviewerAssignmentCounts, assignment, onCloseAssigner } = this.props
 
         return (
             <TweetColumnAssigner
@@ -67,9 +68,15 @@ class TweetColumnAssignerContainer extends React.Component<TComponentProps, {}> 
 const mapStateToProps = (state: IStore, ownProps: IProps): IStoreProps => {
     const { reviewers } = state
 
+    const assignment =
+        ownProps.assignmentId !== null && ownProps.assignmentId in reviewers.assignments
+            ? reviewers.assignments[ownProps.assignmentId]
+            : null
+
     return {
         reviewers: reviewers.users,
         reviewerAssignmentCounts: getUserAssignmentTotals(state),
+        assignment,
     }
 }
 
