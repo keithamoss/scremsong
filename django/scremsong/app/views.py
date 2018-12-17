@@ -184,8 +184,14 @@ class SocialAssignmentsViewset(viewsets.ViewSet):
             "user_id": user_id,
             "is_accepting_assignments": is_accepting_assignments
         })
+
+        if is_accepting_assignments is True:
+            message = "{} has come online and is now ready to receive assignments!".format(UserSerializer(profile.user).data["name"])
+        else:
+            message = "{} has gone offline".format(UserSerializer(profile.user).data["name"])
+
         websockets.send_channel_message("notifications.send", {
-            "message": "{} has come online and is now ready to receive assignments!".format(UserSerializer(profile.user).data["name"]),
+            "message": message,
             "options": {
                 "variant": NotificationVariants.INFO
             }
