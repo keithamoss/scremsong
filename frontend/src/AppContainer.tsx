@@ -115,7 +115,7 @@ export class AppContainer extends React.Component<any, any> {
                     <div className={classes.flexboxCentredContainer}>
                         <div className={classes.flexboxCentredBox}>
                             <div>
-                                <img id="alex" src="/alex.jpg" onMouseEnter={this.playAudio} onMouseOut={this.stopAudio} />
+                                <img src="/alex.jpg" onMouseEnter={this.playAudio} onMouseOut={this.stopAudio} />
                             </div>
                             <div>
                                 <h1>Screm song! Screm song!</h1>

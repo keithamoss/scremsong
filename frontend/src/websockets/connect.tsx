@@ -1,6 +1,6 @@
 import ReconnectingWebSocket from "reconnecting-websocket"
 import { Action } from "redux"
-import { loaded } from "../redux/modules/app"
+import { connected, disconnected, loaded } from "../redux/modules/app"
 import { IActionWebSocketBase } from "./actions"
 import { messageTypes, WS_CONNECTED, WS_URI } from "./constants"
 
@@ -12,12 +12,6 @@ const socket = new ReconnectingWebSocket(WS_URI, [], {
 // socket.onopen = (e: any) => {
 //     console.log("Socket connection opened", e)
 // }
-
-socket.onclose = (e: CloseEvent) => {
-    if (e.code !== 1000 || e.wasClean === false) {
-        console.error("Socket closed unexpectedly", e)
-    }
-}
 
 socket.onerror = (e: any) => {
     console.error("Socket received an error unexpectedly", e)
@@ -32,6 +26,7 @@ export const init = (store: any) => {
         //     store.dispatch(changeCurrentReviewer(data.user))
         // }
 
+        store.dispatch(connected())
         store.dispatch(loaded())
     }
 
@@ -60,6 +55,13 @@ export const init = (store: any) => {
             })
         } else {
             console.error("Receieve a web socket message without a Message Type.", data)
+        }
+    }
+
+    socket.onclose = (e: CloseEvent) => {
+        if (e.code !== 1000 || e.wasClean === false) {
+            console.error("Socket closed unexpectedly", e)
+            store.dispatch(disconnected())
         }
     }
 }

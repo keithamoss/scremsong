@@ -5,41 +5,43 @@ import classNames from "classnames"
 import * as React from "react"
 import { Link, Route } from "react-router-dom"
 import "./App.css"
+import AppDisconnectedDialog from "./AppDisconnectedDialog"
 import Notifier from "./notifications/Notifier"
 import UserReviewQueueViewContainer from "./review/UserReviewQueueView/UserReviewQueueViewContainer"
 import TriageViewContainer from "./triage/TriageView/TriageViewContainer"
 
 const drawerWidth = 100
 
-const styles = (theme: Theme) => ({
-    root: {
-        display: "flex",
-        height: "100%",
-    },
-    drawer: {
-        width: drawerWidth,
-        flexShrink: 0,
-    },
-    drawerPaper: {
-        width: drawerWidth,
-    },
-    content: {
-        flexGrow: 1,
-        // padding: theme.spacing.unit * 3,
-        transition: theme.transitions.create("margin", {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-        }),
-        marginLeft: -drawerWidth,
-    },
-    contentShift: {
-        transition: theme.transitions.create("margin", {
-            easing: theme.transitions.easing.easeOut,
-            duration: theme.transitions.duration.enteringScreen,
-        }),
-        marginLeft: 0,
-    },
-})
+const styles = (theme: Theme) =>
+    ({
+        root: {
+            display: "flex",
+            height: "100%",
+        },
+        drawer: {
+            width: drawerWidth,
+            flexShrink: 0,
+        },
+        drawerPaper: {
+            width: drawerWidth,
+        },
+        content: {
+            flexGrow: 1,
+            // padding: theme.spacing.unit * 3,
+            transition: theme.transitions.create("margin", {
+                easing: theme.transitions.easing.sharp,
+                duration: theme.transitions.duration.leavingScreen,
+            }),
+            marginLeft: -drawerWidth,
+        },
+        contentShift: {
+            transition: theme.transitions.create("margin", {
+                easing: theme.transitions.easing.easeOut,
+                duration: theme.transitions.duration.enteringScreen,
+            }),
+            marginLeft: 0,
+        },
+    } as any)
 
 export interface IProps {
     userAssignmentCount: number
@@ -93,6 +95,7 @@ class App extends React.Component<IProps, {}> {
                     <Route exact={true} path="/" component={TriageViewContainer} />
                 </main>
                 <Notifier />
+                <AppDisconnectedDialog />
             </div>
         )
     }

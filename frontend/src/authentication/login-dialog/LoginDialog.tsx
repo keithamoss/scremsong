@@ -13,8 +13,8 @@ export class LoginDialog extends React.Component<ILoginDialogProps, ILoginDialog
         const { open } = this.props
 
         return (
-            <Dialog aria-labelledby="simple-dialog-title" open={open} fullWidth={true}>
-                <DialogTitle id="simple-dialog-title">Please login to access Scremsong</DialogTitle>
+            <Dialog aria-labelledby="login-dialog-title" open={open} fullWidth={true}>
+                <DialogTitle id="login-dialog-title">Please login to access Scremsong</DialogTitle>
                 <DialogContent>
                     <SocialLoginButton providerName="Google" providerUrl={`${getAPIBaseURL()}/login/google-oauth2/`} colour={"#DD4B39"} />
                 </DialogContent>

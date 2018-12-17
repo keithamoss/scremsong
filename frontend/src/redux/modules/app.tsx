@@ -10,6 +10,8 @@ import { fetchUser, ISelf } from "./user"
 // Actions
 const LOADING = "ealgis/app/LOADING"
 const LOADED = "ealgis/app/LOADED"
+const CONNECTED = "ealgis/app/CONNECTED"
+const DISCONNECTED = "ealgis/app/DISCONNECTED"
 const BEGIN_FETCH = "ealgis/app/BEGIN_FETCH"
 const FINISH_FETCH = "ealgis/app/FINISH_FETCH"
 const TOGGLE_SIDEBAR = "ealgis/app/TOGGLE_SIDEBAR"
@@ -23,6 +25,7 @@ export enum eAppEnv {
 
 const initialState: IModule = {
     loading: true,
+    connected: false,
     requestsInProgress: 0,
     sidebarOpen: false,
     notifications: [],
@@ -32,6 +35,8 @@ const initialState: IModule = {
 type IAction =
     | IActionLoading
     | IActionLoaded
+    | IActionConnected
+    | IActionDisconnected
     | IActionBeginFetch
     | IActionFinishFetch
     | IActionToggleSidebar
@@ -45,6 +50,10 @@ export default function reducer(state: IModule = initialState, action: IAction) 
             return dotProp.set(state, "loading", true)
         case LOADED:
             return dotProp.set(state, "loading", false)
+        case CONNECTED:
+            return dotProp.set(state, "connected", true)
+        case DISCONNECTED:
+            return dotProp.set(state, "connected", false)
         case BEGIN_FETCH:
             return dotProp.set(state, "requestsInProgress", ++requestsInProgress)
         case FINISH_FETCH:
@@ -69,6 +78,12 @@ export const loading = (): IActionLoading => ({
 export const loaded = (): IActionLoaded => ({
     type: LOADED,
 })
+export const connected = (): IActionConnected => ({
+    type: CONNECTED,
+})
+export const disconnected = (): IActionDisconnected => ({
+    type: DISCONNECTED,
+})
 
 export const beginFetch = (): IActionBeginFetch => ({
     type: BEGIN_FETCH,
@@ -90,6 +105,7 @@ export const removeSnackbar = (key: string): IActionRemoveSnackbar => ({
 // Models
 export interface IModule {
     loading: boolean
+    connected: boolean
     requestsInProgress: number
     sidebarOpen: boolean
     notifications: []
@@ -98,6 +114,10 @@ export interface IModule {
 export interface IActionLoading extends Action<typeof LOADING> {}
 
 export interface IActionLoaded extends Action<typeof LOADED> {}
+
+export interface IActionConnected extends Action<typeof CONNECTED> {}
+
+export interface IActionDisconnected extends Action<typeof DISCONNECTED> {}
 
 export interface IActionBeginFetch extends Action<typeof BEGIN_FETCH> {}
 
