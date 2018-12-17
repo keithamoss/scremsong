@@ -81,6 +81,18 @@ export const getUserAssignments = createSelector(
         })
 )
 
+export const getUserAssignmentTotals = createSelector(
+    [getPendingAssignments, getReviewers],
+    (assignments: IReviewerAssignment[], reviewers: IReviewerUser[]): IReviewerAssignmentCounts => {
+        const totals: IReviewerAssignmentCounts = {}
+        reviewers.forEach((reviewer: IReviewerUser) => (totals[reviewer.id] = 0))
+        assignments.forEach((assignment: IReviewerAssignment) => {
+            totals[assignment.user_id] += 1
+        })
+        return totals
+    }
+)
+
 export const getCurrentReviewerAssignments = createSelector(
     [getPendingAssignments, getCurrentReviewerUserId],
     (assignments: IReviewerAssignment[], userId: number | null) => {
@@ -131,6 +143,9 @@ export interface IReviewerAssignment {
     user_id: number
 }
 
+export interface IReviewerAssignmentCounts {
+    [key: string]: number
+}
 export interface IActionReviewersSetCurrentReviewer extends Action<typeof SET_CURRENT_REVIEWER> {
     reviewerId: number
 }

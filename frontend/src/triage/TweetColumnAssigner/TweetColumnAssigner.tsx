@@ -1,21 +1,25 @@
 import {
     Avatar,
+    Badge,
     Dialog,
     DialogTitle,
     Divider,
     List,
     ListItem,
     ListItemAvatar,
+    ListItemSecondaryAction,
     ListItemText,
     Theme,
+    Tooltip,
     withStyles,
     WithStyles,
 } from "@material-ui/core"
 import blue from "@material-ui/core/colors/blue"
+import AssignmentIcon from "@material-ui/icons/Assignment"
 import AssignmentReturnIcon from "@material-ui/icons/AssignmentReturn"
 import PersonIcon from "@material-ui/icons/Person"
 import * as React from "react"
-import { IReviewerAssignment, IReviewerUser } from "../../redux/modules/reviewers"
+import { IReviewerAssignment, IReviewerAssignmentCounts, IReviewerUser } from "../../redux/modules/reviewers"
 
 const styles = (theme: Theme) => ({
     selectedAvatar: {
@@ -32,6 +36,7 @@ export interface IProps {
     assignment: IReviewerAssignment | null
     tweetId: string | null
     reviewers: IReviewerUser[]
+    reviewerAssignmentCounts: IReviewerAssignmentCounts
     onCloseAssigner: any
     onAssignTweet: any
     onUnassignTweet: any
@@ -49,7 +54,7 @@ class TweetColumnAssigner extends React.Component<TComponentProps, {}> {
     }
 
     public render() {
-        const { classes, open, assignment, tweetId, reviewers, onCloseAssigner } = this.props
+        const { classes, open, assignment, tweetId, reviewers, reviewerAssignmentCounts, onCloseAssigner } = this.props
 
         return (
             <React.Fragment>
@@ -89,13 +94,17 @@ class TweetColumnAssigner extends React.Component<TComponentProps, {}> {
                                             </Avatar>
                                         </ListItemAvatar>
                                         <ListItemText primary={reviewer.name} secondary={secondaryText.join(" - ")} />
-                                        {/* <ListItemSecondaryAction>
+                                        <ListItemSecondaryAction>
                                             <Tooltip title="Add" aria-label="Add">
-                                                <Badge color="primary" badgeContent={4} className={classes.badgeMargin}>
+                                                <Badge
+                                                    color="primary"
+                                                    badgeContent={reviewerAssignmentCounts[reviewer.id]}
+                                                    className={classes.badgeMargin}
+                                                >
                                                     <AssignmentIcon />
                                                 </Badge>
                                             </Tooltip>
-                                        </ListItemSecondaryAction> */}
+                                        </ListItemSecondaryAction>
                                     </ListItem>
                                 )
                             })}

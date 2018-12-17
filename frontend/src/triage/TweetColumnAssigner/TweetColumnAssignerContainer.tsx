@@ -1,7 +1,14 @@
 import * as React from "react"
 import { connect } from "react-redux"
 import { IStore } from "../../redux/modules/reducer"
-import { assignReviewer, IReviewerAssignment, IReviewerUser, unassignReviewer } from "../../redux/modules/reviewers"
+import {
+    assignReviewer,
+    getUserAssignmentTotals,
+    IReviewerAssignment,
+    IReviewerAssignmentCounts,
+    IReviewerUser,
+    unassignReviewer,
+} from "../../redux/modules/reviewers"
 import TweetColumnAssigner from "./TweetColumnAssigner"
 
 export interface IProps {
@@ -13,6 +20,7 @@ export interface IProps {
 
 export interface IStoreProps {
     reviewers: IReviewerUser[]
+    reviewerAssignmentCounts: IReviewerAssignmentCounts
 }
 
 export interface IDispatchProps {
@@ -39,7 +47,7 @@ class TweetColumnAssignerContainer extends React.Component<TComponentProps, {}> 
     }
 
     public render() {
-        const { open, assignment, tweetId, reviewers, onCloseAssigner } = this.props
+        const { open, assignment, tweetId, reviewers, reviewerAssignmentCounts, onCloseAssigner } = this.props
 
         return (
             <TweetColumnAssigner
@@ -47,6 +55,7 @@ class TweetColumnAssignerContainer extends React.Component<TComponentProps, {}> 
                 assignment={assignment}
                 tweetId={tweetId}
                 reviewers={reviewers}
+                reviewerAssignmentCounts={reviewerAssignmentCounts}
                 onCloseAssigner={onCloseAssigner}
                 onAssignTweet={this.onAssignTweet}
                 onUnassignTweet={this.onUnassignTweet}
@@ -60,6 +69,7 @@ const mapStateToProps = (state: IStore, ownProps: IProps): IStoreProps => {
 
     return {
         reviewers: reviewers.users,
+        reviewerAssignmentCounts: getUserAssignmentTotals(state),
     }
 }
 
