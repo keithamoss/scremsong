@@ -16,8 +16,17 @@ from scremsong.celery import celery_restart_streaming
 from scremsong.app.models import SocialPlatformChoice, Tweets, SocialAssignments, SocialAssignmentStatus, Profile
 from scremsong.app import websockets
 from scremsong.util import make_logger
+from enum import Enum
 
 logger = make_logger(__name__)
+
+
+class NotificationVariants(str, Enum):
+    DEFAULT = "default"
+    ERROR = "error"
+    SUCCESS = "success"
+    WARNING = "warning"
+    INFO = "info"
 
 
 def api_not_found(request):
@@ -174,6 +183,12 @@ class SocialAssignmentsViewset(viewsets.ViewSet):
         websockets.send_channel_message("reviewers.set_status", {
             "user_id": user_id,
             "is_accepting_assignments": is_accepting_assignments
+        })
+        websockets.send_channel_message("notifications.send", {
+            "message": "{} has come online and is now ready to receive assignments!".format(UserSerializer(profile.user).data["name"]),
+            "options": {
+                "variant": NotificationVariants.INFO
+            }
         })
 
         return Response({})

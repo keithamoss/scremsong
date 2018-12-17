@@ -3,6 +3,7 @@ from channels.generic.websocket import JsonWebsocketConsumer
 from django.conf import settings
 from scremsong.app.websockets import build_on_connect_data_payload
 from scremsong.util import make_logger
+from random import getrandbits
 
 logger = make_logger(__name__)
 
@@ -52,6 +53,17 @@ class ScremsongConsumer(JsonWebsocketConsumer):
     # c.f. https://github.com/andrewgodwin/channels-examples/blob/master/multichat/chat/consumers.py
 
     # These helper methods are named by the types we send - so chat.join becomes chat_join
+    def notifications_send(self, event):
+        """
+        Called when we need to send a notification to connected clients.
+        """
+        self.send_json({
+            "msg_type": settings.MSG_TYPE_NOTIFICATION,
+            "message": event["message"],
+            "options": event["options"],
+            "key": str(getrandbits(128)),
+        })
+
     def reviewers_assign(self, event):
         """
         Called when someone has been assigned a new item.
@@ -79,7 +91,7 @@ class ScremsongConsumer(JsonWebsocketConsumer):
             "assignmentId": event["assignmentId"],
             "status": event["status"],
         })
-        
+
     def reviewers_set_status(self, event):
         """
         Called when someone has changed their assignment status (accepting assignments or not).
@@ -89,7 +101,7 @@ class ScremsongConsumer(JsonWebsocketConsumer):
             "user_id": event["user_id"],
             "is_accepting_assignments": event["is_accepting_assignments"],
         })
-        
+
     def tweets_dismiss(self, event):
         """
         Called when someone has dismissed a tweet (set it to be ignored).

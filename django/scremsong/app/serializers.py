@@ -12,6 +12,15 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     is_approved = serializers.BooleanField(source='profile.is_approved')
 
+    name = serializers.SerializerMethodField()
+    initials = serializers.SerializerMethodField()
+
+    def get_name(self, obj):
+        return "{} {}".format(obj.first_name, obj.last_name)
+
+    def get_initials(self, obj):
+        return "{}{}".format(obj.first_name[:1], obj.last_name[:1])
+
     class Meta:
         model = User
         fields = (
@@ -20,6 +29,8 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             'username',
             'first_name',
             'last_name',
+            'name',
+            'initials',
             'email',
             'is_staff',
             'is_active',
@@ -30,15 +41,6 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 class ReviewerUserSerializer(UserSerializer):
     is_accepting_assignments = serializers.BooleanField(source='profile.is_accepting_assignments')
-
-    name = serializers.SerializerMethodField()
-    initials = serializers.SerializerMethodField()
-
-    def get_name(self, obj):
-        return "{} {}".format(obj.first_name, obj.last_name)
-
-    def get_initials(self, obj):
-        return "{}{}".format(obj.first_name[:1], obj.last_name[:1])
 
     class Meta:
         model = User

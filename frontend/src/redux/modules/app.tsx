@@ -1,5 +1,7 @@
 import * as dotProp from "dot-prop-immutable"
 import { Action } from "redux"
+import { IActionNotification } from "../../websockets/actions"
+import { WS_NOTIFICATION } from "../../websockets/constants"
 import { IThunkExtras } from "./interfaces"
 import { changeCurrentReviewer } from "./reviewers"
 import { fetchUser, ISelf } from "./user"
@@ -11,6 +13,7 @@ const LOADED = "ealgis/app/LOADED"
 const BEGIN_FETCH = "ealgis/app/BEGIN_FETCH"
 const FINISH_FETCH = "ealgis/app/FINISH_FETCH"
 const TOGGLE_SIDEBAR = "ealgis/app/TOGGLE_SIDEBAR"
+const REMOVE_SNACKBAR = "ealgis/app/REMOVE_SNACKBAR"
 
 export enum eAppEnv {
     DEV = 1,
@@ -22,10 +25,18 @@ const initialState: IModule = {
     loading: true,
     requestsInProgress: 0,
     sidebarOpen: false,
+    notifications: [],
 }
 
 // Reducer
-type IAction = IActionLoading | IActionLoaded | IActionBeginFetch | IActionFinishFetch | IActionToggleSidebar
+type IAction =
+    | IActionLoading
+    | IActionLoaded
+    | IActionBeginFetch
+    | IActionFinishFetch
+    | IActionToggleSidebar
+    | IActionRemoveSnackbar
+    | IActionNotification
 export default function reducer(state: IModule = initialState, action: IAction) {
     let requestsInProgress = dotProp.get(state, "requestsInProgress")
 
@@ -40,6 +51,11 @@ export default function reducer(state: IModule = initialState, action: IAction) 
             return dotProp.set(state, "requestsInProgress", --requestsInProgress)
         case TOGGLE_SIDEBAR:
             return dotProp.toggle(state, "sidebarOpen")
+        case WS_NOTIFICATION:
+            return dotProp.set(state, "notifications.$end", action)
+        case REMOVE_SNACKBAR:
+            const notificationIndex = state.notifications.findIndex((notification: INotification) => notification.key === action.key)
+            return dotProp.delete(state, `notifications.${notificationIndex}`)
         default:
             return state
     }
@@ -66,11 +82,17 @@ export const toggleSidebarState = (): IActionToggleSidebar => ({
     type: TOGGLE_SIDEBAR,
 })
 
+export const removeSnackbar = (key: string): IActionRemoveSnackbar => ({
+    type: REMOVE_SNACKBAR,
+    key,
+})
+
 // Models
 export interface IModule {
     loading: boolean
     requestsInProgress: number
     sidebarOpen: boolean
+    notifications: []
 }
 
 export interface IActionLoading extends Action<typeof LOADING> {}
@@ -82,6 +104,30 @@ export interface IActionBeginFetch extends Action<typeof BEGIN_FETCH> {}
 export interface IActionFinishFetch extends Action<typeof FINISH_FETCH> {}
 
 export interface IActionToggleSidebar extends Action<typeof TOGGLE_SIDEBAR> {}
+
+export interface IActionRemoveSnackbar extends Action<typeof REMOVE_SNACKBAR> {
+    key: string
+}
+
+export interface INotification {
+    message: string
+    options: INotificationOptions
+    key: string
+}
+
+export enum eNotificationVariant {
+    DEFAULT = "default",
+    ERROR = "error",
+    SUCCESS = "success",
+    WARNING = "warning",
+    INFO = "info",
+}
+
+export interface INotificationOptions {
+    variant: eNotificationVariant
+    onClickAction?: Function
+    autoHideDuration?: number
+}
 
 // Side effects, only as applicable
 // e.g. thunks, epics, et cetera

@@ -1,4 +1,5 @@
 // React
+import { SnackbarProvider } from "notistack"
 import * as React from "react"
 import * as ReactDOM from "react-dom"
 import { Provider } from "react-redux"
@@ -59,7 +60,15 @@ ReactDOM.render(
         {/* <Router history={history as any} onUpdate={"REACT_APP_GOOGLE_ANALYTICS_UA" in process.env ? fireAnalyticsTracking : undefined}> */}
 
         <BrowserRouter>
-            <AppContainer />
+            <SnackbarProvider
+                maxSnack={3}
+                anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "right",
+                }}
+            >
+                <AppContainer />
+            </SnackbarProvider>
         </BrowserRouter>
     </Provider>,
     document.getElementById("root")

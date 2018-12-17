@@ -1,9 +1,12 @@
 import { Action } from "redux"
+import { INotificationOptions } from "../redux/modules/app"
 import { eSocialAssignmentStatus, IReviewerAssignment, IReviewerUser } from "../redux/modules/reviewers"
 import { ISocialTweetList } from "../redux/modules/social"
 import { ITriageColumn } from "../redux/modules/triage"
 import { IUser } from "../redux/modules/user"
 import {
+    WS_CONNECTED,
+    WS_NOTIFICATION,
     WS_REVIEWERS_ASSIGN,
     WS_REVIEWERS_ASSIGNMENT_STATUS_CHANGE,
     WS_REVIEWERS_LIST_ASSIGNMENTS,
@@ -20,10 +23,16 @@ export interface IActionWebSocketBase {
     msg_type: string
 }
 
-export interface IActionConnected extends IActionWebSocketBase {
+export interface IActionConnected extends Action<typeof WS_CONNECTED> {
     is_logged_in: boolean
     user: IUser
     actions: Action[]
+}
+
+export interface IActionNotification extends Action<typeof WS_NOTIFICATION> {
+    message: string
+    options: INotificationOptions
+    key: string
 }
 
 export interface IActionSocialColumnsList extends Action<typeof WS_SOCIAL_COLUMNS_LIST> {

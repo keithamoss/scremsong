@@ -5,6 +5,7 @@ import classNames from "classnames"
 import * as React from "react"
 import { Link, Route } from "react-router-dom"
 import "./App.css"
+import Notifier from "./notifications/Notifier"
 import UserReviewQueueViewContainer from "./review/UserReviewQueueView/UserReviewQueueViewContainer"
 import TriageViewContainer from "./triage/TriageView/TriageViewContainer"
 
@@ -91,6 +92,7 @@ class App extends React.Component<IProps, {}> {
                     <Route path="/queue" component={UserReviewQueueViewContainer} />
                     <Route exact={true} path="/" component={TriageViewContainer} />
                 </main>
+                <Notifier />
             </div>
         )
     }
