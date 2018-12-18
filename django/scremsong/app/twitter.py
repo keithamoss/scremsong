@@ -57,7 +57,7 @@ def twitter_user_api_auth_stage_2(query_params):
     return True
 
 
-def fetch_some_tweets(startIndex, stopIndex, sinceId=None, maxId=None, columnIds=[]):
+def fetch_tweets(startIndex, stopIndex, sinceId=None, maxId=None, columnIds=[]):
     columns = []
     tweets = {}
     for social_column in get_social_columns(SocialPlatformChoice.TWITTER, columnIds):

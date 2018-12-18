@@ -3,7 +3,7 @@ from channels.generic.websocket import JsonWebsocketConsumer
 from django.conf import settings
 from scremsong.util import make_logger
 from scremsong.app.serializers import UserSerializer
-from scremsong.app.twitter import get_twitter_columns, fetch_some_tweets
+from scremsong.app.twitter import get_twitter_columns, fetch_tweets
 from scremsong.app.reviewers import get_reviewer_users, get_assignments
 from random import getrandbits
 
@@ -144,7 +144,7 @@ def build_on_connect_data_payload(user):
             },
             {
                 **{"msg_type": settings.MSG_TYPE_TWEETS_LOAD_TWEETS},
-                **fetch_some_tweets(startIndex=0, stopIndex=20)
+                **fetch_tweets(startIndex=0, stopIndex=20)
             }
         ]
     }

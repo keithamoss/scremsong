@@ -11,7 +11,7 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
 from tweepy import TweepError
 from scremsong.app.serializers import UserSerializer, ProfileSerializer, SocialAssignmentSerializer
-from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, fetch_some_tweets
+from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, fetch_tweets
 from scremsong.celery import celery_restart_streaming
 from scremsong.app.models import Tweets, SocialAssignments, Profile
 from scremsong.app.enums import SocialPlatformChoice, SocialAssignmentStatus, NotificationVariants
@@ -78,7 +78,7 @@ class TweetsViewset(viewsets.ViewSet):
     permission_classes = (IsAuthenticated,)
 
     @list_route(methods=['get'])
-    def get_some_tweets(self, request, format=None):
+    def fetch(self, request, format=None):
         qp = request.query_params
 
         sinceId = qp["sinceId"] if "sinceId" in qp else None
@@ -92,7 +92,7 @@ class TweetsViewset(viewsets.ViewSet):
         if sinceId is None and (startIndex is None or stopIndex is None):
             return Response({"error": "Missing 'startIndex' or 'stopIndex'."}, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(fetch_some_tweets(startIndex, stopIndex, sinceId, maxId, columnIds))
+        return Response(fetch_tweets(startIndex, stopIndex, sinceId, maxId, columnIds))
 
     @list_route(methods=['get'])
     def dismiss(self, request, format=None):
