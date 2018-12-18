@@ -1,7 +1,9 @@
 import * as dotProp from "dot-prop-immutable"
 import { uniq } from "lodash-es"
+import { Action } from "redux"
 import { IActionSocialColumnsList, IActionsTweetsFetch, IActionTweetsNew, ITweetFetchColumn } from "../../websockets/actions"
 import { WS_SOCIAL_COLUMNS_LIST, WS_TWEETS_FETCH_SOME, WS_TWEETS_NEW } from "../../websockets/constants"
+import { ISocialTweetList, ISocialTweetsAndColumnsResponse } from "./social"
 // import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 
 // Actions
@@ -9,6 +11,7 @@ import { WS_SOCIAL_COLUMNS_LIST, WS_TWEETS_FETCH_SOME, WS_TWEETS_NEW } from "../
 // const LOAD_NEW_TWEETS = "ealgis/app/LOAD_NEW_TWEETS"
 // const DISMISS_TWEET = "ealgis/app/DISMISS_TWEET"
 // const LOAD_COLUMNS = "ealgis/app/LOAD_COLUMNS"
+const TRIAGE_LOAD_TWEETS = "scremsong/triage/LOAD_TWEETS"
 
 const initialState: IModule = {
     columns: [],
@@ -16,10 +19,12 @@ const initialState: IModule = {
 }
 
 // Reducer
-type IAction = IActionsTweetsFetch | IActionTweetsNew | IActionSocialColumnsList
+type IAction = IActionLoadTweets | IActionsTweetsFetch | IActionTweetsNew | IActionSocialColumnsList
 export default function reducer(state: IModule = initialState, action: IAction) {
     switch (action.type) {
+        case TRIAGE_LOAD_TWEETS:
         case WS_TWEETS_FETCH_SOME:
+            // console.log("triage.WS_TWEETS_FETCH_SOME_NEW_TWEETS or triage.WS_TWEETS_FETCH_SOME or triage.TRIAGE_LOAD_TWEETS", action)
             action.columns.forEach((column: ITweetFetchColumn, index: number) => {
                 // Merge and then sort column tweetIds to maintain the correct order chronological order
                 const val = uniq([...state.column_tweets![column.id], ...column.tweet_ids])
@@ -75,11 +80,20 @@ export default function reducer(state: IModule = initialState, action: IAction) 
 }
 
 // Action Creators
+export const loadTweets = (json: ISocialTweetsAndColumnsResponse): IActionLoadTweets => ({
+    type: TRIAGE_LOAD_TWEETS,
+    ...json,
+})
 
 // Models
 export interface IModule {
     columns: ITriageColumn[]
     column_tweets: ITriageColumnTweets
+}
+
+export interface IActionLoadTweets extends Action<typeof TRIAGE_LOAD_TWEETS>, ISocialTweetsAndColumnsResponse {
+    columns: ITweetFetchColumn[]
+    tweets: ISocialTweetList
 }
 
 export enum eSocialPlatformChoice {

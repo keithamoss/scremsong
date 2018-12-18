@@ -1,7 +1,7 @@
 import { Action } from "redux"
 import { INotificationOptions } from "../redux/modules/app"
 import { eSocialAssignmentStatus, IReviewerAssignment, IReviewerUser } from "../redux/modules/reviewers"
-import { ISocialTweet, ISocialTweetList } from "../redux/modules/social"
+import { ISocialTweet, ISocialTweetList, ISocialTweetsAndColumnsResponse } from "../redux/modules/social"
 import { ITriageColumn } from "../redux/modules/triage"
 import { IUser } from "../redux/modules/user"
 import {
@@ -81,7 +81,4 @@ export interface IActionsTweetsDismiss extends Action<typeof WS_TWEETS_DISMISS> 
     tweetId: string
 }
 
-export interface IActionsTweetsFetch extends Action<typeof WS_TWEETS_FETCH_SOME> {
-    columns: ITweetFetchColumn[]
-    tweets: ISocialTweetList
-}
+export interface IActionsTweetsFetch extends Action<typeof WS_TWEETS_FETCH_SOME>, ISocialTweetsAndColumnsResponse {}

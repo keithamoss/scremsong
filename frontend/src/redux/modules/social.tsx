@@ -11,6 +11,7 @@ import {
     IActionsTweetsDismiss,
     IActionsTweetsFetch,
     IActionTweetsNew,
+    ITweetFetchColumn,
 } from "../../websockets/actions"
 import {
     WS_REVIEWERS_ASSIGN,
@@ -22,6 +23,7 @@ import {
 } from "../../websockets/constants"
 import { IStore } from "./reducer"
 import { IReviewerAssignment } from "./reviewers"
+import { loadTweets as triageLoadTweets } from "./triage"
 
 // Actions
 const LOAD_TWEETS = "scremsong/tweets/LOAD_TWEETS"
@@ -93,9 +95,9 @@ export const getTweetIdsForAssignement = createSelector(
 )
 
 // Action Creators
-export const loadTweets = (tweets: ISocialTweetList): IActionLoadTweets => ({
+export const loadTweets = (json: ISocialTweetsAndColumnsResponse): IActionLoadTweets => ({
     type: LOAD_TWEETS,
-    tweets,
+    ...json,
 })
 
 // Models
@@ -104,7 +106,13 @@ export interface IModule {
     tweet_assignments: ISocialTweetAssignments
 }
 
-export interface IActionLoadTweets extends Action<typeof LOAD_TWEETS> {
+export interface IActionLoadTweets extends Action<typeof LOAD_TWEETS>, ISocialTweetsAndColumnsResponse {
+    columns: ITweetFetchColumn[]
+    tweets: ISocialTweetList
+}
+
+export interface ISocialTweetsAndColumnsResponse {
+    columns: ITweetFetchColumn[]
     tweets: ISocialTweetList
 }
 
@@ -140,6 +148,7 @@ export function fetchTweets(startIndex: number, stopIndex: number, columns: numb
             true
         )
         await dispatch(loadTweets(json))
+        await dispatch(triageLoadTweets(json))
     }
 }
 
