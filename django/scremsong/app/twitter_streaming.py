@@ -17,20 +17,20 @@ def open_tweet_stream():
 
         def on_error(self, status_code):
             if status_code == 420:
-                logger.warn("Streaming got status {}. Disconnecting from stream.".format(status_code))
+                logger.warning("Streaming got status {}. Disconnecting from stream.".format(status_code))
 
                 # Fire off tasks to restart streaming (delayed by 2s)
                 celery_init_tweet_streaming()
 
                 # Returning False in on_error disconnects the stream
                 return False
-            logger.warn("Streaming got status {}. Taking no action.".format(status_code))
+            logger.warning("Streaming got status {}. Taking no action.".format(status_code))
 
         def on_limit(self, track):
-            logger.warn("Received an on limit message from Twitter.")
+            logger.warning("Received an on limit message from Twitter.")
 
         def on_timeout(self):
-            logger.error("Streaming connection to Twitter has timed out.")
+            logger.critical("Streaming connection to Twitter has timed out.")
 
             # Fire off tasks to restart streaming (delayed by 2s)
             celery_init_tweet_streaming()
@@ -39,7 +39,7 @@ def open_tweet_stream():
             return False
 
         def on_disconnect(self, notice):
-            logger.error("Received a disconnect notice from Twitter. {}".format(notice))
+            logger.critical("Received a disconnect notice from Twitter. {}".format(notice))
 
             # Fire off tasks to restart streaming (delayed by 2s)
             celery_init_tweet_streaming()
@@ -48,23 +48,23 @@ def open_tweet_stream():
             return False
 
         def on_warning(self, notice):
-            logger.error("Received disconnection warning notice from Twitter. {}".format(notice))
+            logger.critical("Received disconnection warning notice from Twitter. {}".format(notice))
 
         def on_connect(self):
-            logger.error("on_connect")
+            logger.info("on_connect")
 
         def on_data(self, raw_data):
-            logger.error("on_data")
+            logger.info("on_data")
             return super(MyStreamListener, self).on_data(raw_data)
 
         def on_delete(self, status_id, user_id):
             """Called when a delete notice arrives for a status"""
-            logger.error("on_delete: {}, {}".format(status_id, user_id))
+            logger.warning("on_delete: {}, {}".format(status_id, user_id))
             return
 
         def keep_alive(self):
             """Called when a keep-alive arrived"""
-            logger.error("keep_alive")
+            logger.info("keep_alive")
             return
 
     # Create Twitter app credentials + config store if it doesn't exist
