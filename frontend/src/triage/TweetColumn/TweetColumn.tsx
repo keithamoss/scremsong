@@ -43,9 +43,10 @@ export interface ISnapshot {
 
 type TComponentProps = IProps & WithStyles
 class TweetColumn extends React.Component<TComponentProps, {}> {
-    private onDismissTweet: any
-    private onOpenAssigner: any
-    private _list: any
+    private onDismissTweet: Function
+    private onOpenAssigner: Function
+    private _registerChild: Function
+    private _list: List | undefined
     private _maintainScrollPosition: boolean
     private _onRowsRendered?: Function
     private _startTweet?: string
@@ -72,6 +73,11 @@ class TweetColumn extends React.Component<TComponentProps, {}> {
                 this._startTweet = this.props.tweet_ids[opts.startIndex]
                 onRowsRendered(opts)
             }
+        }
+
+        this._registerChild = (registerChild: Function, ref: any) => {
+            this._setListRef(ref)
+            registerChild(ref)
         }
     }
 
@@ -107,7 +113,7 @@ class TweetColumn extends React.Component<TComponentProps, {}> {
                                                     : onRowsRendered
                                             }
                                             overscanRowCount={1}
-                                            ref={this._setListRef}
+                                            ref={this._registerChild.bind(this, registerChild)}
                                             rowCount={column.total_tweets}
                                             rowHeight={this._cache.rowHeight}
                                             rowRenderer={this._rowRenderer}
@@ -155,10 +161,11 @@ class TweetColumn extends React.Component<TComponentProps, {}> {
             }
         }
 
-        if (this._maintainScrollPosition && this.props.tweet_ids !== prevProps.tweet_ids) {
+        if (this._maintainScrollPosition && this._list && this.props.tweet_ids !== prevProps.tweet_ids) {
             if (snapshot !== null && snapshot.lastStartTweet !== undefined) {
                 const tweetIndex = this.props.tweet_ids.findIndex((tweetId: string) => tweetId === snapshot.lastStartTweet)
                 if (tweetIndex !== -1) {
+                    console.log("Move ", this.props.column.id, " to ", tweetIndex, " for ", snapshot.lastStartTweet)
                     this._list.scrollToRow(tweetIndex)
                 }
             }
@@ -231,7 +238,7 @@ class TweetColumn extends React.Component<TComponentProps, {}> {
         }
     }
 
-    private _setListRef = (ref: any) => {
+    private _setListRef = (ref: List) => {
         this._list = ref
     }
 }
