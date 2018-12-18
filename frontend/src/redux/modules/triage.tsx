@@ -1,7 +1,7 @@
 import * as dotProp from "dot-prop-immutable"
 import { uniq } from "lodash-es"
-import { IActionSocialColumnsList, IActionsTweetsFetch, ITweetFetchColumn } from "../../websockets/actions"
-import { WS_SOCIAL_COLUMNS_LIST, WS_TWEETS_FETCH_SOME } from "../../websockets/constants"
+import { IActionSocialColumnsList, IActionsTweetsFetch, IActionTweetsNew, ITweetFetchColumn } from "../../websockets/actions"
+import { WS_SOCIAL_COLUMNS_LIST, WS_TWEETS_FETCH_SOME, WS_TWEETS_NEW } from "../../websockets/constants"
 // import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 
 // Actions
@@ -16,7 +16,7 @@ const initialState: IModule = {
 }
 
 // Reducer
-type IAction = IActionsTweetsFetch | IActionSocialColumnsList
+type IAction = IActionsTweetsFetch | IActionTweetsNew | IActionSocialColumnsList
 export default function reducer(state: IModule = initialState, action: IAction) {
     switch (action.type) {
         case WS_TWEETS_FETCH_SOME:
@@ -25,6 +25,18 @@ export default function reducer(state: IModule = initialState, action: IAction) 
                 const val = uniq([...state.column_tweets![column.id], ...column.tweet_ids])
                 const sorted = val.sort().reverse()
                 state = dotProp.set(state, `column_tweets.${column.id}`, sorted)
+            })
+            return state
+        case WS_TWEETS_NEW:
+            action.columnIds.forEach((columnId: number) => {
+                // Merge and then sort column tweetIds to maintain the correct order chronological order
+                const val = uniq([...state.column_tweets![columnId], ...[action.tweet.data.id_str]])
+                const sorted = val.sort().reverse()
+                state = dotProp.set(state, `column_tweets.${columnId}`, sorted)
+
+                const columnIndex = state.columns.findIndex((c: ITriageColumn) => c.id === columnId)
+                const totalTweets = dotProp.get(state, `columns.${columnIndex}.total_tweets`)
+                state = dotProp.set(state, `columns.${columnIndex}.total_tweets`, totalTweets + 1)
             })
             return state
         // case WS_TWEETS_FETCH_SOME_NEW_TWEETS:

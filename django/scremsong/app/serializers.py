@@ -94,6 +94,5 @@ class TweetsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tweets
         fields = (
-            'id',
             'data',
             'is_dismissed')

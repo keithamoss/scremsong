@@ -10,6 +10,7 @@ import {
     IActionReviewersUnassign,
     IActionsTweetsDismiss,
     IActionsTweetsFetch,
+    IActionTweetsNew,
 } from "../../websockets/actions"
 import {
     WS_REVIEWERS_ASSIGN,
@@ -17,6 +18,7 @@ import {
     WS_REVIEWERS_UNASSIGN,
     WS_TWEETS_DISMISS,
     WS_TWEETS_FETCH_SOME,
+    WS_TWEETS_NEW,
 } from "../../websockets/constants"
 import { IStore } from "./reducer"
 import { IReviewerAssignment } from "./reviewers"
@@ -33,6 +35,7 @@ const initialState: IModule = {
 type IAction =
     | IActionLoadTweets
     | IActionsTweetsFetch
+    | IActionTweetsNew
     | IActionReviewersListAssignments
     | IActionReviewersAssign
     | IActionReviewersUnassign
@@ -44,6 +47,8 @@ export default function reducer(state: IModule = initialState, action: IAction) 
             // case WS_TWEETS_FETCH_SOME_NEW_TWEETS:
             // console.log("social.WS_TWEETS_FETCH_SOME_NEW_TWEETS or social.WS_TWEETS_FETCH_SOME or social.LOAD_TWEETS", action)
             return dotProp.set(state, "tweets", { ...state.tweets, ...action.tweets })
+        case WS_TWEETS_NEW:
+            return dotProp.set(state, `tweets.${action.tweet.data.id_str}`, action.tweet)
         case WS_REVIEWERS_LIST_ASSIGNMENTS:
             Object.values(action.assignments).forEach((assignment: IReviewerAssignment, index: number) => {
                 state = dotProp.set(state, `tweet_assignments.${assignment.social_id}`, assignment.id)
@@ -112,12 +117,13 @@ export interface ISocialTweetAssignments {
 }
 
 export interface ISocialTweet {
-    id: number
     data: ISocialTweetData
     is_dismissed: boolean
 }
 
-export interface ISocialTweetData {}
+export interface ISocialTweetData {
+    id_str: string
+}
 
 // Side effects, only as applicable
 // e.g. thunks, epics, et cetera

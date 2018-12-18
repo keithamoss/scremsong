@@ -1,7 +1,7 @@
 import { Action } from "redux"
 import { INotificationOptions } from "../redux/modules/app"
 import { eSocialAssignmentStatus, IReviewerAssignment, IReviewerUser } from "../redux/modules/reviewers"
-import { ISocialTweetList } from "../redux/modules/social"
+import { ISocialTweet, ISocialTweetList } from "../redux/modules/social"
 import { ITriageColumn } from "../redux/modules/triage"
 import { IUser } from "../redux/modules/user"
 import {
@@ -16,6 +16,7 @@ import {
     WS_SOCIAL_COLUMNS_LIST,
     WS_TWEETS_DISMISS,
     WS_TWEETS_FETCH_SOME,
+    WS_TWEETS_NEW,
 } from "./constants"
 
 // Models
@@ -33,6 +34,11 @@ export interface IActionNotification extends Action<typeof WS_NOTIFICATION> {
     message: string
     options: INotificationOptions
     key: string
+}
+
+export interface IActionTweetsNew extends Action<typeof WS_TWEETS_NEW> {
+    tweet: ISocialTweet
+    columnIds: number[]
 }
 
 export interface IActionSocialColumnsList extends Action<typeof WS_SOCIAL_COLUMNS_LIST> {

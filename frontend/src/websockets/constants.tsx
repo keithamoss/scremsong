@@ -3,6 +3,8 @@ export const WS_URI = process.env.REACT_APP_WEB_SOCKET_URI!
 export const WS_CONNECTED = "ws/scremsong/CONNECTED"
 export const WS_NOTIFICATION = "ws/scremsong/NOTIFICATION"
 
+export const WS_TWEETS_NEW = "ws/scremsong/tweets/NEW"
+
 export const WS_SOCIAL_COLUMNS_LIST = "ws/scremsong/social_columns/LIST"
 
 export const WS_REVIEWERS_LIST_USERS = "ws/scremsong/reviewers/LIST_USERS"
@@ -18,6 +20,7 @@ export const WS_TWEETS_FETCH_SOME_NEW_TWEETS = "ws/scremsong/tweets/FETCH_SOME_N
 
 export const messageTypes = [
     WS_NOTIFICATION,
+    WS_TWEETS_NEW,
     WS_SOCIAL_COLUMNS_LIST,
     WS_REVIEWERS_LIST_USERS,
     WS_REVIEWERS_LIST_ASSIGNMENTS,
