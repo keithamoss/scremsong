@@ -18,15 +18,15 @@ import {
     WS_REVIEWERS_LIST_ASSIGNMENTS,
     WS_REVIEWERS_UNASSIGN,
     WS_TWEETS_DISMISS,
-    WS_TWEETS_FETCH_SOME,
-    WS_TWEETS_NEW,
+    WS_TWEETS_LOAD_TWEETS,
+    WS_TWEETS_NEW_TWEET,
 } from "../../websockets/constants"
 import { IStore } from "./reducer"
 import { IReviewerAssignment } from "./reviewers"
 import { loadTweets as triageLoadTweets } from "./triage"
 
 // Actions
-const LOAD_TWEETS = "scremsong/tweets/LOAD_TWEETS"
+const LOAD_TWEETS = "scremsong/social/LOAD_TWEETS"
 
 const initialState: IModule = {
     tweets: {},
@@ -45,11 +45,9 @@ type IAction =
 export default function reducer(state: IModule = initialState, action: IAction) {
     switch (action.type) {
         case LOAD_TWEETS:
-        case WS_TWEETS_FETCH_SOME:
-            // case WS_TWEETS_FETCH_SOME_NEW_TWEETS:
-            // console.log("social.WS_TWEETS_FETCH_SOME_NEW_TWEETS or social.WS_TWEETS_FETCH_SOME or social.LOAD_TWEETS", action)
+        case WS_TWEETS_LOAD_TWEETS:
             return dotProp.set(state, "tweets", { ...state.tweets, ...action.tweets })
-        case WS_TWEETS_NEW:
+        case WS_TWEETS_NEW_TWEET:
             return dotProp.set(state, `tweets.${action.tweet.data.id_str}`, action.tweet)
         case WS_REVIEWERS_LIST_ASSIGNMENTS:
             Object.values(action.assignments).forEach((assignment: IReviewerAssignment, index: number) => {

@@ -60,7 +60,7 @@ class ScremsongConsumer(JsonWebsocketConsumer):
         Called when we receive a single new tweet from the Twitter stream.
         """
         self.send_json({
-            "msg_type": settings.MSG_TYPE_TWEETS_NEW,
+            "msg_type": settings.MSG_TYPE_TWEETS_NEW_TWEET,
             "tweet": event["tweet"],
             "columnIds": event["columnIds"],
         })
@@ -143,7 +143,7 @@ def build_on_connect_data_payload(user):
                 **get_assignments()
             },
             {
-                **{"msg_type": settings.MSG_TYPE_TWEETS_FETCH_SOME},
+                **{"msg_type": settings.MSG_TYPE_TWEETS_LOAD_TWEETS},
                 **fetch_some_tweets(startIndex=0, stopIndex=20)
             }
         ]

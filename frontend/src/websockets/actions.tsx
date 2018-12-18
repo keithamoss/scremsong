@@ -15,8 +15,8 @@ import {
     WS_REVIEWERS_UNASSIGN,
     WS_SOCIAL_COLUMNS_LIST,
     WS_TWEETS_DISMISS,
-    WS_TWEETS_FETCH_SOME,
-    WS_TWEETS_NEW,
+    WS_TWEETS_LOAD_TWEETS,
+    WS_TWEETS_NEW_TWEET,
 } from "./constants"
 
 // Models
@@ -36,7 +36,7 @@ export interface IActionNotification extends Action<typeof WS_NOTIFICATION> {
     key: string
 }
 
-export interface IActionTweetsNew extends Action<typeof WS_TWEETS_NEW> {
+export interface IActionTweetsNew extends Action<typeof WS_TWEETS_NEW_TWEET> {
     tweet: ISocialTweet
     columnIds: number[]
 }
@@ -81,4 +81,4 @@ export interface IActionsTweetsDismiss extends Action<typeof WS_TWEETS_DISMISS> 
     tweetId: string
 }
 
-export interface IActionsTweetsFetch extends Action<typeof WS_TWEETS_FETCH_SOME>, ISocialTweetsAndColumnsResponse {}
+export interface IActionsTweetsFetch extends Action<typeof WS_TWEETS_LOAD_TWEETS>, ISocialTweetsAndColumnsResponse {}

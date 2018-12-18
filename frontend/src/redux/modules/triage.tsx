@@ -2,16 +2,12 @@ import * as dotProp from "dot-prop-immutable"
 import { uniq } from "lodash-es"
 import { Action } from "redux"
 import { IActionSocialColumnsList, IActionsTweetsFetch, IActionTweetsNew, ITweetFetchColumn } from "../../websockets/actions"
-import { WS_SOCIAL_COLUMNS_LIST, WS_TWEETS_FETCH_SOME, WS_TWEETS_NEW } from "../../websockets/constants"
+import { WS_SOCIAL_COLUMNS_LIST, WS_TWEETS_LOAD_TWEETS, WS_TWEETS_NEW_TWEET } from "../../websockets/constants"
 import { ISocialTweetList, ISocialTweetsAndColumnsResponse } from "./social"
 // import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 
 // Actions
-// const LOAD_TWEETS = "ealgis/app/LOAD_TWEETS"
-// const LOAD_NEW_TWEETS = "ealgis/app/LOAD_NEW_TWEETS"
-// const DISMISS_TWEET = "ealgis/app/DISMISS_TWEET"
-// const LOAD_COLUMNS = "ealgis/app/LOAD_COLUMNS"
-const TRIAGE_LOAD_TWEETS = "scremsong/triage/LOAD_TWEETS"
+const LOAD_TWEETS = "scremsong/triage/LOAD_TWEETS"
 
 const initialState: IModule = {
     columns: [],
@@ -22,9 +18,8 @@ const initialState: IModule = {
 type IAction = IActionLoadTweets | IActionsTweetsFetch | IActionTweetsNew | IActionSocialColumnsList
 export default function reducer(state: IModule = initialState, action: IAction) {
     switch (action.type) {
-        case TRIAGE_LOAD_TWEETS:
-        case WS_TWEETS_FETCH_SOME:
-            // console.log("triage.WS_TWEETS_FETCH_SOME_NEW_TWEETS or triage.WS_TWEETS_FETCH_SOME or triage.TRIAGE_LOAD_TWEETS", action)
+        case LOAD_TWEETS:
+        case WS_TWEETS_LOAD_TWEETS:
             action.columns.forEach((column: ITweetFetchColumn, index: number) => {
                 // Merge and then sort column tweetIds to maintain the correct order chronological order
                 const val = uniq([...state.column_tweets![column.id], ...column.tweet_ids])
@@ -32,7 +27,7 @@ export default function reducer(state: IModule = initialState, action: IAction) 
                 state = dotProp.set(state, `column_tweets.${column.id}`, sorted)
             })
             return state
-        case WS_TWEETS_NEW:
+        case WS_TWEETS_NEW_TWEET:
             action.columnIds.forEach((columnId: number) => {
                 // Merge and then sort column tweetIds to maintain the correct order chronological order
                 const val = uniq([...state.column_tweets![columnId], ...[action.tweet.data.id_str]])
@@ -44,25 +39,6 @@ export default function reducer(state: IModule = initialState, action: IAction) 
                 state = dotProp.set(state, `columns.${columnIndex}.total_tweets`, totalTweets + 1)
             })
             return state
-        // case WS_TWEETS_FETCH_SOME_NEW_TWEETS:
-        //     console.log("triage.WS_TWEETS_FETCH_SOME_NEW_TWEETS", action)
-        //     action.columns.forEach((column: ITriageColumn, index: number) => {
-        //         // Merge and then sort column tweetIds to maintain the correct order chronological order
-        //         const val = uniq([...state.column_tweets![column.id], ...column.tweets])
-        //         const sorted = val.sort().reverse()
-        //         state = dotProp.set(state, `column_tweets.${column.id}`, sorted)
-
-        //         // Update the total number of tweets in the database for this column
-        //         const columnIndex = state.columns.findIndex((col: ITriageColumn) => {
-        //             return col.id === column.id
-        //         })
-        //         state = dotProp.set(
-        //             state,
-        //             `columns.${columnIndex}.total_tweets`,
-        //             state.columns[columnIndex].total_tweets + column.tweets.length
-        //         )
-        //     })
-        //     return state
         case WS_SOCIAL_COLUMNS_LIST:
             // Initialise our store for the tweetIds associated with each column
             // Map our list of columns to an object of empty arrays indexed by columnId
@@ -81,7 +57,7 @@ export default function reducer(state: IModule = initialState, action: IAction) 
 
 // Action Creators
 export const loadTweets = (json: ISocialTweetsAndColumnsResponse): IActionLoadTweets => ({
-    type: TRIAGE_LOAD_TWEETS,
+    type: LOAD_TWEETS,
     ...json,
 })
 
@@ -91,7 +67,7 @@ export interface IModule {
     column_tweets: ITriageColumnTweets
 }
 
-export interface IActionLoadTweets extends Action<typeof TRIAGE_LOAD_TWEETS>, ISocialTweetsAndColumnsResponse {
+export interface IActionLoadTweets extends Action<typeof LOAD_TWEETS>, ISocialTweetsAndColumnsResponse {
     columns: ITweetFetchColumn[]
     tweets: ISocialTweetList
 }

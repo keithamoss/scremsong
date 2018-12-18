@@ -8,14 +8,14 @@ import { fetchUser, ISelf } from "./user"
 // import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 
 // Actions
-const LOADING = "ealgis/app/LOADING"
-const LOADED = "ealgis/app/LOADED"
-const CONNECTED = "ealgis/app/CONNECTED"
-const DISCONNECTED = "ealgis/app/DISCONNECTED"
-const BEGIN_FETCH = "ealgis/app/BEGIN_FETCH"
-const FINISH_FETCH = "ealgis/app/FINISH_FETCH"
-const TOGGLE_SIDEBAR = "ealgis/app/TOGGLE_SIDEBAR"
-const REMOVE_SNACKBAR = "ealgis/app/REMOVE_SNACKBAR"
+const LOADING = "scremsong/app/LOADING"
+const LOADED = "scremsong/app/LOADED"
+const CONNECTED = "scremsong/app/CONNECTED"
+const DISCONNECTED = "scremsong/app/DISCONNECTED"
+const BEGIN_FETCH = "scremsong/app/BEGIN_FETCH"
+const FINISH_FETCH = "scremsong/app/FINISH_FETCH"
+const TOGGLE_SIDEBAR = "scremsong/app/TOGGLE_SIDEBAR"
+const REMOVE_SNACKBAR = "scremsong/app/REMOVE_SNACKBAR"
 
 export enum eAppEnv {
     DEV = 1,

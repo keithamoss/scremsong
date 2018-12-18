@@ -25,7 +25,7 @@ import { eSocialPlatformChoice } from "./triage"
 import { IUser } from "./user"
 
 // Actions
-const SET_CURRENT_REVIEWER = "ealgis/app/SET_CURRENT_REVIEWER"
+const SET_CURRENT_REVIEWER = "scremsong/reviewers/SET_CURRENT_REVIEWER"
 
 const initialState: IModule = {
     users: [],
