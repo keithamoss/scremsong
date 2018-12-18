@@ -42,6 +42,11 @@ type TComponentProps = IProps & WithStyles
 class TweetColumn extends React.Component<TComponentProps, {}> {
     private onDismissTweet: any
     private onOpenAssigner: any
+    private _list: any
+    private _maintainScrollPosition: boolean
+    private _onRowsRendered?: Function
+    private _startTweet?: string
+    private _lastStartTweet?: string
 
     private _cache = new CellMeasurerCache({
         defaultHeight: 175,
@@ -53,13 +58,19 @@ class TweetColumn extends React.Component<TComponentProps, {}> {
         },
     })
 
-    private _list: any
-
     public constructor(props: TComponentProps) {
         super(props)
 
         this.onOpenAssigner = (tweetId: string, assignmentId: number | null) => () => this.props.onOpenAssigner(tweetId, assignmentId)
         this.onDismissTweet = (tweetId: string) => () => this.props.onDismissTweet(tweetId)
+
+        this._maintainScrollPosition = true
+        if (this._maintainScrollPosition) {
+            this._onRowsRendered = (onRowsRendered: Function, opts: any /*ListProps["onRowsRendered"]*/) => {
+                this._startTweet = this.props.tweet_ids[opts.startIndex]
+                onRowsRendered(opts)
+            }
+        }
     }
 
     public render() {
@@ -88,12 +99,17 @@ class TweetColumn extends React.Component<TComponentProps, {}> {
                                             deferredMeasurementCache={this._cache}
                                             width={width}
                                             height={height}
-                                            onRowsRendered={onRowsRendered}
+                                            onRowsRendered={
+                                                this._maintainScrollPosition
+                                                    ? this._onRowsRendered!.bind(this, onRowsRendered)
+                                                    : onRowsRendered
+                                            }
                                             overscanRowCount={1}
                                             ref={this._setListRef}
                                             rowCount={column.total_tweets}
                                             rowHeight={this._cache.rowHeight}
                                             rowRenderer={this._rowRenderer}
+                                            scrollToAlignment={"start"}
                                         />
                                     )
                                 }}
@@ -103,6 +119,12 @@ class TweetColumn extends React.Component<TComponentProps, {}> {
                 )}
             </div>
         )
+    }
+
+    public getSnapshotBeforeUpdate(prevProps: IProps, prevState: IProps) {
+        if (this._maintainScrollPosition) {
+            this._lastStartTweet = this._startTweet
+        }
     }
 
     public componentDidUpdate(prevProps: IProps, prevState: IProps) {
@@ -127,6 +149,17 @@ class TweetColumn extends React.Component<TComponentProps, {}> {
             // Trigger an update if a property of one of our reviewers has changed (e.g. they've gone offline)
             if (this._list) {
                 this._list.recomputeRowHeights(0)
+            }
+        }
+
+        if (this._maintainScrollPosition && this.props.tweet_ids !== prevProps.tweet_ids) {
+            if (this._lastStartTweet !== undefined) {
+                const tweetIndex = this.props.tweet_ids.findIndex((tweetId: string) => tweetId === this._lastStartTweet)
+                if (tweetIndex !== -1) {
+                    this._list.scrollToRow(tweetIndex)
+                }
+
+                this._lastStartTweet = undefined
             }
         }
     }
