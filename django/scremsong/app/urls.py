@@ -8,6 +8,7 @@ from .views import (
     SocialAssignmentsViewset,
     SocialPlatformsAuthViewset,
     CeleryAdminViewset,
+    ScremsongDebugViewset,
     api_not_found)
 from rest_framework import routers
 
@@ -17,6 +18,7 @@ router.register(r'tweets', TweetsViewset, 'Tweets')
 router.register(r'social_assignments', SocialAssignmentsViewset, 'SocialAssignments')
 router.register(r'social_auth', SocialPlatformsAuthViewset, 'SocialPlatformsAuth')
 router.register(r'celery_admin', CeleryAdminViewset, 'CeleryAdmin')
+router.register(r'debug', ScremsongDebugViewset, 'ScremsongDebugViewset')
 
 # Need to set base_name because Reasons
 # http://www.django-rest-framework.org/api-guide/routers/#usage (see note re `base_name`)

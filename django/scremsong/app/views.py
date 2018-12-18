@@ -10,13 +10,16 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
 from tweepy import TweepError
-from scremsong.app.serializers import UserSerializer, ProfileSerializer, SocialAssignmentSerializer
-from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, fetch_tweets
+from scremsong.app.serializers import UserSerializer, ProfileSerializer, SocialAssignmentSerializer, TweetsSerializer
+from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, fetch_tweets, get_columns_for_tweet
 from scremsong.celery import celery_restart_streaming
 from scremsong.app.models import Tweets, SocialAssignments, Profile
 from scremsong.app.enums import SocialPlatformChoice, SocialAssignmentStatus, NotificationVariants
 from scremsong.app import websockets
 from scremsong.util import make_logger
+
+from time import sleep
+from copy import deepcopy
 
 logger = make_logger(__name__)
 
@@ -246,4 +249,63 @@ class CeleryAdminViewset(viewsets.ViewSet):
     @list_route(methods=['get'])
     def restart_streaming(self, request, format=None):
         celery_restart_streaming()
+        return Response({"OK": True})
+
+
+class ScremsongDebugViewset(viewsets.ViewSet):
+    """
+    API endpoint that lets us debug things.
+    """
+    permission_classes = (IsAuthenticated,)
+
+    @list_route(methods=['get'])
+    def send_dummy_tweets(self, request, format=None):
+        qp = request.query_params
+        number_of_tweets = int(qp["number_of_tweets"]) if "number_of_tweets" in qp else None
+        time_limit = int(qp["time_limit"]) if "time_limit" in qp else None
+
+        sleepTime = time_limit / number_of_tweets
+
+        if sleepTime < 0.1:
+            return Response({"error": "Woah there sonny! {} is a bit too fast!".format(sleepTime)})
+
+        if number_of_tweets is not None and time_limit is not None:
+            for i in list(range(1, number_of_tweets + 1)):
+                # Create dummy tweet id
+                latestTweet = deepcopy(Tweets.objects.last())
+                latestTweet.data["id_str"] = "{}-{}".format(latestTweet.data["id_str"], i)
+                latestTweet.tweet_id = latestTweet.data["id_str"]
+
+                # Create dummy tweet mesage
+                tweetText = "@DemSausage Dummy Tweet [{}/{}]".format(i, number_of_tweets)
+
+                if "extended_tweet" in latestTweet.data:
+                    latestTweet.data["extended_tweet"]["full_text"] = tweetText
+
+                if "text" in latestTweet.data:
+                    latestTweet.data["text"] = tweetText
+
+                if "full_text" in latestTweet.data:
+                    latestTweet.data["full_text"] = tweetText
+
+                # Set the right dummy entities
+                if "entities" in latestTweet.data:
+                    latestTweet.data["entities"] = {
+                        "urls": [],
+                        "symbols": [],
+                        "hashtags": [],
+                        "user_mentions": [
+                            {"id": 1256120371, "name": "Democracy Sausage", "id_str": "1256120371", "indices": [0, 11], "screen_name": "DemSausage"}
+                        ]
+                    }
+
+                # Send our web socket message
+                websockets.send_channel_message("tweets.new_tweet", {
+                    "tweet": TweetsSerializer(latestTweet).data,
+                    "columnIds": get_columns_for_tweet(latestTweet),
+                })
+
+                if i < number_of_tweets:
+                    sleep(sleepTime)
+
         return Response({"OK": True})
