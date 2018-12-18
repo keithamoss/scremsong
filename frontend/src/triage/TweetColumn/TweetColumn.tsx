@@ -37,6 +37,9 @@ export interface IProps {
     loadMoreRows: any
     onDismissTweet: any
 }
+export interface ISnapshot {
+    lastStartTweet: string
+}
 
 type TComponentProps = IProps & WithStyles
 class TweetColumn extends React.Component<TComponentProps, {}> {
@@ -46,7 +49,6 @@ class TweetColumn extends React.Component<TComponentProps, {}> {
     private _maintainScrollPosition: boolean
     private _onRowsRendered?: Function
     private _startTweet?: string
-    private _lastStartTweet?: string
 
     private _cache = new CellMeasurerCache({
         defaultHeight: 175,
@@ -121,13 +123,14 @@ class TweetColumn extends React.Component<TComponentProps, {}> {
         )
     }
 
-    public getSnapshotBeforeUpdate(prevProps: IProps, prevState: IProps) {
-        if (this._maintainScrollPosition) {
-            this._lastStartTweet = this._startTweet
+    public getSnapshotBeforeUpdate(prevProps: IProps, prevState: IProps): ISnapshot | null {
+        if (this._maintainScrollPosition && this._startTweet !== undefined) {
+            return { lastStartTweet: this._startTweet }
         }
+        return null
     }
 
-    public componentDidUpdate(prevProps: IProps, prevState: IProps) {
+    public componentDidUpdate(prevProps: IProps, prevState: IProps, snapshot: ISnapshot) {
         if (this.props.tweet_ids !== prevProps.tweet_ids) {
             let index
 
@@ -153,13 +156,11 @@ class TweetColumn extends React.Component<TComponentProps, {}> {
         }
 
         if (this._maintainScrollPosition && this.props.tweet_ids !== prevProps.tweet_ids) {
-            if (this._lastStartTweet !== undefined) {
-                const tweetIndex = this.props.tweet_ids.findIndex((tweetId: string) => tweetId === this._lastStartTweet)
+            if (snapshot !== null && snapshot.lastStartTweet !== undefined) {
+                const tweetIndex = this.props.tweet_ids.findIndex((tweetId: string) => tweetId === snapshot.lastStartTweet)
                 if (tweetIndex !== -1) {
                     this._list.scrollToRow(tweetIndex)
                 }
-
-                this._lastStartTweet = undefined
             }
         }
     }
