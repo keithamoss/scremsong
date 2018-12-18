@@ -88,7 +88,7 @@ def worker_ready(sender, **kwargs):
 
 @app.task(bind=True)
 def task_open_tweet_stream(self):
-    from scremsong.app.twitter import open_tweet_stream
+    from scremsong.app.twitter_streaming import open_tweet_stream
     open_tweet_stream()
 
     logger.info("Done streaming tweets!")

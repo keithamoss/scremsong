@@ -1,8 +1,10 @@
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import JsonWebsocketConsumer
 from django.conf import settings
-from scremsong.app.websockets import build_on_connect_data_payload
 from scremsong.util import make_logger
+from scremsong.app.serializers import UserSerializer
+from scremsong.app.twitter import get_twitter_columns, fetch_some_tweets
+from scremsong.app.reviewers import get_reviewer_users, get_assignments
 from random import getrandbits
 
 logger = make_logger(__name__)
@@ -53,6 +55,16 @@ class ScremsongConsumer(JsonWebsocketConsumer):
     # c.f. https://github.com/andrewgodwin/channels-examples/blob/master/multichat/chat/consumers.py
 
     # These helper methods are named by the types we send - so chat.join becomes chat_join
+    def tweets_new_tweet(self, event):
+        """
+        Called when we receive a single new tweet from the Twitter stream.
+        """
+        self.send_json({
+            "msg_type": settings.MSG_TYPE_TWEETS_NEW,
+            "tweet": event["tweet"],
+            "columnIds": event["columnIds"],
+        })
+
     def notifications_send(self, event):
         """
         Called when we need to send a notification to connected clients.
@@ -110,3 +122,29 @@ class ScremsongConsumer(JsonWebsocketConsumer):
             "msg_type": settings.MSG_TYPE_TWEETS_DISMISS,
             "tweetId": event["tweetId"],
         })
+
+
+def build_on_connect_data_payload(user):
+    return {
+        "msg_type": settings.MSG_TYPE_CONNECTED,
+        "is_logged_in": True,
+        "user": UserSerializer(user).data,
+        "actions": [
+            {
+                "msg_type": settings.MSG_TYPE_SOCIAL_COLUMNS_LIST,
+                "columns": get_twitter_columns()
+            },
+            {
+                "msg_type": settings.MSG_TYPE_REVIEWERS_LIST_USERS,
+                "users": get_reviewer_users()
+            },
+            {
+                **{"msg_type": settings.MSG_TYPE_REVIEWERS_LIST_ASSIGNMENTS},
+                **get_assignments()
+            },
+            {
+                **{"msg_type": settings.MSG_TYPE_TWEETS_FETCH_SOME},
+                **fetch_some_tweets(startIndex=0, stopIndex=20)
+            }
+        ]
+    }

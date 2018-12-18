@@ -13,20 +13,12 @@ from tweepy import TweepError
 from scremsong.app.serializers import UserSerializer, ProfileSerializer, SocialAssignmentSerializer
 from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, fetch_some_tweets
 from scremsong.celery import celery_restart_streaming
-from scremsong.app.models import SocialPlatformChoice, Tweets, SocialAssignments, SocialAssignmentStatus, Profile
+from scremsong.app.models import Tweets, SocialAssignments, Profile
+from scremsong.app.enums import SocialPlatformChoice, SocialAssignmentStatus, NotificationVariants
 from scremsong.app import websockets
 from scremsong.util import make_logger
-from enum import Enum
 
 logger = make_logger(__name__)
-
-
-class NotificationVariants(str, Enum):
-    DEFAULT = "default"
-    ERROR = "error"
-    SUCCESS = "success"
-    WARNING = "warning"
-    INFO = "info"
 
 
 def api_not_found(request):

@@ -5,6 +5,7 @@ def column_search_phrase_to_twitter_search_query(social_column):
     return " OR ".join(social_column.search_phrases)
 
 
+# c.f. is_tweet_in_column() in twitter.py
 def apply_tweet_filter_criteria(social_column, queryset):
     for phrase in social_column.search_phrases:
         for phrase_part in phrase.split(" "):

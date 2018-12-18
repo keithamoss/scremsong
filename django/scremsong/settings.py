@@ -253,6 +253,7 @@ CELERY_BROKER_POOL_LIMIT = None
 # c.f. https://github.com/andrewgodwin/channels-examples/blob/9e6a26c8e6404483695cbd96ebf12fc4ed9956b2/multichat/multichat/settings.py
 MSG_TYPE_CONNECTED = "ws/scremsong/CONNECTED"
 MSG_TYPE_NOTIFICATION = "ws/scremsong/NOTIFICATION"
+MSG_TYPE_TWEETS_NEW = "ws/scremsong/tweets/NEW"
 MSG_TYPE_SOCIAL_COLUMNS_LIST = "ws/scremsong/social_columns/LIST"
 MSG_TYPE_REVIEWERS_LIST_USERS = "ws/scremsong/reviewers/LIST_USERS"
 MSG_TYPE_REVIEWERS_LIST_ASSIGNMENTS = "ws/scremsong/reviewers/LIST_ASSIGNMENTS"

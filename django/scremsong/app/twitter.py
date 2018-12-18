@@ -1,10 +1,12 @@
 import tweepy
 from scremsong.util import make_logger, get_env
-from scremsong.app.models import SocialPlatforms, SocialPlatformChoice, Tweets
-from scremsong.celery import celery_init_tweet_streaming
+from scremsong.app.models import SocialPlatforms, Tweets, SocialColumns
+from scremsong.app.enums import SocialPlatformChoice
 from scremsong.app.social.columns import get_social_columns
 from scremsong.app.social.twitter_utils import apply_tweet_filter_criteria, column_search_phrase_to_twitter_search_query
-from .serializers import SocialColumnsSerializerWithTweetCountSerializer, TweetsSerializer
+from scremsong.app.serializers import SocialColumnsSerializerWithTweetCountSerializer, TweetsSerializer
+from scremsong.app import websockets
+from functools import lru_cache
 
 logger = make_logger(__name__)
 
@@ -95,13 +97,21 @@ def get_next_tweet_id(tweet_id):
 
 
 def save_tweet(status):
+    # Just in case there's an issue
     try:
-        # Handle the occasional duplicate tweet that Twitter sends us
-        t, created = Tweets.objects.update_or_create(
+        logger.info(status.id_str)
+
+        # Handle duplicate tweets (occasionally an issue) and updates to tweets (e.g. Tweets being deleted - I think?)
+        tweet, created = Tweets.objects.update_or_create(
             tweet_id=status.id_str, defaults={"data": status._json}
         )
-        logger.info(status.id_str)
-        return created
+
+        # Send data out to clients via web sockets
+        if created is True:
+            websockets.send_channel_message("tweets.new_tweet", {
+                "tweet": TweetsSerializer(tweet).data,
+                "columnIds": get_columns_for_tweet(tweet),
+            })
     except Exception as e:
         logger.error("Exception {}: '{}' for tweet_id {}".format(type(e), e, status.id_str))
     return None
@@ -163,92 +173,43 @@ def fill_in_missing_tweets(since_id, max_id):
     return total_tweets_added
 
 
-def open_tweet_stream():
-    # https://stackoverflow.com/a/33660005/7368493
-    class MyStreamListener(tweepy.StreamListener):
-        def on_status(self, status):
-            created = save_tweet(status)
-            if(created is True):
-                # Send data out via web sockets
-                pass
+def get_columns_for_tweet(tweet):
+    matchedColumnIds = []
+    for column in get_social_columns_cached(SocialPlatformChoice.TWITTER):
+        if is_tweet_in_column(tweet.data, column) is True:
+            matchedColumnIds.append(column.id)
+    return matchedColumnIds
 
-        def on_error(self, status_code):
-            if status_code == 420:
-                logger.warn("Streaming got status {}. Disconnecting from stream.".format(status_code))
 
-                # Fire off tasks to restart streaming (delayed by 2s)
-                celery_init_tweet_streaming()
+@lru_cache(maxsize=5)
+def get_social_columns_cached(platform=None):
+    if platform is not None:
+        return SocialColumns.objects.filter(platform=platform)
+    else:
+        return SocialColumns.objects.all()
 
-                # Returning False in on_error disconnects the stream
+
+def is_tweet_in_column(tweet_data, social_column):
+    # c.f. apply_tweet_filter_criteria() in twitter_utils.py
+
+    # Completely ignore retweets
+    if "retweeted_status" in tweet_data and tweet_data["retweeted_status"] is not None:
+        return False
+
+    # Every part of every phrase must be a match. Is this correct behaviour?
+    # https://github.com/keithamoss/scremsong/issues/28
+    for phrase in social_column.search_phrases:
+        for phrase_part in phrase.split(" "):
+            match = False
+            if "extended_tweet" in tweet_data and phrase_part.lower() in tweet_data["extended_tweet"]["full_text"].lower():
+                match = True
+
+            if "text" in tweet_data and phrase_part.lower() in tweet_data["text"].lower():
+                match = True
+
+            if "full_text" in tweet_data and phrase_part.lower() in tweet_data["full_text"].lower():
+                match = True
+
+            if match is False:
                 return False
-            logger.warn("Streaming got status {}. Taking no action.".format(status_code))
-
-        def on_limit(self, track):
-            logger.warn("Received an on limit message from Twitter.")
-
-        def on_timeout(self):
-            logger.error("Streaming connection to Twitter has timed out.")
-
-            # Fire off tasks to restart streaming (delayed by 2s)
-            celery_init_tweet_streaming()
-
-            # Returning False in on_timeout disconnects the stream
-            return False
-
-        def on_disconnect(self, notice):
-            logger.error("Received a disconnect notice from Twitter. {}".format(notice))
-
-            # Fire off tasks to restart streaming (delayed by 2s)
-            celery_init_tweet_streaming()
-
-            # Returning False in on_disconnect disconnects the stream
-            return False
-
-        def on_warning(self, notice):
-            logger.error("Received disconnection warning notice from Twitter. {}".format(notice))
-
-        def on_connect(self):
-            logger.error("on_connect")
-
-        def on_data(self, raw_data):
-            logger.error("on_data")
-            return super(MyStreamListener, self).on_data(raw_data)
-
-        def on_delete(self, status_id, user_id):
-            """Called when a delete notice arrives for a status"""
-            logger.error("on_delete: {}, {}".format(status_id, user_id))
-            return
-
-        def keep_alive(self):
-            """Called when a keep-alive arrived"""
-            logger.error("keep_alive")
-            return
-
-    # Create Twitter app credentials + config store if it doesn't exist
-    t = get_twitter_app()
-    if t is None:
-        t = SocialPlatforms(platform=SocialPlatformChoice.TWITTER)
-        t.save()
-        t = get_twitter_app()
-
-    # Begin streaming!
-    api = get_tweepy_api_auth(wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
-    if api is None:
-        logger.warning("No Twitter credentials available! Please generate them by-hand.")
-        return None
-
-    try:
-        myStreamListener = MyStreamListener()
-        myStream = tweepy.Stream(auth=api.auth, listener=myStreamListener)
-
-        track = []
-        [track.extend(column.search_phrases) for column in get_social_columns(SocialPlatformChoice.TWITTER)]
-        if len(track) == 0:
-            logger.info("No search phrases are set - we won't try to stream tweets")
-        else:
-            logger.info("track")
-            logger.info(track)
-            myStream.filter(track=track)
-            logger.info("Streaming Twitter connection establised successfully for terms: {}.".format(", ".join(track)))
-    except Exception as e:
-        logger.error("Exception {}: '{}' during streaming".format(type(e), e))
+    return True
