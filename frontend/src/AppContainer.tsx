@@ -79,19 +79,17 @@ type TComponentProps = IProps & IStoreProps & IDispatchProps & IRouteProps & Wit
 export class AppContainer extends React.Component<TComponentProps, {}> {
     public constructor(props: TComponentProps) {
         super(props)
-
-        this.playAudio = this.playAudio.bind(this)
-        this.stopAudio = this.stopAudio.bind(this)
     }
 
-    public playAudio() {
+    public playAudio = () => {
         const audio = document.getElementById("scremsong-sound") as HTMLMediaElement
         if (this.canPlayAudio(audio)) {
             audio.volume = 0.5
             audio.play()
         }
     }
-    public stopAudio() {
+
+    public stopAudio = () => {
         const audio = document.getElementById("scremsong-sound") as HTMLMediaElement
         if (this.canPlayAudio(audio)) {
             audio.pause()

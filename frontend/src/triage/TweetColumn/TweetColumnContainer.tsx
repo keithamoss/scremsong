@@ -29,6 +29,11 @@ export interface IDispatchProps {
     onDismissTweet: any
 }
 
+export interface IReactVirtualizedIndexes {
+    startIndex: number
+    stopIndex: number
+}
+
 type TComponentProps = IProps & IStoreProps & IDispatchProps
 class TweetColumnContainer extends React.Component<TComponentProps, {}> {
     private loadMoreRows: any
@@ -36,7 +41,7 @@ class TweetColumnContainer extends React.Component<TComponentProps, {}> {
     public constructor(props: TComponentProps) {
         super(props)
 
-        this.loadMoreRows = props.loadMoreRows.bind(this, props.column)
+        this.loadMoreRows = (indexes: IReactVirtualizedIndexes) => props.loadMoreRows(this.props.column, indexes)
     }
     public render() {
         const { column, onOpenAssigner, tweet_ids, tweets, tweet_assignments, assignments, onDismissTweet } = this.props
@@ -71,7 +76,7 @@ const mapStateToProps = (state: IStore, ownProps: IProps): IStoreProps => {
 
 const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {
-        loadMoreRows: (column: ITriageColumn, indexes: { startIndex: number; stopIndex: number }) => {
+        loadMoreRows: (column: ITriageColumn, indexes: IReactVirtualizedIndexes) => {
             return dispatch(fetchTweets(indexes.startIndex, indexes.stopIndex, [column.id]))
         },
         onDismissTweet: (tweetId: string) => {
