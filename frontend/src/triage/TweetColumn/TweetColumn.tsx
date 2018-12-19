@@ -10,6 +10,7 @@ import { ISocialTweetAssignments, ISocialTweetList } from "../../redux/modules/s
 import { ITriageColumn } from "../../redux/modules/triage"
 
 const styles = (theme: Theme) => ({
+    actionBar: {},
     button: {
         margin: theme.spacing.unit,
     },
@@ -231,22 +232,24 @@ class TweetColumn extends React.Component<TComponentProps, {}> {
                     <div style={tweetStyle}>
                         <Tweet key={tweetId} data={tweets[tweetId].data} />
                         <Divider />
-                        <Button
-                            color="primary"
-                            className={classes.button}
-                            aria-label="Assign tweet"
-                            onClick={this.onOpenAssigner(tweetId, assignmentId)}
-                        >
-                            Assign
-                            <AssignmentIcon className={classes.rightIcon} />
-                        </Button>
-
-                        <Tooltip title="Dismiss and hide this tweet" aria-label="Dismiss tweet">
-                            <Button className={classes.button} aria-label="Dismiss tweet" onClick={this.onDismissTweet(tweetId)}>
-                                Dismiss
-                                <DeleteIcon className={classes.rightIcon} />
+                        <div className={classes.actionBar}>
+                            <Button
+                                color="primary"
+                                className={classes.button}
+                                aria-label="Assign tweet"
+                                onClick={this.onOpenAssigner(tweetId, assignmentId)}
+                            >
+                                Assign
+                                <AssignmentIcon className={classes.rightIcon} />
                             </Button>
-                        </Tooltip>
+
+                            <Tooltip title="Dismiss and hide this tweet" aria-label="Dismiss tweet">
+                                <Button className={classes.button} aria-label="Dismiss tweet" onClick={this.onDismissTweet(tweetId)}>
+                                    Dismiss
+                                    <DeleteIcon className={classes.rightIcon} />
+                                </Button>
+                            </Tooltip>
+                        </div>
                     </div>
                 </CellMeasurer>
             )
