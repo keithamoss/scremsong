@@ -230,7 +230,7 @@ class TweetColumn extends React.Component<TComponentProps, {}> {
             return (
                 <CellMeasurer key={key} cache={this._cache} columnIndex={0} parent={parent} rowIndex={index}>
                     <div style={tweetStyle}>
-                        <Tweet key={tweetId} data={tweets[tweetId].data} />
+                        <Tweet key={tweetId} data={tweets[tweetId].data} linkProps={{ target: "_blank", rel: "noreferrer" }} />
                         <Divider />
                         <div className={classes.actionBar}>
                             <Button
