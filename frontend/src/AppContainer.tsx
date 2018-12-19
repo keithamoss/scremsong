@@ -159,7 +159,7 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     }
 }
 
-const AppContainerWrapped = withRouter(connect(
+const AppContainerWrapped = withRouter(connect<IStoreProps, IDispatchProps, IProps, IStore>(
     mapStateToProps,
     mapDispatchToProps
 )(AppContainer) as any)

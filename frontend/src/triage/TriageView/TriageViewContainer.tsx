@@ -15,7 +15,7 @@ export interface IStoreProps {
 export interface IDispatchProps {}
 
 type TComponentProps = IProps & IStoreProps & IDispatchProps
-class TriageViewContainer extends React.Component<IProps & IStoreProps & IDispatchProps, {}> {
+class TriageViewContainer extends React.Component<TComponentProps, {}> {
     public render() {
         const { user, columns } = this.props
 
@@ -27,7 +27,7 @@ class TriageViewContainer extends React.Component<IProps & IStoreProps & IDispat
     }
 }
 
-const mapStateToProps = (state: IStore, ownProps: TComponentProps): IStoreProps => {
+const mapStateToProps = (state: IStore, ownProps: IProps): IStoreProps => {
     const { user, triage } = state
 
     return {
@@ -40,7 +40,7 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {}
 }
 
-export default connect(
+export default connect<IStoreProps, IDispatchProps, IProps, IStore>(
     mapStateToProps,
     mapDispatchToProps
 )(TriageViewContainer)

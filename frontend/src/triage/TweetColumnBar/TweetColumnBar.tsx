@@ -1,16 +1,17 @@
-import { AppBar, IconButton, Toolbar, Tooltip, Typography, withStyles, WithStyles } from "@material-ui/core"
+import { AppBar, IconButton, Theme, Toolbar, Tooltip, Typography, withStyles, WithStyles } from "@material-ui/core"
 import { lightBlue } from "@material-ui/core/colors"
 import NewReleases from "@material-ui/icons/NewReleases"
 import NewReleasesOutlined from "@material-ui/icons/NewReleasesOutlined"
 import * as React from "react"
 import { ITriageColumn } from "../../redux/modules/triage"
 
-const styles = () => ({
+const styles = (theme: Theme) => ({
     grow: {
         flexGrow: 1,
     },
-    newTweetsBright: {
+    newTweetsButton: {
         color: lightBlue[500],
+        margin: theme.spacing.unit,
     },
 })
 
@@ -35,13 +36,13 @@ class TweetColumnBar extends React.PureComponent<TComponentProps, IState> {
                         {column.id})
                     </Typography>
                     {hasBufferedTweets === false && (
-                        <IconButton className={classes.newTweetsBright} disabled={true}>
+                        <IconButton className={classes.newTweetsButton} disabled={true}>
                             <NewReleasesOutlined />
                         </IconButton>
                     )}
                     {hasBufferedTweets === true && (
                         <Tooltip title="There are new tweets in this column - click to show them" aria-label="This column has new tweets">
-                            <IconButton className={classes.newTweetsBright} onClick={onLoadNewTweetsForColumn} data-columnid={column.id}>
+                            <IconButton className={classes.newTweetsButton} onClick={onLoadNewTweetsForColumn} data-columnid={column.id}>
                                 <NewReleases />
                             </IconButton>
                         </Tooltip>
