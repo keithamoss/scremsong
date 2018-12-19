@@ -144,6 +144,10 @@ const mapStateToProps = (state: IStore): IStoreProps => {
     const getUserAssignmentsFilter = getUserAssignments(state)
     const userAssignmentCount = user.user ? getUserAssignmentsFilter(user.user!.id).length : 0
 
+    if (userAssignmentCount > 0) {
+        document.title = `(${userAssignmentCount}) Screm song!`
+    }
+
     return {
         isAppLoading: app.loading,
         userLoggedIn: user.user !== null,
