@@ -15,16 +15,27 @@ import {
     WithStyles,
 } from "@material-ui/core"
 import blue from "@material-ui/core/colors/blue"
+import red from "@material-ui/core/colors/red"
 import AssignmentIcon from "@material-ui/icons/Assignment"
 import AssignmentReturnIcon from "@material-ui/icons/AssignmentReturn"
 import PersonIcon from "@material-ui/icons/Person"
+import PowerOff from "@material-ui/icons/PowerOff"
 import * as React from "react"
 import { IReviewerAssignment, IReviewerAssignmentCounts, IReviewerUser } from "../../redux/modules/reviewers"
 
 const styles = (theme: Theme) => ({
-    selectedAvatar: {
+    assignedAvatar: {
         backgroundColor: blue[100],
         color: blue[600],
+    },
+    offlineAvatar: {
+        backgroundColor: red[100],
+        color: red[600],
+    },
+    assignedAndOfflineAvatar: {
+        backgroundColor: red[100],
+        color: red[600],
+        backgroundImage: "linear-gradient(135deg, #bbdefb 50%, #ffcdd2 50%)",
     },
     badgeMargin: {
         margin: theme.spacing.unit * 2,
@@ -54,7 +65,7 @@ class TweetColumnAssigner extends React.Component<TComponentProps, {}> {
     }
 
     public render() {
-        const { classes, open, assignment, tweetId, reviewers, reviewerAssignmentCounts, onCloseAssigner } = this.props
+        const { open, assignment, tweetId, reviewers, reviewerAssignmentCounts, onCloseAssigner, classes } = this.props
 
         return (
             <React.Fragment>
@@ -77,21 +88,29 @@ class TweetColumnAssigner extends React.Component<TComponentProps, {}> {
                             )}
                             {reviewers.map((reviewer: IReviewerUser) => {
                                 const isAssigned = assignment !== null && reviewer.id === assignment.user_id
+                                const isOffline = reviewer.is_accepting_assignments === false
 
                                 const secondaryText: string[] = []
                                 if (isAssigned) {
                                     secondaryText.push("Assigned")
                                 }
-                                if (reviewer.is_accepting_assignments === false) {
+                                if (isOffline === true) {
                                     secondaryText.push("Offline")
+                                }
+
+                                let className
+                                if (isAssigned === true && isOffline === true) {
+                                    className = classes.assignedAndOfflineAvatar
+                                } else if (isAssigned === true) {
+                                    className = classes.assignedAvatar
+                                } else if (isOffline === true) {
+                                    className = classes.offlineAvatar
                                 }
 
                                 return (
                                     <ListItem key={reviewer.id} button={true} onClick={this.onAssignTweet(tweetId, reviewer.id)}>
                                         <ListItemAvatar>
-                                            <Avatar className={isAssigned ? classes.selectedAvatar : undefined}>
-                                                <PersonIcon />
-                                            </Avatar>
+                                            <Avatar className={className}>{isOffline === false ? <PersonIcon /> : <PowerOff />}</Avatar>
                                         </ListItemAvatar>
                                         <ListItemText primary={reviewer.name} secondary={secondaryText.join(" - ")} />
                                         <ListItemSecondaryAction>
