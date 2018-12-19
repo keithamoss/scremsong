@@ -66,10 +66,10 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
         onMarkAsDone: (assignment: IReviewerAssignment) => {
             dispatch(markAssignmentDone(assignment))
         },
-        onChangeQueueUser: (event: object, reviewerId: number) => {
+        onChangeQueueUser: (event: React.SyntheticEvent<HTMLSelectElement>, reviewerId: number) => {
             dispatch(setCurrentReviewer(reviewerId))
         },
-        onToggleUserOnlineStatus: (event: MouseEvent, currentReviewer: IReviewerUser) => {
+        onToggleUserOnlineStatus: (event: React.SyntheticEvent<HTMLButtonElement>, currentReviewer: IReviewerUser) => {
             dispatch(setReviewerOnlineStatus(currentReviewer.id, !currentReviewer.is_accepting_assignments))
         },
     }
