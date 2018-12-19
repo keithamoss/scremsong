@@ -60,7 +60,7 @@ export interface IProps {
 
 type TComponentProps = IProps & WithStyles
 
-class UserReviewQueueView extends React.Component<TComponentProps, {}> {
+class UserReviewQueueView extends React.PureComponent<TComponentProps, {}> {
     private onChangeQueueUser: any
     private onToggleUserOnlineStatus: any
 

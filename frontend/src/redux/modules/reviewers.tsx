@@ -65,13 +65,18 @@ export default function reducer(state: IModule = initialState, action: IAction) 
 }
 
 // Selectors
-
-const getPendingAssignments = (state: IStore) =>
-    Object.values(state.reviewers.assignments).filter(
-        (assignment: IReviewerAssignment, index: number) => assignment.status === eSocialAssignmentStatus.PENDING
-    )
-const getCurrentReviewerUserId = (state: IStore) => (state.reviewers.currentReviewerId ? state.reviewers.currentReviewerId : null)
+const getAssignments = (state: IStore) => state.reviewers.assignments
 const getReviewers = (state: IStore) => state.reviewers.users
+const getCurrentReviewerUserId = (state: IStore) => (state.reviewers.currentReviewerId ? state.reviewers.currentReviewerId : null)
+
+export const getPendingAssignments = createSelector(
+    [getAssignments],
+    (assignments: IReviewerAssignment[]): any => {
+        return Object.values(assignments).filter(
+            (assignment: IReviewerAssignment, index: number) => assignment.status === eSocialAssignmentStatus.PENDING
+        )
+    }
+)
 
 export const getUserAssignments = createSelector(
     [getPendingAssignments],
