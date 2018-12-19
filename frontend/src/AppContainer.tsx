@@ -102,7 +102,7 @@ export class AppContainer extends React.Component<TComponentProps, {}> {
     }
 
     public render() {
-        const { isAppLoading, userLoggedIn, userAssignmentCount, children, classes } = this.props
+        const { isAppLoading, userLoggedIn, userAssignmentCount, location, children, classes } = this.props
 
         let component
         if (isAppLoading === true) {
@@ -127,7 +127,7 @@ export class AppContainer extends React.Component<TComponentProps, {}> {
         } else if (userLoggedIn === false) {
             component = <LoginDialog open={true} />
         } else {
-            component = <App userAssignmentCount={userAssignmentCount} children={children} />
+            component = <App userAssignmentCount={userAssignmentCount} location={location} children={children} />
         }
 
         return <MuiThemeProvider theme={theme}>{component}</MuiThemeProvider>

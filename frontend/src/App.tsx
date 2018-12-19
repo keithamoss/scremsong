@@ -1,4 +1,5 @@
 import { Badge, CssBaseline, Drawer, IconButton, List, ListItem, Theme, Tooltip, withStyles, WithStyles } from "@material-ui/core"
+import blue from "@material-ui/core/colors/blue"
 import AssignmentIndIcon from "@material-ui/icons/AssignmentInd"
 import ViewColumnIcon from "@material-ui/icons/ViewColumn"
 import classNames from "classnames"
@@ -25,6 +26,9 @@ const styles = (theme: Theme) =>
         drawerPaper: {
             width: drawerWidth,
         },
+        selectedIcon: {
+            color: blue[600],
+        },
         content: {
             flexGrow: 1,
             // padding: theme.spacing.unit * 3,
@@ -45,11 +49,12 @@ const styles = (theme: Theme) =>
 
 export interface IProps {
     userAssignmentCount: number
+    location: Location
 }
 
 class App extends React.Component<IProps & WithStyles, {}> {
     public render() {
-        const { userAssignmentCount, classes } = this.props
+        const { userAssignmentCount, location, classes } = this.props
 
         const QueueLink = (props: any) => <Link to="/queue" {...props} />
         const TriageLink = (props: any) => <Link to="/" {...props} />
@@ -69,7 +74,10 @@ class App extends React.Component<IProps & WithStyles, {}> {
                     <List>
                         <ListItem button={false} component={QueueLink}>
                             <Tooltip title="Go to your queue">
-                                <IconButton aria-label="Your queue">
+                                <IconButton
+                                    aria-label="Your queue"
+                                    className={location.pathname === "/queue" ? classes.selectedIcon : undefined}
+                                >
                                     <Badge badgeContent={userAssignmentCount} color="primary">
                                         <AssignmentIndIcon />
                                     </Badge>
@@ -78,7 +86,10 @@ class App extends React.Component<IProps & WithStyles, {}> {
                         </ListItem>
                         <ListItem button={false} component={TriageLink}>
                             <Tooltip title="Go to triage view">
-                                <IconButton aria-label="Triage view">
+                                <IconButton
+                                    aria-label="Triage view"
+                                    className={location.pathname === "/" ? classes.selectedIcon : undefined}
+                                >
                                     <ViewColumnIcon />
                                 </IconButton>
                             </Tooltip>
