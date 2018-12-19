@@ -5,7 +5,7 @@ import * as React from "react"
 import Tweet from "react-tweet"
 import { AutoSizer, CellMeasurer, CellMeasurerCache, InfiniteLoader, List } from "react-virtualized"
 import "react-virtualized/styles.css"
-import { eSocialAssignmentStatus, IReviewerAssignment, IReviewerUser } from "../../redux/modules/reviewers"
+import { eSocialAssignmentStatus, IReviewerAssignment } from "../../redux/modules/reviewers"
 import { ISocialTweetAssignments, ISocialTweetList } from "../../redux/modules/social"
 import { ITriageColumn } from "../../redux/modules/triage"
 
@@ -32,7 +32,6 @@ export interface IProps {
     tweet_ids: string[]
     tweets: ISocialTweetList
     tweet_assignments: ISocialTweetAssignments
-    reviewers: IReviewerUser[]
     assignments: IReviewerAssignment[]
     loadMoreRows: any
     onDismissTweet: any
@@ -129,7 +128,42 @@ class TweetColumn extends React.Component<TComponentProps, {}> {
         )
     }
 
-    public getSnapshotBeforeUpdate(prevProps: IProps, prevState: IProps): ISnapshot | null {
+    public shouldComponentUpdate(nextProps: TComponentProps, nextState: object, nextContext: any): boolean {
+        if (this.props.tweet_ids.length !== nextProps.tweet_ids.length) {
+            // console.log(`shouldComponentUpdate ${this.props.column.id}`, "tweet_ids.length")
+            return true
+        }
+
+        if (this.props.tweet_assignments.length !== nextProps.tweet_assignments.length) {
+            // console.log(`shouldComponentUpdate ${this.props.column.id}`, "tweet_assignments.length")
+            return true
+        }
+
+        if (this.props.tweet_ids !== nextProps.tweet_ids) {
+            // console.log(`shouldComponentUpdate ${this.props.column.id}`, "tweet_ids")
+            return true
+        }
+
+        if (this.props.tweet_assignments !== nextProps.tweet_assignments) {
+            // console.log(`shouldComponentUpdate ${this.props.column.id}`, "tweet_assignments")
+            return true
+        }
+
+        if (this.props.assignments !== nextProps.assignments) {
+            // console.log(`shouldComponentUpdate ${this.props.column.id}`, "assignments")
+            return true
+        }
+
+        if (this.props.column !== nextProps.column) {
+            // console.log(`shouldComponentUpdate ${this.props.column.id}`, "column")
+            return true
+        }
+
+        // console.log(`shouldComponentUpdate ${this.props.column.id}`, "All checks exhausted, don't update")
+        return false
+    }
+
+    public getSnapshotBeforeUpdate(prevProps: TComponentProps, prevState: object): ISnapshot | null {
         if (this._maintainScrollPosition && this._startTweet !== undefined) {
             return { lastStartTweet: this._startTweet }
         }
@@ -137,6 +171,7 @@ class TweetColumn extends React.Component<TComponentProps, {}> {
     }
 
     public componentDidUpdate(prevProps: IProps, prevState: IProps, snapshot: ISnapshot) {
+        // console.log("componentDidUpdate", this.props.column.id)
         if (this.props.tweet_ids !== prevProps.tweet_ids) {
             let index
 
@@ -154,18 +189,13 @@ class TweetColumn extends React.Component<TComponentProps, {}> {
             if (this._list) {
                 this._list.recomputeRowHeights(index)
             }
-        } else if (JSON.stringify(this.props.reviewers) !== JSON.stringify(prevProps.reviewers)) {
-            // Trigger an update if a property of one of our reviewers has changed (e.g. they've gone offline)
-            if (this._list) {
-                this._list.recomputeRowHeights(0)
-            }
         }
 
         if (this._maintainScrollPosition && this._list && this.props.tweet_ids !== prevProps.tweet_ids) {
             if (snapshot !== null && snapshot.lastStartTweet !== undefined) {
                 const tweetIndex = this.props.tweet_ids.findIndex((tweetId: string) => tweetId === snapshot.lastStartTweet)
                 if (tweetIndex !== -1) {
-                    console.log("Move ", this.props.column.id, " to ", tweetIndex, " for ", snapshot.lastStartTweet)
+                    // console.log("Move ", this.props.column.id, " to ", tweetIndex, " for ", snapshot.lastStartTweet)
                     this._list.scrollToRow(tweetIndex)
                 }
             }
