@@ -9,7 +9,7 @@ import {
     IActionReviewersListAssignments,
     IActionReviewersUnassign,
     IActionsTweetsDismiss,
-    IActionsTweetsFetch,
+    IActionsTweetsLoadTweets,
     IActionTweetsNew,
     ITweetFetchColumn,
 } from "../../websockets/actions"
@@ -36,7 +36,7 @@ const initialState: IModule = {
 // Reducer
 type IAction =
     | IActionLoadTweets
-    | IActionsTweetsFetch
+    | IActionsTweetsLoadTweets
     | IActionTweetsNew
     | IActionReviewersListAssignments
     | IActionReviewersAssign

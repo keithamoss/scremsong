@@ -16,14 +16,6 @@ const styles = (theme: Theme) => ({
     rightIcon: {
         marginLeft: theme.spacing.unit,
     },
-    column: {
-        width: "370px",
-        height: "100%",
-        margin: "5px",
-    },
-    columnHeading: {
-        marginTop: "8px",
-    },
 })
 
 export interface IProps {
@@ -81,50 +73,43 @@ class TweetColumn extends React.Component<TComponentProps, {}> {
     }
 
     public render() {
-        const { column, tweet_ids, loadMoreRows, classes } = this.props
+        const { column, tweet_ids, loadMoreRows } = this.props
+
+        if (tweet_ids.length === 0) {
+            return null
+        }
 
         return (
-            <div className={classes.column}>
-                <div className={classes.columnHeading}>
-                    {column.search_phrases.join(", ")} (#
-                    {column.id})
-                </div>
-
-                {tweet_ids.length > 0 && (
-                    <InfiniteLoader
-                        isRowLoaded={this._isRowLoaded}
-                        loadMoreRows={loadMoreRows}
-                        rowCount={column.total_tweets}
-                        threshold={5}
-                        minimumBatchSize={20}
-                    >
-                        {({ onRowsRendered, registerChild }) => (
-                            <AutoSizer>
-                                {({ height, width }) => {
-                                    return (
-                                        <List
-                                            deferredMeasurementCache={this._cache}
-                                            width={width}
-                                            height={height}
-                                            onRowsRendered={
-                                                this._maintainScrollPosition
-                                                    ? this._onRowsRendered!.bind(this, onRowsRendered)
-                                                    : onRowsRendered
-                                            }
-                                            overscanRowCount={1}
-                                            ref={this._registerChild.bind(this, registerChild)}
-                                            rowCount={column.total_tweets}
-                                            rowHeight={this._cache.rowHeight}
-                                            rowRenderer={this._rowRenderer}
-                                            scrollToAlignment={"start"}
-                                        />
-                                    )
-                                }}
-                            </AutoSizer>
-                        )}
-                    </InfiniteLoader>
+            <InfiniteLoader
+                isRowLoaded={this._isRowLoaded}
+                loadMoreRows={loadMoreRows}
+                rowCount={column.total_tweets}
+                threshold={5}
+                minimumBatchSize={20}
+            >
+                {({ onRowsRendered, registerChild }) => (
+                    <AutoSizer>
+                        {({ height, width }) => {
+                            return (
+                                <List
+                                    deferredMeasurementCache={this._cache}
+                                    width={width}
+                                    height={height}
+                                    onRowsRendered={
+                                        this._maintainScrollPosition ? this._onRowsRendered!.bind(this, onRowsRendered) : onRowsRendered
+                                    }
+                                    overscanRowCount={1}
+                                    ref={this._registerChild.bind(this, registerChild)}
+                                    rowCount={column.total_tweets}
+                                    rowHeight={this._cache.rowHeight}
+                                    rowRenderer={this._rowRenderer}
+                                    scrollToAlignment={"start"}
+                                />
+                            )
+                        }}
+                    </AutoSizer>
                 )}
-            </div>
+            </InfiniteLoader>
         )
     }
 

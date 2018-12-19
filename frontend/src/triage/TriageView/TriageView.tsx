@@ -3,6 +3,7 @@ import * as React from "react"
 import { ITriageColumn } from "../../redux/modules/triage"
 import TweetColumnAssignerContainer from "../../triage/TweetColumnAssigner/TweetColumnAssignerContainer"
 import TweetColumnContainer from "../TweetColumn/TweetColumnContainer"
+import TweetColumnBarContainer from "../TweetColumnBar/TweetColumnBarContainer"
 
 const styles = () =>
     ({
@@ -14,6 +15,11 @@ const styles = () =>
             display: "flex",
             flexDirection: "row",
             height: "88%",
+        },
+        column: {
+            width: "370px",
+            height: "100%",
+            margin: "5px",
         },
     } as any)
 
@@ -31,6 +37,7 @@ type TComponentProps = IProps & WithStyles
 class TriageView extends React.Component<TComponentProps, IState> {
     private onOpenAssigner: any
     private onCloseAssigner: any
+
     public constructor(props: TComponentProps) {
         super(props)
 
@@ -58,7 +65,10 @@ class TriageView extends React.Component<TComponentProps, IState> {
                 <div className={classes.columnContainerContainer}>
                     <div className={classes.columnContainer}>
                         {columns.map((column: ITriageColumn, key: number) => (
-                            <TweetColumnContainer key={column.id} column={column} onOpenAssigner={this.onOpenAssigner} />
+                            <div key={column.id} className={classes.column}>
+                                <TweetColumnBarContainer column={column} />
+                                <TweetColumnContainer column={column} onOpenAssigner={this.onOpenAssigner} />
+                            </div>
                         ))}
                     </div>
                 </div>

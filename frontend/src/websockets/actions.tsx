@@ -81,4 +81,4 @@ export interface IActionsTweetsDismiss extends Action<typeof WS_TWEETS_DISMISS> 
     tweetId: string
 }
 
-export interface IActionsTweetsFetch extends Action<typeof WS_TWEETS_LOAD_TWEETS>, ISocialTweetsAndColumnsResponse {}
+export interface IActionsTweetsLoadTweets extends Action<typeof WS_TWEETS_LOAD_TWEETS>, ISocialTweetsAndColumnsResponse {}
