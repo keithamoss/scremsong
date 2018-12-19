@@ -23,7 +23,7 @@ export const init = (store: any) => {
         // Blocked moving completely to Web Sockets for initial load by not being able to send a custom close/reject code or message
         // await store.dispatch(loadUser(data.user))
         // if (data.is_logged_in === true) {
-        //     store.dispatch(changeCurrentReviewer(data.user))
+        //     store.dispatch(changeCurrentReviewer(data.user.id))
         // }
 
         store.dispatch(connected())

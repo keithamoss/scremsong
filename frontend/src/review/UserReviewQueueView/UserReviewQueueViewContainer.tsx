@@ -2,12 +2,12 @@ import * as React from "react"
 import { connect } from "react-redux"
 import { IStore } from "../../redux/modules/reducer"
 import {
+    changeCurrentReviewer,
     getCurrentReviewer,
     getCurrentReviewerAssignments,
     IReviewerAssignment,
     IReviewerUser,
     markAssignmentDone,
-    setCurrentReviewer,
     setReviewerOnlineStatus,
 } from "../../redux/modules/reviewers"
 import { IUser } from "../../redux/modules/user"
@@ -66,10 +66,10 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
         onMarkAsDone: (assignment: IReviewerAssignment) => {
             dispatch(markAssignmentDone(assignment))
         },
-        onChangeQueueUser: (event: React.SyntheticEvent<HTMLSelectElement>, reviewerId: number) => {
-            dispatch(setCurrentReviewer(reviewerId))
+        onChangeQueueUser: (reviewerId: number) => {
+            dispatch(changeCurrentReviewer(reviewerId))
         },
-        onToggleUserOnlineStatus: (event: React.SyntheticEvent<HTMLButtonElement>, currentReviewer: IReviewerUser) => {
+        onToggleUserOnlineStatus: (currentReviewer: IReviewerUser) => {
             dispatch(setReviewerOnlineStatus(currentReviewer.id, !currentReviewer.is_accepting_assignments))
         },
     }

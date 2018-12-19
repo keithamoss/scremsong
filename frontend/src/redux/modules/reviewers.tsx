@@ -22,7 +22,6 @@ import {
 import { IThunkExtras } from "./interfaces"
 import { IStore } from "./reducer"
 import { eSocialPlatformChoice } from "./triage"
-import { IUser } from "./user"
 
 // Actions
 const SET_CURRENT_REVIEWER = "scremsong/reviewers/SET_CURRENT_REVIEWER"
@@ -158,11 +157,9 @@ export interface IActionReviewersSetCurrentReviewer extends Action<typeof SET_CU
 // Side effects, only as applicable
 // e.g. thunks, epics, et cetera
 
-export function changeCurrentReviewer(user: IUser) {
+export function changeCurrentReviewer(userId: number) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        if (user !== null) {
-            dispatch(setCurrentReviewer(user.id))
-        }
+        dispatch(setCurrentReviewer(userId))
     }
 }
 

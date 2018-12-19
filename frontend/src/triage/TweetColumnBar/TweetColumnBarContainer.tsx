@@ -35,7 +35,7 @@ const mapStateToProps = (state: IStore, ownProps: IProps): IStoreProps => {
 
 const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {
-        onLoadNewTweetsForColumn: (event: React.SyntheticEvent<HTMLButtonElement>) => {
+        onLoadNewTweetsForColumn: (event: React.MouseEvent<HTMLElement>) => {
             if ("columnid" in event.currentTarget.dataset && event.currentTarget.dataset.columnid !== undefined) {
                 dispatch(loadBufferedTweetsForColumn(parseInt(event.currentTarget.dataset.columnid, 10)))
             }

@@ -67,11 +67,11 @@ class UserReviewQueueView extends React.PureComponent<TComponentProps, {}> {
     public constructor(props: TComponentProps) {
         super(props)
 
-        this.onChangeQueueUser = (event: React.SyntheticEvent<HTMLSelectElement>) => {
-            props.onChangeQueueUser(event, event.currentTarget.value)
+        this.onChangeQueueUser = (event: React.ChangeEvent<HTMLSelectElement>) => {
+            props.onChangeQueueUser(event.target.value)
         }
-        this.onToggleUserOnlineStatus = (event: React.SyntheticEvent<HTMLButtonElement>) => {
-            props.onToggleUserOnlineStatus(event, this.props.currentReviewer)
+        this.onToggleUserOnlineStatus = (event: React.MouseEvent<HTMLElement>) => {
+            props.onToggleUserOnlineStatus(this.props.currentReviewer)
         }
     }
 

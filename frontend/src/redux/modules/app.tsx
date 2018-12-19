@@ -165,7 +165,7 @@ export function fetchInitialAppState() {
 
         const self: ISelf = await dispatch(fetchUser())
         if (self.is_logged_in === true) {
-            await dispatch(changeCurrentReviewer(self.user))
+            await dispatch(changeCurrentReviewer(self.user.id))
         } else {
             // Show them the login box
             // If they're logged in a succesful web socket connection fires this
