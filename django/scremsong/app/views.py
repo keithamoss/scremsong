@@ -272,7 +272,7 @@ class ScremsongDebugViewset(viewsets.ViewSet):
         if number_of_tweets is not None and time_limit is not None:
             for i in list(range(1, number_of_tweets + 1)):
                 # Create dummy tweet id
-                latestTweet = deepcopy(Tweets.objects.last())
+                latestTweet = deepcopy(Tweets.objects.filter(data__retweeted_status__isnull=True).last())
                 latestTweet.data["id_str"] = "{}-{}".format(latestTweet.data["id_str"], i)
                 latestTweet.tweet_id = latestTweet.data["id_str"]
 
