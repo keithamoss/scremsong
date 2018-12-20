@@ -39,6 +39,12 @@ def open_tweet_stream():
             return False
 
         def on_disconnect(self, notice):
+            """Called when twitter sends a disconnect notice
+
+            Disconnect codes are listed here:
+            https://dev.twitter.com/docs/streaming-apis/messages#Disconnect_messages_disconnect
+            """
+
             logger.critical("Received a disconnect notice from Twitter. {}".format(notice))
 
             # Fire off tasks to restart streaming (delayed by 2s)
@@ -91,7 +97,7 @@ def open_tweet_stream():
         else:
             logger.info("track")
             logger.info(track)
-            myStream.filter(track=track)
+            myStream.filter(track=track, stall_warnings=True)
             logger.info("Streaming Twitter connection establised successfully for terms: {}.".format(", ".join(track)))
     except Exception as e:
         logger.error("Exception {}: '{}' during streaming".format(type(e), e))
