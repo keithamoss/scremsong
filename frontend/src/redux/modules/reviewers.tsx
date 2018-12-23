@@ -6,6 +6,7 @@ import { createSelector } from "reselect"
 import {
     IActionReviewersAssign,
     IActionReviewersAssignmentStatusChange,
+    IActionReviewersAssignmentUpdated,
     IActionReviewersList,
     IActionReviewersListAssignments,
     IActionReviewersSetStatus,
@@ -14,6 +15,7 @@ import {
 import {
     WS_REVIEWERS_ASSIGN,
     WS_REVIEWERS_ASSIGNMENT_STATUS_CHANGE,
+    WS_REVIEWERS_ASSIGNMENT_UPDATED,
     WS_REVIEWERS_LIST_ASSIGNMENTS,
     WS_REVIEWERS_LIST_USERS,
     WS_REVIEWERS_SET_STATUS,
@@ -39,6 +41,7 @@ type IAction =
     | IActionReviewersSetStatus
     | IActionReviewersAssign
     | IActionReviewersUnassign
+    | IActionReviewersAssignmentUpdated
     | IActionReviewersAssignmentStatusChange
     | IActionReviewersSetCurrentReviewer
 export default function reducer(state: IModule = initialState, action: IAction) {
@@ -50,6 +53,7 @@ export default function reducer(state: IModule = initialState, action: IAction) 
         case SET_CURRENT_REVIEWER:
             return dotProp.set(state, "currentReviewerId", action.reviewerId)
         case WS_REVIEWERS_ASSIGN:
+        case WS_REVIEWERS_ASSIGNMENT_UPDATED:
             return dotProp.set(state, `assignments.${action.assignment.id}`, action.assignment)
         case WS_REVIEWERS_UNASSIGN:
             return dotProp.delete(state, `assignments.${action.assignmentId}`)
@@ -145,6 +149,14 @@ export interface IReviewerAssignment {
     social_id: string
     status: eSocialAssignmentStatus
     user_id: number
+    thread_relationships: IReviewerAssignmentThreadRelationships[]
+    thread_tweets: string[]
+    created_on: string // datetime
+    last_updatd_on: string // datetime
+}
+
+export interface IReviewerAssignmentThreadRelationships {
+    [key: string]: string
 }
 
 export interface IReviewerAssignmentCounts {

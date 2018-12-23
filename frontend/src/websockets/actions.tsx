@@ -9,6 +9,7 @@ import {
     WS_NOTIFICATION,
     WS_REVIEWERS_ASSIGN,
     WS_REVIEWERS_ASSIGNMENT_STATUS_CHANGE,
+    WS_REVIEWERS_ASSIGNMENT_UPDATED,
     WS_REVIEWERS_LIST_ASSIGNMENTS,
     WS_REVIEWERS_LIST_USERS,
     WS_REVIEWERS_SET_STATUS,
@@ -58,10 +59,16 @@ export interface IActionReviewersListAssignments extends Action<typeof WS_REVIEW
 
 export interface IActionReviewersAssign extends Action<typeof WS_REVIEWERS_ASSIGN> {
     assignment: IReviewerAssignment
+    tweets: ISocialTweetList
 }
 
 export interface IActionReviewersUnassign extends Action<typeof WS_REVIEWERS_UNASSIGN> {
     assignmentId: number
+}
+
+export interface IActionReviewersAssignmentUpdated extends Action<typeof WS_REVIEWERS_ASSIGNMENT_UPDATED> {
+    assignment: IReviewerAssignment
+    tweets: ISocialTweetList
 }
 
 export interface IActionReviewersAssignmentStatusChange extends Action<typeof WS_REVIEWERS_ASSIGNMENT_STATUS_CHANGE> {
