@@ -23,11 +23,11 @@ app.autodiscover_tasks()
 
 
 def celery_init_tweet_streaming():
-    from scremsong.app.twitter import get_latest_tweet_id
+    from scremsong.app.twitter import get_latest_tweet_id_for_streaming
 
     # Delay by 7s to give streaming time to start up and get the first tweet
     logger.info("Initialising tweet streaming. Queue up fill in missing tweets task.")
-    task_fill_missing_tweets.apply_async(args=[get_latest_tweet_id()], countdown=7)
+    task_fill_missing_tweets.apply_async(args=[get_latest_tweet_id_for_streaming()], countdown=7)
 
     # Delay by 2s to account for 420 Disconnects
     logger.info("Auto-starting tweet streaming in Celery worker")
@@ -97,7 +97,7 @@ def task_open_tweet_stream(self):
 
 @app.task(bind=True)
 def task_fill_missing_tweets(self, since_id):
-    from scremsong.app.twitter import get_next_tweet_id, fill_in_missing_tweets
+    from scremsong.app.twitter import get_next_tweet_id_for_streaming, fill_in_missing_tweets
 
     if since_id is None:
         logger.info("There's no tweets in the database - skipping filling in missing tweets")
@@ -107,7 +107,7 @@ def task_fill_missing_tweets(self, since_id):
     # NB: Well I guess we could take a few "tweet already exists in table" errors in a row as a sign that we're there?
     max_id = None
     while max_id is None:
-        max_id = get_next_tweet_id(since_id)
+        max_id = get_next_tweet_id_for_streaming(since_id)
 
         if max_id is not None:
             # Get everything except max_id itself (because we already have it, duh)

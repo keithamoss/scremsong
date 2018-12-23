@@ -81,7 +81,7 @@ def open_tweet_stream():
         t = get_twitter_app()
 
     # Begin streaming!
-    api = get_tweepy_api_auth(wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
+    api = get_tweepy_api_auth()
     if api is None:
         logger.warning("No Twitter credentials available! Please generate them by-hand.")
         return None
@@ -100,4 +100,4 @@ def open_tweet_stream():
             myStream.filter(track=track, stall_warnings=True)
             logger.info("Streaming Twitter connection establised successfully for terms: {}.".format(", ".join(track)))
     except Exception as e:
-        logger.error("Exception {}: '{}' during streaming".format(type(e), e))
+        logger.error("Exception {}: '{}' during streaming".format(type(e), str(e)))
