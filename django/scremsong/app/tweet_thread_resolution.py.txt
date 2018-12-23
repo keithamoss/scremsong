@@ -1,0 +1,184 @@
+"""
+This code was from our attempt to fully resolve tweet threads without going over the Twitter API rate limits.
+
+It combined a local cache + the Twitter API but ultimately was going to burn through too much of our Twitter API quota.
+For now we've settled for a partial approach to building tweet threads based on only the tweets we receive and their parents (which we can fetch individually from the API).
+"""
+
+
+def get_tweets_to_user_since_tweet_from_db(status):
+    """Get locally cached tweets to the author of a given tweet.
+
+    This only works for @DemSausage because we get those via the streaming API.
+    """
+    return Tweets.objects.filter(tweet_id__gt=status["id_str"]).filter(source__contains=TweetSource.THREAD_RESOLUTION_TWEETS_TO_USER).filter(Q(data__in_reply_to_screen_name=status["user"]["screen_name"]) | Q(data__entities__user_mentions__screen_name=status["user"]["screen_name"])).values_list("data", flat=True)
+
+
+def get_tweets_to_user_since_tweet_from_api(tweetData):
+    initialSinceId = tweetData["id_str"]
+    sinceId = tweetData["id_str"]
+    logger.info("Find tweets to '{}' since: {}".format(tweetData["user"]["screen_name"], sinceId))
+
+    try:
+        tweets = []
+
+        # Note to future self: We can't rely on locally cached tweets to set our sinceId for use with the API because this assumes we have all replies from the user prior to sinceId.
+        # In reality, we won't. Given what DemSausageis , we could potentially use whatever API options exist to do date queries as well e.g. Fetch and locally cache all tweets to and from
+        # a given user in the past 24 - 48 hours.
+        # The API-only resolution falls afoul of really popular users (tweets to) or really verbose users (tweets from) and could easily consume our API quotas.
+
+        # Grab cached tweets from the local db to reduce the number of API calls we need to make
+        # local = get_tweets_to_user_since_tweet_from_db(tweetData)
+        # if local is not None:
+        #     logger.debug("Found {} locally".format(len(local)))
+        #     # for t in local:
+        #     #     logger.debug("{}: {}".format(t.data["id_str"], get_tweet_text(t.data)))
+        #     # for t in local:
+        #     #     logger.debug("{}: {}".format(t["id_str"], get_tweet_text(t)))
+
+        #     sinceId = local.aggregate(Max("tweet_id"))["tweet_id__max"]
+        #     logger.info("Max local tweetId: {}".format(sinceId))
+        #     tweets += local
+        #     logger.info("Pulled {} tweets from the local db for get_tweets_to_user_since_tweet_from_api".format(len(tweets)))
+
+        # Now fill in any newer tweets from the Twitter API
+        tweetCounter = 0
+        maxTweetsToFetch = 500  # 5 API calls
+
+        api = get_tweepy_api_auth()
+        for status in tweepy_rate_limit_handled(tweepy.Cursor(api.search, q="@{}".format(tweetData["user"]["screen_name"]), since_id=sinceId, result_type="recent", tweet_mode="extended", include_entities=True, count=100).items(maxTweetsToFetch), waitFor=5):
+            tweets.append(status._json)
+            # logger.debug("{}: {}: {}".format(status._json["id_str"], status._json["user"]["screen_name"], get_tweet_text(status._json)))
+
+            # Cache locally to reduce the number of API calls we have to make
+            tweet, created = save_tweet(status._json, source=TweetSource.THREAD_RESOLUTION_TWEETS_TO_USER, status=TweetStatus.OK, sendWebSocketEvent=False)
+            logger.info("Cached {} locally (created={})".format(status._json["id_str"], created))
+
+            tweetCounter += 1
+
+        logger.info("Pulled {} tweets from the API for get_tweets_to_user_since_tweet_from_api for {}".format(tweetCounter, tweetData["user"]["screen_name"]))
+        if tweetCounter == maxTweetsToFetch:
+            raise ScremsongException("Pulled {} tweets from the API to '{}'. Giving up!".format(maxTweetsToFetch, tweetData["user"]["screen_name"]))
+
+        logger.debug("Tweets from remote and local ({} found replying to {} since {}/{})".format(len(tweets), tweetData["user"]["screen_name"], initialSinceId, sinceId))
+
+        return tweets
+
+    except tweepy.TweepError as e:
+        # Uh oh, some error code was returned
+        # NB: tweepy.api can return certain errors via retry_errors
+        logger.error("TweepError from get_tweets_to_user_since_tweet_from_api ({}/{})".format(initialSinceId, sinceId), e)
+        raise ScremsongException("TweepError from get_tweets_to_user_since_tweet_from_api({})".format(tweetData["id_str"]))
+
+    raise ScremsongException("Couldn't fetch tweets to user '{}' from the API".format(tweetData["user"]["screen_name"]))
+    return None
+
+
+def get_tweets_from_user_since_tweet_from_db(status):
+    """Get locally cached tweets from @DemSausage.
+
+    This only works for @DemSausage because we get those via the streaming API.
+    """
+    return Tweets.objects.filter(tweet_id__gt=status["id_str"]).filter(source__contains=TweetSource.THREAD_RESOLUTION_TWEETS_FROM_USER).filter(data__user__screen_name=status["user"]["screen_name"]).values_list("data", flat=True)
+
+
+def get_tweets_from_user_since_tweet_from_api(tweetData):
+    initialSinceId = tweetData["id_str"]
+    sinceId = tweetData["id_str"]
+    logger.info("Find tweets from '{}' since: {}".format(tweetData["user"]["screen_name"], sinceId))
+
+    try:
+        tweets = []
+
+        # Note to future self: See notes in get_tweets_to_user_since_tweet_from_api
+
+        # Grab cached tweets from the local db to reduce the number of API calls we need to make
+        # local = get_tweets_from_user_since_tweet_from_db(tweetData)
+        # if local is not None:
+        #     logger.debug("Found {} locally".format(len(local)))
+        #     # for t in local:
+        #     #     logger.debug("{}: {}".format(t.data["id_str"], get_tweet_text(t.data)))
+        #     # for t in local:
+        #     #     logger.debug("{}: {}".format(t["id_str"], get_tweet_text(t)))
+
+        #     sinceId = local.aggregate(Max("tweet_id"))["tweet_id__max"]
+        #     logger.info("Max local tweetId: {}".format(sinceId))
+        #     tweets += local
+        #     logger.info("Pulled {} tweets from the local db for get_tweets_from_user_since_tweet_from_api for {}".format(len(tweets), tweetData["user"]["screen_name"]))
+
+        # Now fill in any newer tweets from the Twitter API
+        api = get_tweepy_api_auth()
+        tweetCounter = 0
+        maxTweetsToFetch = 1000  # 5 API calls
+
+        for status in tweepy_rate_limit_handled(tweepy.Cursor(api.user_timeline, screen_name=tweetData["user"]["screen_name"], since_id=sinceId, tweet_mode="extended", include_rts=True, exclude_replies=False, count=200).items(maxTweetsToFetch), waitFor=5):
+            tweets.append(status._json)
+            # logger.debug("{}: {}".format(status._json["id_str"], get_tweet_text(status._json)))
+            # logger.debug("{}: {}: {}".format(status._json["id_str"], status._json["user"]["screen_name"], get_tweet_text(status._json)))
+
+            # Cache locally to reduce the number of API calls we have to make
+            tweet, created = save_tweet(status._json, source=TweetSource.THREAD_RESOLUTION_TWEETS_FROM_USER, status=TweetStatus.OK, sendWebSocketEvent=False)
+            logger.info("Cached {} locally (created={})".format(status._json["id_str"], created))
+
+            tweetCounter += 1
+
+        logger.info("Pulled {} tweets from the API for get_tweets_from_user_since_tweet_from_api for {}".format(tweetCounter, tweetData["user"]["screen_name"]))
+        if tweetCounter == maxTweetsToFetch:
+            raise ScremsongException("Pulled {} tweets from the API from '{}'. Giving up!".format(maxTweetsToFetch, tweetData["user"]["screen_name"]))
+
+        logger.debug("Tweets from remote ({} found from {} since {}/{})".format(len(tweets), tweetData["user"]["screen_name"], initialSinceId, sinceId))
+        return tweets
+
+    except tweepy.TweepError as e:
+        # Uh oh, some error code was returned
+        # NB: tweepy.api can return certain errors via retry_errors
+        logger.error("TweepError from get_tweets_from_user_since_tweet_from_api ({}/{})".format(initialSinceId, sinceId), e)
+        raise ScremsongException("TweepError from get_tweets_from_user_since_tweet_from_api({})".format(tweetData["id_str"]))
+
+    raise ScremsongException("Couldn't fetch tweets from user '{}' from the API".format(tweetData["user"]["screen_name"]))
+    return None
+
+
+def get_status_replies(parentStatus):
+    def resolve_tweet_children(tweetId, tweets, replies=[], depth=0, maxDepth=500):
+        """A high max depth is OK because this is never hits an API."""
+        filtered = [t for t in tweets if "in_reply_to_status_id_str" in t and t["in_reply_to_status_id_str"] == tweetId]
+
+        if len(filtered) > 0:
+            replies += filtered
+            logger.info("{} replies found to {}".format(len(filtered), tweetId))
+
+            depth += 1
+            if depth >= maxDepth:
+                logger.warning("Got max depth for {}".format(tweetId))
+                return replies
+
+            for reply in filtered:
+                replies = resolve_tweet_children(reply["id_str"], tweets, replies, depth, maxDepth)
+            return replies
+        else:
+            # We've reached the bottom - there are no more replies!
+            logger.info("We've reached bottom for {}!".format(tweetId))
+            return replies
+
+    if is_a_reply(parentStatus) is True:
+        raise ScremsongException("get_status_replies got passed a non-parent tweet {}".format(parentStatus["id_str"]))
+
+    tweets_to_user = get_tweets_to_user_since_tweet_from_api(parentStatus)
+    tweets_from_user = get_tweets_from_user_since_tweet_from_api(parentStatus)
+    logger.info("tweets_to_user {}".format(len(tweets_to_user)))
+    logger.info("tweets_from_user {}".format(len(tweets_from_user)))
+
+    # Dedupe just in case
+    logger.info("Before dedupe: {}".format(len(tweets_to_user + tweets_from_user)))
+    tweets = {t["id_str"]: t for t in tweets_to_user + tweets_from_user}.values()
+    logger.info("After dedupe: {}".format(len(tweets)))
+
+    if tweets is not None:
+        replies = resolve_tweet_children(parentStatus["id_str"], tweets)
+        logger.info("Found {} replies to {}".format(len(replies), parentStatus["id_str"]))
+        return replies
+    else:
+        # If there's an API error somewhere downstream it'll raise a ScremsongException
+        # So this just means the tweet has no replies
+        return []
