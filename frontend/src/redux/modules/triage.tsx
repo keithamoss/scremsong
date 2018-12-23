@@ -2,7 +2,7 @@ import * as dotProp from "dot-prop-immutable"
 import { uniq } from "lodash-es"
 import { Action } from "redux"
 import { IActionSocialColumnsList, IActionsTweetsLoadTweets, IActionTweetsNew, ITweetFetchColumn } from "../../websockets/actions"
-import { WS_SOCIAL_COLUMNS_LIST, WS_TWEETS_LOAD_TWEETS, WS_TWEETS_NEW_TWEET } from "../../websockets/constants"
+import { WS_SOCIAL_COLUMNS_LIST, WS_TWEETS_LOAD_TWEETS, WS_TWEETS_NEW_TWEETS } from "../../websockets/constants"
 import { IThunkExtras } from "./interfaces"
 import { ISocialTweetList, ISocialTweetsAndColumnsResponse } from "./social"
 // import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
@@ -30,13 +30,17 @@ export default function reducer(state: IModule = initialState, action: IAction) 
                 state = dotProp.set(state, `column_tweets.${column.id}`, sorted)
             })
             return state
-        case WS_TWEETS_NEW_TWEET:
-            action.columnIds.forEach((columnId: number) => {
-                state = dotProp.set(state, `column_tweets_buffered.${columnId}`, [
-                    ...state.column_tweets_buffered[columnId],
-                    ...[action.tweet.data.id_str],
-                ])
-            })
+        case WS_TWEETS_NEW_TWEETS:
+            for (const [tweetId, columnIds] of Object.entries(action.columnIds)) {
+                columnIds.forEach((columnId: number) => {
+                    if (dotProp.get(state, `column_tweets.${columnId}`).includes(tweetId) === false) {
+                        state = dotProp.set(state, `column_tweets_buffered.${columnId}`, [
+                            ...state.column_tweets_buffered[columnId],
+                            ...[tweetId],
+                        ])
+                    }
+                })
+            }
             return state
         case LOAD_BUFFERED_TWEETS:
             // Update the total tweet count for the columns

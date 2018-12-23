@@ -15,11 +15,12 @@ import {
 } from "../../websockets/actions"
 import {
     WS_REVIEWERS_ASSIGN,
+    WS_REVIEWERS_ASSIGNMENT_UPDATED,
     WS_REVIEWERS_LIST_ASSIGNMENTS,
     WS_REVIEWERS_UNASSIGN,
     WS_TWEETS_DISMISS,
     WS_TWEETS_LOAD_TWEETS,
-    WS_TWEETS_NEW_TWEET,
+    WS_TWEETS_NEW_TWEETS,
 } from "../../websockets/constants"
 import { IStore } from "./reducer"
 import { IReviewerAssignment } from "./reviewers"
@@ -46,9 +47,8 @@ export default function reducer(state: IModule = initialState, action: IAction) 
     switch (action.type) {
         case LOAD_TWEETS:
         case WS_TWEETS_LOAD_TWEETS:
+        case WS_TWEETS_NEW_TWEETS:
             return dotProp.set(state, "tweets", { ...state.tweets, ...action.tweets })
-        case WS_TWEETS_NEW_TWEET:
-            return dotProp.set(state, `tweets.${action.tweet.data.id_str}`, action.tweet)
         case WS_REVIEWERS_LIST_ASSIGNMENTS:
             Object.values(action.assignments).forEach((assignment: IReviewerAssignment, index: number) => {
                 state = dotProp.set(state, `tweet_assignments.${assignment.social_id}`, assignment.id)

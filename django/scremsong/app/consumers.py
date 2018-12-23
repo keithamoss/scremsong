@@ -62,13 +62,13 @@ class ScremsongConsumer(JsonWebsocketConsumer):
     # c.f. https://github.com/andrewgodwin/channels-examples/blob/master/multichat/chat/consumers.py
 
     # These helper methods are named by the types we send - so chat.join becomes chat_join
-    def tweets_new_tweet(self, event):
+    def tweets_new_tweets(self, event):
         """
-        Called when we receive a single new tweet from the Twitter stream.
+        Called when we receive new tweets from the Twitter stream, from backfilling, et cetera.
         """
         self.send_json({
-            "msg_type": settings.MSG_TYPE_TWEETS_NEW_TWEET,
-            "tweet": event["tweet"],
+            "msg_type": settings.MSG_TYPE_TWEETS_NEW_TWEETS,
+            "tweets": event["tweets"],
             "columnIds": event["columnIds"],
         })
 
@@ -90,6 +90,7 @@ class ScremsongConsumer(JsonWebsocketConsumer):
         self.send_json({
             "msg_type": settings.MSG_TYPE_REVIEWERS_ASSIGN,
             "assignment": event["assignment"],
+            "tweets": event["tweets"],
         })
 
     def reviewers_unassign(self, event):

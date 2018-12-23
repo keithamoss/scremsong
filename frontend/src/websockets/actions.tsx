@@ -16,7 +16,7 @@ import {
     WS_SOCIAL_COLUMNS_LIST,
     WS_TWEETS_DISMISS,
     WS_TWEETS_LOAD_TWEETS,
-    WS_TWEETS_NEW_TWEET,
+    WS_TWEETS_NEW_TWEETS,
 } from "./constants"
 
 // Models
@@ -36,9 +36,11 @@ export interface IActionNotification extends Action<typeof WS_NOTIFICATION> {
     key: string
 }
 
-export interface IActionTweetsNew extends Action<typeof WS_TWEETS_NEW_TWEET> {
-    tweet: ISocialTweet
-    columnIds: number[]
+export interface IActionTweetsNew extends Action<typeof WS_TWEETS_NEW_TWEETS> {
+    tweets: ISocialTweet[]
+    columnIds: {
+        [key: string]: number[]
+    }
 }
 
 export interface IActionSocialColumnsList extends Action<typeof WS_SOCIAL_COLUMNS_LIST> {
