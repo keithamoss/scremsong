@@ -11,3 +11,11 @@ def send_channel_message(msg_type, payload):
         async_to_sync(channel_layer.group_send)(WS_GROUP_NAME, {
             **{"type": msg_type}, **payload
         })
+
+
+def send_user_channel_message(msg_type, payload, username):
+    if msg_type is not None:
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)("user_{}".format(username), {
+            **{"type": msg_type}, **payload
+        })

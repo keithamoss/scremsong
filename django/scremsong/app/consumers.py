@@ -12,13 +12,20 @@ logger = make_logger(__name__)
 
 class ScremsongConsumer(JsonWebsocketConsumer):
     def connect(self):
-        self.group_name = 'scremsong_%s' % self.scope['url_route']['kwargs']['group_name']
         self.user = self.scope["user"]
+        self.group_name = 'scremsong_%s' % self.scope['url_route']['kwargs']['group_name']  # For all Scremsong users
+        self.user_group_name = 'user_%s' % self.user  # Just for this user
 
         if self.user.is_anonymous is False and self.user.is_authenticated:
-            # Join room group
+            # Join the general Scremsong group
             async_to_sync(self.channel_layer.group_add)(
                 self.group_name,
+                self.channel_name
+            )
+
+            # Join the specific channel for this user (lets us send user-specific messages)
+            async_to_sync(self.channel_layer.group_add)(
+                self.user_group_name,
                 self.channel_name
             )
 
@@ -27,7 +34,7 @@ class ScremsongConsumer(JsonWebsocketConsumer):
             # Send a message back to the client on a successful connection
             self.send_json(build_on_connect_data_payload(self.user))
 
-            logger.debug('scremsong connect channel=%s group=%s user=%s', self.channel_name, self.group_name, self.user)
+            logger.debug('scremsong connect channel=%s group=%s group=%s user=%s', self.channel_name, self.group_name, self.user_group_name, self.user)
         else:
             # Setting a code doesn't actually seem to work
             # https://github.com/django/channels/issues/414
@@ -40,7 +47,7 @@ class ScremsongConsumer(JsonWebsocketConsumer):
             self.channel_name
         )
 
-        # @TODO Send a message to all connected clients that this used has gone offline
+        # @TODO Send a message to all connected clients that this user has gone offline
         # async_to_sync(self.channel_layer.group_send)(
         #     self.group_name,
         #     {
