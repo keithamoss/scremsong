@@ -102,6 +102,16 @@ class ScremsongConsumer(JsonWebsocketConsumer):
             "assignmentId": event["assignmentId"],
         })
 
+    def reviewers_assignment_updated(self, event):
+        """
+        Called when new tweets (e.g. replies) have arrived in an assignment.
+        """
+        self.send_json({
+            "msg_type": settings.MSG_TYPE_REVIEWERS_ASSIGNMENT_UPDATED,
+            "assignment": event["assignment"],
+            "tweets": event["tweets"],
+        })
+
     def reviewers_assignment_status_changed(self, event):
         """
         Called when the status of an assignment has been changed (e.g. it's been completed).

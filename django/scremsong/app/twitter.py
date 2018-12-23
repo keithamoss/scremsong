@@ -1,12 +1,19 @@
 import tweepy
-from scremsong.util import make_logger, get_env
-from scremsong.app.models import SocialPlatforms, Tweets, SocialColumns
-from scremsong.app.enums import SocialPlatformChoice
+
+from scremsong.util import make_logger, get_env, get_or_none
+from scremsong.app.models import SocialPlatforms, Tweets, SocialColumns, SocialAssignments
+from scremsong.app.enums import SocialPlatformChoice, SocialAssignmentStatus, NotificationVariants, TweetStatus, TweetSource
 from scremsong.app.social.columns import get_social_columns
 from scremsong.app.social.twitter_utils import apply_tweet_filter_criteria, column_search_phrase_to_twitter_search_query
-from scremsong.app.serializers import SocialColumnsSerializerWithTweetCountSerializer, TweetsSerializer
+from scremsong.app.serializers import SocialColumnsSerializerWithTweetCountSerializer, TweetsSerializer, SocialAssignmentSerializer
 from scremsong.app import websockets
+from scremsong.app.exceptions import ScremsongException, FailedToResolveTweet
+from scremsong.app.reviewers_utils import is_tweet_part_of_an_assignment
+from scremsong.celery import task_process_tweet_reply
+
 from functools import lru_cache
+from operator import itemgetter
+from time import sleep
 
 logger = make_logger(__name__)
 
@@ -275,10 +282,191 @@ def is_tweet_in_column(tweet_data, social_column):
 
 
 def is_a_reply(status):
+    return "in_reply_to_status_id_str" in status and status["in_reply_to_status_id_str"] is not None
 
-            if "full_text" in tweet_data and phrase_part.lower() in tweet_data["full_text"].lower():
-                match = True
 
-            if match is False:
-                return False
-    return True
+def get_tweet_from_db(tweetId):
+    tweet = get_or_none(Tweets, tweet_id=tweetId)
+    if tweet is not None:
+        return tweet
+    else:
+        logger.debug("Does not exist locally! ({})".format(tweetId))
+        return None
+
+
+def get_status_from_db(tweetId):
+    tweet = get_tweet_from_db(tweetId)
+    if tweet is not None:
+        return tweet.data
+    else:
+        return None
+
+
+def get_status_from_api(tweetId):
+    try:
+        api = get_tweepy_api_auth()
+        status = api.get_status(tweetId, tweet_mode="extended", include_entities=True)
+        return status._json
+    except tweepy.TweepError as e:
+        if e.api_code == 144:
+            # Tweet doesn't exist - if it existed, it was probably deleted)
+            logger.warning("Does not exist remotely in get_status_from_api! ({})".format(tweetId))
+            raise ScremsongException("Does not exist remotely in get_status_from_api! ({})".format(tweetId))
+        else:
+            # Uh oh, some other error code was returned
+            # NB: tweepy.api can return certain errors via retry_errors
+            logger.error("TweepError from get_status_from_api({})".format(tweetId), e)
+            raise ScremsongException("TweepError from get_status_from_api({})".format(tweetId))
+    return None
+
+
+def resolve_tweet_parents(status, tweets=[], depth=0, maxDepth=25):
+    # We did it, we found the absolute parent tweet (the one which was not in reply to anything)
+    if is_a_reply(status) is False:
+        return tweets, status
+
+    parent = get_status_from_db(status["in_reply_to_status_id_str"])
+    if parent is None:
+        parent = get_status_from_api(status["in_reply_to_status_id_str"])
+        tweet, created = save_tweet(parent, source=TweetSource.THREAD_RESOLUTION, status=TweetStatus.OK)
+        logger.info("Cached {} locally (created={})".format(parent["id_str"], created))
+
+    if parent is not None:
+        tweets.append(parent)
+
+        depth += 1
+        if depth >= maxDepth:
+            logger.warning("Got max depth for {}".format(status["in_reply_to_status_id_str"]))
+            raise FailedToResolveTweet("Reached maxDepth {} for tweet {} while trying to resolve parents".format(maxDepth, status["in_reply_to_status_id_str"]))
+
+        return resolve_tweet_parents(parent, tweets, depth, maxDepth)
+    else:
+        raise FailedToResolveTweet("Couldn't find a parent for tweet {}".format(status["in_reply_to_status_id_str"]))
+
+
+def resolve_tweet_thread_for_parent(parent):
+    replies = get_status_replies(parent)
+    relationships = build_relationships(replies)
+
+    # Collect up Django Tweet objects to send back up
+    tweets = {}
+
+    tweets[parent["id_str"]] = TweetsSerializer(get_tweet_from_db(parent["id_str"])).data
+
+    # Replies are already saved by local caching in the get_status_replies() call stack
+    for tweet in Tweets.objects.filter(tweet_id__in=[t["id_str"] for t in replies]).all():
+        tweets[tweet.tweet_id] = TweetsSerializer(tweet).data
+
+    return tweets[parent["id_str"]], tweets, relationships
+
+
+def get_status_replies(parentStatus):
+    def resolve_tweet_children(tweetId, replies=[], depth=0, maxDepth=500):
+        """A high max depth is OK because this is never hits an API."""
+        filtered = Tweets.objects.filter(tweet_id__gt=tweetId).filter(data__in_reply_to_status_id_str=tweetId).values_list("data", flat=True)
+
+        if len(filtered) > 0:
+            replies += filtered
+            logger.info("{} replies found to {}".format(len(filtered), tweetId))
+
+            depth += 1
+            if depth >= maxDepth:
+                logger.warning("Got max depth for {}".format(tweetId))
+                return replies
+
+            for reply in filtered:
+                replies = resolve_tweet_children(reply["id_str"], replies, depth, maxDepth)
+            return replies
+        else:
+            # We've reached the bottom - there are no more replies!
+            logger.info("We've reached bottom at {}!".format(tweetId))
+            return replies
+
+    if is_a_reply(parentStatus) is True:
+        raise ScremsongException("get_status_replies got passed a non-parent tweet {}".format(parentStatus["id_str"]))
+
+    logger.info("Looking for locally cached replies to parent tweet {}".format(parentStatus["id_str"]))
+    replies = resolve_tweet_children(parentStatus["id_str"])
+    logger.info("Found {} replies to {}".format(len(replies), parentStatus["id_str"]))
+    return replies
+
+
+def build_relationships(replies):
+    relationships = [{t["id_str"]: t["in_reply_to_status_id_str"]} for t in replies]
+    # Sort by the key of each dict (the reply tweet) to ensure we keep chronological order
+    return sorted(relationships, key=lambda k: list(k.keys())[0])
+
+
+def process_new_tweet(status, tweetSource, sendWebSocketEvent):
+    # Deal with tweets arriving / being processed out of order.
+    # If it's already part of an assignment then it's been processed and clients have been notified.
+    if is_tweet_part_of_an_assignment(status["id_str"]) is True:
+        logger.warning("Got tweet {} that was already part of an assignment (process_new_tweet)".format(status["id_str"]))
+        # Only send a web socket event if we're not handling this elsewhere (e.g. backfilling)
+        if sendWebSocketEvent is True:
+            notify_of_saved_tweet(get_tweet_from_db(status["id_str"]))
+        return True
+
+    # OK! This means that this is a newly arrived tweet, so we need to work out if it's part of an already existing assignment.
+
+    # Start by saving the tweet as dirty (i.e. we need it in the database for thread resolution, but haven't finished processing it yet)
+    tweet, created = save_tweet(status, source=tweetSource, status=TweetStatus.DIRTY)
+
+    try:
+        parents, parent = resolve_tweet_parents(status)
+
+        # If the parent is tweet is part of an assignment then we need to go and
+        # run a refresh to get us all new replies in the thread.
+        # This gets us replies that we don't get via the stream, as well as our own replies.
+        if is_tweet_part_of_an_assignment(parent["id_str"]) is True:
+            parent, tweets, relationships = resolve_tweet_thread_for_parent(parent)
+            replyTweetIds = [tweetId for tweetId in list(tweets.keys()) if tweetId != parent["data"]["id_str"]]
+
+            assignment, created = SocialAssignments.objects.update_or_create(
+                platform=SocialPlatformChoice.TWITTER, social_id=parent["data"]["id_str"], defaults={"thread_relationships": relationships, "thread_tweets": replyTweetIds}
+            )
+
+            # Adding a new tweet marks the assignment "unread"
+            if assignment.status == str(SocialAssignmentStatus.DONE):
+                assignment.status = SocialAssignmentStatus.PENDING
+                assignment.save()
+
+                websockets.send_user_channel_message("notifications.send", {
+                    "message": "One of your completed assignments has had a new reply arrive - it's been marked as pending again",
+                    "options": {
+                        "variant": NotificationVariants.INFO
+                    }
+                },
+                    assignment.user.username)
+            else:
+                websockets.send_user_channel_message("notifications.send", {
+                    "message": "One of your assignments has had a new reply arrive",
+                    "options": {
+                        "variant": NotificationVariants.INFO
+                    }
+                },
+                    assignment.user.username)
+
+            logger.info("assignment.status: {} ({})".format(assignment.status, type(assignment.status)))
+            websockets.send_channel_message("reviewers.assignment_updated", {
+                "assignment": SocialAssignmentSerializer(assignment).data,
+                "tweets": tweets,
+            })
+
+        # Once we're done processing the tweet, or if its parent is not part of an assignment,
+        # then we just carry on and save the tweet has processed and send a notification.
+        tweet.status = TweetStatus.OK
+        tweet.save()
+        if sendWebSocketEvent is True:
+            notify_of_saved_tweet(tweet)
+        return True
+
+    except Exception as e:
+        # Mark tweets as dirty if we failed to resolve thread relationships (or if something else terrible happened)
+        tweet = Tweets.objects.update_or_create(
+            tweet_id=tweet.tweet_id, defaults={"status": TweetStatus.DIRTY}
+        )
+        raise e
+
+    logger.error("Failed to process new tweet {}".format(status["id_str"]))
+    return False

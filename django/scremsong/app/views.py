@@ -10,13 +10,14 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
 from tweepy import TweepError
-from scremsong.app.serializers import UserSerializer, ProfileSerializer, SocialAssignmentSerializer, TweetsSerializer
-from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, fetch_tweets, get_columns_for_tweet
+from scremsong.app.serializers import UserSerializer, ProfileSerializer, SocialAssignmentSerializer
+from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, fetch_tweets, get_status_from_db, resolve_tweet_parents, resolve_tweet_thread_for_parent, notify_of_saved_tweet
 from scremsong.celery import celery_restart_streaming
 from scremsong.app.models import Tweets, SocialAssignments, Profile
-from scremsong.app.enums import SocialPlatformChoice, SocialAssignmentStatus, NotificationVariants
+from scremsong.app.enums import SocialPlatformChoice, SocialAssignmentStatus, NotificationVariants, TweetStatus
 from scremsong.app import websockets
 from scremsong.util import make_logger
+from scremsong.app.exceptions import ScremsongException
 
 from time import sleep
 from copy import deepcopy
@@ -125,15 +126,28 @@ class SocialAssignmentsViewset(viewsets.ViewSet):
         tweetId = qp["tweetId"] if "tweetId" in qp else None
         reviewerId = qp["reviewerId"] if "reviewerId" in qp else None
 
-        assignment, created = SocialAssignments.objects.update_or_create(
-            platform=SocialPlatformChoice.TWITTER, social_id=tweetId, defaults={"user_id": reviewerId}
-        )
+        try:
+            status = get_status_from_db(tweetId)
+            if status is None:
+                raise ScremsongException("Could not find tweet {} in local db".format(tweetId))
 
-        websockets.send_channel_message("reviewers.assign", {
-            "assignment": SocialAssignmentSerializer(assignment).data,
-        })
+            parents, parent = resolve_tweet_parents(status)
+            parent, tweets, relationships = resolve_tweet_thread_for_parent(parent)
+            replyTweetIds = [tweetId for tweetId in list(tweets.keys()) if tweetId != parent["data"]["id_str"]]
 
-        return Response({})
+            assignment, created = SocialAssignments.objects.update_or_create(
+                platform=SocialPlatformChoice.TWITTER, social_id=parent["data"]["id_str"], defaults={"user_id": reviewerId, "thread_relationships": relationships, "thread_tweets": replyTweetIds}
+            )
+
+            websockets.send_channel_message("reviewers.assign", {
+                "assignment": SocialAssignmentSerializer(assignment).data,
+                "tweets": tweets,
+            })
+
+            return Response({"OK": True})
+
+        except ScremsongException as e:
+            return Response({"error": "Could not assign tweet {}. Failed to resolve and update tweet thread. Message: {}".format(tweetId, str(e))}, status=status.HTTP_400_BAD_REQUEST)
 
     @list_route(methods=['get'])
     def unassign_reviewer(self, request, format=None):
@@ -147,7 +161,7 @@ class SocialAssignmentsViewset(viewsets.ViewSet):
             "assignmentId": assignmentId,
         })
 
-        return Response({})
+        return Response({"OK": True})
 
     @list_route(methods=['get'])
     def assignment_done(self, request, format=None):
@@ -163,7 +177,7 @@ class SocialAssignmentsViewset(viewsets.ViewSet):
             "status": str(SocialAssignmentStatus.DONE),
         })
 
-        return Response({})
+        return Response({"OK": True})
 
     @list_route(methods=['get'])
     def set_user_accepting_assignments(self, request, format=None):
@@ -192,7 +206,7 @@ class SocialAssignmentsViewset(viewsets.ViewSet):
             }
         })
 
-        return Response({})
+        return Response({"OK": True})
 
 
 class SocialPlatformsAuthViewset(viewsets.ViewSet):
@@ -259,6 +273,19 @@ class ScremsongDebugViewset(viewsets.ViewSet):
     permission_classes = (IsAuthenticated,)
 
     @list_route(methods=['get'])
+    def test(self, request, format=None):
+        # from scremsong.app.twitter import get_tweet_from_db, process_new_tweet
+        # tweet = get_tweet_from_db("1076752336591118336")
+        # process_new_tweet(tweet.data, TweetSource.STREAMING, False)
+
+        # from scremsong.util import get_or_none
+        # assgignment = get_or_none(SocialAssignments, id=178)
+        # logger.info(assgignment)
+        # logger.info(assgignment.user.username)
+
+        return Response({"OK": True})
+
+    @list_route(methods=['get'])
     def send_dummy_tweets(self, request, format=None):
         qp = request.query_params
         number_of_tweets = int(qp["number_of_tweets"]) if "number_of_tweets" in qp else None
@@ -272,7 +299,7 @@ class ScremsongDebugViewset(viewsets.ViewSet):
         if number_of_tweets is not None and time_limit is not None:
             for i in list(range(1, number_of_tweets + 1)):
                 # Create dummy tweet id
-                latestTweet = deepcopy(Tweets.objects.filter(data__retweeted_status__isnull=True).last())
+                latestTweet = deepcopy(Tweets.objects.filter(data__retweeted_status__isnull=True).filter(status=TweetStatus.OK).last())
                 latestTweet.data["id_str"] = "{}-{}".format(latestTweet.data["id_str"], i)
                 latestTweet.tweet_id = latestTweet.data["id_str"]
 
@@ -300,10 +327,7 @@ class ScremsongDebugViewset(viewsets.ViewSet):
                     }
 
                 # Send our web socket message
-                websockets.send_channel_message("tweets.new_tweet", {
-                    "tweet": TweetsSerializer(latestTweet).data,
-                    "columnIds": get_columns_for_tweet(latestTweet),
-                })
+                notify_of_saved_tweet(latestTweet)
 
                 if i < number_of_tweets:
                     sleep(sleepTime)

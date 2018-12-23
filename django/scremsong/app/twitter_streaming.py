@@ -1,10 +1,10 @@
 import tweepy
 from scremsong.util import make_logger
 from scremsong.app.models import SocialPlatforms
-from scremsong.app.enums import SocialPlatformChoice
-from scremsong.celery import celery_init_tweet_streaming
+from scremsong.app.enums import SocialPlatformChoice, TweetSource, TweetStatus
+from scremsong.celery import celery_init_tweet_streaming, task_process_tweet_reply
 from scremsong.app.social.columns import get_social_columns
-from scremsong.app.twitter import save_tweet, get_twitter_app, get_tweepy_api_auth
+from scremsong.app.twitter import get_twitter_app, get_tweepy_api_auth, is_a_reply, save_tweet, notify_of_saved_tweet
 
 logger = make_logger(__name__)
 
@@ -13,7 +13,13 @@ def open_tweet_stream():
     # https://stackoverflow.com/a/33660005/7368493
     class MyStreamListener(tweepy.StreamListener):
         def on_status(self, status):
-            save_tweet(status)
+            if is_a_reply(status._json) is False:
+                logger.info("Saving tweet {}".format(status._json["id_str"]))
+                tweet, created = save_tweet(status._json, source=TweetSource.STREAMING, status=TweetStatus.OK)
+                notify_of_saved_tweet(tweet)
+            else:
+                logger.info("Sending tweet {} to the queue to be processed from streaming".format(status._json["id_str"]))
+                task_process_tweet_reply.apply_async(args=[status._json, TweetSource.STREAMING, True])
 
         def on_error(self, status_code):
             if status_code == 420:

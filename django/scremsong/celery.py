@@ -122,3 +122,19 @@ def task_fill_missing_tweets(self, since_id):
 
     logger.info("Done filling missing tweets!")
     return True
+
+
+@app.task(bind=True)
+def task_process_tweet_reply(self, status, tweetSource, sendWebSocketEvent):
+    from scremsong.app.twitter import process_new_tweet
+    from scremsong.app.exceptions import ScremsongException
+    logger.info("Started processing tweet {} from {}".format(status["id_str"], tweetSource))
+
+    try:
+        process_new_tweet(status, tweetSource, sendWebSocketEvent)
+    except ScremsongException as e:
+        logger.error("Celery task could not process tweet {}. Failed to resolve and update tweet thread. Message: {}".format(status["id_str"], str(e)))
+    except Exception as e:
+        logger.error("Celery task could not process tweet {}. Failed for an unknown reason. Message: {}".format(status["id_str"], str(e)))
+
+    return True
