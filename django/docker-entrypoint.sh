@@ -28,8 +28,9 @@ if [ "$1" = "celery_worker" ]; then
     echo "[Run] Starting celery_worker"
 
     set -x
-    exec celery -A scremsong worker -l info --concurrency=2 --logfile=logs/celery-worker.log
-    # exec celery -A scremsong worker -l info --concurrency=2
+    # 1 for streaming, 1 for backfill + processing tweets, 1 for solely processing tweets
+    exec celery -A scremsong worker -l info --concurrency=3 --logfile=logs/celery-worker.log
+    # exec celery -A scremsong worker -l info --concurrency=3
     exit
 fi
 
