@@ -87,7 +87,11 @@ class SocialAssignmentSerializer(serializers.ModelSerializer):
             'platform',
             'social_id',
             'status',
-            'user_id')
+            'user_id',
+            'thread_relationships',
+            'thread_tweets',
+            'created_on',
+            'last_updated_on')
 
 
 class TweetsSerializer(serializers.ModelSerializer):

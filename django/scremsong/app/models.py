@@ -3,7 +3,7 @@ from django.contrib.postgres.fields import JSONField
 from django.contrib.auth.models import User
 from model_utils import FieldTracker
 from scremsong.app.social.twitter_utils import apply_tweet_filter_criteria
-from scremsong.app.enums import SocialPlatformChoice, SocialAssignmentStatus
+from scremsong.app.enums import SocialPlatformChoice, SocialAssignmentStatus, TweetStatus
 from scremsong.util import make_logger
 
 logger = make_logger(__name__)
@@ -59,6 +59,14 @@ class Tweets(models.Model):
     tweet_id = models.TextField(editable=False, unique=True)
     data = JSONField()
     is_dismissed = models.BooleanField(default=False)
+    status = models.TextField(choices=[(tag, tag.value) for tag in TweetStatus])
+    source = JSONField(default=list, blank=True)  # TweetSource
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['source']),
+            models.Index(fields=['status']),
+        ]
 
 
 class SocialAssignments(models.Model):
@@ -69,6 +77,10 @@ class SocialAssignments(models.Model):
     social_id = models.TextField(editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     status = models.TextField(choices=[(tag, tag.value) for tag in SocialAssignmentStatus], default=SocialAssignmentStatus.PENDING)
+    thread_relationships = JSONField(default=None, blank=True, null=True)
+    thread_tweets = JSONField(default=None, blank=True, null=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+    last_updated_on = models.DateTimeField(auto_now=True)
 
     class Meta:
         unique_together = ("platform", "social_id")
