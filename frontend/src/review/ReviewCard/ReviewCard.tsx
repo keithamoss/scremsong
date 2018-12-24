@@ -1,5 +1,6 @@
 import { Button, Card, CardActions, CardContent, Collapse, Theme, withStyles, WithStyles } from "@material-ui/core"
 import AssignmentTurnedIn from "@material-ui/icons/AssignmentTurnedIn"
+import OpenInNew from "@material-ui/icons/OpenInNew"
 import classNames from "classnames"
 import * as React from "react"
 import { ExitHandler } from "react-transition-group/Transition"
@@ -53,6 +54,10 @@ class ReviewCard extends React.PureComponent<TComponentProps, IState> {
     public render() {
         const { assignment, tweets, classes } = this.props
 
+        const TwitterLink = (props: any) => (
+            <a href={`https://twitter.com/DemSausage/status/${props["data-tweetid"]}`} {...props} target="_blank" />
+        )
+
         // const replyToTweetLink = (props: any) => (
         //     <a href={`https://twitter.com/intent/tweet?in_reply_to=${actualTweetId}`} {...props} target="_blank" />
         // )
@@ -90,6 +95,16 @@ class ReviewCard extends React.PureComponent<TComponentProps, IState> {
                             <Button color={"primary"} variant="contained" className={classes.button} onClick={this.handleChange}>
                                 <AssignmentTurnedIn className={classNames(classes.leftIcon, classes.iconSmall)} />
                                 Mark as done
+                            </Button>
+                            <Button
+                                color={"secondary"}
+                                variant="contained"
+                                className={classes.button}
+                                component={TwitterLink}
+                                data-tweetid={assignment.social_id}
+                            >
+                                <OpenInNew className={classNames(classes.leftIcon, classes.iconSmall)} />
+                                Open on Twitter
                             </Button>
                         </CardActions>
                     </Card>
