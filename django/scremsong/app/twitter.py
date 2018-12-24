@@ -221,7 +221,7 @@ def fill_in_missing_tweets(since_id, max_id):
         logger.info("Filled in {} missing tweets for the query '{}'".format(tweets_added, q))
 
     # Sort all of our backfilled tweets by their id (i.e. newest tweets first) so our thread resolution code can maximise use of the local database
-    tweetsByAge = sorted(tweets, key=itemgetter("tweet_id"), reverse=True)
+    tweetsByAge = sorted(tweets, key=lambda t: t.tweet_id, reverse=True)
 
     for tweet in tweetsByAge:
         if is_a_reply(tweet.data) is False:
