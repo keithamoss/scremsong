@@ -11,7 +11,7 @@ import Notifier from "./notifications/Notifier"
 import UserReviewQueueViewContainer from "./review/UserReviewQueueView/UserReviewQueueViewContainer"
 import TriageViewContainer from "./triage/TriageView/TriageViewContainer"
 
-const drawerWidth = 100
+const drawerWidth = 82
 
 const styles = (theme: Theme) =>
     ({
