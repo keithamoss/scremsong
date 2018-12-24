@@ -11,6 +11,8 @@ from scremsong.app.exceptions import ScremsongException, FailedToResolveTweet
 from scremsong.app.reviewers_utils import is_tweet_part_of_an_assignment
 from scremsong.celery import task_process_tweet_reply
 
+from django.utils import timezone
+
 from functools import lru_cache
 from operator import itemgetter
 from time import sleep
@@ -423,7 +425,7 @@ def process_new_tweet(status, tweetSource, sendWebSocketEvent):
             replyTweetIds = [tweetId for tweetId in list(tweets.keys()) if tweetId != parent["data"]["id_str"]]
 
             assignment, created = SocialAssignments.objects.update_or_create(
-                platform=SocialPlatformChoice.TWITTER, social_id=parent["data"]["id_str"], defaults={"thread_relationships": relationships, "thread_tweets": replyTweetIds}
+                platform=SocialPlatformChoice.TWITTER, social_id=parent["data"]["id_str"], defaults={"thread_relationships": relationships, "thread_tweets": replyTweetIds, "last_updated_on": timezone.now()}
             )
 
             # Adding a new tweet marks the assignment "unread"
@@ -447,7 +449,6 @@ def process_new_tweet(status, tweetSource, sendWebSocketEvent):
                 },
                     assignment.user.username)
 
-            logger.info("assignment.status: {} ({})".format(assignment.status, type(assignment.status)))
             websockets.send_channel_message("reviewers.assignment_updated", {
                 "assignment": SocialAssignmentSerializer(assignment).data,
                 "tweets": tweets,

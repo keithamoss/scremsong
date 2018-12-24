@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import logout
 from django.http.response import HttpResponseRedirect
 from django.http import HttpResponseNotFound
+from django.utils import timezone
 
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
@@ -136,7 +137,7 @@ class SocialAssignmentsViewset(viewsets.ViewSet):
             replyTweetIds = [tweetId for tweetId in list(tweets.keys()) if tweetId != parent["data"]["id_str"]]
 
             assignment, created = SocialAssignments.objects.update_or_create(
-                platform=SocialPlatformChoice.TWITTER, social_id=parent["data"]["id_str"], defaults={"user_id": reviewerId, "thread_relationships": relationships, "thread_tweets": replyTweetIds}
+                platform=SocialPlatformChoice.TWITTER, social_id=parent["data"]["id_str"], defaults={"user_id": reviewerId, "thread_relationships": relationships, "thread_tweets": replyTweetIds, "last_updated_on": timezone.now()}
             )
 
             websockets.send_channel_message("reviewers.assign", {
