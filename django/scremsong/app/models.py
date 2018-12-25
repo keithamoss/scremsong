@@ -3,7 +3,7 @@ from django.contrib.postgres.fields import JSONField
 from django.contrib.auth.models import User
 from model_utils import FieldTracker
 from scremsong.app.social.twitter_utils import apply_tweet_filter_criteria
-from scremsong.app.enums import SocialPlatformChoice, SocialAssignmentStatus, TweetStatus
+from scremsong.app.enums import ProfileSettingQueueSortBy, SocialPlatformChoice, SocialAssignmentStatus, TweetStatus
 from scremsong.util import make_logger
 
 logger = make_logger(__name__)
@@ -15,10 +15,17 @@ class CompilationError(Exception):
     pass
 
 
+def default_profile_settings():
+    return {
+        "queue_sort_by": ProfileSettingQueueSortBy.ByCreation
+    }
+
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     is_approved = models.BooleanField(default=False)
     is_accepting_assignments = models.BooleanField(default=False)
+    settings = JSONField(default=default_profile_settings, blank=True)
 
     tracker = FieldTracker()
 

@@ -1,6 +1,19 @@
 from enum import Enum
 
 
+class ProfileSettings(str, Enum):
+    QueueSortBy = "queue_sort_by"
+
+    @classmethod
+    def has_value(cls, value):
+        return any(value == item.value for item in cls)
+
+
+class ProfileSettingQueueSortBy(int, Enum):
+    ByCreation = 1
+    ByModified = 2
+
+
 class SocialPlatformChoice(Enum):
     TWITTER = "Twitter"
 

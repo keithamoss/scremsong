@@ -15,7 +15,7 @@ from scremsong.app.serializers import UserSerializer, ProfileSerializer, SocialA
 from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, fetch_tweets, get_status_from_db, resolve_tweet_parents, resolve_tweet_thread_for_parent, notify_of_saved_tweet
 from scremsong.celery import celery_restart_streaming
 from scremsong.app.models import Tweets, SocialAssignments, Profile
-from scremsong.app.enums import SocialPlatformChoice, SocialAssignmentStatus, NotificationVariants, TweetStatus
+from scremsong.app.enums import SocialPlatformChoice, SocialAssignmentStatus, NotificationVariants, TweetStatus, ProfileSettings
 from scremsong.app import websockets
 from scremsong.util import make_logger
 from scremsong.app.exceptions import ScremsongException
@@ -65,15 +65,20 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
 
 
-class ProfileViewSet(viewsets.ModelViewSet):
+class ProfileViewSet(viewsets.ViewSet):
     """
-    API endpoint that allows user profiles to be viewed or edited.
+    API endpoint that allows user profiles to be viewed and edited.
     """
     permission_classes = (IsAuthenticated,)
-    serializer_class = ProfileSerializer
 
-    def get_queryset(self):
-        return self.request.user.profile
+    @list_route(methods=['post'])
+    def update_settings(self, request):
+        for item, val in request.data.items():
+            if ProfileSettings.has_value(item) is True:
+                request.user.profile.settings[item] = val
+
+        request.user.profile.save()
+        return Response({"OK": True, "settings": request.user.profile.settings})
 
 
 class TweetsViewset(viewsets.ViewSet):

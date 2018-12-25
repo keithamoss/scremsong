@@ -152,7 +152,7 @@ export interface IReviewerAssignment {
     thread_relationships: IReviewerAssignmentThreadRelationships[]
     thread_tweets: string[]
     created_on: string // datetime
-    last_updatd_on: string // datetime
+    last_updated_on: string // datetime
 }
 
 export interface IReviewerAssignmentThreadRelationships {

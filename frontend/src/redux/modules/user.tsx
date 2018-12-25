@@ -5,6 +5,7 @@ import { IThunkExtras } from "../../redux/modules/interfaces"
 
 // Actions
 const LOAD_USER = "scremsong/user/LOAD_USER"
+const CHANGE_SETTINGS = "scremsong/user/CHANGE_SETTINGS"
 
 const initialState: IModule = {
     is_logged_in: false,
@@ -12,12 +13,14 @@ const initialState: IModule = {
 }
 
 // Reducer
-type IAction = IActionLoaderUser
+type IAction = IActionLoaderUser | IActionChangeSettings
 export default function reducer(state: IModule = initialState, action: IAction) {
     switch (action.type) {
         case LOAD_USER:
             state = dotProp.set(state, "is_logged_in", action.is_logged_in)
             return dotProp.set(state, "user", action.user)
+        case CHANGE_SETTINGS:
+            return dotProp.set(state, "user.settings", action.settings)
         default:
             return state
     }
@@ -27,6 +30,10 @@ export default function reducer(state: IModule = initialState, action: IAction) 
 export const loadUser = (self: ISelf): IActionLoaderUser => ({
     type: LOAD_USER,
     ...self,
+})
+export const changeSettings = (settings: IProfileSettings): IActionChangeSettings => ({
+    type: CHANGE_SETTINGS,
+    settings,
 })
 
 // Models
@@ -38,6 +45,10 @@ export interface IModule {
 export interface IActionLoaderUser extends Action<typeof LOAD_USER> {
     is_logged_in: boolean
     user: IUser
+}
+
+export interface IActionChangeSettings extends Action<typeof CHANGE_SETTINGS> {
+    settings: IProfileSettings
 }
 
 export interface ISelf {
@@ -56,6 +67,16 @@ export interface IUser {
     is_active: boolean
     is_approved: boolean
     is_staff: boolean
+    settings: IProfileSettings
+}
+
+export interface IProfileSettings {
+    queue_sort_by: eQueueSortBy
+}
+
+export enum eQueueSortBy {
+    ByCreation = 1,
+    ByModified = 2,
 }
 
 // Side effects, only as applicable
@@ -74,5 +95,12 @@ export function logoutUser() {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
         await api.get("/api/0.1/logout", dispatch)
         // window.location.reload()
+    }
+}
+
+export function changeUserProfileSettings(newSettings: Partial<IProfileSettings>) {
+    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
+        const { json } = await api.post("/api/0.1/profile/update_settings/", newSettings, dispatch)
+        dispatch(changeSettings(json.settings))
     }
 }

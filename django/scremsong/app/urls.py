@@ -19,11 +19,12 @@ router.register(r'social_assignments', SocialAssignmentsViewset, 'SocialAssignme
 router.register(r'social_auth', SocialPlatformsAuthViewset, 'SocialPlatformsAuth')
 router.register(r'celery_admin', CeleryAdminViewset, 'CeleryAdmin')
 router.register(r'debug', ScremsongDebugViewset, 'ScremsongDebugViewset')
+router.register(r'profile', ProfileViewSet, 'ProfileViewSet')
 
 # Need to set base_name because Reasons
 # http://www.django-rest-framework.org/api-guide/routers/#usage (see note re `base_name`)
 # http://stackoverflow.com/questions/22083090/what-base-name-parameter-do-i-need-in-my-route-to-make-this-django-api-work
-router.register(r'profile', ProfileViewSet, base_name='Profile')
+# router.register(r'profile', ProfileViewSet, 'ProfileViewSet')
 
 urlpatterns = [
     url(r'^api/0.1/', include(router.urls)),

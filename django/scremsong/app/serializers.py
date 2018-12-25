@@ -6,11 +6,12 @@ from rest_framework import serializers
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Profile
-        fields = ('is_approved')
+        fields = ('is_approved', 'settings')
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     is_approved = serializers.BooleanField(source='profile.is_approved')
+    settings = serializers.JSONField(source='profile.settings')
 
     name = serializers.SerializerMethodField()
     initials = serializers.SerializerMethodField()
@@ -36,7 +37,8 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             'is_active',
             'date_joined',
             'groups',
-            'is_approved')
+            'is_approved',
+            'settings')
 
 
 class ReviewerUserSerializer(UserSerializer):
