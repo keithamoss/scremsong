@@ -37,10 +37,12 @@ if get_env("ENVIRONMENT") == "PRODUCTION":
     DEBUG = False
     CONN_MAX_AGE = 50  # Half our max number of PostgreSQL connections
     CORS_ORIGIN_WHITELIST = (
-        # 'localhost',
         'scremsong.democracysausage.org',
     )
-    ALLOWED_HOSTS = ["localhost", "scremsong-api.democracysausage.org"]
+    CSRF_TRUSTED_ORIGINS = (
+        'scremsong.democracysausage.org',
+    )
+    ALLOWED_HOSTS = ["scremsong-api.democracysausage.org"]
     LOGGING = {
         'version': 1,
         'disable_existing_loggers': False,
@@ -70,6 +72,9 @@ else:
     # SECURITY WARNING: don't run with debug turned on in production!
     DEBUG = True
     CORS_ORIGIN_WHITELIST = (
+        'localhost',
+    )
+    CSRF_TRUSTED_ORIGINS = (
         'localhost',
     )
     ALLOWED_HOSTS = ["localhost", "scremsong-api.democracysausage.org"]
