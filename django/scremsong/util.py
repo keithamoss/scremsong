@@ -7,8 +7,7 @@ def make_logger(name):
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
     handler = logging.StreamHandler()
-    fmt = logging.Formatter(
-        "%(asctime)s [%(levelname)-7s] [%(threadName)s]  %(message)s")
+    fmt = logging.Formatter("%(asctime)s [%(levelname)s] [P:%(process)d] [%(threadName)s] %(message)s (%(pathname)s %(funcName)s() line=%(lineno)d)")
     handler.setFormatter(fmt)
     logger.addHandler(handler)
     return logger
