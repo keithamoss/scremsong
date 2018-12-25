@@ -1,5 +1,5 @@
 import * as dotProp from "dot-prop-immutable"
-import { memoize } from "lodash-es"
+import { memoize, sortBy } from "lodash-es"
 // import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 import { Action } from "redux"
 import { createSelector } from "reselect"
@@ -24,6 +24,7 @@ import {
 import { IThunkExtras } from "./interfaces"
 import { IStore } from "./reducer"
 import { eSocialPlatformChoice } from "./triage"
+import { eQueueSortBy, IProfileSettings } from "./user"
 
 // Actions
 const SET_CURRENT_REVIEWER = "scremsong/reviewers/SET_CURRENT_REVIEWER"
@@ -106,6 +107,16 @@ export const getCurrentReviewerAssignments = createSelector(
     (assignments: IReviewerAssignment[], userId: number | null) => {
         return userId === null ? [] : assignments.filter((assignment: IReviewerAssignment) => assignment.user_id === userId)
     }
+)
+
+export const getSortedAssignments = createSelector(
+    [getCurrentReviewerAssignments],
+    assignments =>
+        memoize((userSettings: IProfileSettings) => {
+            return sortBy(assignments, (assignment: IReviewerAssignment) =>
+                userSettings.queue_sort_by === eQueueSortBy.ByCreation ? assignment.created_on : assignment.last_updated_on
+            ).reverse()
+        })
 )
 
 export const getCurrentReviewer = createSelector(

@@ -7,6 +7,7 @@ import PowerOff from "@material-ui/icons/PowerOff"
 import classNames from "classnames"
 import * as React from "react"
 import { IReviewerAssignment, IReviewerUser } from "../../redux/modules/reviewers"
+import { eQueueSortBy, IProfileSettings } from "../../redux/modules/user"
 import ReviewCardContainer from "../ReviewCard/ReviewCardContainer"
 
 const styles = (theme: Theme) => ({
@@ -15,6 +16,7 @@ const styles = (theme: Theme) => ({
     },
     formControl: {
         minWidth: 165,
+        paddingRight: theme.spacing.unit * 3,
     },
     focusedInputLabel: {
         color: "white !important",
@@ -53,8 +55,10 @@ export interface IProps {
     assignments: IReviewerAssignment[]
     reviewers: IReviewerUser[]
     currentReviewer: IReviewerUser
+    userSettings: IProfileSettings
     onMarkAsDone: any
     onChangeQueueUser: any
+    onChangeQueueSortOrder: any
     onToggleUserOnlineStatus: any
 }
 
@@ -62,6 +66,7 @@ type TComponentProps = IProps & WithStyles
 
 class UserReviewQueueView extends React.PureComponent<TComponentProps, {}> {
     private onChangeQueueUser: any
+    private onChangeQueueSortOrder: any
     private onToggleUserOnlineStatus: any
 
     public constructor(props: TComponentProps) {
@@ -70,13 +75,16 @@ class UserReviewQueueView extends React.PureComponent<TComponentProps, {}> {
         this.onChangeQueueUser = (event: React.ChangeEvent<HTMLSelectElement>) => {
             props.onChangeQueueUser(event.target.value)
         }
+        this.onChangeQueueSortOrder = (event: React.ChangeEvent<HTMLSelectElement>) => {
+            props.onChangeQueueSortOrder(event.target.value)
+        }
         this.onToggleUserOnlineStatus = (event: React.MouseEvent<HTMLElement>) => {
             props.onToggleUserOnlineStatus(this.props.currentReviewer)
         }
     }
 
     public render() {
-        const { assignments, reviewers, currentReviewer, onMarkAsDone, classes } = this.props
+        const { assignments, reviewers, currentReviewer, userSettings, onMarkAsDone, classes } = this.props
 
         return (
             <React.Fragment>
@@ -107,6 +115,33 @@ class UserReviewQueueView extends React.PureComponent<TComponentProps, {}> {
                                         {reviewer.name}
                                     </MenuItem>
                                 ))}
+                            </Select>
+                        </FormControl>
+                        <FormControl classes={{ root: classes.formControl }}>
+                            <InputLabel
+                                htmlFor="queue-sort-order-control"
+                                classes={{ root: classes.white, focused: classes.focusedInputLabel }}
+                            >
+                                Sort queue assignments by
+                            </InputLabel>
+                            <Select
+                                value={userSettings.queue_sort_by}
+                                onChange={this.onChangeQueueSortOrder}
+                                inputProps={{
+                                    name: "queue-sort-order",
+                                    id: "queue-sort-order-control",
+                                }}
+                                classes={{ root: classes.white, icon: classes.white }}
+                                input={
+                                    <Input
+                                        classes={{
+                                            underline: classes.underline,
+                                        }}
+                                    />
+                                }
+                            >
+                                <MenuItem value={eQueueSortBy.ByCreation}>When they were assigned</MenuItem>
+                                <MenuItem value={eQueueSortBy.ByModified}>When they were last updated</MenuItem>
                             </Select>
                         </FormControl>
                         <Typography variant="h6" color="inherit" className={classes.grow} />

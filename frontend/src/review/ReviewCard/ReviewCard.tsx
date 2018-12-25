@@ -1,12 +1,12 @@
-import { Button, Card, CardActions, CardContent, Collapse, Theme, withStyles, WithStyles } from "@material-ui/core"
-import AssignmentTurnedIn from "@material-ui/icons/AssignmentTurnedIn"
-import OpenInNew from "@material-ui/icons/OpenInNew"
-import classNames from "classnames"
-import * as React from "react"
-import { ExitHandler } from "react-transition-group/Transition"
-import { IReviewerAssignment } from "../../redux/modules/reviewers"
-import { ISocialTweetList } from "../../redux/modules/social"
-import TweetThread from "../TweetThread/TweetThread"
+import { Button, Card, CardActions, CardContent, Collapse, Theme, withStyles, WithStyles } from "@material-ui/core";
+import AssignmentTurnedIn from "@material-ui/icons/AssignmentTurnedIn";
+import OpenInNew from "@material-ui/icons/OpenInNew";
+import classNames from "classnames";
+import * as React from "react";
+import { ExitHandler } from "react-transition-group/Transition";
+import { IReviewerAssignment } from "../../redux/modules/reviewers";
+import { ISocialTweetList } from "../../redux/modules/social";
+import TweetThread from "../TweetThread/TweetThread";
 
 const styles = (theme: Theme) => ({
     button: {
