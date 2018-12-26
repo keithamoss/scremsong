@@ -28,6 +28,17 @@ export default function reducer(state: IModule = initialState, action: IAction) 
                 const val = uniq([...state.column_tweets[column.id], ...column.tweet_ids])
                 const sorted = val.sort().reverse()
                 state = dotProp.set(state, `column_tweets.${column.id}`, sorted)
+
+                if (action.type === WS_TWEETS_LOAD_TWEETS) {
+                    column.tweet_ids_buffered.forEach((tweetId: string) => {
+                        if (dotProp.get(state, `column_tweets.${column.id}`).includes(tweetId) === false) {
+                            state = dotProp.set(state, `column_tweets_buffered.${column.id}`, [
+                                ...state.column_tweets_buffered[column.id],
+                                ...[tweetId],
+                            ])
+                        }
+                    })
+                }
             })
             return state
         case WS_TWEETS_NEW_TWEETS:

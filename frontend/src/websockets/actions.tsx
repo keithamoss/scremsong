@@ -84,6 +84,7 @@ export interface IActionReviewersSetStatus extends Action<typeof WS_REVIEWERS_SE
 export interface ITweetFetchColumn {
     id: number
     tweet_ids: string[]
+    tweet_ids_buffered: string[]
 }
 
 export interface IActionsTweetsDismiss extends Action<typeof WS_TWEETS_DISMISS> {

@@ -14,7 +14,6 @@ from scremsong.celery import task_process_tweet_reply
 from django.utils import timezone
 
 from functools import lru_cache
-from operator import itemgetter
 from time import sleep
 
 logger = make_logger(__name__)
@@ -69,6 +68,7 @@ def twitter_user_api_auth_stage_2(query_params):
 def fetch_tweets(startIndex, stopIndex, sinceId=None, maxId=None, columnIds=[]):
     columns = []
     tweets = {}
+
     for social_column in get_social_columns(SocialPlatformChoice.TWITTER, columnIds):
         column_tweets = get_tweets_for_column(social_column, sinceId, maxId, startIndex, stopIndex)
         column_tweet_ids = []
@@ -86,6 +86,83 @@ def fetch_tweets(startIndex, stopIndex, sinceId=None, maxId=None, columnIds=[]):
         "columns": columns,
         "tweets": tweets,
     }
+
+
+def fetch_tweets_for_columns(columnPositions, columnIds=[]):
+    columns = []
+    tweets = {}
+
+    for social_column in get_social_columns(SocialPlatformChoice.TWITTER, columnIds):
+        if columnPositions is not None and str(social_column.id) in columnPositions:
+            sinceId = int(columnPositions[str(social_column.id)]["stopTweet"]) - 1
+            column_tweets = get_tweets_for_column_by_tweet_ids(social_column, sinceId)
+        else:
+            column_tweets = get_tweets_for_column(social_column, startIndex=0, stopIndex=20)
+
+        column_tweet_ids = []
+        column_tweet_ids_buffered = []
+
+        for tweet in column_tweets:
+            tweets[tweet["tweet_id"]] = TweetsSerializer(tweet).data
+
+            if int(tweet["tweet_id"]) > int(columnPositions[str(social_column.id)]["firstTweet"]):
+                column_tweet_ids_buffered.append(tweet["tweet_id"])
+            else:
+                column_tweet_ids.append(tweet["tweet_id"])
+
+        columns.append({
+            "id": social_column.id,
+            "tweet_ids": column_tweet_ids,
+            "tweet_ids_buffered": column_tweet_ids_buffered,
+        })
+
+    return {
+        "columns": columns,
+        "tweets": tweets,
+    }
+
+
+def get_tweets_for_column_by_tweet_ids(social_column, since_id=None, max_id=None):
+    queryset = Tweets.objects
+
+    if since_id is not None:
+        queryset = queryset.filter(tweet_id__gt=since_id)
+
+    if max_id is not None:
+        queryset = queryset.filter(tweet_id__lte=max_id)
+
+    if since_id is not None and max_id is not None and since_id >= max_id:
+        logger.warning("since_id {} is out of range of max_id {} in get_tweets_for_column - it should be a lower number!")
+        return None
+
+    queryset = apply_tweet_filter_criteria(social_column, queryset)
+
+    return queryset.order_by("-tweet_id").values()
+
+
+def get_tweets_for_column(social_column, since_id=None, max_id=None, startIndex=None, stopIndex=None, limit=None):
+    queryset = Tweets.objects
+
+    if since_id is not None:
+        queryset = queryset.filter(tweet_id__gt=since_id)
+
+    if max_id is not None:
+        queryset = queryset.filter(tweet_id__lte=max_id)
+
+    if since_id is not None and max_id is not None and since_id >= max_id:
+        logger.warning("since_id {} is out of range of max_id {} in get_tweets_for_column - it should be a lower number!")
+        return None
+
+    queryset = apply_tweet_filter_criteria(social_column, queryset)
+
+    tweets = queryset.order_by("-tweet_id").values()
+
+    if limit is not None:
+        return tweets[:int(limit)]
+    elif startIndex is not None and stopIndex is not None:
+        return tweets[int(startIndex):int(stopIndex)]
+    else:
+        return tweets
 
 
 def get_latest_tweet_id_for_streaming():
@@ -154,29 +231,6 @@ def get_twitter_columns():
 
 def get_tweets_by_ids(tweetIds):
     return Tweets.objects.filter(tweet_id__in=tweetIds).values()
-
-
-def get_tweets_for_column(social_column, since_id=None, max_id=None, startIndex=None, stopIndex=None):
-    queryset = Tweets.objects
-
-    if since_id is not None:
-        queryset = queryset.filter(tweet_id__gt=since_id)
-
-    if max_id is not None:
-        queryset = queryset.filter(tweet_id__lte=max_id)
-
-    if since_id is not None and max_id is not None and since_id >= max_id:
-        logger.warning("since_id {} is out of range of max_id {} in get_tweets_for_column - it should be a lower number!")
-        return None
-
-    queryset = apply_tweet_filter_criteria(social_column, queryset)
-
-    tweets = queryset.order_by("-tweet_id").values()
-
-    if startIndex is not None and stopIndex is not None:
-        return tweets[int(startIndex):int(stopIndex)]
-    else:
-        return tweets
 
 
 def tweepy_rate_limit_handled(cursor, waitFor=None):

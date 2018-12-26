@@ -1,6 +1,6 @@
 import * as dotProp from "dot-prop-immutable"
 import { Action } from "redux"
-import { IThunkExtras } from "../../redux/modules/interfaces"
+import { IMyWindow, IThunkExtras } from "../../redux/modules/interfaces"
 // import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 
 // Actions
@@ -72,6 +72,13 @@ export interface IUser {
 
 export interface IProfileSettings {
     queue_sort_by: eQueueSortBy
+    column_positions: { [key: number]: IProfileColumnPosition }
+}
+
+export interface IProfileColumnPosition {
+    firstTweet: string
+    firstVisibleTweet: string
+    stopIndex: string
 }
 
 export enum eQueueSortBy {
@@ -98,9 +105,21 @@ export function logoutUser() {
     }
 }
 
-export function changeUserProfileSettings(newSettings: Partial<IProfileSettings>) {
+export function changeUserProfileSettings(settings: Partial<IProfileSettings>) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        const { json } = await api.post("/api/0.1/profile/update_settings/", newSettings, dispatch)
+        const { json } = await api.post("/api/0.1/profile/update_settings/", settings, dispatch)
         dispatch(changeSettings(json.settings))
     }
+}
+
+export function ws_changeUserProfileSettings(settings: Partial<IProfileSettings>) {
+    return (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
+        emit({ type: "ws/scremsong/user/CHANGE_SETTINGS", settings })
+    }
+}
+
+declare var window: IMyWindow
+export async function getColumnPosition(columnId: number): Promise<IProfileColumnPosition> {
+    const { json } = await window.api.get("/api/0.1/profile/get_column_position/", null, { id: columnId })
+    return json.position
 }
