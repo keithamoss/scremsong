@@ -3,8 +3,9 @@ from channels.generic.websocket import JsonWebsocketConsumer
 from django.conf import settings
 from scremsong.util import make_logger
 from scremsong.app.serializers import UserSerializer
-from scremsong.app.twitter import get_twitter_columns, fetch_tweets
+from scremsong.app.twitter import get_twitter_columns, fetch_tweets_for_columns
 from scremsong.app.reviewers import get_reviewer_users, get_assignments
+from scremsong.app import websockets
 from random import getrandbits
 
 logger = make_logger(__name__)
@@ -40,6 +41,13 @@ class ScremsongConsumer(JsonWebsocketConsumer):
             # https://github.com/django/channels/issues/414
             self.close(code=4000)
 
+    def receive_json(self, content):
+        if "type" not in content:
+            return None
+
+        if content["type"] == settings.MSG_TYPE_USER_CHANGE_SETTINGS:
+            websockets.send_channel_message("user.change_settings", {"settings": content["settings"]})
+
     def disconnect(self, close_code):
         # Leave the group
         async_to_sync(self.channel_layer.group_discard)(
@@ -62,16 +70,6 @@ class ScremsongConsumer(JsonWebsocketConsumer):
     # c.f. https://github.com/andrewgodwin/channels-examples/blob/master/multichat/chat/consumers.py
 
     # These helper methods are named by the types we send - so chat.join becomes chat_join
-    def tweets_new_tweets(self, event):
-        """
-        Called when we receive new tweets from the Twitter stream, from backfilling, et cetera.
-        """
-        self.send_json({
-            "msg_type": settings.MSG_TYPE_TWEETS_NEW_TWEETS,
-            "tweets": event["tweets"],
-            "columnIds": event["columnIds"],
-        })
-
     def notifications_send(self, event):
         """
         Called when we need to send a notification to connected clients.
@@ -132,6 +130,16 @@ class ScremsongConsumer(JsonWebsocketConsumer):
             "is_accepting_assignments": event["is_accepting_assignments"],
         })
 
+    def tweets_new_tweets(self, event):
+        """
+        Called when we receive new tweets from the Twitter stream, from backfilling, et cetera.
+        """
+        self.send_json({
+            "msg_type": settings.MSG_TYPE_TWEETS_NEW_TWEETS,
+            "tweets": event["tweets"],
+            "columnIds": event["columnIds"],
+        })
+
     def tweets_dismiss(self, event):
         """
         Called when someone has dismissed a tweet (set it to be ignored).
@@ -140,6 +148,13 @@ class ScremsongConsumer(JsonWebsocketConsumer):
             "msg_type": settings.MSG_TYPE_TWEETS_DISMISS,
             "tweetId": event["tweetId"],
         })
+
+    def user_change_settings(self, event):
+        """
+        Called when we receive new tweets from the Twitter stream, from backfilling, et cetera.
+        """
+        self.user.profile.merge_settings(event["settings"])
+        self.user.profile.save()
 
 
 def build_on_connect_data_payload(user):
@@ -162,7 +177,7 @@ def build_on_connect_data_payload(user):
             },
             {
                 **{"msg_type": settings.MSG_TYPE_TWEETS_LOAD_TWEETS},
-                **fetch_tweets(startIndex=0, stopIndex=20)
+                **fetch_tweets_for_columns(user.profile.settings["column_positions"] or None)
             }
         ]
     }

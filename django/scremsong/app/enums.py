@@ -3,6 +3,7 @@ from enum import Enum
 
 class ProfileSettings(str, Enum):
     QueueSortBy = "queue_sort_by"
+    ColumnPositions = "column_positions"
 
     @classmethod
     def has_value(cls, value):

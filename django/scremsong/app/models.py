@@ -5,6 +5,7 @@ from model_utils import FieldTracker
 from scremsong.app.social.twitter_utils import apply_tweet_filter_criteria
 from scremsong.app.enums import ProfileSettingQueueSortBy, SocialPlatformChoice, SocialAssignmentStatus, TweetStatus
 from scremsong.util import make_logger
+from scremsong.app.enums import ProfileSettings
 
 logger = make_logger(__name__)
 
@@ -31,6 +32,17 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.user.username
+
+    def merge_settings(self, settings):
+        for item, val in settings.items():
+            if ProfileSettings.has_value(item) is True:
+                if item not in self.settings and type(val) is dict:
+                    self.settings[item] = {}
+
+                if type(self.settings[item]) is dict:
+                    self.settings[item] = {**self.settings[item], **val}
+                else:
+                    self.settings[item] = val
 
 
 class SocialPlatforms(models.Model):

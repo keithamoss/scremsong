@@ -11,11 +11,11 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
 from tweepy import TweepError
-from scremsong.app.serializers import UserSerializer, ProfileSerializer, SocialAssignmentSerializer
+from scremsong.app.serializers import UserSerializer, SocialAssignmentSerializer
 from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, fetch_tweets, get_status_from_db, resolve_tweet_parents, resolve_tweet_thread_for_parent, notify_of_saved_tweet
 from scremsong.celery import celery_restart_streaming
 from scremsong.app.models import Tweets, SocialAssignments, Profile
-from scremsong.app.enums import SocialPlatformChoice, SocialAssignmentStatus, NotificationVariants, TweetStatus, ProfileSettings
+from scremsong.app.enums import SocialPlatformChoice, SocialAssignmentStatus, NotificationVariants, TweetStatus
 from scremsong.app import websockets
 from scremsong.util import make_logger
 from scremsong.app.exceptions import ScremsongException
@@ -73,12 +73,19 @@ class ProfileViewSet(viewsets.ViewSet):
 
     @list_route(methods=['post'])
     def update_settings(self, request):
-        for item, val in request.data.items():
-            if ProfileSettings.has_value(item) is True:
-                request.user.profile.settings[item] = val
-
+        request.user.profile.merge_settings(request.data)
         request.user.profile.save()
-        return Response({"OK": True, "settings": request.user.profile.settings})
+        return Response({"settings": request.user.profile.settings})
+
+    @list_route(methods=['get'])
+    def get_column_position(self, request, format=None):
+        qp = request.query_params
+        columnId = str(qp["id"]) if "id" in qp else None
+
+        if "column_positions" in request.user.profile.settings and columnId in request.user.profile.settings["column_positions"]:
+            return Response({"position": request.user.profile.settings["column_positions"][columnId]})
+        else:
+            return Response({"position": None})
 
 
 class TweetsViewset(viewsets.ViewSet):
