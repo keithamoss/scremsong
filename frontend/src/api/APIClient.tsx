@@ -11,12 +11,12 @@ export class APIClient {
 
     public get(
         url: string,
-        dispatch: Function,
+        dispatch: Function | null,
         params: object = {},
         quiet: boolean = false,
         fetchOptions: object = {}
     ): Promise<IApiResponse> {
-        if (quiet === false) {
+        if (dispatch !== null && quiet === false) {
             dispatch(beginFetch())
         }
 
@@ -28,7 +28,7 @@ export class APIClient {
 
         return fetch(this.baseURL + url, { ...{ credentials: "include" }, ...fetchOptions })
             .then((response: any) => {
-                if (quiet === false) {
+                if (dispatch !== null && quiet === false) {
                     dispatch(finishFetch())
                 }
 

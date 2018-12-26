@@ -17,6 +17,7 @@ import { APIClient } from "./api/APIClient"
 import AppContainer from "./AppContainer"
 import "./index.css"
 import "./polyfills"
+import { IMyWindow } from "./redux/modules/interfaces"
 // Google Analytics
 // import { AnalyticsMiddleware, fireAnalyticsTracking } from "./shared/analytics/GoogleAnalytics"
 // Sentry.io
@@ -28,7 +29,8 @@ import "./polyfills"
 import reducers, { IStore } from "./redux/modules/reducer"
 import { emit, init as websocketInit } from "./websockets/connect"
 
-const api = new APIClient()
+declare var window: IMyWindow
+window.api = new APIClient()
 
 const Middleware: any[] = []
 
@@ -48,7 +50,7 @@ const composeEnhancers = composeWithDevTools({
 })
 const store: Store<IStore> = createStore(
     reducers,
-    composeEnhancers(applyMiddleware(thunkMiddleware.withExtraArgument({ api, emit }), ...Middleware))
+    composeEnhancers(applyMiddleware(thunkMiddleware.withExtraArgument({ api: window.api, emit }), ...Middleware))
 )
 websocketInit(store)
 

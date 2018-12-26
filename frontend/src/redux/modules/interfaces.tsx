@@ -23,6 +23,10 @@ export interface IThunkExtras {
     emit: Function
 }
 
+export interface IMyWindow extends Window {
+    api: APIClient
+}
+
 /* Material UI muiThemeable palette object */
 // tslint:disable-next-line:no-empty-interface
 // export interface IMUIThemePalette extends __MaterialUI.Styles.ThemePalette {}
