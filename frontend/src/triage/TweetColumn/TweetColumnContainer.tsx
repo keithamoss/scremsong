@@ -1,3 +1,4 @@
+import { debounce } from "lodash-es"
 import * as React from "react"
 import { connect } from "react-redux"
 import { IStore } from "../../redux/modules/reducer"
@@ -10,7 +11,13 @@ import {
     ISocialTweetList,
 } from "../../redux/modules/social"
 import { ITriageColumn } from "../../redux/modules/triage"
+import { IProfileColumnPosition, ws_changeUserProfileSettings } from "../../redux/modules/user"
 import TweetColumn from "./TweetColumn"
+
+// Ref. https://github.com/bvaughn/react-virtualized/blob/master/docs/InfiniteLoader.md
+const preFetchThreshold = 5
+const minBatchSize = 20
+const overscanRowCount = 1
 
 export interface IProps {
     column: ITriageColumn
@@ -26,6 +33,7 @@ export interface IStoreProps {
 
 export interface IDispatchProps {
     loadMoreRows: any
+    onPositionUpdate: any
     onDismissTweet: any
 }
 
@@ -37,11 +45,24 @@ export interface IReactVirtualizedIndexes {
 type TComponentProps = IProps & IStoreProps & IDispatchProps
 class TweetColumnContainer extends React.Component<TComponentProps, {}> {
     private loadMoreRows: any
+    private onPositionUpdate: any
 
     public constructor(props: TComponentProps) {
         super(props)
 
         this.loadMoreRows = (indexes: IReactVirtualizedIndexes) => props.loadMoreRows(this.props.column, indexes)
+        this.onPositionUpdate = debounce(
+            (columnId: number, opts: any /*ListProps["onRowsRendered"]*/) =>
+                this.props.onPositionUpdate(columnId, {
+                    firstTweet: this.props.tweet_ids[0],
+                    firstVisibleTweet: this.props.tweet_ids[opts.startIndex],
+                    stopTweet:
+                        this.props.tweet_ids[opts.overscanStopIndex + minBatchSize / 2] ||
+                        this.props.tweet_ids[this.props.tweet_ids.length - 1],
+                }),
+            2500,
+            { maxWait: 5000 }
+        )
     }
     public render() {
         const { column, onOpenAssigner, tweet_ids, tweets, tweet_assignments, assignments, onDismissTweet } = this.props
@@ -54,7 +75,11 @@ class TweetColumnContainer extends React.Component<TComponentProps, {}> {
                 tweets={tweets}
                 tweet_assignments={tweet_assignments}
                 assignments={assignments}
+                preFetchThreshold={preFetchThreshold}
+                minBatchSize={minBatchSize}
+                overscanRowCount={overscanRowCount}
                 loadMoreRows={this.loadMoreRows}
+                onPositionUpdate={this.onPositionUpdate}
                 onDismissTweet={onDismissTweet}
             />
         )
@@ -78,6 +103,11 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {
         loadMoreRows: (column: ITriageColumn, indexes: IReactVirtualizedIndexes) => {
             return dispatch(fetchTweets(indexes.startIndex, indexes.stopIndex, [column.id]))
+        },
+        onPositionUpdate: (columnId: number, positions: IProfileColumnPosition) => {
+            const settings = { column_positions: {} }
+            settings.column_positions[columnId] = positions
+            dispatch(ws_changeUserProfileSettings(settings))
         },
         onDismissTweet: (tweetId: string) => {
             dispatch(dismissTweet(tweetId))
