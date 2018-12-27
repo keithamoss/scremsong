@@ -17,7 +17,7 @@ const styles = () =>
             height: "100%",
         },
         column: {
-            width: "370px",
+            width: "420px",
             height: "100%",
             marginRight: "5px",
         },

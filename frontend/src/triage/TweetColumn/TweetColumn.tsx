@@ -1,22 +1,20 @@
-import { Button, Divider, Theme, Tooltip, withStyles, WithStyles } from "@material-ui/core"
+import { Button, Theme, Tooltip, withStyles, WithStyles } from "@material-ui/core"
 import AssignmentIcon from "@material-ui/icons/Assignment"
+import CheckCircleOutlineIcon from "@material-ui/icons/CheckCircleOutline"
 import DeleteIcon from "@material-ui/icons/Delete"
 import * as React from "react"
 import Tweet from "react-tweet"
 import { AutoSizer, CellMeasurer, CellMeasurerCache, InfiniteLoader, List } from "react-virtualized"
 import "react-virtualized/styles.css"
-import { eSocialAssignmentStatus, IReviewerAssignment } from "../../redux/modules/reviewers"
+import { IReviewerAssignment } from "../../redux/modules/reviewers"
 import { ISocialTweetAssignments, ISocialTweetList } from "../../redux/modules/social"
-import { ITriageColumn } from "../../redux/modules/triage"
+import { getActionBarBackgroundColour, ITriageColumn } from "../../redux/modules/triage"
 import { getColumnPosition } from "../../redux/modules/user"
 
 const styles = (theme: Theme) => ({
-    actionBar: {},
+    actionBar: { width: 50, height: "100%", display: "inline-block", verticalAlign: "top" },
     button: {
-        margin: theme.spacing.unit,
-    },
-    rightIcon: {
-        marginLeft: theme.spacing.unit,
+        minWidth: 50,
     },
 })
 
@@ -56,8 +54,8 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
 
     private _cache = new CellMeasurerCache({
         defaultHeight: 175,
-        // defaultWidth: 370,
-        // minWidth: 370,
+        // defaultWidth: 420,
+        // minWidth: 420,
         fixedWidth: true,
         keyMapper: (rowIndex: number) => {
             return this.props.tweet_ids[rowIndex]
@@ -260,47 +258,55 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
             )
         } else {
             const tweetId = tweet_ids[index]
+            const tweet = tweets[tweetId]
+            const assignmentId = tweet_assignments[tweetId]
+            const assignment = tweetId in tweet_assignments ? assignments[assignmentId] : null
 
-            let tweetStyle = style
-            if (tweets[tweetId].is_dismissed) {
-                tweetStyle = { ...tweetStyle, backgroundColor: "lightgrey" }
-            }
+            const backgroundColor = getActionBarBackgroundColour(tweet, assignment)
 
-            let assignment: IReviewerAssignment | null = null
-            let assignmentId = null
-            if (tweetId in tweet_assignments) {
-                assignmentId = tweet_assignments[tweetId]
-                assignment = assignments[assignmentId]
-                if (assignment.status === eSocialAssignmentStatus.PENDING) {
-                    tweetStyle = { ...tweetStyle, backgroundColor: "lightyellow" }
-                } else if (assignment.status === eSocialAssignmentStatus.DONE) {
-                    tweetStyle = { ...tweetStyle, backgroundColor: "#A2F2AB" }
-                }
+            const cellStyle = style
+            if (tweet.is_dismissed === true) {
+                cellStyle.opacity = 0.4
             }
 
             return (
                 <CellMeasurer key={key} cache={this._cache} columnIndex={0} parent={parent} rowIndex={index}>
-                    <div style={tweetStyle}>
-                        <Tweet key={tweetId} data={tweets[tweetId].data} linkProps={{ target: "_blank", rel: "noreferrer" }} />
-                        <Divider />
-                        <div className={classes.actionBar}>
-                            <Button
-                                color="primary"
-                                className={classes.button}
-                                aria-label="Assign tweet"
-                                onClick={this.onOpenAssigner(tweetId, assignmentId)}
-                            >
-                                Assign
-                                <AssignmentIcon className={classes.rightIcon} />
-                            </Button>
+                    <div style={cellStyle}>
+                        <div className={classes.actionBar} style={{ backgroundColor }}>
+                            <Tooltip title="Assign this tweet to someone" aria-label="Assign tweet">
+                                <Button
+                                    size="small"
+                                    className={classes.button}
+                                    aria-label="Assign tweet"
+                                    onClick={this.onOpenAssigner(tweetId, assignmentId)}
+                                >
+                                    <AssignmentIcon />
+                                </Button>
+                            </Tooltip>
 
-                            <Tooltip title="Dismiss and hide this tweet" aria-label="Dismiss tweet">
-                                <Button className={classes.button} aria-label="Dismiss tweet" onClick={this.onDismissTweet(tweetId)}>
-                                    Dismiss
-                                    <DeleteIcon className={classes.rightIcon} />
+                            <Tooltip title="Dismiss this tweet (ignore)" aria-label="Dismiss tweet">
+                                <Button
+                                    size="small"
+                                    className={classes.button}
+                                    aria-label="Dismiss tweet"
+                                    onClick={this.onDismissTweet(tweetId)}
+                                >
+                                    <DeleteIcon />
+                                </Button>
+                            </Tooltip>
+
+                            <Tooltip title="Mark this tweet as dealt with" aria-label="Deal with tweet">
+                                <Button
+                                    size="small"
+                                    className={classes.button}
+                                    aria-label="Deal with tweet"
+                                    // onClick={this.onDealWithTweet(tweetId)}
+                                >
+                                    <CheckCircleOutlineIcon />
                                 </Button>
                             </Tooltip>
                         </div>
+                        <Tweet key={tweetId} data={tweets[tweetId].data} linkProps={{ target: "_blank", rel: "noreferrer" }} />
                     </div>
                 </CellMeasurer>
             )

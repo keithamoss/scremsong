@@ -4,7 +4,8 @@ import { Action } from "redux"
 import { IActionSocialColumnsList, IActionsTweetsLoadTweets, IActionTweetsNew, ITweetFetchColumn } from "../../websockets/actions"
 import { WS_SOCIAL_COLUMNS_LIST, WS_TWEETS_LOAD_TWEETS, WS_TWEETS_NEW_TWEETS } from "../../websockets/constants"
 import { IThunkExtras } from "./interfaces"
-import { ISocialTweetList, ISocialTweetsAndColumnsResponse } from "./social"
+import { eSocialAssignmentStatus, IReviewerAssignment } from "./reviewers"
+import { ISocialTweet, ISocialTweetList, ISocialTweetsAndColumnsResponse } from "./social"
 // import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 
 // Actions
@@ -136,4 +137,21 @@ export function loadBufferedTweetsForColumn(columnId: number) {
     return (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
         dispatch(loadBufferedTweets(columnId))
     }
+}
+
+// Utilities
+export function getActionBarBackgroundColour(tweet: ISocialTweet, assignment: IReviewerAssignment | null) {
+    if (assignment !== null) {
+        if (assignment.status === eSocialAssignmentStatus.PENDING) {
+            return "lightyellow"
+        } else if (assignment.status === eSocialAssignmentStatus.DONE) {
+            return "#A2F2AB"
+        }
+    }
+
+    if (tweet.is_dismissed === true) {
+        return "lightgrey"
+    }
+
+    return "rgb(250, 250, 250)"
 }
