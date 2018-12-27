@@ -10,6 +10,11 @@ const styles = () =>
         columnContainerContainer: {
             display: "inline-block",
             height: "100%",
+            "& .tweet": {
+                width: "370px !important",
+                minHeight: "123px !important", // Height of the ActionBar
+                display: "inline-block !important",
+            },
         },
         columnContainer: {
             display: "flex",

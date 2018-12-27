@@ -1,6 +1,6 @@
 .tweet {
-    width: 370px !important;
+    /* width: 370px !important;
     min-height: 123px !important; /* Height of the ActionBar */
-    display: inline-block !important;
+    /* display: inline-block !important; */
     /* margin-bottom: 10px !important; */
 }
