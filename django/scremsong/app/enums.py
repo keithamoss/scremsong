@@ -1,31 +1,33 @@
 from enum import Enum
 
 
-class ProfileSettings(str, Enum):
-    QueueSortBy = "queue_sort_by"
-    ColumnPositions = "column_positions"
-
+class EnumBase(Enum):
     @classmethod
     def has_value(cls, value):
         return any(value == item.value for item in cls)
 
 
-class ProfileSettingQueueSortBy(int, Enum):
+class ProfileSettings(str, EnumBase):
+    QueueSortBy = "queue_sort_by"
+    ColumnPositions = "column_positions"
+
+
+class ProfileSettingQueueSortBy(int, EnumBase):
     ByCreation = 1
     ByModified = 2
 
 
-class SocialPlatformChoice(Enum):
+class SocialPlatformChoice(EnumBase):
     TWITTER = "Twitter"
 
 
-class SocialAssignmentStatus(Enum):
+class SocialAssignmentStatus(EnumBase):
     PENDING = "Pending"
     PROCESSED = "Processed"  # DO NOT USE
     DONE = "Done"
 
 
-class NotificationVariants(str, Enum):
+class NotificationVariants(str, EnumBase):
     DEFAULT = "default"
     ERROR = "error"
     SUCCESS = "success"
@@ -33,12 +35,18 @@ class NotificationVariants(str, Enum):
     INFO = "info"
 
 
-class TweetStatus(Enum):
+class TweetState(str, EnumBase):
+    ACTIVE = "Active"
+    DEALT_WITH = "Dealt With"
+    DISMISSED = "Dismissed"
+
+
+class TweetStatus(EnumBase):
     OK = "Ok"
     DIRTY = "Dirty"  # e.g. Part of a thread be we couldn't resolve relationships for it
 
 
-class TweetSource(str, Enum):
+class TweetSource(str, EnumBase):
     STREAMING = "Streaming"
     BACKFILL = "Backfill"
     THREAD_RESOLUTION = "Thread Resolution"

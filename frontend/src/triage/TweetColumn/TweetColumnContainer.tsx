@@ -1,18 +1,12 @@
-import { debounce } from "lodash-es"
-import * as React from "react"
-import { connect } from "react-redux"
-import { IStore } from "../../redux/modules/reducer"
-import { IReviewerAssignment } from "../../redux/modules/reviewers"
-import {
-    dismissTweet,
-    fetchTweets,
-    getTweetAssignmentsForColumn,
-    ISocialTweetAssignments,
-    ISocialTweetList,
-} from "../../redux/modules/social"
-import { ITriageColumn } from "../../redux/modules/triage"
-import { IProfileColumnPosition, ws_changeUserProfileSettings } from "../../redux/modules/user"
-import TweetColumn from "./TweetColumn"
+import { debounce } from "lodash-es";
+import * as React from "react";
+import { connect } from "react-redux";
+import { IStore } from "../../redux/modules/reducer";
+import { IReviewerAssignment } from "../../redux/modules/reviewers";
+import { eSocialTweetState, fetchTweets, getTweetAssignmentsForColumn, ISocialTweetAssignments, ISocialTweetList, setTweetState } from "../../redux/modules/social";
+import { ITriageColumn } from "../../redux/modules/triage";
+import { IProfileColumnPosition, ws_changeUserProfileSettings } from "../../redux/modules/user";
+import TweetColumn from "./TweetColumn";
 
 // Ref. https://github.com/bvaughn/react-virtualized/blob/master/docs/InfiniteLoader.md
 const preFetchThreshold = 5
@@ -34,7 +28,7 @@ export interface IStoreProps {
 export interface IDispatchProps {
     loadMoreRows: any
     onPositionUpdate: any
-    onDismissTweet: any
+    onSetTweetState: any
 }
 
 export interface IReactVirtualizedIndexes {
@@ -65,7 +59,7 @@ class TweetColumnContainer extends React.Component<TComponentProps, {}> {
         )
     }
     public render() {
-        const { column, onOpenAssigner, tweet_ids, tweets, tweet_assignments, assignments, onDismissTweet } = this.props
+        const { column, onOpenAssigner, tweet_ids, tweets, tweet_assignments, assignments, onSetTweetState } = this.props
 
         return (
             <TweetColumn
@@ -80,7 +74,7 @@ class TweetColumnContainer extends React.Component<TComponentProps, {}> {
                 overscanRowCount={overscanRowCount}
                 loadMoreRows={this.loadMoreRows}
                 onPositionUpdate={this.onPositionUpdate}
-                onDismissTweet={onDismissTweet}
+                onSetTweetState={onSetTweetState}
             />
         )
     }
@@ -109,9 +103,10 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
             settings.column_positions[columnId] = positions
             dispatch(ws_changeUserProfileSettings(settings))
         },
-        onDismissTweet: (tweetId: string) => {
-            dispatch(dismissTweet(tweetId))
+        onSetTweetState: (tweetId: string, tweetState: eSocialTweetState) => {
+            dispatch(setTweetState(tweetId, tweetState))
         },
+
     }
 }
 

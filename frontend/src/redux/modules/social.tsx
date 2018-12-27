@@ -9,8 +9,8 @@ import {
     IActionReviewersAssignmentUpdated,
     IActionReviewersListAssignments,
     IActionReviewersUnassign,
-    IActionsTweetsDismiss,
     IActionsTweetsLoadTweets,
+    IActionsTweetsSetState,
     IActionTweetsNew,
     ITweetFetchColumn,
 } from "../../websockets/actions"
@@ -19,9 +19,9 @@ import {
     WS_REVIEWERS_ASSIGNMENT_UPDATED,
     WS_REVIEWERS_LIST_ASSIGNMENTS,
     WS_REVIEWERS_UNASSIGN,
-    WS_TWEETS_DISMISS,
     WS_TWEETS_LOAD_TWEETS,
     WS_TWEETS_NEW_TWEETS,
+    WS_TWEETS_SET_STATE,
 } from "../../websockets/constants"
 import { IStore } from "./reducer"
 import { IReviewerAssignment } from "./reviewers"
@@ -44,7 +44,7 @@ type IAction =
     | IActionReviewersAssign
     | IActionReviewersUnassign
     | IActionReviewersAssignmentUpdated
-    | IActionsTweetsDismiss
+    | IActionsTweetsSetState
 export default function reducer(state: IModule = initialState, action: IAction) {
     switch (action.type) {
         case LOAD_TWEETS:
@@ -72,8 +72,8 @@ export default function reducer(state: IModule = initialState, action: IAction) 
                 }
             }
             return state
-        case WS_TWEETS_DISMISS:
-            return dotProp.set(state, `tweets.${action.tweetId}.is_dismissed`, true)
+        case WS_TWEETS_SET_STATE:
+            return dotProp.set(state, `tweets.${action.tweetId}.state`, action.tweetState)
         default:
             return state
     }
@@ -145,9 +145,15 @@ export interface ISocialTweetAssignments {
     [key: string]: number
 }
 
+export enum eSocialTweetState {
+    ACTIVE = "Active",
+    DEALT_WITH = "Dealt With",
+    DISMISSED = "Dismissed",
+}
+
 export interface ISocialTweet {
     data: ISocialTweetData
-    is_dismissed: boolean
+    state: eSocialTweetState
 }
 
 export interface ISocialTweetData {
@@ -173,10 +179,11 @@ export function fetchTweets(startIndex: number, stopIndex: number, columns: numb
     }
 }
 
-export function dismissTweet(tweetId: string) {
+export function setTweetState(tweetId: string, tweetState: eSocialTweetState) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        await api.get("/api/0.1/tweets/dismiss/", dispatch, {
+        await api.get("/api/0.1/tweets/set_state/", dispatch, {
             tweetId,
+            tweetState,
         })
     }
 }

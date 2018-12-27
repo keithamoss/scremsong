@@ -5,7 +5,7 @@ import { IActionSocialColumnsList, IActionsTweetsLoadTweets, IActionTweetsNew, I
 import { WS_SOCIAL_COLUMNS_LIST, WS_TWEETS_LOAD_TWEETS, WS_TWEETS_NEW_TWEETS } from "../../websockets/constants"
 import { IThunkExtras } from "./interfaces"
 import { eSocialAssignmentStatus, IReviewerAssignment } from "./reviewers"
-import { ISocialTweet, ISocialTweetList, ISocialTweetsAndColumnsResponse } from "./social"
+import { eSocialTweetState, ISocialTweet, ISocialTweetList, ISocialTweetsAndColumnsResponse } from "./social"
 // import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 
 // Actions
@@ -149,8 +149,10 @@ export function getActionBarBackgroundColour(tweet: ISocialTweet, assignment: IR
         }
     }
 
-    if (tweet.is_dismissed === true) {
+    if (tweet.state === eSocialTweetState.DISMISSED) {
         return "lightgrey"
+    } else if (tweet.state === eSocialTweetState.DEALT_WITH) {
+        return "lightblue"
     }
 
     return "rgb(250, 250, 250)"

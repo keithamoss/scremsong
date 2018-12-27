@@ -5,7 +5,7 @@ export const WS_NOTIFICATION = "ws/scremsong/NOTIFICATION"
 
 export const WS_TWEETS_NEW_TWEETS = "ws/scremsong/tweets/NEW_TWEETS"
 export const WS_TWEETS_LOAD_TWEETS = "ws/scremsong/tweets/LOAD_TWEETS"
-export const WS_TWEETS_DISMISS = "ws/scremsong/tweets/DISMISS"
+export const WS_TWEETS_SET_STATE = "ws/scremsong/tweets/SET_STATE"
 
 export const WS_SOCIAL_COLUMNS_LIST = "ws/scremsong/social_columns/LIST"
 
@@ -21,7 +21,7 @@ export const messageTypes = [
     WS_NOTIFICATION,
     WS_TWEETS_NEW_TWEETS,
     WS_TWEETS_LOAD_TWEETS,
-    WS_TWEETS_DISMISS,
+    WS_TWEETS_SET_STATE,
     WS_SOCIAL_COLUMNS_LIST,
     WS_REVIEWERS_LIST_USERS,
     WS_REVIEWERS_LIST_ASSIGNMENTS,

@@ -3,7 +3,7 @@ from django.contrib.postgres.fields import JSONField
 from django.contrib.auth.models import User
 from model_utils import FieldTracker
 from scremsong.app.social.twitter_utils import apply_tweet_filter_criteria
-from scremsong.app.enums import ProfileSettingQueueSortBy, SocialPlatformChoice, SocialAssignmentStatus, TweetStatus
+from scremsong.app.enums import ProfileSettingQueueSortBy, SocialPlatformChoice, SocialAssignmentStatus, TweetState, TweetStatus
 from scremsong.util import make_logger
 from scremsong.app.enums import ProfileSettings
 
@@ -77,7 +77,7 @@ class Tweets(models.Model):
 
     tweet_id = models.TextField(editable=False, unique=True)
     data = JSONField()
-    is_dismissed = models.BooleanField(default=False)
+    state = models.TextField(choices=[(tag, tag.value) for tag in TweetState], default=TweetState.ACTIVE)
     status = models.TextField(choices=[(tag, tag.value) for tag in TweetStatus])
     source = JSONField(default=list, blank=True)  # TweetSource
 

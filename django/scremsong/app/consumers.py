@@ -140,13 +140,14 @@ class ScremsongConsumer(JsonWebsocketConsumer):
             "columnIds": event["columnIds"],
         })
 
-    def tweets_dismiss(self, event):
+    def tweets_set_state(self, event):
         """
-        Called when someone has dismissed a tweet (set it to be ignored).
+        Called when someone has changed the state of a tweet (e.g. dismissed it).
         """
         self.send_json({
-            "msg_type": settings.MSG_TYPE_TWEETS_DISMISS,
+            "msg_type": settings.MSG_TYPE_TWEETS_SET_STATE,
             "tweetId": event["tweetId"],
+            "tweetState": event["tweetState"],
         })
 
     def user_change_settings(self, event):

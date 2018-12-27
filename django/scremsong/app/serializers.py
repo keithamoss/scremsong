@@ -101,4 +101,4 @@ class TweetsSerializer(serializers.ModelSerializer):
         model = Tweets
         fields = (
             'data',
-            'is_dismissed')
+            'state')

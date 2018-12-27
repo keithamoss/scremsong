@@ -1,7 +1,7 @@
 import { Action } from "redux"
 import { INotificationOptions } from "../redux/modules/app"
 import { eSocialAssignmentStatus, IReviewerAssignment, IReviewerUser } from "../redux/modules/reviewers"
-import { ISocialTweet, ISocialTweetList, ISocialTweetsAndColumnsResponse } from "../redux/modules/social"
+import { eSocialTweetState, ISocialTweet, ISocialTweetList, ISocialTweetsAndColumnsResponse } from "../redux/modules/social"
 import { ITriageColumn } from "../redux/modules/triage"
 import { IUser } from "../redux/modules/user"
 import {
@@ -15,9 +15,9 @@ import {
     WS_REVIEWERS_SET_STATUS,
     WS_REVIEWERS_UNASSIGN,
     WS_SOCIAL_COLUMNS_LIST,
-    WS_TWEETS_DISMISS,
     WS_TWEETS_LOAD_TWEETS,
     WS_TWEETS_NEW_TWEETS,
+    WS_TWEETS_SET_STATE,
 } from "./constants"
 
 // Models
@@ -87,8 +87,9 @@ export interface ITweetFetchColumn {
     tweet_ids_buffered: string[]
 }
 
-export interface IActionsTweetsDismiss extends Action<typeof WS_TWEETS_DISMISS> {
+export interface IActionsTweetsSetState extends Action<typeof WS_TWEETS_SET_STATE> {
     tweetId: string
+    tweetState: eSocialTweetState
 }
 
 export interface IActionsTweetsLoadTweets extends Action<typeof WS_TWEETS_LOAD_TWEETS>, ISocialTweetsAndColumnsResponse {}

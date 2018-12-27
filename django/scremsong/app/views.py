@@ -15,7 +15,7 @@ from scremsong.app.serializers import UserSerializer, SocialAssignmentSerializer
 from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, fetch_tweets, get_status_from_db, resolve_tweet_parents, resolve_tweet_thread_for_parent, notify_of_saved_tweet
 from scremsong.celery import celery_restart_streaming
 from scremsong.app.models import Tweets, SocialAssignments, Profile
-from scremsong.app.enums import SocialPlatformChoice, SocialAssignmentStatus, NotificationVariants, TweetStatus
+from scremsong.app.enums import SocialPlatformChoice, SocialAssignmentStatus, NotificationVariants, TweetState, TweetStatus
 from scremsong.app import websockets
 from scremsong.util import make_logger
 from scremsong.app.exceptions import ScremsongException
@@ -112,17 +112,20 @@ class TweetsViewset(viewsets.ViewSet):
         return Response(fetch_tweets(startIndex, stopIndex, sinceId, maxId, columnIds))
 
     @list_route(methods=['get'])
-    def dismiss(self, request, format=None):
+    def set_state(self, request, format=None):
         qp = request.query_params
         tweetId = qp["tweetId"] if "tweetId" in qp else None
+        tweetState = qp["tweetState"] if "tweetState" in qp else None
 
-        tweet = Tweets.objects.get(tweet_id=tweetId)
-        tweet.is_dismissed = True
-        tweet.save()
+        if TweetState.has_value(tweetState):
+            tweet = Tweets.objects.get(tweet_id=tweetId)
+            tweet.state = tweetState
+            tweet.save()
 
-        websockets.send_channel_message("tweets.dismiss", {
-            "tweetId": tweetId,
-        })
+            websockets.send_channel_message("tweets.set_state", {
+                "tweetId": tweetId,
+                "tweetState": tweetState,
+            })
 
         return Response({})
 

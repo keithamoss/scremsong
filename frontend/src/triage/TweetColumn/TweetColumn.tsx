@@ -1,13 +1,14 @@
 import { Button, Theme, Tooltip, withStyles, WithStyles } from "@material-ui/core"
 import AssignmentIcon from "@material-ui/icons/Assignment"
 import CheckCircleOutlineIcon from "@material-ui/icons/CheckCircleOutline"
-import DeleteIcon from "@material-ui/icons/Delete"
+import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline"
+import LiveTvIcon from "@material-ui/icons/LiveTv"
 import * as React from "react"
 import Tweet from "react-tweet"
 import { AutoSizer, CellMeasurer, CellMeasurerCache, InfiniteLoader, List } from "react-virtualized"
 import "react-virtualized/styles.css"
 import { IReviewerAssignment } from "../../redux/modules/reviewers"
-import { ISocialTweetAssignments, ISocialTweetList } from "../../redux/modules/social"
+import { eSocialTweetState, ISocialTweetAssignments, ISocialTweetList } from "../../redux/modules/social"
 import { getActionBarBackgroundColour, ITriageColumn } from "../../redux/modules/triage"
 import { getColumnPosition } from "../../redux/modules/user"
 
@@ -30,7 +31,7 @@ export interface IProps {
     overscanRowCount: number
     loadMoreRows: any
     onPositionUpdate: any
-    onDismissTweet: any
+    onSetTweetState: any
 }
 
 export interface IState {
@@ -45,7 +46,7 @@ export interface ISnapshot {
 type TComponentProps = IProps & WithStyles
 class TweetColumn extends React.Component<TComponentProps, IState> {
     private onOpenAssigner: Function
-    private onDismissTweet: Function
+    private onSetTweetState: Function
     private _registerChild: Function
     private _noRowsRenderer: any
     private _list: List | undefined
@@ -68,7 +69,7 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
         this.state = { ready: false }
 
         this.onOpenAssigner = (tweetId: string, assignmentId: number | null) => () => this.props.onOpenAssigner(tweetId, assignmentId)
-        this.onDismissTweet = (tweetId: string) => () => this.props.onDismissTweet(tweetId)
+        this.onSetTweetState = (tweetId: string, tweetState: eSocialTweetState) => () => this.props.onSetTweetState(tweetId, tweetState)
 
         this._onRowsRendered = (onRowsRendered: Function, opts: any /*ListProps["onRowsRendered"]*/) => {
             if (this.state.ready === true) {
@@ -265,7 +266,7 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
             const backgroundColor = getActionBarBackgroundColour(tweet, assignment)
 
             const cellStyle = style
-            if (tweet.is_dismissed === true) {
+            if (tweet.state === eSocialTweetState.DISMISSED) {
                 cellStyle.opacity = 0.4
             }
 
@@ -284,23 +285,38 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
                                 </Button>
                             </Tooltip>
 
-                            <Tooltip title="Dismiss this tweet (ignore)" aria-label="Dismiss tweet">
-                                <Button
-                                    size="small"
-                                    className={classes.button}
-                                    aria-label="Dismiss tweet"
-                                    onClick={this.onDismissTweet(tweetId)}
-                                >
-                                    <DeleteIcon />
-                                </Button>
-                            </Tooltip>
+                            {tweet.state === eSocialTweetState.ACTIVE && (
+                                <Tooltip title="Dismiss this tweet (ignore it)" aria-label="Dismiss tweet">
+                                    <Button
+                                        size="small"
+                                        className={classes.button}
+                                        aria-label="Dismiss tweet"
+                                        onClick={this.onSetTweetState(tweetId, eSocialTweetState.DISMISSED)}
+                                    >
+                                        <DeleteOutlineIcon />
+                                    </Button>
+                                </Tooltip>
+                            )}
+
+                            {tweet.state === eSocialTweetState.DISMISSED && (
+                                <Tooltip title="Undissmiss this tweet (reset it)" aria-label="Undismiss tweet">
+                                    <Button
+                                        size="small"
+                                        className={classes.button}
+                                        aria-label="Undismiss tweet"
+                                        onClick={this.onSetTweetState(tweetId, eSocialTweetState.ACTIVE)}
+                                    >
+                                        <LiveTvIcon />
+                                    </Button>
+                                </Tooltip>
+                            )}
 
                             <Tooltip title="Mark this tweet as dealt with" aria-label="Deal with tweet">
                                 <Button
                                     size="small"
                                     className={classes.button}
                                     aria-label="Deal with tweet"
-                                    // onClick={this.onDealWithTweet(tweetId)}
+                                    onClick={this.onSetTweetState(tweetId, eSocialTweetState.DEALT_WITH)}
                                 >
                                     <CheckCircleOutlineIcon />
                                 </Button>
