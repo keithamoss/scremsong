@@ -274,7 +274,7 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
                 if (assignment.status === eSocialAssignmentStatus.PENDING) {
                     tweetStyle = { ...tweetStyle, backgroundColor: "lightyellow" }
                 } else if (assignment.status === eSocialAssignmentStatus.DONE) {
-                    tweetStyle = { ...tweetStyle, backgroundColor: "lightgreen" }
+                    tweetStyle = { ...tweetStyle, backgroundColor: "#A2F2AB" }
                 }
             }
 
