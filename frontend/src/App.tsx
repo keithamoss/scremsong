@@ -1,4 +1,5 @@
 import { Badge, CssBaseline, Drawer, IconButton, List, ListItem, Theme, Tooltip, withStyles, WithStyles } from "@material-ui/core"
+import { lightBlue } from "@material-ui/core/colors"
 import blue from "@material-ui/core/colors/blue"
 import AssignmentIndIcon from "@material-ui/icons/AssignmentInd"
 import ViewColumnIcon from "@material-ui/icons/ViewColumn"
@@ -25,6 +26,16 @@ const styles = (theme: Theme) =>
         },
         drawerPaper: {
             width: drawerWidth,
+        },
+        list: {
+            paddingTop: 0,
+        },
+        listItem: {
+            borderRight: "2px solid white",
+        },
+        selectedListItem: {
+            borderRight: "2px solid #2196f3",
+            backgroundColor: lightBlue[50],
         },
         selectedIcon: {
             color: blue[600],
@@ -71,8 +82,12 @@ class App extends React.Component<IProps & WithStyles, {}> {
                         paper: classes.drawerPaper,
                     }}
                 >
-                    <List>
-                        <ListItem button={false} component={QueueLink}>
+                    <List className={classes.list}>
+                        <ListItem
+                            button={false}
+                            component={QueueLink}
+                            className={location.pathname === "/queue" ? classes.selectedListItem : classes.listItem}
+                        >
                             <Tooltip title="Go to your queue">
                                 <IconButton
                                     aria-label="Your queue"
@@ -84,7 +99,11 @@ class App extends React.Component<IProps & WithStyles, {}> {
                                 </IconButton>
                             </Tooltip>
                         </ListItem>
-                        <ListItem button={false} component={TriageLink}>
+                        <ListItem
+                            button={false}
+                            component={TriageLink}
+                            className={location.pathname === "/" ? classes.selectedListItem : classes.listItem}
+                        >
                             <Tooltip title="Go to triage view">
                                 <IconButton
                                     aria-label="Triage view"
