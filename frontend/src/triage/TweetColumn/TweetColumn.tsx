@@ -1,8 +1,9 @@
 import { Button, Theme, Tooltip, withStyles, WithStyles } from "@material-ui/core"
 import AssignmentIcon from "@material-ui/icons/Assignment"
-import CheckCircleOutlineIcon from "@material-ui/icons/CheckCircleOutline"
-import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline"
-import LiveTvIcon from "@material-ui/icons/LiveTv"
+import AssignmentOutlinedIcon from "@material-ui/icons/AssignmentOutlined"
+import CheckCircleOutlinedIcon from "@material-ui/icons/CheckCircleOutlined"
+import DeleteOutlinedIcon from "@material-ui/icons/DeleteOutlined"
+import LiveTvOutlinedIcon from "@material-ui/icons/LiveTvOutlined"
 import * as React from "react"
 import Tweet from "react-tweet"
 import { AutoSizer, CellMeasurer, CellMeasurerCache, InfiniteLoader, List } from "react-virtualized"
@@ -275,7 +276,7 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
 
             return (
                 <CellMeasurer key={key} cache={this._cache} columnIndex={0} parent={parent} rowIndex={index}>
-                    <div style={{ ...style, ...{ opacity } }}>
+                    <div style={style}>
                         <div className={classes.actionBar} style={{ borderRight: `6px solid ${backgroundColor}` }}>
                             <Tooltip title="Assign this tweet to someone" aria-label="Assign tweet">
                                 <Button
@@ -284,48 +285,55 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
                                     aria-label="Assign tweet"
                                     onClick={this.onOpenAssigner(tweetId, assignmentId)}
                                 >
-                                    <AssignmentIcon />
+                                    {assignmentId === undefined ? <AssignmentOutlinedIcon /> : <AssignmentIcon />}
                                 </Button>
                             </Tooltip>
 
-                            {tweet.state !== eSocialTweetState.DISMISSED && (
-                                <Tooltip title="Dismiss this tweet (ignore it)" aria-label="Dismiss tweet">
-                                    <Button
-                                        size="small"
-                                        className={classes.button}
-                                        aria-label="Dismiss tweet"
-                                        onClick={this.onSetTweetState(tweetId, eSocialTweetState.DISMISSED)}
-                                    >
-                                        <DeleteOutlineIcon />
-                                    </Button>
-                                </Tooltip>
+                            {tweet.state === eSocialTweetState.ACTIVE && (
+                                <React.Fragment>
+                                    <Tooltip title="Dismiss this tweet (ignore it)" aria-label="Dismiss tweet">
+                                        <Button
+                                            size="small"
+                                            className={classes.button}
+                                            aria-label="Dismiss tweet"
+                                            onClick={this.onSetTweetState(tweetId, eSocialTweetState.DISMISSED)}
+                                        >
+                                            <DeleteOutlinedIcon />
+                                        </Button>
+                                    </Tooltip>
+
+                                    <Tooltip title="Mark this tweet as dealt with" aria-label="Deal with tweet">
+                                        <Button
+                                            size="small"
+                                            className={classes.button}
+                                            aria-label="Deal with tweet"
+                                            onClick={this.onSetTweetState(tweetId, eSocialTweetState.DEALT_WITH)}
+                                        >
+                                            <CheckCircleOutlinedIcon />
+                                        </Button>
+                                    </Tooltip>
+                                </React.Fragment>
                             )}
 
-                            {tweet.state === eSocialTweetState.DISMISSED && (
-                                <Tooltip title="Undissmiss this tweet (reset it)" aria-label="Undismiss tweet">
+                            {(tweet.state === eSocialTweetState.DISMISSED || tweet.state === eSocialTweetState.DEALT_WITH) && (
+                                <Tooltip
+                                    title="Make this tweet active again (i.e. undismiss it, mark it as 'not deal with')"
+                                    aria-label="Set active"
+                                >
                                     <Button
                                         size="small"
                                         className={classes.button}
-                                        aria-label="Undismiss tweet"
+                                        aria-label="Set active"
                                         onClick={this.onSetTweetState(tweetId, eSocialTweetState.ACTIVE)}
                                     >
-                                        <LiveTvIcon />
+                                        <LiveTvOutlinedIcon />
                                     </Button>
                                 </Tooltip>
                             )}
-
-                            <Tooltip title="Mark this tweet as dealt with" aria-label="Deal with tweet">
-                                <Button
-                                    size="small"
-                                    className={classes.button}
-                                    aria-label="Deal with tweet"
-                                    onClick={this.onSetTweetState(tweetId, eSocialTweetState.DEALT_WITH)}
-                                >
-                                    <CheckCircleOutlineIcon />
-                                </Button>
-                            </Tooltip>
                         </div>
-                        <Tweet key={tweetId} data={tweets[tweetId].data} linkProps={{ target: "_blank", rel: "noreferrer" }} />
+                        <div style={{ display: "inline", opacity }}>
+                            <Tweet key={tweetId} data={tweets[tweetId].data} linkProps={{ target: "_blank", rel: "noreferrer" }} />
+                        </div>
                     </div>
                 </CellMeasurer>
             )
