@@ -19,7 +19,7 @@ const styles = () =>
         column: {
             width: "370px",
             height: "100%",
-            margin: "5px",
+            marginRight: "5px",
         },
     } as any)
 

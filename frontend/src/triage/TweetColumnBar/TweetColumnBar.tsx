@@ -3,6 +3,7 @@ import { lightBlue } from "@material-ui/core/colors"
 import NewReleases from "@material-ui/icons/NewReleases"
 import NewReleasesOutlined from "@material-ui/icons/NewReleasesOutlined"
 import * as React from "react"
+import { isDevEnvironment } from "../../redux/modules/app"
 import { ITriageColumn } from "../../redux/modules/triage"
 
 const styles = (theme: Theme) => ({
@@ -32,8 +33,8 @@ class TweetColumnBar extends React.PureComponent<TComponentProps, IState> {
             <AppBar position="static">
                 <Toolbar>
                     <Typography variant="h6" color="inherit" className={classes.grow}>
-                        {column.search_phrases.join(", ")} (#
-                        {column.id})
+                        {column.search_phrases.join(", ")}
+                        {isDevEnvironment() && ` (#${column.id})`}
                     </Typography>
                     {hasBufferedTweets === false && (
                         <IconButton className={classes.newTweetsButton} disabled={true}>
