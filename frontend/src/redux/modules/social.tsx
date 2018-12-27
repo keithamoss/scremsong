@@ -115,6 +115,19 @@ export const getTweetAssignmentsForColumn = createSelector(
         })
 )
 
+export const getTweetsForColumn = createSelector(
+    [getTweetAssignments, getTweets],
+    (tweetAssignments, tweets) =>
+        memoize((columnTweetIds: string[]) => {
+            return Object.keys(tweets)
+                .filter((tweetId: string) => columnTweetIds.includes(tweetId))
+                .reduce((obj, tweetId) => {
+                    obj[tweetId] = tweets[tweetId]
+                    return obj
+                }, {})
+        })
+)
+
 // Action Creators
 export const loadTweets = (json: ISocialTweetsAndColumnsResponse): IActionLoadTweets => ({
     type: LOAD_TWEETS,

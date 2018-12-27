@@ -1,12 +1,19 @@
-import { debounce } from "lodash-es";
-import * as React from "react";
-import { connect } from "react-redux";
-import { IStore } from "../../redux/modules/reducer";
-import { IReviewerAssignment } from "../../redux/modules/reviewers";
-import { eSocialTweetState, fetchTweets, getTweetAssignmentsForColumn, ISocialTweetAssignments, ISocialTweetList, setTweetState } from "../../redux/modules/social";
-import { ITriageColumn } from "../../redux/modules/triage";
-import { IProfileColumnPosition, ws_changeUserProfileSettings } from "../../redux/modules/user";
-import TweetColumn from "./TweetColumn";
+import { debounce } from "lodash-es"
+import * as React from "react"
+import { connect } from "react-redux"
+import { IStore } from "../../redux/modules/reducer"
+import { IReviewerAssignment } from "../../redux/modules/reviewers"
+import {
+    eSocialTweetState,
+    fetchTweets,
+    getTweetAssignmentsForColumn,
+    ISocialTweetAssignments,
+    ISocialTweetList,
+    setTweetState,
+} from "../../redux/modules/social"
+import { ITriageColumn } from "../../redux/modules/triage"
+import { IProfileColumnPosition, ws_changeUserProfileSettings } from "../../redux/modules/user"
+import TweetColumn from "./TweetColumn"
 
 // Ref. https://github.com/bvaughn/react-virtualized/blob/master/docs/InfiniteLoader.md
 const preFetchThreshold = 5
@@ -87,7 +94,7 @@ const mapStateToProps = (state: IStore, ownProps: IProps): IStoreProps => {
 
     return {
         tweet_ids: triage.column_tweets[ownProps.column.id],
-        tweets: social.tweets, // No need to have a selector here as shouldComponentUpdate in TweetColumn ignores changes to tweets
+        tweets: social.tweets, // No need to have a selector here as shouldComponentUpdate in TweetColumn re-renders all changes to tweets
         tweet_assignments: getTweetAssignmentsForColumnFilter(triage.column_tweets[ownProps.column.id]),
         assignments: reviewers.assignments,
     }
@@ -106,7 +113,6 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
         onSetTweetState: (tweetId: string, tweetState: eSocialTweetState) => {
             dispatch(setTweetState(tweetId, tweetState))
         },
-
     }
 }
 

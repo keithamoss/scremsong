@@ -137,43 +137,46 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
     }
 
     public shouldComponentUpdate(nextProps: TComponentProps, nextState: object, nextContext: any): boolean {
-        if (this.state !== nextState) {
-            // console.log(`shouldComponentUpdate ${this.props.column.id}`, "State differs")
-            return true
-        }
+        // Now that we need to reflect changes to tweet.state we always need to re-render the component
+        return true
 
-        if (this.props.tweet_ids.length !== nextProps.tweet_ids.length) {
-            // console.log(`shouldComponentUpdate ${this.props.column.id}`, "tweet_ids.length")
-            return true
-        }
+        // if (this.state !== nextState) {
+        //     // console.log(`shouldComponentUpdate ${this.props.column.id}`, "State differs")
+        //     return true
+        // }
 
-        if (this.props.tweet_assignments.length !== nextProps.tweet_assignments.length) {
-            // console.log(`shouldComponentUpdate ${this.props.column.id}`, "tweet_assignments.length")
-            return true
-        }
+        // if (this.props.tweet_ids.length !== nextProps.tweet_ids.length) {
+        //     // console.log(`shouldComponentUpdate ${this.props.column.id}`, "tweet_ids.length")
+        //     return true
+        // }
 
-        if (this.props.tweet_ids !== nextProps.tweet_ids) {
-            // console.log(`shouldComponentUpdate ${this.props.column.id}`, "tweet_ids")
-            return true
-        }
+        // if (this.props.tweet_assignments.length !== nextProps.tweet_assignments.length) {
+        //     // console.log(`shouldComponentUpdate ${this.props.column.id}`, "tweet_assignments.length")
+        //     return true
+        // }
 
-        if (this.props.tweet_assignments !== nextProps.tweet_assignments) {
-            // console.log(`shouldComponentUpdate ${this.props.column.id}`, "tweet_assignments")
-            return true
-        }
+        // if (this.props.tweet_ids !== nextProps.tweet_ids) {
+        //     // console.log(`shouldComponentUpdate ${this.props.column.id}`, "tweet_ids")
+        //     return true
+        // }
 
-        if (this.props.assignments !== nextProps.assignments) {
-            // console.log(`shouldComponentUpdate ${this.props.column.id}`, "assignments")
-            return true
-        }
+        // if (this.props.tweet_assignments !== nextProps.tweet_assignments) {
+        //     // console.log(`shouldComponentUpdate ${this.props.column.id}`, "tweet_assignments")
+        //     return true
+        // }
 
-        if (this.props.column !== nextProps.column) {
-            // console.log(`shouldComponentUpdate ${this.props.column.id}`, "column")
-            return true
-        }
+        // if (this.props.assignments !== nextProps.assignments) {
+        //     // console.log(`shouldComponentUpdate ${this.props.column.id}`, "assignments")
+        //     return true
+        // }
 
-        // console.log(`shouldComponentUpdate ${this.props.column.id}`, "All checks exhausted, don't update")
-        return false
+        // if (this.props.column !== nextProps.column) {
+        //     // console.log(`shouldComponentUpdate ${this.props.column.id}`, "column")
+        //     return true
+        // }
+
+        // // console.log(`shouldComponentUpdate ${this.props.column.id}`, "All checks exhausted, don't update")
+        // return false
     }
 
     public async componentDidMount() {
@@ -265,14 +268,14 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
 
             const backgroundColor = getActionBarBackgroundColour(tweet, assignment)
 
-            const cellStyle = style
+            let opacity = 1
             if (tweet.state === eSocialTweetState.DISMISSED) {
-                cellStyle.opacity = 0.4
+                opacity = 0.4
             }
 
             return (
                 <CellMeasurer key={key} cache={this._cache} columnIndex={0} parent={parent} rowIndex={index}>
-                    <div style={cellStyle}>
+                    <div style={{ ...style, ...{ opacity } }}>
                         <div className={classes.actionBar} style={{ borderRight: `6px solid ${backgroundColor}` }}>
                             <Tooltip title="Assign this tweet to someone" aria-label="Assign tweet">
                                 <Button
