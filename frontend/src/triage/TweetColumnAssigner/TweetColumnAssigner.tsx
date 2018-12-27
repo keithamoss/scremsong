@@ -10,16 +10,17 @@ import {
     ListItemSecondaryAction,
     ListItemText,
     Theme,
-    Tooltip,
     withStyles,
     WithStyles,
 } from "@material-ui/core"
+import { yellow } from "@material-ui/core/colors"
 import blue from "@material-ui/core/colors/blue"
 import red from "@material-ui/core/colors/red"
 import AssignmentIcon from "@material-ui/icons/Assignment"
 import AssignmentReturnIcon from "@material-ui/icons/AssignmentReturn"
 import PersonIcon from "@material-ui/icons/Person"
 import PowerOff from "@material-ui/icons/PowerOff"
+import { sortBy } from "lodash-es"
 import * as React from "react"
 import { IReviewerAssignment, IReviewerAssignmentCounts, IReviewerUser } from "../../redux/modules/reviewers"
 
@@ -67,10 +68,15 @@ class TweetColumnAssigner extends React.Component<TComponentProps, {}> {
     public render() {
         const { open, assignment, tweetId, reviewers, reviewerAssignmentCounts, onCloseAssigner, classes } = this.props
 
+        const onlineReviewers = reviewers.filter((reviewer: IReviewerUser) => reviewer.is_accepting_assignments === true)
+        const onlineReviewersSorted = sortBy(onlineReviewers, (reviewer: IReviewerUser) => reviewer.name)
+        const offlineReviewers = reviewers.filter((reviewer: IReviewerUser) => reviewer.is_accepting_assignments === false)
+        const offlineReviewersSorted = sortBy(offlineReviewers, (reviewer: IReviewerUser) => reviewer.name)
+
         return (
             <React.Fragment>
                 <Dialog open={open} onClose={onCloseAssigner} aria-labelledby="assign-tweet-dialog">
-                    <DialogTitle id="assign-tweet-dialog-title">Assign tweet to a reviewer</DialogTitle>
+                    <DialogTitle id="assign-tweet-dialog-title">Assign a tweet to a reviewer</DialogTitle>
                     <div>
                         <List>
                             {assignment !== null && (
@@ -86,43 +92,68 @@ class TweetColumnAssigner extends React.Component<TComponentProps, {}> {
                                     <Divider variant="middle" />
                                 </React.Fragment>
                             )}
-                            {reviewers.map((reviewer: IReviewerUser) => {
+                            {onlineReviewersSorted.map((reviewer: IReviewerUser) => {
                                 const isAssigned = assignment !== null && reviewer.id === assignment.user_id
-                                const isOffline = reviewer.is_accepting_assignments === false
 
-                                const secondaryText: string[] = []
-                                if (isAssigned) {
-                                    secondaryText.push("Assigned")
-                                }
-                                if (isOffline === true) {
-                                    secondaryText.push("Offline")
-                                }
-
-                                let className
-                                if (isAssigned === true && isOffline === true) {
-                                    className = classes.assignedAndOfflineAvatar
-                                } else if (isAssigned === true) {
-                                    className = classes.assignedAvatar
-                                } else if (isOffline === true) {
-                                    className = classes.offlineAvatar
-                                }
+                                const secondaryText = isAssigned ? "Assigned" : undefined
+                                const className = isAssigned ? classes.assignedAvatar : undefined
 
                                 return (
-                                    <ListItem key={reviewer.id} button={true} onClick={this.onAssignTweet(tweetId, reviewer.id)}>
+                                    <ListItem
+                                        key={reviewer.id}
+                                        button={true}
+                                        onClick={this.onAssignTweet(tweetId, reviewer.id)}
+                                        style={isAssigned === true ? { backgroundColor: yellow[200] } : undefined}
+                                    >
                                         <ListItemAvatar>
-                                            <Avatar className={className}>{isOffline === false ? <PersonIcon /> : <PowerOff />}</Avatar>
+                                            <Avatar className={className}>
+                                                <PersonIcon />
+                                            </Avatar>
                                         </ListItemAvatar>
-                                        <ListItemText primary={reviewer.name} secondary={secondaryText.join(" - ")} />
+                                        <ListItemText primary={reviewer.name} secondary={secondaryText} />
                                         <ListItemSecondaryAction>
-                                            <Tooltip title="Add" aria-label="Add">
-                                                <Badge
-                                                    color="primary"
-                                                    badgeContent={reviewerAssignmentCounts[reviewer.id]}
-                                                    className={classes.badgeMargin}
-                                                >
-                                                    <AssignmentIcon />
-                                                </Badge>
-                                            </Tooltip>
+                                            <Badge
+                                                color="primary"
+                                                badgeContent={reviewerAssignmentCounts[reviewer.id]}
+                                                className={classes.badgeMargin}
+                                            >
+                                                <AssignmentIcon />
+                                            </Badge>
+                                        </ListItemSecondaryAction>
+                                    </ListItem>
+                                )
+                            })}
+                            {onlineReviewersSorted.length > 0 && offlineReviewersSorted.length > 0 && <Divider variant="middle" />}
+                            {offlineReviewersSorted.map((reviewer: IReviewerUser) => {
+                                const isAssigned = assignment !== null && reviewer.id === assignment.user_id
+
+                                const secondaryText = isAssigned ? "Assigned - Offline" : "Offline"
+                                const className = isAssigned ? classes.assignedAndOfflineAvatar : classes.offlineAvatar
+
+                                return (
+                                    <ListItem
+                                        key={reviewer.id}
+                                        button={true}
+                                        onClick={this.onAssignTweet(tweetId, reviewer.id)}
+                                        style={{
+                                            ...{ opacity: 0.5 },
+                                            ...(isAssigned === true ? { backgroundColor: yellow[200] } : undefined),
+                                        }}
+                                    >
+                                        <ListItemAvatar>
+                                            <Avatar className={className}>
+                                                <PowerOff />
+                                            </Avatar>
+                                        </ListItemAvatar>
+                                        <ListItemText primary={reviewer.name} secondary={secondaryText} />
+                                        <ListItemSecondaryAction>
+                                            <Badge
+                                                color="primary"
+                                                badgeContent={reviewerAssignmentCounts[reviewer.id]}
+                                                className={classes.badgeMargin}
+                                            >
+                                                <AssignmentIcon />
+                                            </Badge>
                                         </ListItemSecondaryAction>
                                     </ListItem>
                                 )
