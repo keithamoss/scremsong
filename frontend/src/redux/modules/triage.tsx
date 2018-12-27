@@ -1,3 +1,4 @@
+import { blueGrey, green, lightBlue, yellow } from "@material-ui/core/colors"
 import * as dotProp from "dot-prop-immutable"
 import { uniq } from "lodash-es"
 import { Action } from "redux"
@@ -143,17 +144,17 @@ export function loadBufferedTweetsForColumn(columnId: number) {
 export function getActionBarBackgroundColour(tweet: ISocialTweet, assignment: IReviewerAssignment | null) {
     if (assignment !== null) {
         if (assignment.status === eSocialAssignmentStatus.PENDING) {
-            return "lightyellow"
+            return yellow[200]
         } else if (assignment.status === eSocialAssignmentStatus.DONE) {
-            return "#A2F2AB"
+            return green[200]
         }
     }
 
     if (tweet.state === eSocialTweetState.DISMISSED) {
-        return "lightgrey"
+        return blueGrey[200]
     } else if (tweet.state === eSocialTweetState.DEALT_WITH) {
-        return "lightblue"
+        return lightBlue[200]
     }
 
-    return "rgb(250, 250, 250)"
+    return "transparent"
 }

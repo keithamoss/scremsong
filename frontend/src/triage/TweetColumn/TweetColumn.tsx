@@ -273,7 +273,7 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
             return (
                 <CellMeasurer key={key} cache={this._cache} columnIndex={0} parent={parent} rowIndex={index}>
                     <div style={cellStyle}>
-                        <div className={classes.actionBar} style={{ backgroundColor }}>
+                        <div className={classes.actionBar} style={{ borderRight: `6px solid ${backgroundColor}` }}>
                             <Tooltip title="Assign this tweet to someone" aria-label="Assign tweet">
                                 <Button
                                     size="small"
@@ -285,7 +285,7 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
                                 </Button>
                             </Tooltip>
 
-                            {tweet.state === eSocialTweetState.ACTIVE && (
+                            {tweet.state !== eSocialTweetState.DISMISSED && (
                                 <Tooltip title="Dismiss this tweet (ignore it)" aria-label="Dismiss tweet">
                                     <Button
                                         size="small"
