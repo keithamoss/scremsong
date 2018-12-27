@@ -12,7 +12,6 @@ const styles = (theme: Theme) => ({
     },
     newTweetsButton: {
         color: lightBlue[500],
-        margin: theme.spacing.unit,
     },
 })
 
@@ -31,7 +30,7 @@ class TweetColumnBar extends React.PureComponent<TComponentProps, IState> {
 
         return (
             <AppBar position="static">
-                <Toolbar>
+                <Toolbar variant="dense">
                     <Typography variant="h6" color="inherit" className={classes.grow}>
                         {column.search_phrases.join(", ")}
                         {isDevEnvironment() && ` (#${column.id})`}
