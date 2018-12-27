@@ -14,7 +14,7 @@ const styles = () =>
         columnContainer: {
             display: "flex",
             flexDirection: "row",
-            height: "88%",
+            height: "100%",
         },
         column: {
             width: "370px",
