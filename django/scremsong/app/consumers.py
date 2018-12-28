@@ -178,7 +178,7 @@ def build_on_connect_data_payload(user):
             },
             {
                 **{"msg_type": settings.MSG_TYPE_TWEETS_LOAD_TWEETS},
-                **fetch_tweets_for_columns(user.profile.settings["column_positions"] or None)
+                **fetch_tweets_for_columns(user.profile.settings["column_positions"] if ("column_positions" in user.profile.settings) else None)
             }
         ]
     }

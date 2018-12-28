@@ -93,7 +93,8 @@ def fetch_tweets_for_columns(columnPositions, columnIds=[]):
     tweets = {}
 
     for social_column in get_social_columns(SocialPlatformChoice.TWITTER, columnIds):
-        if columnPositions is not None and str(social_column.id) in columnPositions:
+        hasColumnPosition = columnPositions is not None and str(social_column.id) in columnPositions
+        if hasColumnPosition is True:
             sinceId = int(columnPositions[str(social_column.id)]["stopTweet"]) - 1
             column_tweets = get_tweets_for_column_by_tweet_ids(social_column, sinceId)
         else:
@@ -105,7 +106,7 @@ def fetch_tweets_for_columns(columnPositions, columnIds=[]):
         for tweet in column_tweets:
             tweets[tweet["tweet_id"]] = TweetsSerializer(tweet).data
 
-            if int(tweet["tweet_id"]) > int(columnPositions[str(social_column.id)]["firstTweet"]):
+            if hasColumnPosition is True and int(tweet["tweet_id"]) > int(columnPositions[str(social_column.id)]["firstTweet"]):
                 column_tweet_ids_buffered.append(tweet["tweet_id"])
             else:
                 column_tweet_ids.append(tweet["tweet_id"])
@@ -217,7 +218,10 @@ def notify_of_saved_tweets(tweets):
 
         for tweet in tweets:
             response["tweets"][tweet.tweet_id] = TweetsSerializer(tweet).data
-            response["columnIds"][tweet.tweet_id] = get_columns_for_tweet(tweet),
+            
+            cols = get_columns_for_tweet(tweet)
+            if len(cols) > 0:
+                response["columnIds"][tweet.tweet_id] = cols,
 
         websockets.send_channel_message("tweets.new_tweets", response)
 

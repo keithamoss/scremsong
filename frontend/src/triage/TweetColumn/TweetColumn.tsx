@@ -78,6 +78,10 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
                 this.props.onPositionUpdate(this.props.column.id, opts)
                 // We store it in the class rather than React state so we can avoid triggering the React update lifecycle
                 this._firstVisibleTweet = this.props.tweet_ids[opts.startIndex]
+                // if (this.props.column.id === 6) {
+                //     console.log(`oRR: _firstVisibleTweet is ${this._firstVisibleTweet}`)
+                //     console.log("oRR:", opts)
+                // }
             }
             onRowsRendered(opts)
         }
@@ -92,7 +96,8 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
             if (ready === false) {
                 return <div>Loading...</div>
             }
-            return <div>No rows found!</div>
+            this.props.onPositionUpdate(this.props.column.id, null)
+            return <div>This column has no tweets!</div>
         }
     }
 
@@ -100,7 +105,7 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
         const { column, tweet_ids, preFetchThreshold, minBatchSize, overscanRowCount, loadMoreRows } = this.props
         const { ready } = this.state
 
-        if (tweet_ids.length === 0) {
+        if (tweet_ids.length === 0 && ready === false) {
             return null
         }
 
@@ -188,6 +193,9 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
             this.setState({ ready: true, firstVisibleTweet: position.firstVisibleTweet }, () => {
                 const tweetIndex = this.props.tweet_ids.findIndex((tweetId: string) => tweetId === this.state.firstVisibleTweet)
                 if (this._list !== undefined && tweetIndex !== -1) {
+                    // if (this.props.column.id === 6) {
+                    //     console.log("cDM: Move ", this.props.column.id, " to ", tweetIndex, " for ", position.firstVisibleTweet)
+                    // }
                     this._list.scrollToRow(tweetIndex)
                 }
             })
@@ -235,8 +243,10 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
             // first visible tweet we'll check it's index
             const oldTweetIndex = prevProps.tweet_ids.findIndex((tweetId: string) => tweetId === snapshot.lastStartTweet)
             const tweetIndex = this.props.tweet_ids.findIndex((tweetId: string) => tweetId === snapshot.lastStartTweet)
+            // if (this.props.column.id === 6) {
+            //     console.log("cDU: Move ", this.props.column.id, " to ", tweetIndex, " for ", snapshot.lastStartTweet)
+            // }
             if (tweetIndex !== -1 && oldTweetIndex !== tweetIndex) {
-                // console.log("Move ", this.props.column.id, " to ", tweetIndex, " for ", snapshot.lastStartTweet)
                 this._list.scrollToRow(tweetIndex)
             }
         }
