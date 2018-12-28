@@ -152,7 +152,7 @@ class SocialAssignmentsViewset(viewsets.ViewSet):
             replyTweetIds = [tweetId for tweetId in list(tweets.keys()) if tweetId != parent["data"]["id_str"]]
 
             assignment, created = SocialAssignments.objects.update_or_create(
-                platform=SocialPlatformChoice.TWITTER, social_id=parent["data"]["id_str"], defaults={"user_id": reviewerId, "thread_relationships": relationships, "thread_tweets": replyTweetIds, "last_updated_on": timezone.now()}
+                platform=SocialPlatformChoice.TWITTER, social_id=parent["data"]["id_str"], defaults={"user_id": reviewerId, "assigned_by": request.user, "thread_relationships": relationships, "thread_tweets": replyTweetIds, "last_updated_on": timezone.now()}
             )
 
             websockets.send_channel_message("reviewers.assign", {

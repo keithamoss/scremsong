@@ -104,6 +104,7 @@ class SocialAssignments(models.Model):
     platform = models.TextField(choices=[(tag, tag.value) for tag in SocialPlatformChoice])
     social_id = models.TextField(editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    assigned_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="assigned_by")
     status = models.TextField(choices=[(tag, tag.value) for tag in SocialAssignmentStatus], default=SocialAssignmentStatus.PENDING)
     thread_relationships = JSONField(default=None, blank=True, null=True)
     thread_tweets = JSONField(default=None, blank=True, null=True)
