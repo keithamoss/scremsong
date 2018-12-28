@@ -1,12 +1,12 @@
-import { Button, Card, CardActions, CardContent, Collapse, Theme, withStyles, WithStyles } from "@material-ui/core";
-import AssignmentTurnedIn from "@material-ui/icons/AssignmentTurnedIn";
-import OpenInNew from "@material-ui/icons/OpenInNew";
-import classNames from "classnames";
-import * as React from "react";
-import { ExitHandler } from "react-transition-group/Transition";
-import { IReviewerAssignment } from "../../redux/modules/reviewers";
-import { ISocialTweetList } from "../../redux/modules/social";
-import TweetThread from "../TweetThread/TweetThread";
+import { Button, Card, CardActions, CardContent, Collapse, IconButton, Theme, Tooltip, withStyles, WithStyles } from "@material-ui/core"
+import AssignmentTurnedIn from "@material-ui/icons/AssignmentTurnedIn"
+import OpenInNew from "@material-ui/icons/OpenInNew"
+import classNames from "classnames"
+import * as React from "react"
+import { ExitHandler } from "react-transition-group/Transition"
+import { IReviewerAssignment } from "../../redux/modules/reviewers"
+import { ISocialTweetList } from "../../redux/modules/social"
+import TweetThread from "../TweetThread/TweetThread"
 
 const styles = (theme: Theme) => ({
     button: {
@@ -96,16 +96,16 @@ class ReviewCard extends React.PureComponent<TComponentProps, IState> {
                                 <AssignmentTurnedIn className={classNames(classes.leftIcon, classes.iconSmall)} />
                                 Mark as done
                             </Button>
-                            <Button
-                                color={"secondary"}
-                                variant="contained"
-                                className={classes.button}
-                                component={TwitterLink}
-                                data-tweetid={assignment.social_id}
-                            >
-                                <OpenInNew className={classNames(classes.leftIcon, classes.iconSmall)} />
-                                Open on Twitter
-                            </Button>
+                            <Tooltip title="View this tweet on twitter.com">
+                                <IconButton
+                                    aria-label="View on Twitter"
+                                    color="secondary"
+                                    component={TwitterLink}
+                                    data-tweetid={assignment.social_id}
+                                >
+                                    <OpenInNew className={classes.iconSmall} />
+                                </IconButton>
+                            </Tooltip>
                         </CardActions>
                     </Card>
                 </Collapse>
