@@ -1,4 +1,5 @@
 import { AppBar, Button, FormControl, Input, InputLabel, Theme, Tooltip, Typography, withStyles, WithStyles } from "@material-ui/core"
+import { blueGrey } from "@material-ui/core/colors"
 import MenuItem from "@material-ui/core/MenuItem"
 import Select from "@material-ui/core/Select"
 import Toolbar from "@material-ui/core/Toolbar"
@@ -38,6 +39,13 @@ const styles = (theme: Theme) => ({
     },
     button: {
         margin: theme.spacing.unit,
+    },
+    buttonOffline: {
+        margin: theme.spacing.unit,
+        backgroundColor: blueGrey[500],
+        "&:hover:not($disabled)": {
+            backgroundColor: blueGrey[700],
+        },
     },
     leftIcon: {
         marginRight: theme.spacing.unit,
@@ -146,7 +154,12 @@ class UserReviewQueueView extends React.PureComponent<TComponentProps, {}> {
                         </FormControl>
                         <Typography variant="h6" color="inherit" className={classes.grow} />
                         <Tooltip title="Let us know if you're available to receive tweets">
-                            <Button variant="contained" color="primary" className={classes.button} onClick={this.onToggleUserOnlineStatus}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                className={currentReviewer.is_accepting_assignments === true ? classes.button : classes.buttonOffline}
+                                onClick={this.onToggleUserOnlineStatus}
+                            >
                                 {currentReviewer.is_accepting_assignments ? (
                                     <Power className={classNames(classes.leftIcon, classes.iconSmall)} />
                                 ) : (
