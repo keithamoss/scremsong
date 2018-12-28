@@ -109,7 +109,7 @@ class SocialAssignments(models.Model):
     thread_relationships = JSONField(default=None, blank=True, null=True)
     thread_tweets = JSONField(default=None, blank=True, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
-    last_updated_on = models.DateTimeField(auto_now=True)
+    last_updated_on = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ("platform", "social_id")
