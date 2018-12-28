@@ -160,7 +160,9 @@ def get_tweets_for_column(social_column, since_id=None, max_id=None, startIndex=
     if limit is not None:
         return tweets[:int(limit)]
     elif startIndex is not None and stopIndex is not None:
-        return tweets[int(startIndex):int(stopIndex)]
+        # FIXME Work out why the very end of a column is not returning the last tweet. Add +1 for now to hackily work around it.
+        # logger.info("col {}: startIndex = {}, stopIndex = {}, len = {}".format(social_column.id, startIndex, stopIndex, len(t)))
+        return tweets[int(startIndex):int(stopIndex) + 1]
     else:
         return tweets
 
