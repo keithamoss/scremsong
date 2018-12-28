@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import logout
 from django.http.response import HttpResponseRedirect
 from django.http import HttpResponseNotFound
-from django.utils import timezone
+from django.db import transaction
 
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
@@ -17,7 +17,7 @@ from scremsong.celery import celery_restart_streaming
 from scremsong.app.models import Tweets, SocialAssignments, Profile
 from scremsong.app.enums import SocialPlatformChoice, SocialAssignmentStatus, NotificationVariants, TweetState, TweetStatus
 from scremsong.app import websockets
-from scremsong.util import make_logger
+from scremsong.util import make_logger, get_or_none
 from scremsong.app.exceptions import ScremsongException
 
 from time import sleep
@@ -164,6 +164,65 @@ class SocialAssignmentsViewset(viewsets.ViewSet):
 
         except ScremsongException as e:
             return Response({"error": "Could not assign tweet {}. Failed to resolve and update tweet thread. Message: {}".format(tweetId, str(e))}, status=status.HTTP_400_BAD_REQUEST)
+
+    @list_route(methods=['get'])
+    def reassign_reviewer(self, request, format=None):
+        qp = request.query_params
+        assignmentId = int(qp["assignmentId"]) if "assignmentId" in qp else None
+        newReviewerId = int(qp["newReviewerId"]) if "newReviewerId" in qp else None
+
+        if assignmentId is not None and newReviewerId is not None:
+            try:
+                assignment = get_or_none(SocialAssignments, id=assignmentId)
+                assignment.user_id = newReviewerId
+                assignment.assigned_by = request.user
+                assignment.save()
+
+                parent = get_status_from_db(assignment.social_id)
+                parent, tweets, relationships = resolve_tweet_thread_for_parent(parent)
+
+                websockets.send_channel_message("reviewers.assign", {
+                    "assignment": SocialAssignmentSerializer(assignment).data,
+                    "tweets": tweets,
+                })
+
+                return Response({"OK": True})
+
+            except ScremsongException as e:
+                return Response({"error": "Could not reassign assignment {}. Failed to resolve and update tweet thread. Message: {}".format(assignmentId, str(e))}, status=status.HTTP_400_BAD_REQUEST)
+
+    @list_route(methods=['get'])
+    def bulk_reassign_reviewer(self, request, format=None):
+        qp = request.query_params
+        currentReviewerId = int(qp["currentReviewerId"]) if "currentReviewerId" in qp else None
+        newReviewerId = int(qp["newReviewerId"]) if "newReviewerId" in qp else None
+
+        if currentReviewerId is not None and newReviewerId is not None:
+            try:
+                assignmentsUpdated = []
+                tweetsUpdated = {}
+
+                assignments = SocialAssignments.objects.filter(user_id=currentReviewerId)
+                with transaction.atomic():
+                    for assignment in assignments:
+                        assignment.user_id = newReviewerId
+                        assignment.assigned_by = request.user
+                        assignment.save()
+
+                        assignmentsUpdated.append(SocialAssignmentSerializer(assignment).data)
+                        parent = get_status_from_db(assignment.social_id)
+                        parent, tweets, relationships = resolve_tweet_thread_for_parent(parent)
+                        tweetsUpdated = {**tweetsUpdated, **tweets}
+
+                websockets.send_channel_message("reviewers.bulk_assign", {
+                    "assignments": assignmentsUpdated,
+                    "tweets": tweetsUpdated,
+                })
+
+                return Response({"OK": True})
+
+            except ScremsongException as e:
+                return Response({"error": "Could not bulk reassign assignments for {} to {}. Failed to resolve and update tweet thread. Message: {}".format(currentReviewerId, newReviewerId, str(e))}, status=status.HTTP_400_BAD_REQUEST)
 
     @list_route(methods=['get'])
     def unassign_reviewer(self, request, format=None):

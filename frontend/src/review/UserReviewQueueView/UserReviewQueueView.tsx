@@ -3,12 +3,14 @@ import { blueGrey } from "@material-ui/core/colors"
 import MenuItem from "@material-ui/core/MenuItem"
 import Select from "@material-ui/core/Select"
 import Toolbar from "@material-ui/core/Toolbar"
+import AssignmentReturn from "@material-ui/icons/AssignmentReturn"
 import Power from "@material-ui/icons/Power"
 import PowerOff from "@material-ui/icons/PowerOff"
 import classNames from "classnames"
 import * as React from "react"
 import { IReviewerAssignment, IReviewerUser } from "../../redux/modules/reviewers"
 import { eQueueSortBy, IProfileSettings } from "../../redux/modules/user"
+import TweetColumnAssignerContainer, { eTweetColumnAssignerMode } from "../../triage/TweetColumnAssigner/TweetColumnAssignerContainer"
 import ReviewCardContainer from "../ReviewCard/ReviewCardContainer"
 
 const styles = (theme: Theme) => ({
@@ -70,15 +72,31 @@ export interface IProps {
     onToggleUserOnlineStatus: any
 }
 
+export interface IState {
+    assignerOpen: boolean
+}
+
 type TComponentProps = IProps & WithStyles
 
-class UserReviewQueueView extends React.PureComponent<TComponentProps, {}> {
+class UserReviewQueueView extends React.PureComponent<TComponentProps, IState> {
+    private onOpenAssigner: any
+    private onCloseAssigner: any
     private onChangeQueueUser: any
     private onChangeQueueSortOrder: any
     private onToggleUserOnlineStatus: any
 
     public constructor(props: TComponentProps) {
         super(props)
+
+        this.state = { assignerOpen: false }
+
+        this.onOpenAssigner = () => {
+            this.setState({ assignerOpen: true })
+        }
+
+        this.onCloseAssigner = () => {
+            this.setState({ assignerOpen: false })
+        }
 
         this.onChangeQueueUser = (event: React.ChangeEvent<HTMLSelectElement>) => {
             props.onChangeQueueUser(event.target.value)
@@ -93,9 +111,17 @@ class UserReviewQueueView extends React.PureComponent<TComponentProps, {}> {
 
     public render() {
         const { assignments, reviewers, currentReviewer, userSettings, onMarkAsDone, classes } = this.props
+        const { assignerOpen } = this.state
 
         return (
             <React.Fragment>
+                <TweetColumnAssignerContainer
+                    open={assignerOpen}
+                    assignmentId={null}
+                    tweetId={null}
+                    mode={eTweetColumnAssignerMode.BULK_REASSIGN}
+                    onCloseAssigner={this.onCloseAssigner}
+                />
                 <AppBar position="static">
                     <Toolbar>
                         <FormControl classes={{ root: classes.formControl }}>
@@ -125,6 +151,7 @@ class UserReviewQueueView extends React.PureComponent<TComponentProps, {}> {
                                 ))}
                             </Select>
                         </FormControl>
+
                         <FormControl classes={{ root: classes.formControl }}>
                             <InputLabel
                                 htmlFor="queue-sort-order-control"
@@ -152,7 +179,17 @@ class UserReviewQueueView extends React.PureComponent<TComponentProps, {}> {
                                 <MenuItem value={eQueueSortBy.ByModified}>When they were last updated</MenuItem>
                             </Select>
                         </FormControl>
+
                         <Typography variant="h6" color="inherit" className={classes.grow} />
+                        {assignments.length > 0 && (
+                            <Tooltip title="Reassign all of your tweets to somebody else">
+                                <Button variant="contained" color="primary" className={classes.button} onClick={this.onOpenAssigner}>
+                                    <AssignmentReturn className={classNames(classes.leftIcon, classes.iconSmall)} />
+                                    Bulk reassign
+                                </Button>
+                            </Tooltip>
+                        )}
+
                         <Tooltip title="Let us know if you're available to receive tweets">
                             <Button
                                 variant="contained"

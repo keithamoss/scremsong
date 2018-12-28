@@ -7,6 +7,7 @@ import { IThunkExtras } from "../../redux/modules/interfaces"
 import {
     IActionReviewersAssign,
     IActionReviewersAssignmentUpdated,
+    IActionReviewersBulkAssign,
     IActionReviewersListAssignments,
     IActionReviewersUnassign,
     IActionsTweetsLoadTweets,
@@ -17,6 +18,7 @@ import {
 import {
     WS_REVIEWERS_ASSIGN,
     WS_REVIEWERS_ASSIGNMENT_UPDATED,
+    WS_REVIEWERS_BULK_ASSIGN,
     WS_REVIEWERS_LIST_ASSIGNMENTS,
     WS_REVIEWERS_UNASSIGN,
     WS_TWEETS_LOAD_TWEETS,
@@ -43,6 +45,7 @@ type IAction =
     | IActionReviewersListAssignments
     | IActionReviewersAssign
     | IActionReviewersUnassign
+    | IActionReviewersBulkAssign
     | IActionReviewersAssignmentUpdated
     | IActionsTweetsSetState
 export default function reducer(state: IModule = initialState, action: IAction) {
@@ -64,6 +67,14 @@ export default function reducer(state: IModule = initialState, action: IAction) 
             Object.keys(action.tweets).forEach(
                 (tweetId: string) => (state = dotProp.set(state, `tweet_assignments.${tweetId}`, action.assignment.id))
             )
+            return dotProp.set(state, "tweets", { ...state.tweets, ...action.tweets })
+        case WS_REVIEWERS_BULK_ASSIGN:
+            action.assignments.forEach((assignment: IReviewerAssignment) => {
+                state = dotProp.set(state, `tweet_assignments.${assignment.social_id}`, assignment.id)
+                assignment.thread_tweets.forEach(
+                    (tweetId: string) => (state = dotProp.set(state, `tweet_assignments.${tweetId}`, assignment.id))
+                )
+            })
             return dotProp.set(state, "tweets", { ...state.tweets, ...action.tweets })
         case WS_REVIEWERS_UNASSIGN:
             for (const [tweetId, assignmentId] of Object.entries(state.tweet_assignments)) {

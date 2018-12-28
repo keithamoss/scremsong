@@ -1,7 +1,7 @@
 import { withStyles, WithStyles } from "@material-ui/core"
 import * as React from "react"
 import { ITriageColumn } from "../../redux/modules/triage"
-import TweetColumnAssignerContainer from "../../triage/TweetColumnAssigner/TweetColumnAssignerContainer"
+import TweetColumnAssignerContainer, { eTweetColumnAssignerMode } from "../../triage/TweetColumnAssigner/TweetColumnAssignerContainer"
 import TweetColumnContainer from "../TweetColumn/TweetColumnContainer"
 import TweetColumnBarContainer from "../TweetColumnBar/TweetColumnBarContainer"
 
@@ -57,7 +57,7 @@ class TriageView extends React.Component<TComponentProps, IState> {
     }
     public render() {
         const { columns, classes } = this.props
-        const { tweetId, assignmentId, assignerOpen } = this.state
+        const { assignerOpen, assignmentId, tweetId } = this.state
 
         return (
             <React.Fragment>
@@ -65,6 +65,7 @@ class TriageView extends React.Component<TComponentProps, IState> {
                     open={assignerOpen}
                     assignmentId={assignmentId}
                     tweetId={tweetId}
+                    mode={eTweetColumnAssignerMode.ASSIGN}
                     onCloseAssigner={this.onCloseAssigner}
                 />
                 <div className={classes.columnContainerContainer}>

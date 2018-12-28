@@ -218,7 +218,7 @@ def notify_of_saved_tweets(tweets):
 
         for tweet in tweets:
             response["tweets"][tweet.tweet_id] = TweetsSerializer(tweet).data
-            
+
             cols = get_columns_for_tweet(tweet)
             if len(cols) > 0:
                 response["columnIds"][tweet.tweet_id] = cols,

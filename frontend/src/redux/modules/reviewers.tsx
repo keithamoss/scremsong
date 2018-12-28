@@ -7,6 +7,7 @@ import {
     IActionReviewersAssign,
     IActionReviewersAssignmentStatusChange,
     IActionReviewersAssignmentUpdated,
+    IActionReviewersBulkAssign,
     IActionReviewersList,
     IActionReviewersListAssignments,
     IActionReviewersSetStatus,
@@ -16,6 +17,7 @@ import {
     WS_REVIEWERS_ASSIGN,
     WS_REVIEWERS_ASSIGNMENT_STATUS_CHANGE,
     WS_REVIEWERS_ASSIGNMENT_UPDATED,
+    WS_REVIEWERS_BULK_ASSIGN,
     WS_REVIEWERS_LIST_ASSIGNMENTS,
     WS_REVIEWERS_LIST_USERS,
     WS_REVIEWERS_SET_STATUS,
@@ -42,6 +44,7 @@ type IAction =
     | IActionReviewersSetStatus
     | IActionReviewersAssign
     | IActionReviewersUnassign
+    | IActionReviewersBulkAssign
     | IActionReviewersAssignmentUpdated
     | IActionReviewersAssignmentStatusChange
     | IActionReviewersSetCurrentReviewer
@@ -56,6 +59,11 @@ export default function reducer(state: IModule = initialState, action: IAction) 
         case WS_REVIEWERS_ASSIGN:
         case WS_REVIEWERS_ASSIGNMENT_UPDATED:
             return dotProp.set(state, `assignments.${action.assignment.id}`, action.assignment)
+        case WS_REVIEWERS_BULK_ASSIGN:
+            action.assignments.forEach(
+                (assignment: IReviewerAssignment) => (state = dotProp.set(state, `assignments.${assignment.id}`, assignment))
+            )
+            return state
         case WS_REVIEWERS_UNASSIGN:
             return dotProp.delete(state, `assignments.${action.assignmentId}`)
         case WS_REVIEWERS_ASSIGNMENT_STATUS_CHANGE:
@@ -199,6 +207,24 @@ export function unassignReviewer(assignmentId: number) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
         await api.get("/api/0.1/social_assignments/unassign_reviewer/", dispatch, {
             assignmentId,
+        })
+    }
+}
+
+export function reassignReviewer(assignmentId: number, newReviewerId: number) {
+    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
+        await api.get("/api/0.1/social_assignments/reassign_reviewer/", dispatch, {
+            assignmentId,
+            newReviewerId,
+        })
+    }
+}
+
+export function bulkReassignReviewer(currentReviewerId: number, newReviewerId: number) {
+    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
+        await api.get("/api/0.1/social_assignments/bulk_reassign_reviewer/", dispatch, {
+            currentReviewerId,
+            newReviewerId,
         })
     }
 }

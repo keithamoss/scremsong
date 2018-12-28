@@ -100,6 +100,16 @@ class ScremsongConsumer(JsonWebsocketConsumer):
             "assignmentId": event["assignmentId"],
         })
 
+    def reviewers_bulk_assign(self, event):
+        """
+        Called when someone has been assigned multiple new items to someone.
+        """
+        self.send_json({
+            "msg_type": settings.MSG_TYPE_REVIEWERS_BULK_ASSIGN,
+            "assignments": event["assignments"],
+            "tweets": event["tweets"],
+        })
+
     def reviewers_assignment_updated(self, event):
         """
         Called when new tweets (e.g. replies) have arrived in an assignment.
