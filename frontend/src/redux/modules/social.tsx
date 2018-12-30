@@ -13,6 +13,7 @@ import {
     IActionsTweetsLoadTweets,
     IActionsTweetsSetState,
     IActionTweetsNew,
+    IActionTweetsUpdateTweets,
     ITweetFetchColumn,
 } from "../../websockets/actions"
 import {
@@ -24,6 +25,7 @@ import {
     WS_TWEETS_LOAD_TWEETS,
     WS_TWEETS_NEW_TWEETS,
     WS_TWEETS_SET_STATE,
+    WS_TWEETS_UPDATE_TWEETS,
 } from "../../websockets/constants"
 import { IStore } from "./reducer"
 import { IReviewerAssignment } from "./reviewers"
@@ -42,6 +44,7 @@ type IAction =
     | IActionLoadTweets
     | IActionsTweetsLoadTweets
     | IActionTweetsNew
+    | IActionTweetsUpdateTweets
     | IActionReviewersListAssignments
     | IActionReviewersAssign
     | IActionReviewersUnassign
@@ -53,6 +56,7 @@ export default function reducer(state: IModule = initialState, action: IAction) 
         case LOAD_TWEETS:
         case WS_TWEETS_LOAD_TWEETS:
         case WS_TWEETS_NEW_TWEETS:
+        case WS_TWEETS_UPDATE_TWEETS:
             return dotProp.set(state, "tweets", { ...state.tweets, ...action.tweets })
         case WS_REVIEWERS_LIST_ASSIGNMENTS:
             Object.values(action.assignments).forEach((assignment: IReviewerAssignment, index: number) => {
@@ -175,6 +179,12 @@ export enum eSocialTweetState {
     DISMISSED = "Dismissed",
 }
 
+export enum eSocialTweetActionType {
+    REPLY = "reply",
+    RETWEET = "retweet",
+    FAVOURITE = "favourite",
+}
+
 export interface ISocialTweet {
     data: ISocialTweetData
     state: eSocialTweetState
@@ -182,6 +192,8 @@ export interface ISocialTweet {
 
 export interface ISocialTweetData {
     id_str: string
+    favorited: boolean
+    retweeted: boolean
 }
 
 // Side effects, only as applicable
@@ -208,6 +220,38 @@ export function setTweetState(tweetId: string, tweetState: eSocialTweetState) {
         await api.get("/api/0.1/tweets/set_state/", dispatch, {
             tweetId,
             tweetState,
+        })
+    }
+}
+
+export function favouriteTweet(tweetId: string) {
+    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
+        await api.get("/api/0.1/tweets/favourite/", dispatch, {
+            tweetId,
+        })
+    }
+}
+
+export function unfavouriteTweet(tweetId: string) {
+    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
+        await api.get("/api/0.1/tweets/unfavourite/", dispatch, {
+            tweetId,
+        })
+    }
+}
+
+export function retweetTweet(tweetId: string) {
+    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
+        await api.get("/api/0.1/tweets/retweet/", dispatch, {
+            tweetId,
+        })
+    }
+}
+
+export function unretweetTweet(tweetId: string) {
+    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
+        await api.get("/api/0.1/tweets/unretweet/", dispatch, {
+            tweetId,
         })
     }
 }

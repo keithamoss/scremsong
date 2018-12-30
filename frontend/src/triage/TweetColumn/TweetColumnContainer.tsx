@@ -4,12 +4,18 @@ import { connect } from "react-redux"
 import { IStore } from "../../redux/modules/reducer"
 import { IReviewerAssignment } from "../../redux/modules/reviewers"
 import {
+    eSocialTweetActionType,
     eSocialTweetState,
+    favouriteTweet,
     fetchTweets,
     getTweetAssignmentsForColumn,
     ISocialTweetAssignments,
+    ISocialTweetData,
     ISocialTweetList,
+    retweetTweet,
     setTweetState,
+    unfavouriteTweet,
+    unretweetTweet,
 } from "../../redux/modules/social"
 import { ITriageColumn } from "../../redux/modules/triage"
 import { IProfileColumnPosition, ws_changeUserProfileSettings } from "../../redux/modules/user"
@@ -36,6 +42,7 @@ export interface IDispatchProps {
     loadMoreRows: any
     onPositionUpdate: any
     onSetTweetState: any
+    onTweetAction: any
 }
 
 export interface IReactVirtualizedIndexes {
@@ -83,7 +90,7 @@ class TweetColumnContainer extends React.Component<TComponentProps, {}> {
         )
     }
     public render() {
-        const { column, onOpenAssigner, tweet_ids, tweets, tweet_assignments, assignments, onSetTweetState } = this.props
+        const { column, onOpenAssigner, tweet_ids, tweets, tweet_assignments, assignments, onSetTweetState, onTweetAction } = this.props
 
         return (
             <TweetColumn
@@ -99,6 +106,7 @@ class TweetColumnContainer extends React.Component<TComponentProps, {}> {
                 loadMoreRows={this.loadMoreRows}
                 onPositionUpdate={this.onPositionUpdate}
                 onSetTweetState={onSetTweetState}
+                onTweetAction={onTweetAction}
             />
         )
     }
@@ -129,6 +137,21 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
         },
         onSetTweetState: (tweetId: string, tweetState: eSocialTweetState) => {
             dispatch(setTweetState(tweetId, tweetState))
+        },
+        onTweetAction: (tweetAction: eSocialTweetActionType, tweet: ISocialTweetData) => {
+            if (tweetAction === eSocialTweetActionType.FAVOURITE) {
+                if (tweet.favorited === false) {
+                    dispatch(favouriteTweet(tweet.id_str))
+                } else {
+                    dispatch(unfavouriteTweet(tweet.id_str))
+                }
+            } else if (tweetAction === eSocialTweetActionType.RETWEET) {
+                if (tweet.retweeted === false) {
+                    dispatch(retweetTweet(tweet.id_str))
+                } else {
+                    dispatch(unretweetTweet(tweet.id_str))
+                }
+            }
         },
     }
 }

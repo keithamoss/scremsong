@@ -19,6 +19,7 @@ import {
     WS_TWEETS_LOAD_TWEETS,
     WS_TWEETS_NEW_TWEETS,
     WS_TWEETS_SET_STATE,
+    WS_TWEETS_UPDATE_TWEETS,
 } from "./constants"
 
 // Models
@@ -36,13 +37,6 @@ export interface IActionNotification extends Action<typeof WS_NOTIFICATION> {
     message: string
     options: INotificationOptions
     key: string
-}
-
-export interface IActionTweetsNew extends Action<typeof WS_TWEETS_NEW_TWEETS> {
-    tweets: ISocialTweet[]
-    columnIds: {
-        [key: string]: number[]
-    }
 }
 
 export interface IActionSocialColumnsList extends Action<typeof WS_SOCIAL_COLUMNS_LIST> {
@@ -91,6 +85,17 @@ export interface ITweetFetchColumn {
     id: number
     tweet_ids: string[]
     tweet_ids_buffered: string[]
+}
+
+export interface IActionTweetsNew extends Action<typeof WS_TWEETS_NEW_TWEETS> {
+    tweets: ISocialTweet[]
+    columnIds: {
+        [key: string]: number[]
+    }
+}
+
+export interface IActionTweetsUpdateTweets extends Action<typeof WS_TWEETS_UPDATE_TWEETS> {
+    tweets: ISocialTweet[]
 }
 
 export interface IActionsTweetsSetState extends Action<typeof WS_TWEETS_SET_STATE> {
