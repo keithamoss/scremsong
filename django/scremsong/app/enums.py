@@ -50,6 +50,7 @@ class TweetSource(str, EnumBase):
     STREAMING = "Streaming"
     BACKFILL = "Backfill"
     THREAD_RESOLUTION = "Thread Resolution"
+    RETWEETING = "Retweeting"
     # THREAD_RESOLUTION_TWEETS_TO_USER = "Thread Resolution To User"
     # THREAD_RESOLUTION_TWEETS_FROM_USER = "Thread Resolution From User"
     TESTING = "Testing"

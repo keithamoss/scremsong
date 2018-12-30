@@ -531,3 +531,151 @@ def process_new_tweet(status, tweetSource, sendWebSocketEvent):
 
     logger.error("Failed to process new tweet {}".format(status["id_str"]))
     return False
+
+def favourite_tweet(tweetId):
+    def ws_send_updated_tweet(tweet):
+        websockets.send_channel_message("tweets.update_tweets", {
+            "tweets": {tweet.tweet_id: TweetsSerializer(tweet).data},
+        })
+    
+    tweet = Tweets.objects.get(tweet_id=tweetId)
+
+    # The client shouldn't be able to favourite a tweet we've already favourited.
+    # Fail quietly and send out new state to all connected clients.
+    if tweet.data["favorited"] is True:
+        ws_send_updated_tweet(tweet)
+        return
+
+    try:
+        api = get_tweepy_api_auth()
+        status = api.create_favorite(tweetId, include_entities=True)
+        
+        tweet.data = status._json
+        tweet.save()
+
+        ws_send_updated_tweet(tweet)
+
+    except tweepy.TweepError as e:
+        if e.api_code == 139:
+            # The tweet was already favourited somewhere else (e.g. another Twitter client). Update local state tweet and respond as if we succeeded.
+            tweet.data["favorited"] = True
+            tweet.save()
+            
+            ws_send_updated_tweet(tweet)
+        else:
+            # Uh oh, some other error code was returned
+            # NB: tweepy.api can return certain errors via retry_errors
+            raise e
+
+def unfavourite_tweet(tweetId):
+    def ws_send_updated_tweet(tweet):
+        websockets.send_channel_message("tweets.update_tweets", {
+            "tweets": {tweet.tweet_id: TweetsSerializer(tweet).data},
+        })
+    
+    tweet = Tweets.objects.get(tweet_id=tweetId)
+
+    # The client shouldn't be able to favourite a tweet we've already favourited.
+    # Fail quietly and send out new state to all connected clients.
+    if tweet.data["favorited"] is False:
+        ws_send_updated_tweet(tweet)
+        return
+
+    try:
+        api = get_tweepy_api_auth()
+        status = api.destroy_favorite(tweetId, include_entities=True)
+        
+        tweet.data = status._json
+        tweet.save()
+
+        ws_send_updated_tweet(tweet)
+
+    except tweepy.TweepError as e:
+        if e.api_code == 144:
+            # The tweet was already unfavourited somewhere else (e.g. another Twitter client). Update local state tweet and respond as if we succeeded.
+            # NB: No idea why they use 144 as the response code. 144 is supposed to be "No status found with that ID"
+            tweet.data["favorited"] = False
+            tweet.save()
+            
+            ws_send_updated_tweet(tweet)
+        else:
+            # Uh oh, some other error code was returned
+            # NB: tweepy.api can return certain errors via retry_errors
+            raise e
+
+def retweet_tweet(tweetId):
+    def ws_send_updated_tweet(tweet):
+        websockets.send_channel_message("tweets.update_tweets", {
+            "tweets": {tweet.tweet_id: TweetsSerializer(tweet).data},
+        })
+    
+    tweet = Tweets.objects.get(tweet_id=tweetId)
+
+    # The client shouldn't be able to retweet a tweet they've already retweeted.
+    # Fail quietly and send out new state to all connected clients.
+    if tweet.data["retweeted"] is True:
+        ws_send_updated_tweet(tweet)
+        return
+
+    try:
+        api = get_tweepy_api_auth()
+        status = api.retweet(tweetId)
+        
+        tweet.data = status._json["retweeted_status"]
+        tweet.save()
+
+        retweet, created = save_tweet(status._json, source=TweetSource.RETWEETING, status=TweetStatus.OK)
+
+        websockets.send_channel_message("tweets.update_tweets", {
+            "tweets": {tweet.tweet_id: TweetsSerializer(tweet).data, retweet.tweet_id: TweetsSerializer(retweet).data},
+        })
+
+    except tweepy.TweepError as e:
+        if e.api_code == 327:
+            # The tweet was already retweeted somewhere else (e.g. another Twitter client). Update local state tweet and respond as if we succeeded.
+            tweet.data["retweeted"] = True
+            tweet.save()
+            
+            ws_send_updated_tweet(tweet)
+        else:
+            # Uh oh, some other error code was returned
+            # NB: tweepy.api can return certain errors via retry_errors
+            raise e
+
+
+def unretweet_tweet(tweetId):
+    def ws_send_updated_tweet(tweet):
+        websockets.send_channel_message("tweets.update_tweets", {
+            "tweets": {tweet.tweet_id: TweetsSerializer(tweet).data},
+        })
+    
+    tweet = Tweets.objects.get(tweet_id=tweetId)
+
+    # The client shouldn't be able to retweet a tweet they've already retweeted.
+    # Fail quietly and send out new state to all connected clients.
+    if tweet.data["retweeted"] is False:
+        ws_send_updated_tweet(tweet)
+        return
+
+    try:
+        api = get_tweepy_api_auth()
+        status = api.unretweet(tweetId)
+        
+        tweet.data = status._json
+        tweet.save()
+
+        ws_send_updated_tweet(tweet)
+
+    except tweepy.TweepError as e:
+        raise e
+
+        if e.api_code == 327:
+            # The tweet was already retweeted somewhere else (e.g. another Twitter client). Update local state tweet and respond as if we succeeded.
+            tweet.data["retweeted"] = False
+            tweet.save()
+            
+            ws_send_updated_tweet(tweet)
+        else:
+            # Uh oh, some other error code was returned
+            # NB: tweepy.api can return certain errors via retry_errors
+            raise e

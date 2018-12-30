@@ -12,7 +12,7 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
 from tweepy import TweepError
 from scremsong.app.serializers import UserSerializer, SocialAssignmentSerializer
-from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, fetch_tweets, get_status_from_db, resolve_tweet_parents, resolve_tweet_thread_for_parent, notify_of_saved_tweet
+from scremsong.app.twitter import get_tweepy_api_auth, twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, fetch_tweets, get_status_from_db, resolve_tweet_parents, resolve_tweet_thread_for_parent, notify_of_saved_tweet, favourite_tweet, unfavourite_tweet, retweet_tweet, unretweet_tweet
 from scremsong.celery import celery_restart_streaming
 from scremsong.app.models import Tweets, SocialAssignments, Profile
 from scremsong.app.enums import SocialPlatformChoice, SocialAssignmentStatus, NotificationVariants, TweetState, TweetStatus
@@ -126,6 +126,42 @@ class TweetsViewset(viewsets.ViewSet):
                 "tweetId": tweetId,
                 "tweetState": tweetState,
             })
+
+        return Response({})
+
+    @list_route(methods=['get'])
+    def favourite(self, request, format=None):
+        qp = request.query_params
+        tweetId = qp["tweetId"] if "tweetId" in qp else None
+
+        favourite_tweet(tweetId)
+
+        return Response({})
+
+    @list_route(methods=['get'])
+    def unfavourite(self, request, format=None):
+        qp = request.query_params
+        tweetId = qp["tweetId"] if "tweetId" in qp else None
+
+        unfavourite_tweet(tweetId)
+
+        return Response({})
+
+    @list_route(methods=['get'])
+    def retweet(self, request, format=None):
+        qp = request.query_params
+        tweetId = qp["tweetId"] if "tweetId" in qp else None
+
+        retweet_tweet(tweetId)
+
+        return Response({})
+
+    @list_route(methods=['get'])
+    def unretweet(self, request, format=None):
+        qp = request.query_params
+        tweetId = qp["tweetId"] if "tweetId" in qp else None
+
+        unretweet_tweet(tweetId)
 
         return Response({})
 

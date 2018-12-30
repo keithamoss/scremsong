@@ -160,6 +160,15 @@ class ScremsongConsumer(JsonWebsocketConsumer):
             "tweetState": event["tweetState"],
         })
 
+    def tweets_update_tweets(self, event):
+        """
+        Called when something has changed the state of a tweet (e.g. favourited it).
+        """
+        self.send_json({
+            "msg_type": settings.MSG_TYPE_TWEETS_UPDATE_TWEETS,
+            "tweets": event["tweets"],
+        })
+
     def user_change_settings(self, event):
         """
         Called when we receive new tweets from the Twitter stream, from backfilling, et cetera.
