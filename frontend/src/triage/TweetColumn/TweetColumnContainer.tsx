@@ -29,6 +29,7 @@ const overscanRowCount = 1
 export interface IProps {
     column: ITriageColumn
     onOpenAssigner: any
+    onOpenReplier: any
 }
 
 export interface IStoreProps {
@@ -77,20 +78,25 @@ type TComponentProps = IProps & IStoreProps & IDispatchProps
 class TweetColumnContainer extends React.Component<TComponentProps, {}> {
     private loadMoreRows: any
     private onPositionUpdate: any
+    private onTweetAction: any
 
     public constructor(props: TComponentProps) {
         super(props)
 
         this.loadMoreRows = (indexes: IReactVirtualizedIndexes) => props.loadMoreRows(this.props.column, indexes)
+
         this.onPositionUpdate = debounce(
             (columnId: number, opts: any /*ListProps["onRowsRendered"]*/) =>
                 this.props.onPositionUpdate(columnId, mapColumnListPropsToTweetPosition(opts, this.props.tweet_ids)),
             2500,
             { maxWait: 5000 }
         )
+
+        this.onTweetAction = (tweetAction: eSocialTweetActionType, tweet: ISocialTweetData) =>
+            this.props.onTweetAction(tweetAction, tweet, this.props.onOpenReplier)
     }
     public render() {
-        const { column, onOpenAssigner, tweet_ids, tweets, tweet_assignments, assignments, onSetTweetState, onTweetAction } = this.props
+        const { column, onOpenAssigner, tweet_ids, tweets, tweet_assignments, assignments, onSetTweetState } = this.props
 
         return (
             <TweetColumn
@@ -106,7 +112,7 @@ class TweetColumnContainer extends React.Component<TComponentProps, {}> {
                 loadMoreRows={this.loadMoreRows}
                 onPositionUpdate={this.onPositionUpdate}
                 onSetTweetState={onSetTweetState}
-                onTweetAction={onTweetAction}
+                onTweetAction={this.onTweetAction}
             />
         )
     }
@@ -138,8 +144,10 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
         onSetTweetState: (tweetId: string, tweetState: eSocialTweetState) => {
             dispatch(setTweetState(tweetId, tweetState))
         },
-        onTweetAction: (tweetAction: eSocialTweetActionType, tweet: ISocialTweetData) => {
-            if (tweetAction === eSocialTweetActionType.FAVOURITE) {
+        onTweetAction: (tweetAction: eSocialTweetActionType, tweet: ISocialTweetData, onOpenReplier: Function) => {
+            if (tweetAction === eSocialTweetActionType.REPLY) {
+                onOpenReplier(tweet.id_str)
+            } else if (tweetAction === eSocialTweetActionType.FAVOURITE) {
                 if (tweet.favorited === false) {
                     dispatch(favouriteTweet(tweet.id_str))
                 } else {
