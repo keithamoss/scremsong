@@ -1,8 +1,8 @@
 import { Button, Theme, Tooltip, withStyles, WithStyles } from "@material-ui/core"
 import AssignmentIcon from "@material-ui/icons/Assignment"
 import AssignmentOutlinedIcon from "@material-ui/icons/AssignmentOutlined"
+import BlockOutlinedIcon from "@material-ui/icons/BlockOutlined"
 import CheckCircleOutlinedIcon from "@material-ui/icons/CheckCircleOutlined"
-import DeleteOutlinedIcon from "@material-ui/icons/DeleteOutlined"
 import LiveTvOutlinedIcon from "@material-ui/icons/LiveTvOutlined"
 import * as React from "react"
 import Tweet from "react-tweet"
@@ -303,14 +303,14 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
 
                                 {tweet.state === eSocialTweetState.ACTIVE && (
                                     <React.Fragment>
-                                        <Tooltip title="Dismiss this tweet (ignore it)" aria-label="Dismiss tweet">
+                                        <Tooltip title="Ignore this tweet" aria-label="Ignore tweet">
                                             <Button
                                                 size="small"
                                                 className={classes.button}
-                                                aria-label="Dismiss tweet"
+                                                aria-label="Ignore tweet"
                                                 onClick={this.onSetTweetState(tweetId, eSocialTweetState.DISMISSED)}
                                             >
-                                                <DeleteOutlinedIcon />
+                                                <BlockOutlinedIcon />
                                             </Button>
                                         </Tooltip>
 
@@ -329,7 +329,7 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
 
                                 {(tweet.state === eSocialTweetState.DISMISSED || tweet.state === eSocialTweetState.DEALT_WITH) && (
                                     <Tooltip
-                                        title="Make this tweet active again (i.e. undismiss it, mark it as 'not deal with')"
+                                        title="Make this tweet active again (i.e. unignore it, mark it as 'not dealt with')"
                                         aria-label="Set active"
                                     >
                                         <Button
