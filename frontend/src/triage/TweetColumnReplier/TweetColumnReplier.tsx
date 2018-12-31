@@ -18,6 +18,10 @@ export interface IProps {
     onTweetCharacterLimitValid: any
 }
 
+export interface IState {
+    replyButtonDisabled: boolean
+}
+
 const getReplyMetadata = (tweet: ISocialTweet) =>
     [
         `@${tweet.data.user.screen_name}`,
@@ -27,9 +31,25 @@ const getReplyMetadata = (tweet: ISocialTweet) =>
         .join(" ") + " "
 
 type TComponentProps = IProps & WithStyles
-class TweetColumnReplier extends React.Component<TComponentProps, {}> {
+class TweetColumnReplier extends React.Component<TComponentProps, IState> {
+    private onTweetCharacterLimitError: Function
+    private onTweetCharacterLimitValid: Function
+
+    public constructor(props: TComponentProps) {
+        super(props)
+
+        this.state = { replyButtonDisabled: false }
+        this.onTweetCharacterLimitError = () => {
+            this.setState({ replyButtonDisabled: true })
+        }
+        this.onTweetCharacterLimitValid = () => {
+            this.setState({ replyButtonDisabled: false })
+        }
+    }
+
     public render() {
-        const { open, tweet, onCloseReplier, onTweetCharacterLimitError, onTweetCharacterLimitValid, classes } = this.props
+        const { open, tweet, onCloseReplier, classes } = this.props
+        const { replyButtonDisabled } = this.state
 
         return (
             <React.Fragment>
@@ -47,10 +67,10 @@ class TweetColumnReplier extends React.Component<TComponentProps, {}> {
                             margin="normal"
                             variant="filled"
                             characterLimit={280}
-                            onLimitError={onTweetCharacterLimitError}
-                            onLimitValid={onTweetCharacterLimitValid}
+                            onLimitError={this.onTweetCharacterLimitError}
+                            onLimitValid={this.onTweetCharacterLimitValid}
                         />
-                        <Button variant="contained" color="primary" className={classes.button}>
+                        <Button variant="contained" color="primary" className={classes.button} disabled={replyButtonDisabled}>
                             Reply
                         </Button>
                     </DialogContent>
