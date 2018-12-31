@@ -15,10 +15,8 @@ export interface IStoreProps {
 }
 
 export interface IDispatchProps {
-    // onAssignTweet: Function
-    // onUnassignTweet: Function
-    // onReassign: Function
-    // onBulkReassign: Function
+    onTweetCharacterLimitError: Function
+    onTweetCharacterLimitValid: Function
 }
 
 type TComponentProps = IProps & IStoreProps & IDispatchProps
@@ -28,9 +26,21 @@ class TweetColumnReplierContainer extends React.Component<TComponentProps, {}> {
     }
 
     public render() {
-        const { open, tweet, onCloseReplier } = this.props
+        const { open, tweet, onCloseReplier, onTweetCharacterLimitError, onTweetCharacterLimitValid } = this.props
 
-        return <TweetColumnReplier open={open} tweet={tweet} onCloseReplier={onCloseReplier} />
+        if (tweet === undefined || open === false) {
+            return null
+        }
+
+        return (
+            <TweetColumnReplier
+                open={open}
+                tweet={tweet}
+                onCloseReplier={onCloseReplier}
+                onTweetCharacterLimitError={onTweetCharacterLimitError}
+                onTweetCharacterLimitValid={onTweetCharacterLimitValid}
+            />
+        )
     }
 }
 
@@ -44,18 +54,12 @@ const mapStateToProps = (state: IStore, ownProps: IProps): IStoreProps => {
 
 const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {
-        // onAssignTweet: (tweetId: string, userId: number) => {
-        //     dispatch(assignReviewer(tweetId, userId))
-        // },
-        // onUnassignTweet: (assignment: IReviewerAssignment) => {
-        //     dispatch(unassignReviewer(assignment.id))
-        // },
-        // onReassign: (assignmentId: number, newReviewerId: number) => {
-        //     dispatch(reassignReviewer(assignmentId, newReviewerId))
-        // },
-        // onBulkReassign: (currentReviewerId: number, newReviewerId: number) => {
-        //     dispatch(bulkReassignReviewer(currentReviewerId, newReviewerId))
-        // },
+        onTweetCharacterLimitError: () => {
+            console.log("onTweetCharacterLimitError")
+        },
+        onTweetCharacterLimitValid: () => {
+            console.log("onTweetCharacterLimitValid")
+        },
     }
 }
 

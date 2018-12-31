@@ -194,6 +194,20 @@ export interface ISocialTweetData {
     id_str: string
     favorited: boolean
     retweeted: boolean
+    user: {
+        screen_name: string
+    }
+    entities: {
+        user_mentions: ISocialTweetDataUserMention[]
+    }
+}
+
+export interface ISocialTweetDataUserMention {
+    id: number
+    name: string
+    id_str: string
+    indices: number[]
+    screen_name: string
 }
 
 // Side effects, only as applicable

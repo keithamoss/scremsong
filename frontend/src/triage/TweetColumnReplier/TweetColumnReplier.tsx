@@ -1,25 +1,12 @@
-import { Dialog, Theme, withStyles, WithStyles } from "@material-ui/core"
-import blue from "@material-ui/core/colors/blue"
-import red from "@material-ui/core/colors/red"
+import { Button, Dialog, DialogContent, Theme, withStyles, WithStyles } from "@material-ui/core"
 import * as React from "react"
-import { ISocialTweet } from "../../redux/modules/social"
+import Tweet from "react-tweet"
+import { ISocialTweet, ISocialTweetDataUserMention } from "../../redux/modules/social"
+import TextFieldWithCharacterCount from "../TextFieldWithCharacterCount/TextFieldWithCharacterCount"
 
 const styles = (theme: Theme) => ({
-    assignedAvatar: {
-        backgroundColor: blue[100],
-        color: blue[600],
-    },
-    offlineAvatar: {
-        backgroundColor: red[100],
-        color: red[600],
-    },
-    assignedAndOfflineAvatar: {
-        backgroundColor: red[100],
-        color: red[600],
-        backgroundImage: "linear-gradient(135deg, #bbdefb 50%, #ffcdd2 50%)",
-    },
-    badgeMargin: {
-        margin: theme.spacing.unit * 2,
+    button: {
+        margin: theme.spacing.unit,
     },
 })
 
@@ -27,21 +14,46 @@ export interface IProps {
     open: boolean
     tweet: ISocialTweet
     onCloseReplier: any
+    onTweetCharacterLimitError: any
+    onTweetCharacterLimitValid: any
 }
+
+const getReplyMetadata = (tweet: ISocialTweet) =>
+    [
+        `@${tweet.data.user.screen_name}`,
+        ...tweet.data.entities.user_mentions.map((userMention: ISocialTweetDataUserMention) => `@${userMention.screen_name}`),
+    ]
+        .filter((screenName: string) => screenName !== "@DemSausage")
+        .join(" ") + " "
 
 type TComponentProps = IProps & WithStyles
 class TweetColumnReplier extends React.Component<TComponentProps, {}> {
-    public constructor(props: TComponentProps) {
-        super(props)
-    }
-
     public render() {
-        const { open, onCloseReplier } = this.props
+        const { open, tweet, onCloseReplier, onTweetCharacterLimitError, onTweetCharacterLimitValid, classes } = this.props
 
         return (
             <React.Fragment>
                 <Dialog open={open} onClose={onCloseReplier} aria-labelledby="reply-to-tweet-dialog">
-                    Foobar.
+                    <DialogContent>
+                        <Tweet data={tweet.data} linkProps={{ target: "_blank", rel: "noreferrer" }} />
+                        <TextFieldWithCharacterCount
+                            id="reply-to-tweet-multiline"
+                            label="Replying to tweet"
+                            multiline={true}
+                            fullWidth={true}
+                            autoFocus={true}
+                            rows="5"
+                            defaultValue={getReplyMetadata(tweet)}
+                            margin="normal"
+                            variant="filled"
+                            characterLimit={280}
+                            onLimitError={onTweetCharacterLimitError}
+                            onLimitValid={onTweetCharacterLimitValid}
+                        />
+                        <Button variant="contained" color="primary" className={classes.button}>
+                            Reply
+                        </Button>
+                    </DialogContent>
                 </Dialog>
             </React.Fragment>
         )
