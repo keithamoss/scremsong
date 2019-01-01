@@ -12,7 +12,7 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
 from tweepy import TweepError
 from scremsong.app.serializers import UserSerializer, SocialAssignmentSerializer
-from scremsong.app.twitter import get_tweepy_api_auth, twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, fetch_tweets, get_status_from_db, resolve_tweet_parents, resolve_tweet_thread_for_parent, notify_of_saved_tweet, favourite_tweet, unfavourite_tweet, retweet_tweet, unretweet_tweet
+from scremsong.app.twitter import get_tweepy_api_auth, twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, fetch_tweets, get_status_from_db, resolve_tweet_parents, resolve_tweet_thread_for_parent, notify_of_saved_tweet, favourite_tweet, unfavourite_tweet, retweet_tweet, unretweet_tweet, reply_to_tweet
 from scremsong.celery import celery_restart_streaming
 from scremsong.app.models import Tweets, SocialAssignments, Profile
 from scremsong.app.enums import SocialPlatformChoice, SocialAssignmentStatus, NotificationVariants, TweetState, TweetStatus
@@ -164,6 +164,30 @@ class TweetsViewset(viewsets.ViewSet):
         unretweet_tweet(tweetId)
 
         return Response({})
+
+    @list_route(methods=['get'])
+    def reply(self, request, format=None):
+        qp = request.query_params
+        inReplyToTweetId = qp["inReplyToTweetId"] if "inReplyToTweetId" in qp else None
+        replyText = qp["replyText"] if "replyText" in qp else None
+
+        try:
+            reply_to_tweet(inReplyToTweetId, replyText)
+            return Response({})
+    
+        except tweepy.RateLimitError:
+            return Response({"error": "Error sending reply. It looks like we've been rate limited for replying to / favouriting tweets. Try again in a little while."}, status=status.HTTP_403_FORBIDDEN)
+
+        except tweepy.TweepError as e:
+            if e.api_code == 403:
+                return Response({"error": "Error sending reply. It looks like that exactly reply recently got sent. Change the reply text and try again."}, status=status.HTTP_403_FORBIDDEN)
+            else:
+                # Uh oh, some other error code was returned
+                # NB: tweepy.api can return certain errors via retry_errors
+                return Response({"error": "Error {} while sending reply.".format(e.api_code)}, status=status.HTTP_400_BAD_REQUEST)
+        
+        except Exception as e:
+            return Response({"error": "Unknown error while sending reply: {}".format(str(e))}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class SocialAssignmentsViewset(viewsets.ViewSet):

@@ -286,3 +286,13 @@ export function unretweetTweet(tweetId: string) {
         })
     }
 }
+
+export function replyToTweet(inReplyToTweetId: string, replyText: string) {
+    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
+        const { response } = await api.get("/api/0.1/tweets/reply/", dispatch, {
+            inReplyToTweetId,
+            replyText,
+        })
+        return response.status === 200
+    }
+}

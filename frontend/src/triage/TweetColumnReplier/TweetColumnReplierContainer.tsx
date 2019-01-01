@@ -1,7 +1,7 @@
 import * as React from "react"
 import { connect } from "react-redux"
 import { IStore } from "../../redux/modules/reducer"
-import { ISocialPrecannedTweetReplies, ISocialTweet } from "../../redux/modules/social"
+import { ISocialPrecannedTweetReplies, ISocialTweet, replyToTweet } from "../../redux/modules/social"
 import TweetColumnReplier from "./TweetColumnReplier"
 
 export interface IProps {
@@ -16,18 +16,13 @@ export interface IStoreProps {
 }
 
 export interface IDispatchProps {
-    onFieldInvalid: Function
-    onFieldValid: Function
+    onReply: Function
 }
 
 type TComponentProps = IProps & IStoreProps & IDispatchProps
 class TweetColumnReplierContainer extends React.Component<TComponentProps, {}> {
-    public constructor(props: TComponentProps) {
-        super(props)
-    }
-
     public render() {
-        const { open, tweet, precanned_replies, onCloseReplier, onFieldInvalid, onFieldValid } = this.props
+        const { open, tweet, precanned_replies, onCloseReplier, onReply } = this.props
 
         if (tweet === undefined || open === false) {
             return null
@@ -39,8 +34,7 @@ class TweetColumnReplierContainer extends React.Component<TComponentProps, {}> {
                 tweet={tweet}
                 precanned_replies={precanned_replies}
                 onCloseReplier={onCloseReplier}
-                onFieldInvalid={onFieldInvalid}
-                onFieldValid={onFieldValid}
+                onReply={onReply}
             />
         )
     }
@@ -55,13 +49,13 @@ const mapStateToProps = (state: IStore, ownProps: IProps): IStoreProps => {
     }
 }
 
-const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
+const mapDispatchToProps = (dispatch: Function, ownProps: IProps): IDispatchProps => {
     return {
-        onFieldInvalid: () => {
-            console.log("onFieldInvalid")
-        },
-        onFieldValid: () => {
-            console.log("onFieldValid")
+        onReply: async (inReplyToTweetId: string, replyText: string) => {
+            const success = await dispatch(replyToTweet(inReplyToTweetId, replyText))
+            if (success === true) {
+                ownProps.onCloseReplier()
+            }
         },
     }
 }

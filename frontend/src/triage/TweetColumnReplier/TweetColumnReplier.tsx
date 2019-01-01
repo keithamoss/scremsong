@@ -44,12 +44,12 @@ export interface IProps {
     tweet: ISocialTweet
     precanned_replies: ISocialPrecannedTweetReplies
     onCloseReplier: any
-    onFieldInvalid: any
-    onFieldValid: any
+    onReply: any
 }
 
 export interface IState {
     replyFieldValue: string
+    mentions: string[]
     characterPrefixLength: number
     replyButtonDisabled: boolean
     categoryCollapseStates: { [key: string]: boolean }
@@ -61,7 +61,9 @@ const getUsersToReplyTo = (tweet: ISocialTweet) =>
         tweet.data.user.screen_name,
     ].filter((screenName: string) => screenName !== "DemSausage")
 
-const getLengthOfReplies = (array: string[]) => array.map((value: string) => `@${value}`).join(" ").length + 1 // + 1 to account for the space between the replies and the text
+const getMentions = (mentions: string[]) => mentions.map((mention: string) => `@${mention}`).join(" ")
+
+const getLengthOfMentions = (mentions: string[]) => getMentions(mentions).length + 1 // + 1 to account for the space between the replies and the text
 
 type TComponentProps = IProps & WithStyles
 class TweetColumnReplier extends React.Component<TComponentProps, IState> {
@@ -72,6 +74,7 @@ class TweetColumnReplier extends React.Component<TComponentProps, IState> {
     private handleCategoryClick: Function
     private handleChooseRandomReplyClick: Function
     private handleReplyChosen: Function
+    private onReply: any
 
     public constructor(props: TComponentProps) {
         super(props)
@@ -80,7 +83,8 @@ class TweetColumnReplier extends React.Component<TComponentProps, IState> {
         Object.keys(props.precanned_replies).forEach((category: string) => (categoryCollapseStates[category] = false))
         this.state = {
             replyFieldValue: "",
-            characterPrefixLength: getLengthOfReplies(getUsersToReplyTo(props.tweet)),
+            mentions: getUsersToReplyTo(props.tweet),
+            characterPrefixLength: getLengthOfMentions(getUsersToReplyTo(props.tweet)),
             replyButtonDisabled: true,
             categoryCollapseStates,
         }
@@ -103,7 +107,7 @@ class TweetColumnReplier extends React.Component<TComponentProps, IState> {
         }
         this.onChipChange = (chips: string[]) => {
             this.setState((state: IState) => {
-                return { ...state, characterPrefixLength: getLengthOfReplies(chips) }
+                return { ...state, mentions: chips, characterPrefixLength: getLengthOfMentions(chips) }
             })
         }
         this.handleCategoryClick = (category: string) => (e: React.MouseEvent<HTMLElement>) => {
@@ -125,6 +129,10 @@ class TweetColumnReplier extends React.Component<TComponentProps, IState> {
         }
         this.handleReplyChosen = (replyText: string) => (e: React.MouseEvent<HTMLElement>) => {
             this.setState({ ...this.state, replyFieldValue: replyText })
+        }
+        this.onReply = () => {
+            const replyText = `${getMentions(this.state.mentions)} ${this.state.replyFieldValue}`
+            this.props.onReply(this.props.tweet.data.id_str, replyText)
         }
     }
 
@@ -161,7 +169,7 @@ class TweetColumnReplier extends React.Component<TComponentProps, IState> {
                             onFieldValid={this.onFieldValid}
                             onFieldInvalid={this.onFieldInvalid}
                         />
-                        <Button variant="contained" color="primary" disabled={replyButtonDisabled}>
+                        <Button variant="contained" color="primary" disabled={replyButtonDisabled} onClick={this.onReply}>
                             Reply
                         </Button>
                         <List
