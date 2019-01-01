@@ -3,7 +3,7 @@ from django.contrib.postgres.fields import JSONField
 from django.contrib.auth.models import User
 from model_utils import FieldTracker
 from scremsong.app.social.twitter_utils import apply_tweet_filter_criteria
-from scremsong.app.enums import ProfileSettingQueueSortBy, SocialPlatformChoice, SocialAssignmentStatus, TweetState, TweetStatus
+from scremsong.app.enums import ProfileSettingQueueSortBy, SocialPlatformChoice, SocialAssignmentStatus, TweetState, TweetStatus, TweetReplyCategories
 from scremsong.util import make_logger
 from scremsong.app.enums import ProfileSettings
 
@@ -113,3 +113,10 @@ class SocialAssignments(models.Model):
 
     class Meta:
         unique_together = ("platform", "social_id")
+
+
+class TweetReplies(models.Model):
+    "Our pre-canned responses to tweets."
+
+    reply_text = models.TextField()
+    category = models.TextField(choices=[(tag, tag.value) for tag in TweetReplyCategories], null=True)

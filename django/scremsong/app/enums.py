@@ -54,3 +54,9 @@ class TweetSource(str, EnumBase):
     # THREAD_RESOLUTION_TWEETS_TO_USER = "Thread Resolution To User"
     # THREAD_RESOLUTION_TWEETS_FROM_USER = "Thread Resolution From User"
     TESTING = "Testing"
+
+
+class TweetReplyCategories(str, EnumBase):
+    POSITIVE_REPORT = "Positive Report"
+    NEGATIVE_REPORT = "Negative Report"
+    THANK_YOUS = "Thank Yous"

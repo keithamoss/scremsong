@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from .models import Profile, SocialColumns, Tweets, SocialAssignments
+from .models import Profile, SocialColumns, Tweets, SocialAssignments, TweetReplies
 from rest_framework import serializers
 
 
@@ -102,3 +102,11 @@ class TweetsSerializer(serializers.ModelSerializer):
         fields = (
             'data',
             'state')
+
+
+class TweetRepliesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TweetReplies
+        fields = (
+            'reply_text',
+            'category')
