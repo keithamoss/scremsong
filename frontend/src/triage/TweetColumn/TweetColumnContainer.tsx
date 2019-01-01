@@ -4,18 +4,12 @@ import { connect } from "react-redux"
 import { IStore } from "../../redux/modules/reducer"
 import { IReviewerAssignment } from "../../redux/modules/reviewers"
 import {
-    eSocialTweetActionType,
     eSocialTweetState,
-    favouriteTweet,
     fetchTweets,
     getTweetAssignmentsForColumn,
     ISocialTweetAssignments,
-    ISocialTweetData,
     ISocialTweetList,
-    retweetTweet,
     setTweetState,
-    unfavouriteTweet,
-    unretweetTweet,
 } from "../../redux/modules/social"
 import { ITriageColumn } from "../../redux/modules/triage"
 import { IProfileColumnPosition, ws_changeUserProfileSettings } from "../../redux/modules/user"
@@ -29,7 +23,6 @@ const overscanRowCount = 1
 export interface IProps {
     column: ITriageColumn
     onOpenAssigner: any
-    onOpenReplier: any
 }
 
 export interface IStoreProps {
@@ -43,7 +36,6 @@ export interface IDispatchProps {
     loadMoreRows: any
     onPositionUpdate: any
     onSetTweetState: any
-    onTweetAction: any
 }
 
 export interface IReactVirtualizedIndexes {
@@ -78,7 +70,6 @@ type TComponentProps = IProps & IStoreProps & IDispatchProps
 class TweetColumnContainer extends React.Component<TComponentProps, {}> {
     private loadMoreRows: any
     private onPositionUpdate: any
-    private onTweetAction: any
 
     public constructor(props: TComponentProps) {
         super(props)
@@ -91,9 +82,6 @@ class TweetColumnContainer extends React.Component<TComponentProps, {}> {
             2500,
             { maxWait: 5000 }
         )
-
-        this.onTweetAction = (tweetAction: eSocialTweetActionType, tweet: ISocialTweetData) =>
-            this.props.onTweetAction(tweetAction, tweet, this.props.onOpenReplier)
     }
     public render() {
         const { column, onOpenAssigner, tweet_ids, tweets, tweet_assignments, assignments, onSetTweetState } = this.props
@@ -112,7 +100,6 @@ class TweetColumnContainer extends React.Component<TComponentProps, {}> {
                 loadMoreRows={this.loadMoreRows}
                 onPositionUpdate={this.onPositionUpdate}
                 onSetTweetState={onSetTweetState}
-                onTweetAction={this.onTweetAction}
             />
         )
     }
@@ -143,23 +130,6 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
         },
         onSetTweetState: (tweetId: string, tweetState: eSocialTweetState) => {
             dispatch(setTweetState(tweetId, tweetState))
-        },
-        onTweetAction: (tweetAction: eSocialTweetActionType, tweet: ISocialTweetData, onOpenReplier: Function) => {
-            if (tweetAction === eSocialTweetActionType.REPLY) {
-                onOpenReplier(tweet.id_str)
-            } else if (tweetAction === eSocialTweetActionType.FAVOURITE) {
-                if (tweet.favorited === false) {
-                    dispatch(favouriteTweet(tweet.id_str))
-                } else {
-                    dispatch(unfavouriteTweet(tweet.id_str))
-                }
-            } else if (tweetAction === eSocialTweetActionType.RETWEET) {
-                if (tweet.retweeted === false) {
-                    dispatch(retweetTweet(tweet.id_str))
-                } else {
-                    dispatch(unretweetTweet(tweet.id_str))
-                }
-            }
         },
     }
 }

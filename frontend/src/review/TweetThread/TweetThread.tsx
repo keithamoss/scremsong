@@ -1,7 +1,7 @@
 import * as React from "react"
-import Tweet from "react-tweet"
 import { IReviewerAssignmentThreadRelationships } from "../../redux/modules/reviewers"
 import { ISocialTweetList } from "../../redux/modules/social"
+import TweetCardContainer from "../../twitter/TweetCard/TweetCardContainer"
 
 export interface IProps {
     tweetId: string
@@ -60,13 +60,12 @@ class TweetThread extends React.PureComponent<TComponentProps, IState> {
 
         return (
             <React.Fragment>
-                {ourDepth === 0 && childTweetIds.length === 0 && (
-                    <Tweet data={tweets[tweetId].data} linkProps={{ target: "_blank", rel: "noreferrer" }} />
-                )}
+                {ourDepth === 0 && childTweetIds.length === 0 && <TweetCardContainer tweetId={tweetId} />}
                 {!(ourDepth === 0 && childTweetIds.length === 0) && (
-                    <div style={{ marginLeft: ourDepth * 6, borderLeft: getBorderCSSForDepth(ourDepth) }}>
-                        <Tweet data={tweets[tweetId].data} linkProps={{ target: "_blank", rel: "noreferrer" }} />
-                    </div>
+                    <TweetCardContainer
+                        tweetId={tweetId}
+                        tweetStyles={{ marginLeft: ourDepth * 6, borderLeft: getBorderCSSForDepth(ourDepth) }}
+                    />
                 )}
 
                 {childTweetIds.length > 0 &&

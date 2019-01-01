@@ -5,13 +5,13 @@ import BlockOutlinedIcon from "@material-ui/icons/BlockOutlined"
 import CheckCircleOutlinedIcon from "@material-ui/icons/CheckCircleOutlined"
 import LiveTvOutlinedIcon from "@material-ui/icons/LiveTvOutlined"
 import * as React from "react"
-import Tweet from "react-tweet"
 import { AutoSizer, CellMeasurer, CellMeasurerCache, InfiniteLoader, List } from "react-virtualized"
 import "react-virtualized/styles.css"
 import { IReviewerAssignment } from "../../redux/modules/reviewers"
 import { eSocialTweetState, ISocialTweetAssignments, ISocialTweetList } from "../../redux/modules/social"
 import { getActionBarBackgroundColour, ITriageColumn } from "../../redux/modules/triage"
 import { getColumnPosition } from "../../redux/modules/user"
+import TweetCardContainer from "../../twitter/TweetCard/TweetCardContainer"
 
 const styles = (theme: Theme) => ({
     actionBar: { width: 50, height: "100%", display: "inline-block", verticalAlign: "top" },
@@ -33,7 +33,6 @@ export interface IProps {
     loadMoreRows: any
     onPositionUpdate: any
     onSetTweetState: any
-    onTweetAction: any
 }
 
 export interface IState {
@@ -258,7 +257,7 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
     }
 
     private _rowRenderer = ({ index, isScrolling, isVisible, key, parent, style }: any) => {
-        const { column, tweet_ids, tweets, tweet_assignments, assignments, onTweetAction, classes } = this.props
+        const { column, tweet_ids, tweets, tweet_assignments, assignments, classes } = this.props
 
         if (index >= column.total_tweets) {
             return (
@@ -343,12 +342,9 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
                                     </Tooltip>
                                 )}
                             </div>
-                            <Tweet
-                                key={tweetId}
-                                data={tweets[tweetId].data}
-                                linkProps={{ target: "_blank", rel: "noreferrer" }}
+                            <TweetCardContainer
+                                tweetId={tweetId}
                                 tweetStyles={{ display: "inline", opacity }}
-                                onTweetAction={onTweetAction}
                                 onMediaLoad={measure}
                                 onMediaLoadError={measure}
                             />
