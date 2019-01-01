@@ -68,13 +68,10 @@ const mapColumnListPropsToTweetPosition = (opts: any /*ListProps["onRowsRendered
 
 type TComponentProps = IProps & IStoreProps & IDispatchProps
 class TweetColumnContainer extends React.Component<TComponentProps, {}> {
-    private loadMoreRows: any
     private onPositionUpdate: any
 
     public constructor(props: TComponentProps) {
         super(props)
-
-        this.loadMoreRows = (indexes: IReactVirtualizedIndexes) => props.loadMoreRows(this.props.column, indexes)
 
         this.onPositionUpdate = debounce(
             (columnId: number, opts: any /*ListProps["onRowsRendered"]*/) =>
@@ -84,7 +81,7 @@ class TweetColumnContainer extends React.Component<TComponentProps, {}> {
         )
     }
     public render() {
-        const { column, onOpenAssigner, tweet_ids, tweets, tweet_assignments, assignments, onSetTweetState } = this.props
+        const { column, onOpenAssigner, tweet_ids, tweets, tweet_assignments, assignments, loadMoreRows, onSetTweetState } = this.props
 
         return (
             <TweetColumn
@@ -97,7 +94,7 @@ class TweetColumnContainer extends React.Component<TComponentProps, {}> {
                 preFetchThreshold={preFetchThreshold}
                 minBatchSize={minBatchSize}
                 overscanRowCount={overscanRowCount}
-                loadMoreRows={this.loadMoreRows}
+                loadMoreRows={loadMoreRows}
                 onPositionUpdate={this.onPositionUpdate}
                 onSetTweetState={onSetTweetState}
             />
@@ -118,10 +115,10 @@ const mapStateToProps = (state: IStore, ownProps: IProps): IStoreProps => {
     }
 }
 
-const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
+const mapDispatchToProps = (dispatch: Function, ownProps: IProps): IDispatchProps => {
     return {
-        loadMoreRows: (column: ITriageColumn, indexes: IReactVirtualizedIndexes) => {
-            return dispatch(fetchTweets(indexes.startIndex, indexes.stopIndex, [column.id]))
+        loadMoreRows: (indexes: IReactVirtualizedIndexes) => {
+            return dispatch(fetchTweets(indexes.startIndex, indexes.stopIndex, [ownProps.column.id]))
         },
         onPositionUpdate: (columnId: number, positions: IProfileColumnPosition | null) => {
             const settings = { column_positions: {} }

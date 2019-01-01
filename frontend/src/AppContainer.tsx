@@ -77,10 +77,6 @@ export interface IRouteProps {
 
 type TComponentProps = IProps & IStoreProps & IDispatchProps & IRouteProps & WithStyles
 export class AppContainer extends React.Component<TComponentProps, {}> {
-    public constructor(props: TComponentProps) {
-        super(props)
-    }
-
     public playAudio = () => {
         const audio = document.getElementById("scremsong-sound") as HTMLMediaElement
         if (this.canPlayAudio(audio)) {

@@ -45,37 +45,21 @@ export enum eTweetColumnAssignerMode {
 
 type TComponentProps = IProps & IStoreProps & IDispatchProps
 class TweetColumnAssignerContainer extends React.Component<TComponentProps, {}> {
-    private onAssignTweet: any
-    private onUnassignTweet: any
-    private onReassign: any
-    private onBulkReassign: any
-
-    public constructor(props: TComponentProps) {
-        super(props)
-
-        this.onAssignTweet = (tweetId: string, userId: number) => {
-            this.props.onAssignTweet(tweetId, userId)
-            this.props.onCloseAssigner()
-        }
-        this.onUnassignTweet = (assignment: IReviewerAssignment) => {
-            this.props.onUnassignTweet(assignment)
-            this.props.onCloseAssigner()
-        }
-        this.onReassign = (assignmentId: number, newReviewerId: number) => {
-            if ("onBeforeReassign" in this.props) {
-                this.props.onBeforeReassign(() => {
-                    this.props.onReassign(assignmentId, newReviewerId)
-                    this.props.onCloseAssigner()
-                })
-            } else {
-                this.props.onReassign(assignmentId, newReviewerId)
-                this.props.onCloseAssigner()
-            }
-        }
-    }
-
     public render() {
-        const { open, assignment, tweetId, currentReviewer, reviewers, reviewerAssignmentCounts, mode, onCloseAssigner } = this.props
+        const {
+            open,
+            assignment,
+            tweetId,
+            currentReviewer,
+            reviewers,
+            reviewerAssignmentCounts,
+            mode,
+            onCloseAssigner,
+            onAssignTweet,
+            onUnassignTweet,
+            onReassign,
+            onBulkReassign,
+        } = this.props
 
         return (
             <TweetColumnAssigner
@@ -87,10 +71,10 @@ class TweetColumnAssignerContainer extends React.Component<TComponentProps, {}> 
                 reviewerAssignmentCounts={reviewerAssignmentCounts}
                 mode={mode}
                 onCloseAssigner={onCloseAssigner}
-                onAssignTweet={this.onAssignTweet}
-                onUnassignTweet={this.onUnassignTweet}
-                onReassign={this.onReassign}
-                onBulkReassign={this.onBulkReassign}
+                onAssignTweet={onAssignTweet}
+                onUnassignTweet={onUnassignTweet}
+                onReassign={onReassign}
+                onBulkReassign={onBulkReassign}
             />
         )
     }
@@ -112,16 +96,26 @@ const mapStateToProps = (state: IStore, ownProps: IProps): IStoreProps => {
     }
 }
 
-const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
+const mapDispatchToProps = (dispatch: Function, ownProps: IProps): IDispatchProps => {
     return {
         onAssignTweet: (tweetId: string, userId: number) => {
             dispatch(assignReviewer(tweetId, userId))
+            ownProps.onCloseAssigner()
         },
         onUnassignTweet: (assignment: IReviewerAssignment) => {
             dispatch(unassignReviewer(assignment.id))
+            ownProps.onCloseAssigner()
         },
         onReassign: (assignmentId: number, newReviewerId: number) => {
-            dispatch(reassignReviewer(assignmentId, newReviewerId))
+            if ("onBeforeReassign" in ownProps) {
+                ownProps.onBeforeReassign(() => {
+                    dispatch(reassignReviewer(assignmentId, newReviewerId))
+                    ownProps.onCloseAssigner()
+                })
+            } else {
+                dispatch(reassignReviewer(assignmentId, newReviewerId))
+                ownProps.onCloseAssigner()
+            }
         },
         onBulkReassign: (currentReviewerId: number, newReviewerId: number) => {
             dispatch(bulkReassignReviewer(currentReviewerId, newReviewerId))
