@@ -67,7 +67,11 @@ class ReviewCard extends React.PureComponent<TComponentProps, IState> {
     }
 
     public handleChange = (callback: any = undefined) => {
-        this.setState({ ...this.state, ...{ shown: false } }, callback)
+        if (typeof callback === "function") {
+            this.setState({ ...this.state, ...{ shown: false } }, callback)
+        } else {
+            this.setState({ ...this.state, ...{ shown: false } })
+        }
     }
 
     public render() {
