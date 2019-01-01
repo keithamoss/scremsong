@@ -119,6 +119,7 @@ const mapDispatchToProps = (dispatch: Function, ownProps: IProps): IDispatchProp
         },
         onBulkReassign: (currentReviewerId: number, newReviewerId: number) => {
             dispatch(bulkReassignReviewer(currentReviewerId, newReviewerId))
+            ownProps.onCloseAssigner()
         },
     }
 }

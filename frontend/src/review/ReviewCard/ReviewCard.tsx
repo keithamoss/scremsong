@@ -66,7 +66,6 @@ class ReviewCard extends React.PureComponent<TComponentProps, IState> {
     }
 
     public handleCardCollapse = (callback: any = undefined) => {
-        console.log("handleCardCollapse", typeof callback)
         if (typeof callback === "function") {
             this.setState({ ...this.state, ...{ shown: false } }, callback)
         } else {
