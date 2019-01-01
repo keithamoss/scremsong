@@ -16,6 +16,7 @@ const BEGIN_FETCH = "scremsong/app/BEGIN_FETCH"
 const FINISH_FETCH = "scremsong/app/FINISH_FETCH"
 const TOGGLE_SIDEBAR = "scremsong/app/TOGGLE_SIDEBAR"
 const REMOVE_SNACKBAR = "scremsong/app/REMOVE_SNACKBAR"
+const SEND_NOTIFICATION = "scremsong/app/SEND_NOTIFICATION"
 
 export enum eAppEnv {
     DEV = 1,
@@ -42,6 +43,7 @@ type IAction =
     | IActionToggleSidebar
     | IActionRemoveSnackbar
     | IActionNotification
+    | IActionSendNotification
 export default function reducer(state: IModule = initialState, action: IAction) {
     let requestsInProgress = dotProp.get(state, "requestsInProgress")
 
@@ -61,6 +63,7 @@ export default function reducer(state: IModule = initialState, action: IAction) 
         case TOGGLE_SIDEBAR:
             return dotProp.toggle(state, "sidebarOpen")
         case WS_NOTIFICATION:
+        case SEND_NOTIFICATION:
             return dotProp.set(state, "notifications.$end", action)
         case REMOVE_SNACKBAR:
             const notificationIndex = state.notifications.findIndex((notification: INotification) => notification.key === action.key)
@@ -102,6 +105,11 @@ export const removeSnackbar = (key: string): IActionRemoveSnackbar => ({
     key,
 })
 
+export const sendNotification = (notification: INotification): IActionSendNotification => ({
+    type: SEND_NOTIFICATION,
+    ...notification,
+})
+
 // Models
 export interface IModule {
     loading: boolean
@@ -129,6 +137,8 @@ export interface IActionRemoveSnackbar extends Action<typeof REMOVE_SNACKBAR> {
     key: string
 }
 
+export interface IActionSendNotification extends Action<typeof SEND_NOTIFICATION>, INotification {}
+
 export interface INotification {
     message: string
     options: INotificationOptions
@@ -147,6 +157,7 @@ export interface INotificationOptions {
     variant: eNotificationVariant
     onClickAction?: Function
     autoHideDuration?: number
+    action?: any // Per https://material-ui.com/api/snackbar/#snackbar
 }
 
 // Side effects, only as applicable

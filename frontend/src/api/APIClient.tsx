@@ -1,6 +1,9 @@
+import { Button } from "@material-ui/core"
 import * as Cookies from "js-cookie"
 import * as qs from "qs"
-import { beginFetch, finishFetch, getAPIBaseURL } from "../redux/modules/app"
+import * as React from "react"
+import { beginFetch, eNotificationVariant, finishFetch, getAPIBaseURL, sendNotification } from "../redux/modules/app"
+import { randomHash } from "../utils"
 
 export class APIClient {
     private baseURL: string
@@ -34,7 +37,7 @@ export class APIClient {
 
                 return response.json().then((json: any) => {
                     if (json.error) {
-                        this.handleError(json.messages, url, dispatch)
+                        this.handleError(json.error, url, dispatch)
                     }
 
                     return {
@@ -110,11 +113,23 @@ export class APIClient {
             .catch((error: any) => this.handleError(error, url, dispatch))
     }
 
-    // Only handles fatal errors from the API (i.e. non-200 responses)
-    private handleError(error: any[], url: string, dispatch: any) {
-        // dispatch(
-        //     // Do whatever you want to do here to alert the user to a problem
-        // )
+    // Handles fatal errors from the API (i.e. non-200 responses)
+    private handleError(error: string, url: string, dispatch: any) {
+        dispatch(
+            sendNotification({
+                message: error,
+                options: {
+                    variant: eNotificationVariant.ERROR,
+                    autoHideDuration: 6000,
+                    action: (
+                        <Button size="small" color="inherit">
+                            OK
+                        </Button>
+                    ),
+                },
+                key: randomHash(32),
+            })
+        )
     }
 }
 

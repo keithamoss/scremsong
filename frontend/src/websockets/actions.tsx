@@ -1,5 +1,5 @@
 import { Action } from "redux"
-import { INotificationOptions } from "../redux/modules/app"
+import { INotification } from "../redux/modules/app"
 import { eSocialAssignmentStatus, IReviewerAssignment, IReviewerUser } from "../redux/modules/reviewers"
 import {
     eSocialTweetState,
@@ -40,11 +40,7 @@ export interface IActionConnected extends Action<typeof WS_CONNECTED> {
     actions: Action[]
 }
 
-export interface IActionNotification extends Action<typeof WS_NOTIFICATION> {
-    message: string
-    options: INotificationOptions
-    key: string
-}
+export interface IActionNotification extends Action<typeof WS_NOTIFICATION>, INotification {}
 
 export interface IActionSocialColumnsList extends Action<typeof WS_SOCIAL_COLUMNS_LIST> {
     columns: ITriageColumn[]
