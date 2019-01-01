@@ -11,6 +11,7 @@ import {
     IActionReviewersListAssignments,
     IActionReviewersUnassign,
     IActionsTweetsLoadTweets,
+    IActionsTweetsPrecannedReplies,
     IActionsTweetsSetState,
     IActionTweetsNew,
     IActionTweetsUpdateTweets,
@@ -24,6 +25,7 @@ import {
     WS_REVIEWERS_UNASSIGN,
     WS_TWEETS_LOAD_TWEETS,
     WS_TWEETS_NEW_TWEETS,
+    WS_TWEETS_PRECANNED_REPLIES,
     WS_TWEETS_SET_STATE,
     WS_TWEETS_UPDATE_TWEETS,
 } from "../../websockets/constants"
@@ -37,6 +39,7 @@ const LOAD_TWEETS = "scremsong/social/LOAD_TWEETS"
 const initialState: IModule = {
     tweets: {},
     tweet_assignments: {},
+    precanned_replies: {} as ISocialPrecannedTweetReplies,
 }
 
 // Reducer
@@ -51,6 +54,7 @@ type IAction =
     | IActionReviewersBulkAssign
     | IActionReviewersAssignmentUpdated
     | IActionsTweetsSetState
+    | IActionsTweetsPrecannedReplies
 export default function reducer(state: IModule = initialState, action: IAction) {
     switch (action.type) {
         case LOAD_TWEETS:
@@ -89,6 +93,8 @@ export default function reducer(state: IModule = initialState, action: IAction) 
             return state
         case WS_TWEETS_SET_STATE:
             return dotProp.set(state, `tweets.${action.tweetId}.state`, action.tweetState)
+        case WS_TWEETS_PRECANNED_REPLIES:
+            return dotProp.set(state, "precanned_replies", action.replies)
         default:
             return state
     }
@@ -153,6 +159,7 @@ export const loadTweets = (json: ISocialTweetsAndColumnsResponse): IActionLoadTw
 export interface IModule {
     tweets: ISocialTweetList
     tweet_assignments: ISocialTweetAssignments
+    precanned_replies: ISocialPrecannedTweetReplies
 }
 
 export interface IActionLoadTweets extends Action<typeof LOAD_TWEETS>, ISocialTweetsAndColumnsResponse {
@@ -208,6 +215,16 @@ export interface ISocialTweetDataUserMention {
     id_str: string
     indices: number[]
     screen_name: string
+}
+
+export enum eSocialTweetReplyCategories {
+    POSITIVE_REPORT = "Positive Report",
+    NEGATIVE_REPORT = "Negative Report",
+    THANK_YOUS = "Thank Yous",
+}
+
+export interface ISocialPrecannedTweetReplies {
+    eSocialTweetReplyCategories: string[]
 }
 
 // Side effects, only as applicable

@@ -1,7 +1,13 @@
 import { Action } from "redux"
 import { INotificationOptions } from "../redux/modules/app"
 import { eSocialAssignmentStatus, IReviewerAssignment, IReviewerUser } from "../redux/modules/reviewers"
-import { eSocialTweetState, ISocialTweet, ISocialTweetList, ISocialTweetsAndColumnsResponse } from "../redux/modules/social"
+import {
+    eSocialTweetState,
+    ISocialPrecannedTweetReplies,
+    ISocialTweet,
+    ISocialTweetList,
+    ISocialTweetsAndColumnsResponse,
+} from "../redux/modules/social"
 import { ITriageColumn } from "../redux/modules/triage"
 import { IUser } from "../redux/modules/user"
 import {
@@ -18,6 +24,7 @@ import {
     WS_SOCIAL_COLUMNS_LIST,
     WS_TWEETS_LOAD_TWEETS,
     WS_TWEETS_NEW_TWEETS,
+    WS_TWEETS_PRECANNED_REPLIES,
     WS_TWEETS_SET_STATE,
     WS_TWEETS_UPDATE_TWEETS,
 } from "./constants"
@@ -101,6 +108,10 @@ export interface IActionTweetsUpdateTweets extends Action<typeof WS_TWEETS_UPDAT
 export interface IActionsTweetsSetState extends Action<typeof WS_TWEETS_SET_STATE> {
     tweetId: string
     tweetState: eSocialTweetState
+}
+
+export interface IActionsTweetsPrecannedReplies extends Action<typeof WS_TWEETS_PRECANNED_REPLIES> {
+    replies: ISocialPrecannedTweetReplies
 }
 
 export interface IActionsTweetsLoadTweets extends Action<typeof WS_TWEETS_LOAD_TWEETS>, ISocialTweetsAndColumnsResponse {}

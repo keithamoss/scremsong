@@ -10,6 +10,7 @@
         "js-cookie": "^2.2.0",
         "jss-material-ui": "^2.0.5",
         "lodash-es": "^4.17.11",
+        "material-ui-chip-input": "^1.0.0-beta.11",
         "notistack": "^0.4.1",
         "qs": "^6.6.0",
         "react": "^16.7.0",

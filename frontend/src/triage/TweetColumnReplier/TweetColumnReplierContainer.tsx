@@ -1,7 +1,7 @@
 import * as React from "react"
 import { connect } from "react-redux"
 import { IStore } from "../../redux/modules/reducer"
-import { ISocialTweet } from "../../redux/modules/social"
+import { ISocialPrecannedTweetReplies, ISocialTweet } from "../../redux/modules/social"
 import TweetColumnReplier from "./TweetColumnReplier"
 
 export interface IProps {
@@ -12,11 +12,12 @@ export interface IProps {
 
 export interface IStoreProps {
     tweet: ISocialTweet
+    precanned_replies: ISocialPrecannedTweetReplies
 }
 
 export interface IDispatchProps {
-    onTweetCharacterLimitError: Function
-    onTweetCharacterLimitValid: Function
+    onFieldInvalid: Function
+    onFieldValid: Function
 }
 
 type TComponentProps = IProps & IStoreProps & IDispatchProps
@@ -26,7 +27,7 @@ class TweetColumnReplierContainer extends React.Component<TComponentProps, {}> {
     }
 
     public render() {
-        const { open, tweet, onCloseReplier, onTweetCharacterLimitError, onTweetCharacterLimitValid } = this.props
+        const { open, tweet, precanned_replies, onCloseReplier, onFieldInvalid, onFieldValid } = this.props
 
         if (tweet === undefined || open === false) {
             return null
@@ -36,9 +37,10 @@ class TweetColumnReplierContainer extends React.Component<TComponentProps, {}> {
             <TweetColumnReplier
                 open={open}
                 tweet={tweet}
+                precanned_replies={precanned_replies}
                 onCloseReplier={onCloseReplier}
-                onTweetCharacterLimitError={onTweetCharacterLimitError}
-                onTweetCharacterLimitValid={onTweetCharacterLimitValid}
+                onFieldInvalid={onFieldInvalid}
+                onFieldValid={onFieldValid}
             />
         )
     }
@@ -49,16 +51,17 @@ const mapStateToProps = (state: IStore, ownProps: IProps): IStoreProps => {
 
     return {
         tweet: social.tweets[ownProps.tweetId],
+        precanned_replies: social.precanned_replies,
     }
 }
 
 const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {
-        onTweetCharacterLimitError: () => {
-            console.log("onTweetCharacterLimitError")
+        onFieldInvalid: () => {
+            console.log("onFieldInvalid")
         },
-        onTweetCharacterLimitValid: () => {
-            console.log("onTweetCharacterLimitValid")
+        onFieldValid: () => {
+            console.log("onFieldValid")
         },
     }
 }

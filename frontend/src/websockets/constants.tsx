@@ -7,6 +7,7 @@ export const WS_TWEETS_NEW_TWEETS = "ws/scremsong/tweets/NEW_TWEETS"
 export const WS_TWEETS_LOAD_TWEETS = "ws/scremsong/tweets/LOAD_TWEETS"
 export const WS_TWEETS_UPDATE_TWEETS = "ws/scremsong/tweets/UPDATE_TWEETS"
 export const WS_TWEETS_SET_STATE = "ws/scremsong/tweets/SET_STATE"
+export const WS_TWEETS_PRECANNED_REPLIES = "ws/scremsong/tweets/PRECANNED_REPLIES"
 
 export const WS_SOCIAL_COLUMNS_LIST = "ws/scremsong/social_columns/LIST"
 
@@ -25,6 +26,7 @@ export const messageTypes = [
     WS_TWEETS_LOAD_TWEETS,
     WS_TWEETS_UPDATE_TWEETS,
     WS_TWEETS_SET_STATE,
+    WS_TWEETS_PRECANNED_REPLIES,
     WS_SOCIAL_COLUMNS_LIST,
     WS_REVIEWERS_LIST_USERS,
     WS_REVIEWERS_LIST_ASSIGNMENTS,
