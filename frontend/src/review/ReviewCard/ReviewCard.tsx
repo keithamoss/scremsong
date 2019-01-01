@@ -4,7 +4,6 @@ import AssignmentTurnedIn from "@material-ui/icons/AssignmentTurnedIn"
 import OpenInNew from "@material-ui/icons/OpenInNew"
 import classNames from "classnames"
 import * as React from "react"
-import { ExitHandler } from "react-transition-group/Transition"
 import { IReviewerAssignment } from "../../redux/modules/reviewers"
 import { ISocialTweetList } from "../../redux/modules/social"
 import TweetColumnAssignerContainer, { eTweetColumnAssignerMode } from "../../triage/TweetColumnAssigner/TweetColumnAssignerContainer"
@@ -42,7 +41,7 @@ class ReviewCard extends React.PureComponent<TComponentProps, IState> {
     private onOpenAssigner: any
     private onCloseAssigner: any
     private onBeforeReassign: any
-    private onMarkAsDone: ExitHandler
+    private onMarkAsDone: any
 
     public constructor(props: TComponentProps) {
         super(props)
@@ -58,15 +57,16 @@ class ReviewCard extends React.PureComponent<TComponentProps, IState> {
         }
 
         this.onBeforeReassign = (callback: any) => {
-            this.handleChange(callback)
+            this.handleCardCollapse(callback)
         }
 
         this.onMarkAsDone = (node: HTMLElement) => {
-            this.props.onMarkAsDone(this.props.assignment)
+            this.handleCardCollapse(() => this.props.onMarkAsDone(this.props.assignment))
         }
     }
 
-    public handleChange = (callback: any = undefined) => {
+    public handleCardCollapse = (callback: any = undefined) => {
+        console.log("handleCardCollapse", typeof callback)
         if (typeof callback === "function") {
             this.setState({ ...this.state, ...{ shown: false } }, callback)
         } else {
@@ -102,7 +102,7 @@ class ReviewCard extends React.PureComponent<TComponentProps, IState> {
                     onCloseAssigner={this.onCloseAssigner}
                     onBeforeReassign={this.onBeforeReassign}
                 />
-                <Collapse in={this.state.shown} onExited={this.onMarkAsDone}>
+                <Collapse in={this.state.shown}>
                     <Card className={classes.paddedCard}>
                         <CardContent>
                             <TweetThread
@@ -124,7 +124,7 @@ class ReviewCard extends React.PureComponent<TComponentProps, IState> {
                                 <RetweetIcon />
                             </IconButton> */}
 
-                            <Button color={"primary"} variant="contained" className={classes.button} onClick={this.handleChange}>
+                            <Button color={"primary"} variant="contained" className={classes.button} onClick={this.onMarkAsDone}>
                                 <AssignmentTurnedIn className={classNames(classes.leftIcon, classes.iconSmall)} />
                                 Mark as done
                             </Button>
