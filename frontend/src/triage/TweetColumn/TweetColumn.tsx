@@ -7,7 +7,7 @@ import LiveTvOutlinedIcon from "@material-ui/icons/LiveTvOutlined"
 import * as React from "react"
 import { AutoSizer, CellMeasurer, CellMeasurerCache, InfiniteLoader, List } from "react-virtualized"
 import "react-virtualized/styles.css"
-import { IReviewerAssignment } from "../../redux/modules/reviewers"
+import { eSocialAssignmentStatus, IReviewerAssignment } from "../../redux/modules/reviewers"
 import { eSocialTweetState, ISocialTweetAssignments, ISocialTweetList } from "../../redux/modules/social"
 import { getActionBarBackgroundColour, ITriageColumn } from "../../redux/modules/triage"
 import { getColumnPosition } from "../../redux/modules/user"
@@ -277,6 +277,7 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
             const assignmentId = tweet_assignments[tweetId]
             const assignment = tweetId in tweet_assignments ? assignments[assignmentId] : null
 
+            const showActionBarButtons = assignment === null || assignment.status !== eSocialAssignmentStatus.DONE
             const backgroundColor = getActionBarBackgroundColour(tweet, assignment)
 
             let opacity = 1
@@ -289,18 +290,20 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
                     {({ measure }) => (
                         <div style={style}>
                             <div className={classes.actionBar} style={{ borderRight: `6px solid ${backgroundColor}` }}>
-                                <Tooltip title="Assign this tweet to someone" aria-label="Assign tweet">
-                                    <Button
-                                        size="small"
-                                        className={classes.button}
-                                        aria-label="Assign tweet"
-                                        onClick={this.onOpenAssigner(tweetId, assignmentId)}
-                                    >
-                                        {assignmentId === undefined ? <AssignmentOutlinedIcon /> : <AssignmentIcon />}
-                                    </Button>
-                                </Tooltip>
+                                {showActionBarButtons === true && (
+                                    <Tooltip title="Assign this tweet to someone" aria-label="Assign tweet">
+                                        <Button
+                                            size="small"
+                                            className={classes.button}
+                                            aria-label="Assign tweet"
+                                            onClick={this.onOpenAssigner(tweetId, assignmentId)}
+                                        >
+                                            {assignmentId === undefined ? <AssignmentOutlinedIcon /> : <AssignmentIcon />}
+                                        </Button>
+                                    </Tooltip>
+                                )}
 
-                                {tweet.state === eSocialTweetState.ACTIVE && (
+                                {showActionBarButtons === true && tweet.state === eSocialTweetState.ACTIVE && (
                                     <React.Fragment>
                                         <Tooltip title="Ignore this tweet" aria-label="Ignore tweet">
                                             <Button
@@ -326,21 +329,22 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
                                     </React.Fragment>
                                 )}
 
-                                {(tweet.state === eSocialTweetState.DISMISSED || tweet.state === eSocialTweetState.DEALT_WITH) && (
-                                    <Tooltip
-                                        title="Make this tweet active again (i.e. unignore it, mark it as 'not dealt with')"
-                                        aria-label="Set active"
-                                    >
-                                        <Button
-                                            size="small"
-                                            className={classes.button}
+                                {showActionBarButtons === true &&
+                                    (tweet.state === eSocialTweetState.DISMISSED || tweet.state === eSocialTweetState.DEALT_WITH) && (
+                                        <Tooltip
+                                            title="Make this tweet active again (i.e. unignore it, mark it as 'not dealt with')"
                                             aria-label="Set active"
-                                            onClick={this.onSetTweetState(tweetId, eSocialTweetState.ACTIVE)}
                                         >
-                                            <LiveTvOutlinedIcon />
-                                        </Button>
-                                    </Tooltip>
-                                )}
+                                            <Button
+                                                size="small"
+                                                className={classes.button}
+                                                aria-label="Set active"
+                                                onClick={this.onSetTweetState(tweetId, eSocialTweetState.ACTIVE)}
+                                            >
+                                                <LiveTvOutlinedIcon />
+                                            </Button>
+                                        </Tooltip>
+                                    )}
                             </div>
                             <TweetCardContainer
                                 tweetId={tweetId}

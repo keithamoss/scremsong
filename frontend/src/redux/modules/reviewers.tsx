@@ -150,7 +150,7 @@ export interface IModule {
 
 export enum eSocialAssignmentStatus {
     PENDING = "SocialAssignmentStatus.PENDING",
-    PROCESSED = "SocialAssignmentStatus.PROCESSED",
+    // PROCESSED = "SocialAssignmentStatus.PROCESSED", // DO NOT USE
     DONE = "SocialAssignmentStatus.DONE",
 }
 
