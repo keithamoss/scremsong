@@ -6,7 +6,7 @@ from scremsong.app.serializers import ReviewerUserSerializer, TweetsSerializer, 
 
 
 def get_reviewer_users():
-    users = User.objects.filter(is_staff=False, is_active=True).all()
+    users = User.objects.filter(is_staff=False, is_active=True).order_by("first_name").all()
     return ReviewerUserSerializer(users, many=True).data
 
 
