@@ -121,3 +121,10 @@ class TweetReplies(models.Model):
 
     reply_text = models.TextField()
     category = models.TextField(choices=[(tag, tag.value) for tag in TweetReplyCategories], null=True)
+
+
+
+class AllowedUsers(models.Model):
+    "Our whitelist of allowed users"
+
+    email = models.EmailField(unique=True, blank=False)

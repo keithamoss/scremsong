@@ -1,12 +1,13 @@
 from scremsong.util import get_env
+from scremsong.app.models import AllowedUsers
 
 USER_FIELDS = ["username", "email"]
 
 
 def allowed_email(email):
-    allowed_emails = get_env("AUTHORISED_USERS")
-    if allowed_emails is not None and len(allowed_emails) > 1:
-        return email in allowed_emails.split(",")
+    allowed_emails = list(AllowedUsers.objects.all().values_list("email", flat=True))
+    if len(allowed_emails) > 1:
+        return email in allowed_emails
     return False
 
 # https://medium.com/trabe/user-account-validation-with-social-auth-django-658ff00404b5
