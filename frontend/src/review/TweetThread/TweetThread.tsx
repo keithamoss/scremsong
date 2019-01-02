@@ -1,12 +1,13 @@
 import * as React from "react"
-import { IReviewerAssignmentThreadRelationships } from "../../redux/modules/reviewers"
-import { ISocialTweetList } from "../../redux/modules/social"
+import { IReviewerAssignment, IReviewerAssignmentThreadRelationships } from "../../redux/modules/reviewers"
+import { getTweetStyle, ISocialTweetList } from "../../redux/modules/social"
 import TweetCardContainer from "../../twitter/TweetCard/TweetCardContainer"
 
 export interface IProps {
     tweetId: string
     threadRelationships: IReviewerAssignmentThreadRelationships[]
     tweets: ISocialTweetList
+    assignment: IReviewerAssignment
     depth?: number
 }
 
@@ -46,7 +47,7 @@ const getBorderCSSForDepth = (depth: number) => {
 type TComponentProps = IProps
 class TweetThread extends React.PureComponent<TComponentProps, IState> {
     public render() {
-        const { tweetId, threadRelationships, tweets, depth } = this.props
+        const { tweetId, threadRelationships, tweets, assignment, depth } = this.props
 
         const ourDepth = depth === undefined ? 0 : depth
         const nextDepth = ourDepth + 1
@@ -60,11 +61,13 @@ class TweetThread extends React.PureComponent<TComponentProps, IState> {
 
         return (
             <React.Fragment>
-                {ourDepth === 0 && childTweetIds.length === 0 && <TweetCardContainer tweetId={tweetId} />}
                 {!(ourDepth === 0 && childTweetIds.length === 0) && (
                     <TweetCardContainer
                         tweetId={tweetId}
-                        tweetStyles={{ marginLeft: ourDepth * 6, borderLeft: getBorderCSSForDepth(ourDepth) }}
+                        tweetStyles={{
+                            ...{ marginLeft: ourDepth * 6, borderLeft: getBorderCSSForDepth(ourDepth) },
+                            ...getTweetStyle(assignment, tweets[tweetId]),
+                        }}
                     />
                 )}
 
@@ -75,6 +78,7 @@ class TweetThread extends React.PureComponent<TComponentProps, IState> {
                             tweetId={childTweetId}
                             threadRelationships={threadRelationships}
                             tweets={tweets}
+                            assignment={assignment}
                             depth={nextDepth}
                         />
                     ))}

@@ -1,6 +1,6 @@
 import { Action } from "redux"
 import { INotification } from "../redux/modules/app"
-import { eSocialAssignmentStatus, IReviewerAssignment, IReviewerUser } from "../redux/modules/reviewers"
+import { IReviewerAssignment, IReviewerUser } from "../redux/modules/reviewers"
 import {
     eSocialTweetState,
     ISocialPrecannedTweetReplies,
@@ -14,7 +14,7 @@ import {
     WS_CONNECTED,
     WS_NOTIFICATION,
     WS_REVIEWERS_ASSIGN,
-    WS_REVIEWERS_ASSIGNMENT_STATUS_CHANGE,
+    WS_REVIEWERS_ASSIGNMENT_METADATA_CHANGED,
     WS_REVIEWERS_ASSIGNMENT_UPDATED,
     WS_REVIEWERS_BULK_ASSIGN,
     WS_REVIEWERS_LIST_ASSIGNMENTS,
@@ -74,9 +74,8 @@ export interface IActionReviewersAssignmentUpdated extends Action<typeof WS_REVI
     tweets: ISocialTweetList
 }
 
-export interface IActionReviewersAssignmentStatusChange extends Action<typeof WS_REVIEWERS_ASSIGNMENT_STATUS_CHANGE> {
-    assignmentId: number
-    status: eSocialAssignmentStatus
+export interface IActionReviewersAssignmentMetadataChanged extends Action<typeof WS_REVIEWERS_ASSIGNMENT_METADATA_CHANGED> {
+    assignment: IReviewerAssignment
 }
 
 export interface IActionReviewersSetStatus extends Action<typeof WS_REVIEWERS_SET_STATUS> {

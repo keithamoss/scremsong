@@ -277,7 +277,8 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
             const assignmentId = tweet_assignments[tweetId]
             const assignment = tweetId in tweet_assignments ? assignments[assignmentId] : null
 
-            const showActionBarButtons = assignment === null || assignment.status !== eSocialAssignmentStatus.DONE
+            const showActionBarButtons =
+                assignment === null || assignment.status === eSocialAssignmentStatus.PENDING || eSocialAssignmentStatus.AWAIT_REPLY
             const backgroundColor = getActionBarBackgroundColour(tweet, assignment)
 
             let opacity = 1

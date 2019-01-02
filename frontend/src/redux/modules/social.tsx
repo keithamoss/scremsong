@@ -1,5 +1,6 @@
 import * as dotProp from "dot-prop-immutable"
-import { memoize } from "lodash-es"
+import { max, memoize, min } from "lodash-es"
+import { DateTime } from "luxon"
 // import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 import { Action } from "redux"
 import { createSelector } from "reselect"
@@ -105,7 +106,7 @@ export default function reducer(state: IModule = initialState, action: IAction) 
 const getTweetAssignments = (state: IStore) => state.social.tweet_assignments
 const getTweets = (state: IStore) => state.social.tweets
 
-export const getTweetIdsForAssignement = createSelector(
+export const getTweetsForAssignment = createSelector(
     [getTweetAssignments, getTweets],
     (tweetAssignments, tweets) =>
         memoize((assignment: IReviewerAssignment) => {
@@ -148,6 +149,36 @@ export const getTweetsForColumn = createSelector(
                 }, {})
         })
 )
+
+export const getUnreadTweetIds = memoize((assignment: IReviewerAssignment, tweets: ISocialTweetList) => {
+    if (assignment.last_read_on === null) {
+        return Object.keys(tweets)
+    }
+
+    const assignmentLastReadOn = DateTime.fromISO(assignment.last_read_on)
+    const tweetIds: string[] = []
+    for (const [tweetId, tweet] of Object.entries(tweets)) {
+        if (parseTwitterDate(tweet.data.created_at) > assignmentLastReadOn) {
+            tweetIds.push(tweetId)
+        }
+    }
+    return tweetIds
+})
+
+export const isTweetUnread = memoize(
+    (assignment: IReviewerAssignment, tweet: ISocialTweet) => {
+        if (assignment.last_read_on === null) {
+            return true
+        }
+
+        return parseTwitterDate(tweet.data.created_at) > DateTime.fromISO(assignment.last_read_on)
+    },
+    (assignment: IReviewerAssignment, tweet: ISocialTweet) => `${assignment.id}.${tweet.data.id_str}.${assignment.last_read_on}`
+)
+
+export const getOldestUnreadTweetId = memoize((unreadTweets: string[]) => min(unreadTweets))
+
+export const getNewestTweetId = memoize((tweetIds: string[]) => max(tweetIds))
 
 // Action Creators
 export const loadTweets = (json: ISocialTweetsAndColumnsResponse): IActionLoadTweets => ({
@@ -201,6 +232,7 @@ export interface ISocialTweetData {
     id_str: string
     favorited: boolean
     retweeted: boolean
+    created_at: string // datetime
     user: {
         screen_name: string
     }
@@ -296,3 +328,10 @@ export function replyToTweet(inReplyToTweetId: string, replyText: string) {
         return response.status === 200
     }
 }
+
+// Utilities
+const TWITTER_DATE_FORMAT = "EEE MMM d HH:mm:ss ZZZ yyyy"
+export const parseTwitterDate = (date: string) => DateTime.fromFormat(date, TWITTER_DATE_FORMAT)
+
+export const getTweetStyle = (assignment: IReviewerAssignment, tweet: ISocialTweet) =>
+    isTweetUnread(assignment, tweet) ? { backgroundColor: "rgba(173, 216, 230, 0.25)" } : undefined

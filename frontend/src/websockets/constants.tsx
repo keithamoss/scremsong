@@ -17,7 +17,7 @@ export const WS_REVIEWERS_ASSIGN = "ws/scremsong/reviewers/ASSIGN"
 export const WS_REVIEWERS_UNASSIGN = "ws/scremsong/reviewers/UNASSIGN"
 export const WS_REVIEWERS_BULK_ASSIGN = "ws/scremsong/reviewers/BULK_ASSIGN"
 export const WS_REVIEWERS_ASSIGNMENT_UPDATED = "ws/scremsong/reviewers/ASSIGNMENT_UPDATED"
-export const WS_REVIEWERS_ASSIGNMENT_STATUS_CHANGE = "ws/scremsong/reviewers/ASSIGNMENT_STATUS_CHANGE"
+export const WS_REVIEWERS_ASSIGNMENT_METADATA_CHANGED = "ws/scremsong/reviewers/ASSIGNMENT_METADATA_CHANGED"
 export const WS_REVIEWERS_SET_STATUS = "ws/scremsong/reviewers/SET_STATUS"
 
 export const messageTypes = [
@@ -34,6 +34,6 @@ export const messageTypes = [
     WS_REVIEWERS_UNASSIGN,
     WS_REVIEWERS_BULK_ASSIGN,
     WS_REVIEWERS_ASSIGNMENT_UPDATED,
-    WS_REVIEWERS_ASSIGNMENT_STATUS_CHANGE,
+    WS_REVIEWERS_ASSIGNMENT_METADATA_CHANGED,
     WS_REVIEWERS_SET_STATUS,
 ]

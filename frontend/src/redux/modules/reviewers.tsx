@@ -5,7 +5,7 @@ import { Action } from "redux"
 import { createSelector } from "reselect"
 import {
     IActionReviewersAssign,
-    IActionReviewersAssignmentStatusChange,
+    IActionReviewersAssignmentMetadataChanged,
     IActionReviewersAssignmentUpdated,
     IActionReviewersBulkAssign,
     IActionReviewersList,
@@ -15,7 +15,7 @@ import {
 } from "../../websockets/actions"
 import {
     WS_REVIEWERS_ASSIGN,
-    WS_REVIEWERS_ASSIGNMENT_STATUS_CHANGE,
+    WS_REVIEWERS_ASSIGNMENT_METADATA_CHANGED,
     WS_REVIEWERS_ASSIGNMENT_UPDATED,
     WS_REVIEWERS_BULK_ASSIGN,
     WS_REVIEWERS_LIST_ASSIGNMENTS,
@@ -46,7 +46,7 @@ type IAction =
     | IActionReviewersUnassign
     | IActionReviewersBulkAssign
     | IActionReviewersAssignmentUpdated
-    | IActionReviewersAssignmentStatusChange
+    | IActionReviewersAssignmentMetadataChanged
     | IActionReviewersSetCurrentReviewer
 export default function reducer(state: IModule = initialState, action: IAction) {
     switch (action.type) {
@@ -66,8 +66,8 @@ export default function reducer(state: IModule = initialState, action: IAction) 
             return state
         case WS_REVIEWERS_UNASSIGN:
             return dotProp.delete(state, `assignments.${action.assignmentId}`)
-        case WS_REVIEWERS_ASSIGNMENT_STATUS_CHANGE:
-            return dotProp.set(state, `assignments.${action.assignmentId}.status`, action.status)
+        case WS_REVIEWERS_ASSIGNMENT_METADATA_CHANGED:
+            return dotProp.set(state, `assignments.${action.assignment.id}`, action.assignment)
         case WS_REVIEWERS_SET_STATUS:
             const userIndex = state.users.findIndex((user: IReviewerUser) => user.id === action.user_id)
             return dotProp.set(state, `users.${userIndex}.is_accepting_assignments`, action.is_accepting_assignments)
@@ -81,17 +81,18 @@ const getAssignments = (state: IStore) => state.reviewers.assignments
 const getReviewers = (state: IStore) => state.reviewers.users
 const getCurrentReviewerUserId = (state: IStore) => (state.reviewers.currentReviewerId ? state.reviewers.currentReviewerId : null)
 
-export const getPendingAssignments = createSelector(
+export const getActiveAssignments = createSelector(
     [getAssignments],
     (assignments: IReviewerAssignment[]): any => {
         return Object.values(assignments).filter(
-            (assignment: IReviewerAssignment, index: number) => assignment.status === eSocialAssignmentStatus.PENDING
+            (assignment: IReviewerAssignment, index: number) =>
+                assignment.status === eSocialAssignmentStatus.PENDING || assignment.status === eSocialAssignmentStatus.AWAIT_REPLY
         )
     }
 )
 
 export const getUserAssignments = createSelector(
-    [getPendingAssignments],
+    [getActiveAssignments],
     assignments =>
         memoize((userId: number | undefined) => {
             return userId === undefined ? [] : assignments.filter((assignment: IReviewerAssignment) => assignment.user_id === userId)
@@ -99,7 +100,7 @@ export const getUserAssignments = createSelector(
 )
 
 export const getUserAssignmentTotals = createSelector(
-    [getPendingAssignments, getReviewers],
+    [getActiveAssignments, getReviewers],
     (assignments: IReviewerAssignment[], reviewers: IReviewerUser[]): IReviewerAssignmentCounts => {
         const totals: IReviewerAssignmentCounts = {}
         reviewers.forEach((reviewer: IReviewerUser) => (totals[reviewer.id] = 0))
@@ -111,7 +112,7 @@ export const getUserAssignmentTotals = createSelector(
 )
 
 export const getCurrentReviewerAssignments = createSelector(
-    [getPendingAssignments, getCurrentReviewerUserId],
+    [getActiveAssignments, getCurrentReviewerUserId],
     (assignments: IReviewerAssignment[], userId: number | null) => {
         return userId === null ? [] : assignments.filter((assignment: IReviewerAssignment) => assignment.user_id === userId)
     }
@@ -149,9 +150,10 @@ export interface IModule {
 }
 
 export enum eSocialAssignmentStatus {
-    PENDING = "SocialAssignmentStatus.PENDING",
-    // PROCESSED = "SocialAssignmentStatus.PROCESSED", // DO NOT USE
-    DONE = "SocialAssignmentStatus.DONE",
+    PENDING = "Pending",
+    AWAIT_REPLY = "Await Reply",
+    CLOSED = "Closed",
+    DONE = "Done",
 }
 
 export interface IReviewerUser {
@@ -172,6 +174,7 @@ export interface IReviewerAssignment {
     thread_tweets: string[]
     created_on: string // datetime
     last_updated_on: string // datetime
+    last_read_on: string | null // datetime
 }
 
 export interface IReviewerAssignmentThreadRelationships {
@@ -229,9 +232,33 @@ export function bulkReassignReviewer(currentReviewerId: number, newReviewerId: n
     }
 }
 
+export function markAssignmentAwaitingReply(assignment: IReviewerAssignment) {
+    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
+        await api.get("/api/0.1/social_assignments/awaiting_reply/", dispatch, {
+            assignmentId: assignment.id,
+        })
+    }
+}
+
+export function markAssignmentClosed(assignment: IReviewerAssignment) {
+    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
+        await api.get("/api/0.1/social_assignments/close/", dispatch, {
+            assignmentId: assignment.id,
+        })
+    }
+}
+
 export function markAssignmentDone(assignment: IReviewerAssignment) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        await api.get("/api/0.1/social_assignments/assignment_done/", dispatch, {
+        await api.get("/api/0.1/social_assignments/done/", dispatch, {
+            assignmentId: assignment.id,
+        })
+    }
+}
+
+export function markAssignmentRead(assignment: IReviewerAssignment) {
+    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
+        await api.get("/api/0.1/social_assignments/mark_read/", dispatch, {
             assignmentId: assignment.id,
         })
     }

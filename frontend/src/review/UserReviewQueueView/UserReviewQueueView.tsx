@@ -3,12 +3,12 @@ import { blueGrey } from "@material-ui/core/colors"
 import MenuItem from "@material-ui/core/MenuItem"
 import Select from "@material-ui/core/Select"
 import Toolbar from "@material-ui/core/Toolbar"
-import AssignmentReturn from "@material-ui/icons/AssignmentReturn"
+import AssignmentInd from "@material-ui/icons/AssignmentInd"
 import Power from "@material-ui/icons/Power"
 import PowerOff from "@material-ui/icons/PowerOff"
 import classNames from "classnames"
 import * as React from "react"
-import { IReviewerAssignment, IReviewerUser } from "../../redux/modules/reviewers"
+import { eSocialAssignmentStatus, IReviewerAssignment, IReviewerUser } from "../../redux/modules/reviewers"
 import { eQueueSortBy, IProfileSettings } from "../../redux/modules/user"
 import TweetColumnAssignerContainer, { eTweetColumnAssignerMode } from "../../triage/TweetColumnAssigner/TweetColumnAssignerContainer"
 import ReviewCardContainer from "../ReviewCard/ReviewCardContainer"
@@ -66,7 +66,6 @@ export interface IProps {
     reviewers: IReviewerUser[]
     currentReviewer: IReviewerUser
     userSettings: IProfileSettings
-    onMarkAsDone: any
     onChangeQueueUser: any
     onChangeQueueSortOrder: any
     onToggleUserOnlineStatus: any
@@ -110,8 +109,12 @@ class UserReviewQueueView extends React.PureComponent<TComponentProps, IState> {
     }
 
     public render() {
-        const { assignments, reviewers, currentReviewer, userSettings, onMarkAsDone, classes } = this.props
+        const { assignments, reviewers, currentReviewer, userSettings, classes } = this.props
         const { assignerOpen } = this.state
+
+        const assignmentsAwaitingReplies = assignments.filter(
+            (assignment: IReviewerAssignment) => assignment.status === eSocialAssignmentStatus.AWAIT_REPLY
+        )
 
         return (
             <React.Fragment>
@@ -184,7 +187,7 @@ class UserReviewQueueView extends React.PureComponent<TComponentProps, IState> {
                         {assignments.length > 0 && (
                             <Tooltip title="Reassign all of your tweets to somebody else">
                                 <Button variant="contained" color="primary" className={classes.button} onClick={this.onOpenAssigner}>
-                                    <AssignmentReturn className={classNames(classes.leftIcon, classes.iconSmall)} />
+                                    <AssignmentInd className={classNames(classes.leftIcon, classes.iconSmall)} />
                                     Bulk reassign
                                 </Button>
                             </Tooltip>
@@ -209,8 +212,18 @@ class UserReviewQueueView extends React.PureComponent<TComponentProps, IState> {
                 </AppBar>
 
                 <div className={classes.reviewerContainer}>
-                    {assignments.map((assignment: IReviewerAssignment) => (
-                        <ReviewCardContainer key={assignment.id} assignment={assignment} onMarkAsDone={onMarkAsDone} />
+                    {assignments
+                        .filter((assignment: IReviewerAssignment) => assignment.status === eSocialAssignmentStatus.PENDING)
+                        .map((assignment: IReviewerAssignment) => (
+                            <ReviewCardContainer key={assignment.id} assignment={assignment} />
+                        ))}
+                    {assignmentsAwaitingReplies.length > 0 && (
+                        <Typography variant="h5" gutterBottom={true}>
+                            Assignments awaiting replies
+                        </Typography>
+                    )}
+                    {assignmentsAwaitingReplies.map((assignment: IReviewerAssignment) => (
+                        <ReviewCardContainer key={assignment.id} assignment={assignment} />
                     ))}
                 </div>
             </React.Fragment>

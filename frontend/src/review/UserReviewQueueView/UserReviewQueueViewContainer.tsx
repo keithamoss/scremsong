@@ -7,7 +7,6 @@ import {
     getSortedAssignments,
     IReviewerAssignment,
     IReviewerUser,
-    markAssignmentDone,
     setReviewerOnlineStatus,
 } from "../../redux/modules/reviewers"
 import { changeUserProfileSettings, eQueueSortBy, IUser } from "../../redux/modules/user"
@@ -23,7 +22,6 @@ export interface IStoreProps {
 }
 
 export interface IDispatchProps {
-    onMarkAsDone: Function
     onChangeQueueUser: Function
     onChangeQueueSortOrder: Function
     onToggleUserOnlineStatus: Function
@@ -37,7 +35,6 @@ class UserReviewQueueViewContainer extends React.Component<TComponentProps, {}> 
             assignments,
             reviewers,
             currentReviewer,
-            onMarkAsDone,
             onChangeQueueUser,
             onChangeQueueSortOrder,
             onToggleUserOnlineStatus,
@@ -53,7 +50,6 @@ class UserReviewQueueViewContainer extends React.Component<TComponentProps, {}> 
                 reviewers={reviewers}
                 currentReviewer={currentReviewer}
                 userSettings={user.settings}
-                onMarkAsDone={onMarkAsDone}
                 onChangeQueueUser={onChangeQueueUser}
                 onChangeQueueSortOrder={onChangeQueueSortOrder}
                 onToggleUserOnlineStatus={onToggleUserOnlineStatus}
@@ -78,9 +74,6 @@ const mapStateToProps = (state: IStore, ownProps: TComponentProps): IStoreProps 
 
 const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {
-        onMarkAsDone: (assignment: IReviewerAssignment) => {
-            dispatch(markAssignmentDone(assignment))
-        },
         onChangeQueueUser: (reviewerId: number) => {
             dispatch(changeCurrentReviewer(reviewerId))
         },
