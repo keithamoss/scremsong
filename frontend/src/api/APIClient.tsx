@@ -35,16 +35,19 @@ export class APIClient {
                     dispatch(finishFetch())
                 }
 
-                return response.json().then((json: any) => {
-                    if (json.error) {
-                        this.handleError(json.error, url, dispatch)
-                    }
+                return response
+                    .json()
+                    .then((json: any) => {
+                        if (json.error) {
+                            this.handleError(json.error, url, dispatch)
+                        }
 
-                    return {
-                        response,
-                        json,
-                    }
-                })
+                        return {
+                            response,
+                            json,
+                        }
+                    })
+                    .catch((error: any) => this.handleError(`Unknown error from ${url}`, url, dispatch))
             })
             .catch((error: any) => this.handleError(error, url, dispatch))
     }
