@@ -3,7 +3,6 @@ from django.contrib.auth import logout
 from django.http.response import HttpResponseRedirect
 from django.http import HttpResponseNotFound
 from django.db import transaction
-from django.utils import timezone
 
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
@@ -11,9 +10,10 @@ from rest_framework.decorators import list_route
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
+import tweepy
 from tweepy import TweepError
 from scremsong.app.serializers import UserSerializer, SocialAssignmentSerializer
-from scremsong.app.twitter import get_tweepy_api_auth, twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, fetch_tweets, get_status_from_db, resolve_tweet_parents, resolve_tweet_thread_for_parent, notify_of_saved_tweet, favourite_tweet, unfavourite_tweet, retweet_tweet, unretweet_tweet, reply_to_tweet, get_tweet_from_db
+from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, fetch_tweets, get_status_from_db, resolve_tweet_parents, resolve_tweet_thread_for_parent, notify_of_saved_tweet, favourite_tweet, unfavourite_tweet, retweet_tweet, unretweet_tweet, reply_to_tweet
 from scremsong.app.reviewers import getCreationDateOfNewestTweetInAssignment
 from scremsong.celery import celery_restart_streaming
 from scremsong.app.models import Tweets, SocialAssignments, Profile

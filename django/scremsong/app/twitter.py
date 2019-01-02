@@ -699,6 +699,7 @@ def unretweet_tweet(tweetId):
             # NB: tweepy.api can return certain errors via retry_errors
             raise e
 
+
 def reply_to_tweet(inReplyToTweetId, replyText):
     try:
         api = get_tweepy_api_auth()
@@ -709,14 +710,15 @@ def reply_to_tweet(inReplyToTweetId, replyText):
         websockets.send_channel_message("tweets.update_tweets", {
             "tweets": {reply.tweet_id: TweetsSerializer(reply).data},
         })
-    
-    except tweepy.RateLimitError:
+
+    except tweepy.RateLimitError as e:
         logger.warning("Got a RateLimitError from Tweepy while sending a reply to {}".format(inReplyToTweetId))
         raise e
 
     except tweepy.TweepError as e:
         logger.warning("Got a TweepError {} from Tweepy while sending a reply to {}".format(e.api_code, inReplyToTweetId))
         raise e
+
 
 def get_precanned_tweet_replies():
     replies = {}

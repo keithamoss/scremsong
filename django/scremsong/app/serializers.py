@@ -2,7 +2,6 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from scremsong.app.models import Profile, SocialColumns, Tweets, SocialAssignments, TweetReplies
-from scremsong.app.enums import SocialAssignmentStatus
 
 
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
