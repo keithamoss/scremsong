@@ -27,7 +27,9 @@ export default function reducer(state: IModule = initialState, action: IAction) 
         case WS_TWEETS_LOAD_TWEETS:
             action.columns.forEach((column: ITweetFetchColumn, index: number) => {
                 // Merge and then sort column tweetIds to maintain the correct order chronological order
+                // tslint:disable-next-line:no-shadowed-variable
                 const val = uniq([...state.column_tweets[column.id], ...column.tweet_ids])
+                // tslint:disable-next-line:no-shadowed-variable
                 const sorted = val.sort().reverse()
                 state = dotProp.set(state, `column_tweets.${column.id}`, sorted)
 
