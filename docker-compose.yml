@@ -1,4 +1,4 @@
-version: "2"
+version: "3.7"
 services:
     db:
         image: mdillon/postgis:10-alpine
@@ -39,6 +39,9 @@ services:
         image: redis:5.0.3-alpine3.8
         ports:
             - "6379:6379"
+        # https://github.com/docker-library/redis/issues/35#issuecomment-360810072
+        sysctls:
+            net.core.somaxconn: "511"
     django:
         build: django/
         entrypoint: /app/docker-entrypoint.sh
