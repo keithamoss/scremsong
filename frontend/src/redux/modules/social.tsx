@@ -150,20 +150,23 @@ export const getTweetsForColumn = createSelector(
         })
 )
 
-export const getUnreadTweetIds = memoize((assignment: IReviewerAssignment, tweets: ISocialTweetList) => {
-    if (assignment.last_read_on === null) {
-        return Object.keys(tweets)
-    }
-
-    const assignmentLastReadOn = DateTime.fromISO(assignment.last_read_on)
-    const tweetIds: string[] = []
-    for (const [tweetId, tweet] of Object.entries(tweets)) {
-        if (parseTwitterDate(tweet.data.created_at) > assignmentLastReadOn) {
-            tweetIds.push(tweetId)
+export const getUnreadTweetIds = memoize(
+    (assignment: IReviewerAssignment, tweets: ISocialTweetList) => {
+        if (assignment.last_read_on === null) {
+            return Object.keys(tweets)
         }
-    }
-    return tweetIds
-})
+
+        const assignmentLastReadOn = DateTime.fromISO(assignment.last_read_on)
+        const tweetIds: string[] = []
+        for (const [tweetId, tweet] of Object.entries(tweets)) {
+            if (parseTwitterDate(tweet.data.created_at) > assignmentLastReadOn) {
+                tweetIds.push(tweetId)
+            }
+        }
+        return tweetIds
+    },
+    (assignment: IReviewerAssignment, tweets: ISocialTweetList) => `${assignment.id}.${assignment.last_read_on}.${tweets.length}`
+)
 
 export const isTweetUnread = memoize(
     (assignment: IReviewerAssignment, tweet: ISocialTweet) => {
