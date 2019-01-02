@@ -15,10 +15,10 @@ def get_reviewer_users():
     return ReviewerUserSerializer(users, many=True).data
 
 
-def get_assignments(status=None, user=None):
+def get_assignments(statuses=None, user=None):
     queryset = SocialAssignments.objects
-    if status is not None:
-        queryset = queryset.filter(status=status)
+    if statuses is not None:
+        queryset = queryset.filter(status__in=[s for s in statuses])
 
     if user is not None:
         queryset = queryset.filter(user=user)

@@ -5,6 +5,7 @@ from scremsong.util import make_logger
 from scremsong.app.serializers import UserSerializer
 from scremsong.app.twitter import get_twitter_columns, fetch_tweets_for_columns, get_precanned_tweet_replies
 from scremsong.app.reviewers import get_reviewer_users, get_assignments
+from scremsong.app.enums import SocialAssignmentStatus
 from scremsong.app import websockets
 from random import getrandbits
 
@@ -192,7 +193,7 @@ def build_on_connect_data_payload(user):
             },
             {
                 **{"msg_type": settings.MSG_TYPE_REVIEWERS_LIST_ASSIGNMENTS},
-                **get_assignments()
+                **get_assignments([SocialAssignmentStatus.PENDING, SocialAssignmentStatus.AWAIT_REPLY])
             },
             {
                 **{"msg_type": settings.MSG_TYPE_TWEETS_LOAD_TWEETS},
