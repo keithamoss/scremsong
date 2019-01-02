@@ -1,5 +1,4 @@
 import { Badge, CssBaseline, Drawer, IconButton, List, ListItem, Theme, Tooltip, withStyles, WithStyles } from "@material-ui/core"
-import { lightBlue } from "@material-ui/core/colors"
 import blue from "@material-ui/core/colors/blue"
 import AssignmentIndIcon from "@material-ui/icons/AssignmentInd"
 import ViewColumnIcon from "@material-ui/icons/ViewColumn"
@@ -35,7 +34,7 @@ const styles = (theme: Theme) =>
         },
         selectedListItem: {
             borderRight: "2px solid #2196f3",
-            backgroundColor: lightBlue[50],
+            // backgroundColor: lightBlue[50],
         },
         selectedIcon: {
             color: blue[600],
