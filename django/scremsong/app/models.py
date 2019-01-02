@@ -24,6 +24,7 @@ def default_profile_settings():
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    profile_image_url = models.URLField(blank=False)
     is_approved = models.BooleanField(default=False)
     is_accepting_assignments = models.BooleanField(default=False)
     settings = JSONField(default=default_profile_settings, blank=True)
@@ -121,7 +122,6 @@ class TweetReplies(models.Model):
 
     reply_text = models.TextField()
     category = models.TextField(choices=[(tag, tag.value) for tag in TweetReplyCategories], null=True)
-
 
 
 class AllowedUsers(models.Model):

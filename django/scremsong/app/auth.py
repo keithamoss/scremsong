@@ -1,4 +1,3 @@
-from scremsong.util import get_env
 from scremsong.app.models import AllowedUsers
 
 USER_FIELDS = ["username", "email"]
@@ -33,3 +32,23 @@ def create_user(strategy, details, user=None, *args, **kwargs):
         "is_new": True,
         "user": strategy.create_user(**fields)
     }
+
+
+def get_avatar(strategy, backend, uid, response, details, user, social, *args, **kwargs):
+    """Source: https://stackoverflow.com/a/33161353/7368493"""
+
+    # The users isn't on our list of authorised users
+    if user is None:
+        return
+
+    url = None
+    if backend.name == 'facebook':
+        url = "https://graph.facebook.com/%s/picture?type=large" % response['id']
+    if backend.name == 'twitter':
+        url = response.get('profile_image_url', '').replace('_normal', '')
+    if backend.name == 'google-oauth2':
+        url = response['image'].get('url')
+
+    if url is not None:
+        user.profile.profile_image_url = url
+        user.profile.save()
