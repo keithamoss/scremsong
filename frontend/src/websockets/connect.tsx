@@ -1,6 +1,6 @@
 import ReconnectingWebSocket from "reconnecting-websocket"
 import { Action } from "redux"
-import { connected, disconnected, loaded } from "../redux/modules/app"
+import { connected, disconnected, isDevEnvironment, loaded } from "../redux/modules/app"
 import { IActionWebSocketBase } from "./actions"
 import { messageTypes, WS_CONNECTED, WS_URI } from "./constants"
 
@@ -34,7 +34,10 @@ export const init = (store: any) => {
         const data = JSON.parse(e.data)
 
         if ("msg_type" in data) {
-            console.log(data.msg_type, data)
+            if (isDevEnvironment() === true) {
+                console.log(data.msg_type, data)
+            }
+
             let actions
             if (data.msg_type === WS_CONNECTED && "actions" in data) {
                 // Handle the initial payload of actions from Web Socket onopen
