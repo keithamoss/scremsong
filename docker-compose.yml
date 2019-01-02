@@ -28,7 +28,9 @@ services:
             - secrets/scremsong-frontend.dev.env
     rabbitmq:
         image: rabbitmq:3.7.8-alpine
-        # volumes:
+        volumes:
+            # Might need to `docker commit` too if we ever change settings? Not sure. (Ref. https://github.com/docker-library/rabbitmq/issues/106#issuecomment-380519695)
+            - ./rabbitmq/data:/var/lib/rabbitmq
         #   - ./rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
         ports:
             - "5672:5672"
