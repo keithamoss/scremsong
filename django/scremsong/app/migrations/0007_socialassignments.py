@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('platform', models.TextField(choices=[(scremsong.app.models.SocialPlatformChoice('Twitter'), 'Twitter')])),
                 ('social_id', models.TextField(editable=False)),
-                ('status', models.TextField(choices=[(scremsong.app.models.SocialAssignmentStatus('Pending'), 'Pending'), (scremsong.app.models.SocialAssignmentStatus('Processed'), 'Processed')], default=scremsong.app.models.SocialAssignmentStatus('Pending'))),
+                ('status', models.TextField(choices=[(scremsong.app.models.SocialAssignmentStatus('Pending'), 'Pending')], default=scremsong.app.models.SocialAssignmentStatus('Pending'))),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),

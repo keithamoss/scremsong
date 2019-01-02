@@ -1,8 +1,13 @@
 from django.contrib.auth.models import User
 
 from scremsong.app.models import SocialAssignments
-from scremsong.app.twitter import get_tweets_by_ids
+from scremsong.app.twitter import get_tweets_by_ids, get_tweet_from_db
 from scremsong.app.serializers import ReviewerUserSerializer, TweetsSerializer, SocialAssignmentSerializer
+from scremsong.util import make_logger
+
+from datetime import datetime, timedelta
+
+logger = make_logger(__name__)
 
 
 def get_reviewer_users():
@@ -37,3 +42,15 @@ def get_assignments(status=None, user=None):
         assignmentsById[assignment["id"]] = SocialAssignmentSerializer(assignment).data
 
     return {"assignments": assignmentsById, "tweets": tweets}
+
+
+def getCreationDateOfNewestTweetInAssignment(assignment):
+    def parseTwitterDate(date):
+        # "Tue Sep 25 02:35:07 +0000 2018"
+        TWITTER_DATE_FORMAT = "%a %b %d %H:%M:%S %z %Y"
+        date = datetime.strptime(date, TWITTER_DATE_FORMAT)
+        return date + timedelta(microseconds=1)  # Twitter doesn't record time beyond seconds, so add a little bit of time to match the format of timezone.now()
+
+    newestTweetId = max([assignment.social_id] + assignment.thread_tweets)
+    newestTweet = get_tweet_from_db(newestTweetId)
+    return parseTwitterDate(newestTweet.data["created_at"])

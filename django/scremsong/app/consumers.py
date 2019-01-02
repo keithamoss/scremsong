@@ -120,14 +120,13 @@ class ScremsongConsumer(JsonWebsocketConsumer):
             "tweets": event["tweets"],
         })
 
-    def reviewers_assignment_status_changed(self, event):
+    def reviewers_assignment_metdata_changed(self, event):
         """
         Called when the status of an assignment has been changed (e.g. it's been completed).
         """
         self.send_json({
-            "msg_type": settings.MSG_TYPE_REVIEWERS_ASSIGNMENT_STATUS_CHANGE,
-            "assignmentId": event["assignmentId"],
-            "status": event["status"],
+            "msg_type": settings.MSG_TYPE_REVIEWERS_ASSIGNMENT_METADATA_CHANGED,
+            "assignment": event["assignment"],
         })
 
     def reviewers_set_status(self, event):

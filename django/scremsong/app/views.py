@@ -3,6 +3,7 @@ from django.contrib.auth import logout
 from django.http.response import HttpResponseRedirect
 from django.http import HttpResponseNotFound
 from django.db import transaction
+from django.utils import timezone
 
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
@@ -12,7 +13,8 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
 from tweepy import TweepError
 from scremsong.app.serializers import UserSerializer, SocialAssignmentSerializer
-from scremsong.app.twitter import get_tweepy_api_auth, twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, fetch_tweets, get_status_from_db, resolve_tweet_parents, resolve_tweet_thread_for_parent, notify_of_saved_tweet, favourite_tweet, unfavourite_tweet, retweet_tweet, unretweet_tweet, reply_to_tweet
+from scremsong.app.twitter import get_tweepy_api_auth, twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, fetch_tweets, get_status_from_db, resolve_tweet_parents, resolve_tweet_thread_for_parent, notify_of_saved_tweet, favourite_tweet, unfavourite_tweet, retweet_tweet, unretweet_tweet, reply_to_tweet, get_tweet_from_db
+from scremsong.app.reviewers import getCreationDateOfNewestTweetInAssignment
 from scremsong.celery import celery_restart_streaming
 from scremsong.app.models import Tweets, SocialAssignments, Profile
 from scremsong.app.enums import SocialPlatformChoice, SocialAssignmentStatus, NotificationVariants, TweetState, TweetStatus
@@ -174,7 +176,7 @@ class TweetsViewset(viewsets.ViewSet):
         try:
             reply_to_tweet(inReplyToTweetId, replyText)
             return Response({})
-    
+
         except tweepy.RateLimitError:
             return Response({"error": "Error sending reply. It looks like we've been rate limited for replying to / favouriting tweets. Try again in a little while."}, status=status.HTTP_403_FORBIDDEN)
 
@@ -185,7 +187,7 @@ class TweetsViewset(viewsets.ViewSet):
                 # Uh oh, some other error code was returned
                 # NB: tweepy.api can return certain errors via retry_errors
                 return Response({"error": "Error {} while sending reply.".format(e.api_code)}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         except Exception as e:
             return Response({"error": "Unknown error while sending reply: {}".format(str(e))}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -299,17 +301,64 @@ class SocialAssignmentsViewset(viewsets.ViewSet):
         return Response({"OK": True})
 
     @list_route(methods=['get'])
-    def assignment_done(self, request, format=None):
+    def awaiting_reply(self, request, format=None):
+        qp = request.query_params
+        assignmentId = int(qp["assignmentId"]) if "assignmentId" in qp else None
+
+        assignment = SocialAssignments.objects.get(id=assignmentId)
+        assignment.status = SocialAssignmentStatus.AWAIT_REPLY
+        assignment.last_read_on = getCreationDateOfNewestTweetInAssignment(assignment)
+        assignment.save()
+
+        websockets.send_channel_message("reviewers.assignment_metdata_changed", {
+            "assignment": SocialAssignmentSerializer(assignment).data,
+        })
+
+        return Response({"OK": True})
+
+    @list_route(methods=['get'])
+    def close(self, request, format=None):
+        qp = request.query_params
+        assignmentId = int(qp["assignmentId"]) if "assignmentId" in qp else None
+
+        assignment = SocialAssignments.objects.get(id=assignmentId)
+        assignment.status = SocialAssignmentStatus.CLOSED
+        assignment.last_read_on = getCreationDateOfNewestTweetInAssignment(assignment)
+        assignment.save()
+
+        websockets.send_channel_message("reviewers.assignment_metdata_changed", {
+            "assignment": SocialAssignmentSerializer(assignment).data,
+        })
+
+        return Response({"OK": True})
+
+    @list_route(methods=['get'])
+    def done(self, request, format=None):
         qp = request.query_params
         assignmentId = int(qp["assignmentId"]) if "assignmentId" in qp else None
 
         assignment = SocialAssignments.objects.get(id=assignmentId)
         assignment.status = SocialAssignmentStatus.DONE
+        assignment.last_read_on = getCreationDateOfNewestTweetInAssignment(assignment)
         assignment.save()
 
-        websockets.send_channel_message("reviewers.assignment_status_changed", {
-            "assignmentId": assignmentId,
-            "status": str(SocialAssignmentStatus.DONE),
+        websockets.send_channel_message("reviewers.assignment_metdata_changed", {
+            "assignment": SocialAssignmentSerializer(assignment).data,
+        })
+
+        return Response({"OK": True})
+
+    @list_route(methods=['get'])
+    def mark_read(self, request, format=None):
+        qp = request.query_params
+        assignmentId = int(qp["assignmentId"]) if "assignmentId" in qp else None
+
+        assignment = SocialAssignments.objects.get(id=assignmentId)
+        assignment.last_read_on = getCreationDateOfNewestTweetInAssignment(assignment)
+        assignment.save()
+
+        websockets.send_channel_message("reviewers.assignment_metdata_changed", {
+            "assignment": SocialAssignmentSerializer(assignment).data,
         })
 
         return Response({"OK": True})

@@ -21,10 +21,14 @@ class SocialPlatformChoice(EnumBase):
     TWITTER = "Twitter"
 
 
-class SocialAssignmentStatus(EnumBase):
+class SocialAssignmentStatus(str, EnumBase):
     PENDING = "Pending"
-    PROCESSED = "Processed"  # DO NOT USE
+    AWAIT_REPLY = "Await Reply"
+    CLOSED = "Closed"
     DONE = "Done"
+
+    def __str__(self):
+        return self.value
 
 
 class NotificationVariants(str, EnumBase):

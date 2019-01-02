@@ -226,6 +226,14 @@ def notify_of_saved_tweets(tweets):
         websockets.send_channel_message("tweets.new_tweets", response)
 
 
+def get_columns_for_tweet(tweet):
+    matchedColumnIds = []
+    for column in get_social_columns_cached(SocialPlatformChoice.TWITTER):
+        if is_tweet_in_column(tweet.data, column) is True:
+            matchedColumnIds.append(column.id)
+    return matchedColumnIds
+
+
 def notify_of_saved_tweet(tweet):
     notify_of_saved_tweets([tweet])
 
@@ -297,14 +305,6 @@ def fill_in_missing_tweets(since_id, max_id):
 
     notify_of_saved_tweets(tweets)
     return total_tweets_added
-
-
-def get_columns_for_tweet(tweet):
-    matchedColumnIds = []
-    for column in get_social_columns_cached(SocialPlatformChoice.TWITTER):
-        if is_tweet_in_column(tweet.data, column) is True:
-            matchedColumnIds.append(column.id)
-    return matchedColumnIds
 
 
 @lru_cache(maxsize=5)
@@ -489,7 +489,9 @@ def process_new_tweet(status, tweetSource, sendWebSocketEvent):
             )
 
             # Adding a new tweet marks the assignment "unread"
-            if assignment.status == str(SocialAssignmentStatus.DONE):
+            logger.info("Processing tweet {}: Assignment.status = {} ({})".format(status["id_str"], assignment.status, assignment.status == SocialAssignmentStatus.DONE, assignment.status == SocialAssignmentStatus.AWAIT_REPLY))
+            if assignment.status == SocialAssignmentStatus.DONE:
+                logger.info("Processing tweet {}: Set it to pending".format(status["id_str"]))
                 assignment.status = SocialAssignmentStatus.PENDING
                 assignment.save()
 
@@ -500,6 +502,20 @@ def process_new_tweet(status, tweetSource, sendWebSocketEvent):
                     }
                 },
                     assignment.user.username)
+
+            elif assignment.status == SocialAssignmentStatus.AWAIT_REPLY:
+                logger.info("Processing tweet {}: Set it to pending".format(status["id_str"]))
+                assignment.status = SocialAssignmentStatus.PENDING
+                assignment.save()
+
+                websockets.send_user_channel_message("notifications.send", {
+                    "message": "One of the assignments you had marked as 'awaiting reply' has had a new reply arrive",
+                    "options": {
+                        "variant": NotificationVariants.INFO
+                    }
+                },
+                    assignment.user.username)
+
             else:
                 websockets.send_user_channel_message("notifications.send", {
                     "message": "One of your assignments has had a new reply arrive",

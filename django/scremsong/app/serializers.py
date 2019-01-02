@@ -1,6 +1,8 @@
 from django.contrib.auth.models import User
-from .models import Profile, SocialColumns, Tweets, SocialAssignments, TweetReplies
 from rest_framework import serializers
+
+from scremsong.app.models import Profile, SocialColumns, Tweets, SocialAssignments, TweetReplies
+from scremsong.app.enums import SocialAssignmentStatus
 
 
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
@@ -93,7 +95,8 @@ class SocialAssignmentSerializer(serializers.ModelSerializer):
             'thread_relationships',
             'thread_tweets',
             'created_on',
-            'last_updated_on')
+            'last_updated_on',
+            'last_read_on')
 
 
 class TweetsSerializer(serializers.ModelSerializer):
