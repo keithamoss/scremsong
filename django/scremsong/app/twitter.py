@@ -221,7 +221,7 @@ def notify_of_saved_tweets(tweets):
 
             cols = get_columns_for_tweet(tweet)
             if len(cols) > 0:
-                response["columnIds"][tweet.tweet_id] = cols,
+                response["columnIds"][tweet.tweet_id] = cols
 
         websockets.send_channel_message("tweets.new_tweets", response)
 

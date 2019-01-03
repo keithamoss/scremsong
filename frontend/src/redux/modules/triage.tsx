@@ -47,10 +47,6 @@ export default function reducer(state: IModule = initialState, action: IAction) 
             return state
         case WS_TWEETS_NEW_TWEETS:
             for (const [tweetId, columnIds] of Object.entries(action.columnIds)) {
-                console.log(
-                    "WS_TWEETS_NEW_TWEETS:",
-                    `tweetId = ${tweetId}, columnIds = ${columnIds} (${typeof columnIds}) (${JSON.stringify(columnIds)})`
-                )
                 columnIds.forEach((columnId: number) => {
                     if (dotProp.get(state, `column_tweets.${columnId}`).includes(tweetId) === false) {
                         state = dotProp.set(state, `column_tweets_buffered.${columnId}`, [
