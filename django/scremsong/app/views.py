@@ -406,9 +406,10 @@ class SocialPlatformsAuthViewset(viewsets.ViewSet):
         #   - https://localhost:8001/api/0.1/social_auth/twitter_auth_step2/
         #   - https://scremsong-api.democracysausage.org/api/0.1/social_auth/twitter_auth_step2/
         # 3. In a new tab, go to Twitter and login as @DemSausage
-        # 3. Navigate to https://localhost:8001/api/0.1/social_auth/twitter_auth_step1/?format=json
-        # 4. It will send you to Twitter and prompt you to Authorize Scremsong to use your account. (Important: Make sure you're logged in as @DemSausage before continuing!)
-        # 5. You'll be returned to a page called "Social Platforms Auth Viewset" that says '"OK": true'
+        # 4. Go to https://scremsong.democracysausage.org and login
+        # 5. Navigate to https://localhost:8001/api/0.1/social_auth/twitter_auth_step1/?format=json
+        # 6. It will send you to Twitter and prompt you to Authorize Scremsong to use your account. (Important: Make sure you're logged in as @DemSausage before continuing!)
+        # 7. You'll be returned to a page called "Social Platforms Auth Viewset" that says '"OK": true'
         try:
             redirect_url = twitter_user_api_auth_stage_1()
             return HttpResponseRedirect(redirect_to=redirect_url)
