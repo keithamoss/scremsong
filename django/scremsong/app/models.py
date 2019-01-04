@@ -37,6 +37,9 @@ class Profile(models.Model):
     def merge_settings(self, settings):
         for item, val in settings.items():
             if ProfileSettings.has_value(item) is True:
+                if item not in self.settings and type(val) is dict:
+                    self.settings[item] = {}
+
                 # If a specific column position object is null then we want to remove it completely
                 if item == "column_positions":
                     columnId = next(iter(val.keys()))
@@ -45,9 +48,6 @@ class Profile(models.Model):
                         if columnId in self.settings[item]:
                             del self.settings[item][columnId]
                         continue
-
-                if item not in self.settings and type(val) is dict:
-                    self.settings[item] = {}
 
                 if type(self.settings[item]) is dict:
                     self.settings[item] = {**self.settings[item], **val}
