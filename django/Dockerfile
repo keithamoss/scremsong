@@ -1,4 +1,4 @@
-FROM python:3.7-alpine3.8
+FROM python:3.6-alpine3.8
 MAINTAINER Keith Moss <keithamoss@gmail.com>
 
 ENV PYTHONUNBUFFERED 1
@@ -23,7 +23,7 @@ RUN pip3 install -U setuptools
 # Installing pg_config takes a little more work on Alpine images.
 # Credit: https://stackoverflow.com/a/47871121
 RUN apk update
-RUN apk add postgresql-libs && apk add --virtual .build-deps gcc musl-dev postgresql-dev && apk add supervisor uwsgi-python3 && rm -rf /var/cache/apk/*
+RUN apk add postgresql-libs && apk add --virtual .build-deps gcc musl-dev postgresql-dev && apk add supervisor && rm -rf /var/cache/apk/*
 
 ADD requirements.txt /app/
 RUN pip install -r requirements.txt --no-cache-dir

@@ -37,47 +37,50 @@ if get_env("ENVIRONMENT") == "PRODUCTION":
     DEBUG = False
     CONN_MAX_AGE = 50  # Half our max number of PostgreSQL connections
     CORS_ORIGIN_WHITELIST = (
-        'scremsong.democracysausage.org',
+        "scremsong.democracysausage.org",
+        "localhost"
     )
     CSRF_TRUSTED_ORIGINS = (
-        'scremsong.democracysausage.org',
+        "scremsong.democracysausage.org",
+        "localhost"
     )
-    ALLOWED_HOSTS = ["scremsong-api.democracysausage.org"]
+    ALLOWED_HOSTS = [
+        "scremsong.democracysausage.org",
+        "localhost"
+    ]
     LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': False,
-        'formatters': {
-            'verbose': {
-                'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "verbose": {
+                "format": "%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s"
             },
         },
-        'handlers': {
-            'file': {
-                'level': 'WARNING',
-                'class': 'logging.FileHandler',
-                'filename': '/app/logs/django.log',
-                'formatter': 'verbose',
+        "handlers": {
+            "file": {
+                "level": "WARNING",
+                "class": "logging.FileHandler",
+                "filename": "/app/logs/django.log",
+                "formatter": "verbose",
             },
         },
-        'loggers': {
-            'django': {
-                'handlers': ['file'],
-                'level': 'WARNING',
-                'propagate': True,
+        "loggers": {
+            "django": {
+                "handlers": ["file"],
+                "level": "WARNING",
+                "propagate": True,
             },
         },
     }
-    STATIC_ROOT = "/app/static"
 else:
-    # SECURITY WARNING: don't run with debug turned on in production!
     DEBUG = True
     CORS_ORIGIN_WHITELIST = (
-        'localhost',
+        "localhost",
     )
     CSRF_TRUSTED_ORIGINS = (
-        'localhost',
+        "localhost",
     )
-    ALLOWED_HOSTS = ["localhost", "scremsong-api.democracysausage.org"]
+    ALLOWED_HOSTS = ["localhost"]
     STATICFILES_DIRS = [
         os.path.join(BASE_DIR, "static")
     ]
@@ -178,8 +181,6 @@ TEMPLATES = [
         },
     },
 ]
-
-WSGI_APPLICATION = 'scremsong.wsgi.application'
 
 # CACHES = {
 #     'default': {

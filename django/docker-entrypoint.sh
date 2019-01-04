@@ -1,38 +1,30 @@
 #!/bin/sh
 
-# wait for a given host:port to become available
-#
-# $1 host
-# $2 port
-function dockerwait {
-    while ! exec 6<>/dev/tcp/$1/$2; do
-        echo "$(date) - waiting to connect $1 $2"
-        sleep 5
-    done
-    echo "$(date) - connected to $1 $2"
-
-    exec 6>&-
-    exec 6<&-
+function postgres_ready(){
+python << END
+import sys
+import psycopg2
+try:
+    conn = psycopg2.connect(dbname="$DB_NAME", user="$DB_USERNAME", password="$DB_PASSWORD", host="$DB_HOST")
+except psycopg2.OperationalError:
+    sys.exit(-1)
+sys.exit(0)
+END
 }
 
-# dockerwait $DB_HOST $DB_PORT
-# sleep 8
+waitfordb()
+{
+  until postgres_ready; do
+    >&2 echo "Postgres is unavailable - sleeping"
+    sleep 1
+  done
+
+  >&2 echo "Postgres is up - continuing..."
+
+  sleep 8
+}
 
 CMD="$1"
-# echo $CMD
-
-# django-admin migrate
-
-# celery_worker entrypoint
-if [ "$1" = "celery_worker" ]; then
-    echo "[Run] Starting celery_worker"
-
-    set -x
-    # 1 for streaming, 1 for backfill + processing tweets, 1 for solely processing tweets
-    exec celery -A scremsong worker -l info --concurrency=3 --logfile=logs/celery-worker.log
-    # exec celery -A scremsong worker -l info --concurrency=3
-    exit
-fi
 
 if [ "$ENVIRONMENT" = "DEVELOPMENT" ]; then
   django-admin migrate
@@ -40,19 +32,45 @@ if [ "$ENVIRONMENT" = "DEVELOPMENT" ]; then
   exit
 fi
 
-if [ "$ENVIRONMENT" = "PRODUCTION" ]; then
-  mkdir -p logs
-  
-  mkdir -p static
-  rm -rf static/*
-  django-admin collectstatic
+# celery_worker entrypoint
+if [ "$1" = "celery_worker" ]; then
+    echo "[Run] Starting celery_worker"
+
+    # Print all executed commands to the terminal
+    set -x
+
+    # Concurrency: 1 for streaming, 1 for backfill + processing tweets, 1 for solely processing tweets
+    exec celery -A scremsong worker -l info --concurrency=3 --logfile=logs/celery-worker.log
+    exit
 fi
 
-# CMD="$1"
-# echo $CMD
-# if [ "$CMD" = "runserver" ]; then
-#     django-admin runserver "0.0.0.0:8000"
+if [ "$CMD" = "build" ]; then
+   export ENVIRONMENT=PRODUCTION
+
+   rm -rf /app/static
+   mkdir -p /app/static
+
+   django-admin collectstatic --noinput
+   cd /app/static && tar czvf /build/django.tgz . && rm -rf /app/static
+   exit
+fi
+
+# if [ "$CMD" = "uwsgi" ]; then
+#    waitfordb
+#    export ENVIRONMENT=PRODUCTION
+#    django-admin migrate
+#    django-admin collectstatic --noinput
+#    chown 1000:1000 /var/log/django.log
+#    uwsgi --lazy-apps --uid 1000 --gid 1000 --http-socket :9090 --wsgi scremsong.wsgi --master --processes 8 --threads 8
+#    exit
 # fi
 
-exec "$@"
+if [ "$CMD" = "supervisord" ]; then
+   waitfordb
+   export ENVIRONMENT=PRODUCTION
+   django-admin migrate
+   /usr/bin/supervisord -c /app/supervisord.conf
+   exit
+fi
 
+exec "$@"

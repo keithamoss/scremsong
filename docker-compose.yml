@@ -17,15 +17,6 @@ services:
 
             # Enable this to store the PostgreSQL data on the host
             - ./db/data:/var/lib/postgresql/data
-    frontend:
-        image: node:10.14.2-alpine
-        volumes:
-            - ./frontend:/app:delegated
-        entrypoint: /app/docker-entrypoint.sh
-        ports:
-            - "3000:3000"
-        env_file:
-            - secrets/scremsong-frontend.dev.env
     rabbitmq:
         image: rabbitmq:3.7.8-alpine
         volumes:
@@ -34,7 +25,6 @@ services:
         #   - ./rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
         ports:
             - "5672:5672"
-            # - "15672:15672"
         env_file:
             - secrets/rabbitmq.env
     redis:
@@ -44,6 +34,15 @@ services:
         # https://github.com/docker-library/redis/issues/35#issuecomment-360810072
         sysctls:
             net.core.somaxconn: "511"
+    frontend:
+        image: node:10.14.2-alpine
+        volumes:
+            - ./frontend:/app:delegated
+        entrypoint: /app/docker-entrypoint.sh
+        ports:
+            - "3000:3000"
+        env_file:
+            - secrets/scremsong-frontend.dev.env
     django:
         build: django/
         entrypoint: /app/docker-entrypoint.sh
@@ -74,7 +73,8 @@ services:
         build: nginx/
         volumes:
             - ./nginx:/app
-            - ./nginx/nginx/docker.dev.conf:/etc/nginx/conf.d/nginx.conf
+            - ./nginx/nginx/docker.https.dev.conf:/etc/nginx/conf.d/nginx.conf
+            - ./keys/:/app/keys/:delegated
         depends_on:
             - django
             - frontend

@@ -1,67 +1,63 @@
-version: "2"
+version: "3.7"
 services:
-  db:
-    image: mdillon/postgis:10-alpine
-    command: postgres -c 'config_file=/etc/postgresql/postgresql.conf'
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=stack
-    volumes:
-      # Enable this mapping to inject the tweaked postgresql.conf file into our PostgreSQL container.
-      - ./db/postgresql.conf:/etc/postgresql/postgresql.conf
+    db:
+        image: mdillon/postgis:10-alpine
+        command: postgres -c 'config_file=/etc/postgresql/postgresql.conf'
+        # ports:
+        #     - "5432:5432"
+        environment:
+            - POSTGRES_PASSWORD=postgres
+            - POSTGRES_DB=stack
+        volumes:
+            # Enable this mapping to inject the tweaked postgresql.conf file into our PostgreSQL container.
+            - ./db/postgresql.conf:/etc/postgresql/postgresql.conf
 
-      # Enable this mapping and create ./dev/pg_log/ to get easier access to PostgreSQL's log files for debugging.
-      # - ./dev/pg_log/:/var/lib/postgresql/data/pg_log/
-  frontend:
-    image: node:10.5.0-alpine
-    volumes:
-      - ./frontend:/app:delegated
-    entrypoint: /app/docker-entrypoint.sh
-    ports:
-      - "3000:3000"
-    env_file:
-      - secrets/scremsong-frontend.prod-local.env
-  django:
-    build: django/
-    command: /usr/bin/supervisord -c /app/supervisord.conf
-    volumes:
-      - ./django/:/app:delegated
-      - ./logs/django:/app/logs:delegated
-    ports:
-      - "8000:8000"
-    env_file:
-      - secrets/scremsong-web.prod.env
-      - secrets/scremsong-db.env
-    depends_on:
-      - db
-      - frontend
-  # celery_worker:
-  #   build: django/
-  #   entrypoint: /app/docker-entrypoint.sh
-  #   command: celery_worker
-  #   volumes:
-  #     - ./django/:/app:delegated
-  #   # ports:
-  #   #   - "8000:8000"
-  #   env_file:
-  #     - secrets/scremsong-web.dev.env
-  #     - secrets/scremsong-db.env
-  #   depends_on:
-  #     - db
-  #     - rabbitmq
-  nginx:
-    build: nginx/
-    volumes:
-      - ./nginx:/app
-      - ./nginx/nginx/docker.prod.conf:/etc/nginx/conf.d/nginx.conf
-      - ./frontend/build:/scremsong/frontend/build/:delegated
-      - ./django/static:/django/static:delegated
-    depends_on:
-      - django
-    links:
-      - django
-    ports:
-      - "443:443"
-      - "8001:8001"
+            # Enable this mapping and create ./dev/pg_log/ to get easier access to PostgreSQL's log files for debugging.
+            # - ./dev/pg_log/:/var/lib/postgresql/data/pg_log/
+
+            # Enable this to store the PostgreSQL data on the host
+            - ./db/data:/var/lib/postgresql/data
+    rabbitmq:
+        image: rabbitmq:3.7.8-alpine
+        volumes:
+            # Might need to `docker commit` too if we ever change settings? Not sure. (Ref. https://github.com/docker-library/rabbitmq/issues/106#issuecomment-380519695)
+            - ./rabbitmq/data:/var/lib/rabbitmq
+        # ports:
+        #     - "5672:5672"
+        env_file:
+            - secrets/rabbitmq.env
+    redis:
+        image: redis:5.0.3-alpine3.8
+        # ports:
+        #     - "6379:6379"
+        # https://github.com/docker-library/redis/issues/35#issuecomment-360810072
+        sysctls:
+            net.core.somaxconn: "511"
+    django:
+        image: scremsong/uwsgi:latest
+        command: supervisord
+        volumes:
+            - ./logs/django:/app/logs:delegated
+        # ports:
+        #     - "8000:8000"
+        env_file:
+            - secrets/scremsong-web.prod-local.env
+            - secrets/scremsong-db.env
+        depends_on:
+            - db
+            - rabbitmq
+            - redis
+    nginx_prod:
+        image: scremsong/nginx-prod:latest
+        volumes:
+            - ./keys/:/app/keys/:delegated
+            - ./logs/nginx:/var/log/nginx:delegated
+        depends_on:
+            - django
+        ports:
+            - "443:443"
+            - "8001:8001"
+        environment:
+            - HTTPS_ENABLED=TRUE
+            - SERVER_NAME=localhost
+            - DJANGO_LOCATION=django:8000

@@ -1,32 +1,23 @@
 #!/bin/sh
 
-# wait for a given host:port to become available
-#
-# $1 host
-# $2 port
-# function dockerwait {
-#     while ! exec 6<>/dev/tcp/$1/$2; do
-#         echo "$(date) - waiting to connect $1 $2"
-#         sleep 5
-#     done
-#     echo "$(date) - connected to $1 $2"
-
-#     exec 6>&-
-#     exec 6<&-
-# }
-
+command="$1"
 cd /app
+
 if [ "$REACT_APP_ENVIRONMENT" = "DEVELOPMENT" ]; then
-#   HTTPS=true npm run start
-  npm run start
-elif [ "$REACT_APP_ENVIRONMENT" = "PRODUCTION" ]; then
-  npm install .
-  npm run build
+  yarn run start
+  exit
 fi
 
-# CMD="$1"
-# if [ "$CMD" = "nginx" ]; then
-#     nginx -g 'daemon off;'
-# fi
+if [ x"$command" = x"build" ]; then
+    export TERM=xterm
 
-# exec "$@"
+    apk add --no-cache git
+    yarn
+
+    rm -rf /app/build
+    mkdir -p /app/build
+
+    yarn run build
+    cd /app/build && tar czvf /build/frontend.tgz .
+    exit
+fi

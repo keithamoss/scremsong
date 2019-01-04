@@ -1,5 +1,5 @@
 Django==2.1.4
-psycopg2==2.7.6.1
+psycopg2-binary==2.7.6.1
 djangorestframework==3.9.0
 django-cors-headers==2.4.0
 django-model-utils==3.1.2
@@ -12,3 +12,4 @@ raven==6.10.0
 tweepy==3.7.0
 celery==4.2.1
 django-celery-results==1.0.4
+daphne==2.2.4
