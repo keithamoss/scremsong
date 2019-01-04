@@ -3,8 +3,14 @@
 # dependencies
 /node_modules
 
+# development
+keys/
+
 # testing
 /coverage
+
+# building
+nginx-prod/build/
 
 # production
 /build
@@ -56,3 +62,5 @@ foo10\.json
 foo11\.json
 
 foo12\.json
+
+initial-data/*
