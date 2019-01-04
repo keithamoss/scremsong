@@ -34,7 +34,7 @@ services:
         sysctls:
             net.core.somaxconn: "511"
     django:
-        image: scremsong/uwsgi:latest
+        image: scremsong/django:latest
         command: supervisord
         volumes:
             - ./logs/django:/app/logs:delegated

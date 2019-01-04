@@ -20,7 +20,7 @@ mv build/django.tgz build/django-$ver.tgz
 mv build/frontend.tgz build/frontend-$ver.tgz
 
 echo pushing prod django container
-docker tag scremsong/uwsgi:latest keithmoss/scremsong-django:latest
-docker tag scremsong/uwsgi:latest keithmoss/scremsong-django:"$ver"
+docker tag scremsong/django:latest keithmoss/scremsong-django:latest
+docker tag scremsong/django:latest keithmoss/scremsong-django:"$ver"
 docker push keithmoss/scremsong-django:latest
 docker push keithmoss/scremsong-django:"$ver"

@@ -13,15 +13,14 @@ docker-compose -f docker-compose-buildpy.yml run django
 docker-compose -f docker-compose-buildpy.yml stop
 
 # build production nginx image
-# cp build/frontend.tgz build/django.tgz nginx-prod/build # this is horrible, fixme
+cp build/frontend.tgz build/django.tgz nginx-prod/build # this is horrible, fixme
 
+# For local testing with docker-compose-prod.yml only
 # echo building prod nginx container
 # (cd nginx-prod && docker build -t scremsong/nginx-prod:latest .)
-# (cd nginx-prod && docker build -t scremsong/nginx-prod:latest . && cd ..)
 # (cd nginx-prod && docker build --no-cache -t scremsong/nginx-prod:latest . && cd ..)
 
-echo building prod uwsgi container
-(cd django && docker build -t scremsong/uwsgi:latest .)
-# (cd django && docker build -t scremsong/uwsgi:latest . && cd ..)
-# (cd django && docker build --no-cache -t scremsong/uwsgi:latest . && cd ..)
+echo building prod django container
+(cd django && docker build -t scremsong/django:latest .)
+# (cd django && docker build --no-cache -t scremsong/django:latest . && cd ..)
 # rm django/scremsong/ealfront/templates/index.html

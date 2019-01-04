@@ -43,7 +43,7 @@ services:
             - ./build/:/build:delegated
             # - ./frontend:/frontend:delegated
         env_file:
-            - secrets/scremsong-web.prod.env
+            - secrets/scremsong-web.prod-local.env
             - secrets/scremsong-db.env
         # depends_on:
         #     - db
