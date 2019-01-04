@@ -12,7 +12,7 @@ docker-compose -f docker-compose-buildpy.yml build
 docker-compose -f docker-compose-buildpy.yml run django
 docker-compose -f docker-compose-buildpy.yml stop
 
-# build production nginx image
+# copy assets locally for build local production nginx image (local testing only)
 cp build/frontend.tgz build/django.tgz nginx-prod/build # this is horrible, fixme
 
 # For local testing with docker-compose-prod.yml only
