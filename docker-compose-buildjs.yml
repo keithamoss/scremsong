@@ -8,4 +8,4 @@ services:
             - ./frontend:/app:delegated
             - ./build:/build:delegated
         env_file:
-            - secrets/scremsong-frontend.prod-local.env
+            - secrets/scremsong-frontend.prod.env
