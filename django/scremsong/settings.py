@@ -158,7 +158,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('redis', 6379)],
+            "hosts": [(get_env('REDIS_HOST'), 6379)],
             "prefix": "asgi-scremsong:",
         },
     },
