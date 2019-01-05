@@ -404,7 +404,7 @@ class SocialPlatformsAuthViewset(viewsets.ViewSet):
         # 1. Login to https://developer.twitter.com/en/apps as @DemSausage
         # 2. Register an app and set these callback URLs:
         #   - https://localhost:8001/api/0.1/social_auth/twitter_auth_step2/
-        #   - https://api.scremsong.democracysausage.org/api/0.1/social_auth/twitter_auth_step2/
+        #   - https://scremsong-api.democracysausage.org/api/0.1/social_auth/twitter_auth_step2/
         # 3. In a new tab, go to Twitter and login as @DemSausage
         # 4. Go to https://scremsong.democracysausage.org and login
         # 5. Navigate to https://localhost:8001/api/0.1/social_auth/twitter_auth_step1/?format=json
