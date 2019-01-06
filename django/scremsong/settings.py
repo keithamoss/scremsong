@@ -51,6 +51,8 @@ if get_env("ENVIRONMENT") == "PRODUCTION":
     SESSION_COOKIE_DOMAIN = ".democracysausage.org"
     CSRF_COOKIE_DOMAIN = ".democracysausage.org"
 
+    STATIC_ROOT = "/app/static"
+
     LOGGING = {
         "version": 1,
         "disable_existing_loggers": False,
