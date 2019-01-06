@@ -26,12 +26,6 @@ waitfordb()
 
 CMD="$1"
 
-if [ "$ENVIRONMENT" = "DEVELOPMENT" ]; then
-  django-admin migrate
-  django-admin runserver "0.0.0.0:8000"
-  exit
-fi
-
 # celery_worker entrypoint
 if [ "$1" = "celery_worker" ]; then
     echo "[Run] Starting celery_worker"
@@ -42,6 +36,12 @@ if [ "$1" = "celery_worker" ]; then
     # Concurrency: 1 for streaming, 1 for backfill + processing tweets, 1 for solely processing tweets
     exec celery -A scremsong worker -l info --concurrency=3 --logfile=logs/celery-worker.log
     exit
+fi
+
+if [ "$ENVIRONMENT" = "DEVELOPMENT" ]; then
+  django-admin migrate
+  django-admin runserver "0.0.0.0:8000"
+  exit
 fi
 
 if [ "$CMD" = "build" ]; then
