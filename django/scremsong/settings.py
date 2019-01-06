@@ -37,17 +37,20 @@ if get_env("ENVIRONMENT") == "PRODUCTION":
     DEBUG = False
     CONN_MAX_AGE = 50  # Half our max number of PostgreSQL connections
     CORS_ORIGIN_WHITELIST = (
-        "scremsong.democracysausage.org",
-        "localhost"
+        "scremsong.democracysausage.org"
     )
     CSRF_TRUSTED_ORIGINS = (
-        "scremsong.democracysausage.org",
-        "localhost"
+        "scremsong.democracysausage.org"
     )
     ALLOWED_HOSTS = [
         "scremsong.democracysausage.org",
-        "localhost"
+        "scremsong-api.democracysausage.org"
     ]
+
+    # @FIXME Hang the backend off scremsong.democracysausage.org/api/ to avoid cookie conflicts with admin.democracysausage.org later on (when we rebuild it in Django)
+    SESSION_COOKIE_DOMAIN = ".democracysausage.org"
+    CSRF_COOKIE_DOMAIN = ".democracysausage.org"
+
     LOGGING = {
         "version": 1,
         "disable_existing_loggers": False,
@@ -58,7 +61,7 @@ if get_env("ENVIRONMENT") == "PRODUCTION":
         },
         "handlers": {
             "file": {
-                "level": "WARNING",
+                "level": "INFO",
                 "class": "logging.FileHandler",
                 "filename": "/app/logs/django.log",
                 "formatter": "verbose",
@@ -67,7 +70,7 @@ if get_env("ENVIRONMENT") == "PRODUCTION":
         "loggers": {
             "django": {
                 "handlers": ["file"],
-                "level": "WARNING",
+                "level": "INFO",
                 "propagate": True,
             },
         },
