@@ -1,4 +1,4 @@
-import { blueGrey, green, lightBlue, yellow } from "@material-ui/core/colors"
+import { blueGrey, green, yellow } from "@material-ui/core/colors"
 import * as dotProp from "dot-prop-immutable"
 import { uniq } from "lodash-es"
 import { Action } from "redux"
@@ -155,7 +155,7 @@ export function getActionBarBackgroundColour(tweet: ISocialTweet, assignment: IR
     if (tweet.state === eSocialTweetState.DISMISSED) {
         return blueGrey[200]
     } else if (tweet.state === eSocialTweetState.DEALT_WITH) {
-        return lightBlue[200]
+        return green[200]
     }
 
     return "transparent"
