@@ -19,7 +19,7 @@
         "react-redux": "^6.0.0",
         "react-router-dom": "^4.3.1",
         "react-router-redux": "^4.0.8",
-        "react-tweet": "https://github.com/keithamoss/react-tweet.git#1.8.1",
+        "react-tweet": "https://github.com/keithamoss/react-tweet.git#1.8.3",
         "react-virtualized": "^9.21.0",
         "reconnecting-websocket": "^4.1.10",
         "redux": "^4.0.1",
