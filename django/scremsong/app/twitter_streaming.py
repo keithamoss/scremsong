@@ -89,7 +89,7 @@ def open_tweet_stream():
     # Begin streaming!
     api = get_tweepy_api_auth()
     if api is None:
-        logger.warning("No Twitter credentials available! Please generate them by-hand.")
+        logger.critical("No Twitter credentials available! Please generate them by-hand.")
         return None
 
     try:
