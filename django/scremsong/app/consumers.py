@@ -203,7 +203,7 @@ def build_on_connect_data_payload(user):
             },
             {
                 **{"msg_type": settings.MSG_TYPE_REVIEWERS_LIST_ASSIGNMENTS},
-                **get_assignments([SocialAssignmentStatus.PENDING, SocialAssignmentStatus.AWAIT_REPLY])
+                **get_assignments()
             },
             {
                 **{"msg_type": settings.MSG_TYPE_TWEETS_LOAD_TWEETS},
