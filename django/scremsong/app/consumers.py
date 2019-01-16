@@ -2,7 +2,7 @@ from asgiref.sync import async_to_sync
 from channels.generic.websocket import JsonWebsocketConsumer
 from django.conf import settings
 from scremsong.util import make_logger
-from scremsong.app.serializers import UserSerializer
+from scremsong.app.serializers import UserSerializer, ReviewerUserSerializer
 from scremsong.app.twitter import get_twitter_columns, fetch_tweets_for_columns, get_precanned_tweet_replies
 from scremsong.app.reviewers import get_reviewer_users, get_assignments
 from scremsong.app.enums import SocialAssignmentStatus
@@ -36,6 +36,10 @@ class ScremsongConsumer(JsonWebsocketConsumer):
             # Send a message back to the client on a successful connection
             self.send_json(build_on_connect_data_payload(self.user))
 
+            # Send a message to all connected clients that a new user has come online
+            # We send the whole object to deal with brand new registered users coming online for the first time
+            websockets.send_channel_message("reviewers.user_connected", {"user": ReviewerUserSerializer(self.user).data})
+
             logger.debug('scremsong connect channel=%s group=%s group=%s user=%s', self.channel_name, self.group_name, self.user_group_name, self.user)
         else:
             # Setting a code doesn't actually seem to work
@@ -57,13 +61,10 @@ class ScremsongConsumer(JsonWebsocketConsumer):
         )
 
         # @TODO Send a message to all connected clients that this user has gone offline
-        # async_to_sync(self.channel_layer.group_send)(
-        #     self.group_name,
-        #     {
-        #         "user_id": self.user.id,
-        #         "is_accepting_assignments": False
-        #     }
-        # )
+        # websockets.send_channel_message("reviewers.set_status", {
+        #     "user_id": self.user.id,
+        #     "is_accepting_assignments": False
+        # })
 
         logger.debug('scremsong disconnect channel=%s user=%s', self.channel_name, self.user)
 
@@ -80,6 +81,15 @@ class ScremsongConsumer(JsonWebsocketConsumer):
             "message": event["message"],
             "options": event["options"],
             "key": str(getrandbits(128)),
+        })
+
+    def reviewers_user_connected(self, event):
+        """
+        Called when a user comes online.
+        """
+        self.send_json({
+            "msg_type": settings.MSG_TYPE_REVIEWERS_USER_CONNECTED,
+            "user": event["user"]
         })
 
     def reviewers_assign(self, event):

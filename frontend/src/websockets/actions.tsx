@@ -21,6 +21,7 @@ import {
     WS_REVIEWERS_LIST_USERS,
     WS_REVIEWERS_SET_STATUS,
     WS_REVIEWERS_UNASSIGN,
+    WS_REVIEWERS_USER_CONNECTED,
     WS_SOCIAL_COLUMNS_LIST,
     WS_TWEETS_LOAD_TWEETS,
     WS_TWEETS_NEW_TWEETS,
@@ -81,6 +82,10 @@ export interface IActionReviewersAssignmentMetadataChanged extends Action<typeof
 export interface IActionReviewersSetStatus extends Action<typeof WS_REVIEWERS_SET_STATUS> {
     user_id: number
     is_accepting_assignments: boolean
+}
+
+export interface IActionReviewersUserConnected extends Action<typeof WS_REVIEWERS_USER_CONNECTED> {
+    user: IReviewerUser
 }
 
 export interface ITweetFetchColumn {

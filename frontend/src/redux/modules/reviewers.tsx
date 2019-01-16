@@ -12,6 +12,7 @@ import {
     IActionReviewersListAssignments,
     IActionReviewersSetStatus,
     IActionReviewersUnassign,
+    IActionReviewersUserConnected,
 } from "../../websockets/actions"
 import {
     WS_REVIEWERS_ASSIGN,
@@ -22,6 +23,7 @@ import {
     WS_REVIEWERS_LIST_USERS,
     WS_REVIEWERS_SET_STATUS,
     WS_REVIEWERS_UNASSIGN,
+    WS_REVIEWERS_USER_CONNECTED,
 } from "../../websockets/constants"
 import { IThunkExtras } from "./interfaces"
 import { IStore } from "./reducer"
@@ -39,6 +41,7 @@ const initialState: IModule = {
 
 // Reducer
 type IAction =
+    | IActionReviewersUserConnected
     | IActionReviewersList
     | IActionReviewersListAssignments
     | IActionReviewersSetStatus
@@ -50,6 +53,13 @@ type IAction =
     | IActionReviewersSetCurrentReviewer
 export default function reducer(state: IModule = initialState, action: IAction) {
     switch (action.type) {
+        case WS_REVIEWERS_USER_CONNECTED:
+            const theUserIndex = state.users.findIndex((user: IReviewerUser) => user.id === action.user.id)
+            if (theUserIndex !== -1) {
+                return dotProp.set(state, `users.${theUserIndex}`, action.user)
+            } else {
+                return dotProp.set(state, `users.$end`, action.user)
+            }
         case WS_REVIEWERS_LIST_USERS:
             return dotProp.set(state, "users", action.users)
         case WS_REVIEWERS_LIST_ASSIGNMENTS:
