@@ -74,6 +74,7 @@ class TweetReplyChipInput extends React.Component<TComponentProps, IState> {
         return (
             <ChipInput
                 defaultValue={defaultValue}
+                placeholder={"@"}
                 fullWidth={true}
                 fullWidthInput={true}
                 variant="filled"
