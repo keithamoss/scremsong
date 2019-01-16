@@ -291,7 +291,7 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
                     {({ measure }) => (
                         <div style={style}>
                             <div className={classes.actionBar} style={{ borderRight: `6px solid ${backgroundColor}` }}>
-                                {showActionBarButtons === true && (
+                                {showActionBarButtons === true && tweet.state === eSocialTweetState.ACTIVE && (
                                     <Tooltip title="Assign this tweet to someone" aria-label="Assign tweet">
                                         <Button
                                             size="small"
