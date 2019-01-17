@@ -265,12 +265,8 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
                     Fin.
                 </div>
             )
-        } else if (index >= tweet_ids.length) {
-            return (
-                <div key={key} style={style}>
-                    Loading some more tweets...
-                </div>
-            )
+        } else if (index >= tweet_ids.length && tweet_ids.length < column.total_tweets) {
+            return null
         } else {
             const tweetId = tweet_ids[index]
             const tweet = tweets[tweetId]
