@@ -1,6 +1,7 @@
 import { Button } from "@material-ui/core"
 import * as Cookies from "js-cookie"
 import * as qs from "qs"
+import * as Raven from "raven-js"
 import * as React from "react"
 import { beginFetch, eNotificationVariant, finishFetch, getAPIBaseURL, sendNotification } from "../redux/modules/app"
 import { randomHash } from "../utils"
@@ -118,6 +119,9 @@ export class APIClient {
 
     // Handles fatal errors from the API (i.e. non-200 responses)
     private handleError(error: string, url: string, dispatch: any) {
+        Raven.captureException(error)
+        Raven.showReportDialog({})
+
         dispatch(
             sendNotification({
                 message: error,

@@ -1,5 +1,6 @@
-// React
 import { SnackbarProvider } from "notistack"
+import * as createRavenMiddleware from "raven-for-redux"
+import * as Raven from "raven-js"
 import * as React from "react"
 import * as ReactDOM from "react-dom"
 import { Provider } from "react-redux"
@@ -17,12 +18,11 @@ import { APIClient } from "./api/APIClient"
 import AppContainer from "./AppContainer"
 import "./index.css"
 import "./polyfills"
+import { eAppEnv, getEnvironment } from "./redux/modules/app"
 import { IMyWindow } from "./redux/modules/interfaces"
 // Google Analytics
 // import { AnalyticsMiddleware, fireAnalyticsTracking } from "./shared/analytics/GoogleAnalytics"
 // Sentry.io
-// import * as Raven from "raven-js"
-// import * as createRavenMiddleware from "raven-for-redux"
 // Service Workers
 // import registerServiceWorker from "./registerServiceWorker"
 // import { getEnvironment, eAppEnv } from "./redux/modules/app"
@@ -35,10 +35,11 @@ window.api = new APIClient()
 const Middleware: any[] = []
 
 // Sentry.io
-// if (getEnvironment() === eAppEnv.PROD && "REACT_APP_RAVEN_URL" in process.env) {
-//     Raven.config(process.env.REACT_APP_RAVEN_URL!).install()
-//     Middleware.push(createRavenMiddleware(Raven))
-// }
+if (getEnvironment() === eAppEnv.PROD && "REACT_APP_RAVEN_URL" in process.env) {
+    Raven.config(process.env.REACT_APP_RAVEN_URL!).install()
+    // @ts-ignore
+    Middleware.push(createRavenMiddleware(Raven))
+}
 
 // Google Analytics
 // if ("REACT_APP_GOOGLE_ANALYTICS_UA" in process.env) {
