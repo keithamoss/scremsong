@@ -81,7 +81,7 @@ export class AppContainer extends React.Component<TComponentProps, {}> {
         const audio = document.getElementById("scremsong-sound") as HTMLMediaElement
         if (this.canPlayAudio(audio)) {
             audio.volume = 0.5
-            audio.play()
+            audio.play().catch((error: any) => null)
         }
     }
 
