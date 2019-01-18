@@ -440,6 +440,18 @@ class CeleryAdminViewset(viewsets.ViewSet):
         return Response(i.active())
 
     @list_route(methods=['get'])
+    def celery_pending_tasks(self, request, format=None):
+        from celery.task.control import inspect
+        i = inspect()
+        return Response(i.scheduled())
+
+    @list_route(methods=['get'])
+    def celery_reserved_tasks(self, request, format=None):
+        from celery.task.control import inspect
+        i = inspect()
+        return Response(i.reserved())
+
+    @list_route(methods=['get'])
     def celery_workers(self, request, format=None):
         from celery.task.control import inspect
         i = inspect()
