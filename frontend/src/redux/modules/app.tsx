@@ -71,7 +71,7 @@ export default function reducer(state: IModule = initialState, action: IAction) 
             const notificationIndex = state.notifications.findIndex((notification: INotification) => notification.key === action.key)
             return dotProp.delete(state, `notifications.${notificationIndex}`)
         case WS_TWEETS_STREAMING_STATE:
-            return dotProp.toggle(state, "tweet_streaming_connected", action.connected)
+            return dotProp.set(state, "tweet_streaming_connected", action.connected)
         default:
             return state
     }
