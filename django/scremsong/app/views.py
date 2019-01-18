@@ -434,25 +434,20 @@ class CeleryAdminViewset(viewsets.ViewSet):
     permission_classes = (IsAuthenticated,)
 
     @list_route(methods=['get'])
-    def celery_running_tasks(self, request, format=None):
+    def tasks(self, request, format=None):
         from celery.task.control import inspect
         i = inspect()
-        return Response(i.active())
+        return Response({
+            # These are all the tasks that are currently being executed.
+            "running": i.active(),
+            # These are tasks reserved by the worker when they have an eta or countdown argument set.
+            "scheduled": i.scheduled(),
+            # This will list all tasks that have been prefetched by the worker, and is currently waiting to be executed (doesn’t include tasks with an ETA value set).
+            "reserved": i.reserved()
+        })
 
     @list_route(methods=['get'])
-    def celery_pending_tasks(self, request, format=None):
-        from celery.task.control import inspect
-        i = inspect()
-        return Response(i.scheduled())
-
-    @list_route(methods=['get'])
-    def celery_reserved_tasks(self, request, format=None):
-        from celery.task.control import inspect
-        i = inspect()
-        return Response(i.reserved())
-
-    @list_route(methods=['get'])
-    def celery_workers(self, request, format=None):
+    def workers(self, request, format=None):
         from celery.task.control import inspect
         i = inspect()
         return Response(i.ping())

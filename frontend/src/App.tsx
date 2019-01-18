@@ -41,6 +41,9 @@ const styles = (theme: Theme) =>
         selectedIcon: {
             color: blue[600],
         },
+        disconnectedBadge: {
+            fontWeight: 700,
+        },
         content: {
             flexGrow: 1,
             // padding: theme.spacing.unit * 3,
@@ -127,7 +130,7 @@ class App extends React.Component<IProps & WithStyles, {}> {
                                     className={location.pathname === "/admin" ? classes.selectedIcon : undefined}
                                 >
                                     {tweetStreamingConnected === false && (
-                                        <Badge badgeContent={"!"} color="secondary">
+                                        <Badge badgeContent={"!"} color="secondary" className={classes.disconnectedBadge}>
                                             <DNSIcon />
                                         </Badge>
                                     )}

@@ -140,6 +140,6 @@ def is_streaming_connected():
     i = inspect()
     for worker_name, tasks in i.active().items():
         for task in tasks:
-            if task["name"] == "scremsong.celery.task_fill_missing_tweets":
+            if task["name"] == "scremsong.celery.task_open_tweet_stream":
                 return True
     return False

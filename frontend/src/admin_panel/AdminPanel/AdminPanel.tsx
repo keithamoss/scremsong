@@ -1,5 +1,6 @@
 import { AppBar, Tab, Tabs, Theme, Typography, withStyles, WithStyles } from "@material-ui/core"
 import * as React from "react"
+import RealTimeTweetStreamingContainer from "../RealTimeTweetStreaming/RealTimeTweetStreamingContainer"
 
 const styles = (theme: Theme) => ({
     root: {
@@ -56,7 +57,11 @@ class AdminPanel extends React.PureComponent<TComponentProps, IState> {
                         </Tabs>
                     </AppBar>
                     {activeTab === 0 && <TabContainer>Page One</TabContainer>}
-                    {activeTab === 1 && <TabContainer>Page Two</TabContainer>}
+                    {activeTab === 1 && (
+                        <TabContainer>
+                            <RealTimeTweetStreamingContainer />
+                        </TabContainer>
+                    )}
                     {activeTab === 2 && <TabContainer>Page Three</TabContainer>}
                 </div>
             </React.Fragment>
