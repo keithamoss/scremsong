@@ -1,10 +1,12 @@
 import tweepy
 from scremsong.util import make_logger
 from scremsong.app.models import SocialPlatforms
-from scremsong.app.enums import SocialPlatformChoice, TweetSource, TweetStatus
+from scremsong.app.enums import SocialPlatformChoice, TweetSource, TweetStatus, NotificationVariants
 from scremsong.celery import celery_init_tweet_streaming, task_process_tweet_reply
 from scremsong.app.social.columns import get_social_columns
 from scremsong.app.twitter import get_twitter_app, get_tweepy_api_auth, is_a_reply, save_tweet, notify_of_saved_tweet
+from scremsong.app import websockets
+from time import sleep
 
 logger = make_logger(__name__)
 
@@ -24,6 +26,8 @@ def open_tweet_stream():
         def on_error(self, status_code):
             if status_code == 420:
                 logger.warning("Streaming got status {}. Disconnecting from stream.".format(status_code))
+
+                sleep(10)
 
                 # Fire off tasks to restart streaming (delayed by 2s)
                 celery_init_tweet_streaming()
@@ -65,6 +69,13 @@ def open_tweet_stream():
         def on_connect(self):
             logger.info("on_connect")
 
+            websockets.send_channel_message("notifications.send", {
+                "message": "Real-time tweet streaming has connected.",
+                "options": {
+                    "variant": NotificationVariants.INFO
+                }
+            })
+
         def on_data(self, raw_data):
             logger.info("on_data")
             return super(MyStreamListener, self).on_data(raw_data)
@@ -104,6 +115,14 @@ def open_tweet_stream():
             logger.info("track")
             logger.info(track)
             myStream.filter(track=track, stall_warnings=True)
-            logger.info("Streaming Twitter connection establised successfully for terms: {}.".format(", ".join(track)))
+
+            logger.info("Oops, looks like tweet streaming has ended.")
+            websockets.send_channel_message("notifications.send", {
+                "message": "Real-time tweet streaming has disconnected.",
+                "options": {
+                    "variant": NotificationVariants.ERROR,
+                    "autoHideDuration": None
+                }
+            })
     except Exception as e:
         logger.error("Exception {}: '{}' during streaming".format(type(e), str(e)))

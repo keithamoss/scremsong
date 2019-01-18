@@ -1,9 +1,12 @@
 from __future__ import absolute_import, unicode_literals
-from scremsong.util import make_logger
 import os
+from time import sleep
 from celery import Celery
 from celery.signals import celeryd_init, worker_ready
-from time import sleep
+from celery.contrib.abortable import AbortableTask
+from scremsong.util import make_logger
+from scremsong.app import websockets
+from scremsong.app.enums import NotificationVariants
 
 logger = make_logger(__name__)
 
@@ -47,11 +50,11 @@ def celery_kill_running_tasks():
             # Not an issue for us with how we're using Celery at the moment.
             # A better approach is using AbortableTasks and testing for is_aborted() in the task and here.
             # (See the commit history on this file for WIPy attempts at doing that)
-            logger.info("Revoking task_id {}".format(task["id"]))
+            logger.info("Revoking task {} ({})".format(task["name"], task["id"]))
             revoke(task["id"], terminate=True)
 
     # Give the tasks time to properly die
-    sleep(2)
+    sleep(5)
 
 
 def celery_restart_streaming():
@@ -92,6 +95,13 @@ def task_open_tweet_stream(self):
     open_tweet_stream()
 
     logger.info("Done streaming tweets!")
+    websockets.send_channel_message("notifications.send", {
+        "message": "Real-time tweet streaming has disconnected (death).",
+        "options": {
+            "variant": NotificationVariants.ERROR,
+            "autoHideDuration": None
+        }
+    })
     return True
 
 
