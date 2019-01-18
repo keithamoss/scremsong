@@ -6,7 +6,6 @@ from scremsong.app.serializers import UserSerializer, ReviewerUserSerializer
 from scremsong.app.twitter import get_twitter_columns, fetch_tweets_for_columns, get_precanned_tweet_replies
 from scremsong.app.twitter_streaming import is_streaming_connected
 from scremsong.app.reviewers import get_reviewer_users, get_assignments
-from scremsong.app.enums import SocialAssignmentStatus
 from scremsong.app import websockets
 from random import getrandbits
 

@@ -1,14 +1,16 @@
-import { AppBar, Tab, Tabs, Theme, Typography, withStyles, WithStyles } from "@material-ui/core"
-import * as React from "react"
-import RealTimeTweetStreamingContainer from "../RealTimeTweetStreaming/RealTimeTweetStreamingContainer"
+import { AppBar, Tab, Tabs, Theme, withStyles, WithStyles } from "@material-ui/core";
+import * as React from "react";
+import LogViewerContainer from "../LogViewer/LogViewerContainer";
+import RealTimeTweetStreamingContainer from "../RealTimeTweetStreaming/RealTimeTweetStreamingContainer";
 
 const styles = (theme: Theme) => ({
     root: {
         flexGrow: 1,
-        minHeight: "100%",
+        height: "100%",
         backgroundColor: theme.palette.background.paper,
     },
     tabContainer: {
+        height: "100%",
         padding: theme.spacing.unit * 3,
     },
 })
@@ -40,11 +42,7 @@ class AdminPanel extends React.PureComponent<TComponentProps, IState> {
         const { classes } = this.props
         const { activeTab } = this.state
 
-        const TabContainer = (props: any) => (
-            <Typography component="div" className={classes.tabContainer}>
-                {props.children}
-            </Typography>
-        )
+        const TabContainer = (props: any) => <div className={classes.tabContainer}>{props.children}</div>
 
         return (
             <React.Fragment>
@@ -62,7 +60,11 @@ class AdminPanel extends React.PureComponent<TComponentProps, IState> {
                             <RealTimeTweetStreamingContainer />
                         </TabContainer>
                     )}
-                    {activeTab === 2 && <TabContainer>Page Three</TabContainer>}
+                    {activeTab === 2 && (
+                        <TabContainer>
+                            <LogViewerContainer />
+                        </TabContainer>
+                    )}
                 </div>
             </React.Fragment>
         )

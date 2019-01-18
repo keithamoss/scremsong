@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.contrib.auth import logout
-from django.http.response import HttpResponseRedirect
+from django.http.response import HttpResponseRedirect, HttpResponse
 from django.http import HttpResponseNotFound
 from django.db import transaction
 
@@ -24,6 +24,8 @@ from scremsong.app.exceptions import ScremsongException
 
 from time import sleep
 from copy import deepcopy
+import glob
+import os
 
 logger = make_logger(__name__)
 
@@ -456,6 +458,43 @@ class CeleryAdminViewset(viewsets.ViewSet):
     def restart_streaming(self, request, format=None):
         celery_restart_streaming()
         return Response({"OK": True})
+
+
+class LogsAdminViewset(viewsets.ViewSet):
+    """
+    API endpoint that lets us do stuff with log files.
+    """
+    permission_classes = (IsAuthenticated,)
+
+    @list_route(methods=['get'])
+    def available_logs(self, request, format=None):
+        filenames = []
+        for filename in glob.iglob("/app/logs/*.log", recursive=True):
+            filenames.append(os.path.basename(filename))
+
+        return Response(filenames)
+
+    @list_route(methods=['get'])
+    def get_log(self, request, format=None):
+        def tail(file_path, num_lines=2000):
+            if os.path.exists(file_path) is False:
+                return "File does not exist."
+            else:
+                from sh import tail
+                return tail("-n", int(num_lines), file_path)
+
+        qp = request.query_params
+        log_filename = str(qp["log_filename"]) if "log_filename" in qp else None
+        download = True if "download" in qp else False
+
+        file_path = os.path.join("/app/logs", os.path.basename(log_filename))
+        response = HttpResponse(tail(file_path), content_type="text/plain")
+
+        if download is True:
+            response["Content-Disposition"] = "attachment; filename=\"{}\"".format(log_filename)
+            response["Cache-Control"] = "no-cache"
+
+        return response
 
 
 class ScremsongDebugViewset(viewsets.ViewSet):

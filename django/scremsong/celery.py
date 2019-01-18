@@ -3,7 +3,6 @@ import os
 from time import sleep
 from celery import Celery
 from celery.signals import celeryd_init, worker_ready
-from celery.contrib.abortable import AbortableTask
 from scremsong.util import make_logger
 from scremsong.app import websockets
 from scremsong.app.enums import NotificationVariants

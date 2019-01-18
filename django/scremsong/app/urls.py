@@ -8,6 +8,7 @@ from .views import (
     SocialAssignmentsViewset,
     SocialPlatformsAuthViewset,
     CeleryAdminViewset,
+    LogsAdminViewset,
     ScremsongDebugViewset,
     api_not_found)
 from rest_framework import routers
@@ -18,6 +19,7 @@ router.register(r'tweets', TweetsViewset, 'Tweets')
 router.register(r'social_assignments', SocialAssignmentsViewset, 'SocialAssignments')
 router.register(r'social_auth', SocialPlatformsAuthViewset, 'SocialPlatformsAuth')
 router.register(r'celery_admin', CeleryAdminViewset, 'CeleryAdmin')
+router.register(r'logs_admin', LogsAdminViewset, 'LogsAdmin')
 router.register(r'debug', ScremsongDebugViewset, 'ScremsongDebugViewset')
 router.register(r'profile', ProfileViewSet, 'ProfileViewSet')
 
