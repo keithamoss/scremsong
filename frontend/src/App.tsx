@@ -6,6 +6,7 @@ import ViewColumnIcon from "@material-ui/icons/ViewColumn"
 import classNames from "classnames"
 import * as React from "react"
 import { Link, Route } from "react-router-dom"
+import AdminPanelContainer from "./admin_panel/AdminPanel/AdminPanelContainer"
 import "./App.css"
 import AppDisconnectedDialog from "./AppDisconnectedDialog"
 import Notifier from "./notifications/Notifier"
@@ -143,6 +144,7 @@ class App extends React.Component<IProps & WithStyles, {}> {
                 >
                     <Route path="/queue" component={UserReviewQueueViewContainer} />
                     <Route exact={true} path="/" component={TriageViewContainer} />
+                    <Route path="/admin" component={AdminPanelContainer} />
                 </main>
                 <Notifier />
                 <AppDisconnectedDialog />
