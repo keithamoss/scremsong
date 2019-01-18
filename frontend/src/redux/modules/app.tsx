@@ -1,7 +1,7 @@
 import * as dotProp from "dot-prop-immutable"
 import { Action } from "redux"
-import { IActionNotification } from "../../websockets/actions"
-import { WS_NOTIFICATION } from "../../websockets/constants"
+import { IActionNotification, IActionTweetsStreamingState } from "../../websockets/actions"
+import { WS_NOTIFICATION, WS_TWEETS_STREAMING_STATE } from "../../websockets/constants"
 import { IThunkExtras } from "./interfaces"
 import { changeCurrentReviewer } from "./reviewers"
 import { fetchUser, ISelf } from "./user"
@@ -30,6 +30,7 @@ const initialState: IModule = {
     requestsInProgress: 0,
     sidebarOpen: false,
     notifications: [],
+    tweet_streaming_connected: false,
 }
 
 // Reducer
@@ -44,6 +45,7 @@ type IAction =
     | IActionRemoveSnackbar
     | IActionNotification
     | IActionSendNotification
+    | IActionTweetsStreamingState
 export default function reducer(state: IModule = initialState, action: IAction) {
     let requestsInProgress = dotProp.get(state, "requestsInProgress")
 
@@ -68,6 +70,8 @@ export default function reducer(state: IModule = initialState, action: IAction) 
         case REMOVE_SNACKBAR:
             const notificationIndex = state.notifications.findIndex((notification: INotification) => notification.key === action.key)
             return dotProp.delete(state, `notifications.${notificationIndex}`)
+        case WS_TWEETS_STREAMING_STATE:
+            return dotProp.toggle(state, "tweet_streaming_connected", action.connected)
         default:
             return state
     }
@@ -117,6 +121,7 @@ export interface IModule {
     requestsInProgress: number
     sidebarOpen: boolean
     notifications: []
+    tweet_streaming_connected: boolean
 }
 
 export interface IActionLoading extends Action<typeof LOADING> {}

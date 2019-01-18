@@ -27,6 +27,7 @@ import {
     WS_TWEETS_NEW_TWEETS,
     WS_TWEETS_PRECANNED_REPLIES,
     WS_TWEETS_SET_STATE,
+    WS_TWEETS_STREAMING_STATE,
     WS_TWEETS_UPDATE_TWEETS,
 } from "./constants"
 
@@ -92,6 +93,10 @@ export interface ITweetFetchColumn {
     id: number
     tweet_ids: string[]
     tweet_ids_buffered: string[]
+}
+
+export interface IActionTweetsStreamingState extends Action<typeof WS_TWEETS_STREAMING_STATE> {
+    connected: boolean
 }
 
 export interface IActionTweetsNew extends Action<typeof WS_TWEETS_NEW_TWEETS> {

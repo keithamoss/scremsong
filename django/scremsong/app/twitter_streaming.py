@@ -75,6 +75,9 @@ def open_tweet_stream():
                     "variant": NotificationVariants.INFO
                 }
             })
+            websockets.send_channel_message("tweets.streaming_state", {
+                "connected": True,
+            })
 
         def on_data(self, raw_data):
             logger.info("on_data")
@@ -117,6 +120,7 @@ def open_tweet_stream():
             myStream.filter(track=track, stall_warnings=True)
 
             logger.info("Oops, looks like tweet streaming has ended.")
+
             websockets.send_channel_message("notifications.send", {
                 "message": "Real-time tweet streaming has disconnected.",
                 "options": {
@@ -124,5 +128,18 @@ def open_tweet_stream():
                     "autoHideDuration": None
                 }
             })
+            websockets.send_channel_message("tweets.streaming_state", {
+                "connected": False,
+            })
     except Exception as e:
         logger.error("Exception {}: '{}' during streaming".format(type(e), str(e)))
+
+
+def is_streaming_connected():
+    from celery.task.control import inspect
+    i = inspect()
+    for worker_name, tasks in i.active().items():
+        for task in tasks:
+            if task["name"] == "scremsong.celery.task_fill_missing_tweets":
+                return True
+    return False

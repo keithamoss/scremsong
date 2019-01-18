@@ -4,6 +4,7 @@ from django.conf import settings
 from scremsong.util import make_logger
 from scremsong.app.serializers import UserSerializer, ReviewerUserSerializer
 from scremsong.app.twitter import get_twitter_columns, fetch_tweets_for_columns, get_precanned_tweet_replies
+from scremsong.app.twitter_streaming import is_streaming_connected
 from scremsong.app.reviewers import get_reviewer_users, get_assignments
 from scremsong.app.enums import SocialAssignmentStatus
 from scremsong.app import websockets
@@ -150,6 +151,15 @@ class ScremsongConsumer(JsonWebsocketConsumer):
             "is_accepting_assignments": event["is_accepting_assignments"],
         })
 
+    def tweets_streaming_state(self, event):
+        """
+        Called when the real-time tweet streaming state changes (i.e. connected, disconnected)
+        """
+        self.send_json({
+            "msg_type": settings.MSG_TYPE_TWEETS_STREAMING_STATE,
+            "connected": event["connected"],
+        })
+
     def tweets_new_tweets(self, event):
         """
         Called when we receive new tweets from the Twitter stream, from backfilling, et cetera.
@@ -212,6 +222,10 @@ def build_on_connect_data_payload(user):
             {
                 **{"msg_type": settings.MSG_TYPE_TWEETS_PRECANNED_REPLIES},
                 "replies": get_precanned_tweet_replies()
+            },
+            {
+                **{"msg_type": settings.MSG_TYPE_TWEETS_STREAMING_STATE},
+                "connected": is_streaming_connected()
             }
         ]
     }

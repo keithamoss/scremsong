@@ -95,6 +95,7 @@ def task_open_tweet_stream(self):
     open_tweet_stream()
 
     logger.info("Done streaming tweets!")
+
     websockets.send_channel_message("notifications.send", {
         "message": "Real-time tweet streaming has disconnected (death).",
         "options": {
@@ -102,6 +103,10 @@ def task_open_tweet_stream(self):
             "autoHideDuration": None
         }
     })
+    websockets.send_channel_message("tweets.streaming_state", {
+        "connected": False,
+    })
+
     return True
 
 

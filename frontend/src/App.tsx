@@ -1,6 +1,7 @@
 import { Badge, CssBaseline, Drawer, IconButton, List, ListItem, Theme, Tooltip, withStyles, WithStyles } from "@material-ui/core"
 import blue from "@material-ui/core/colors/blue"
 import AssignmentIndIcon from "@material-ui/icons/AssignmentInd"
+import DNSIcon from "@material-ui/icons/Dns"
 import ViewColumnIcon from "@material-ui/icons/ViewColumn"
 import classNames from "classnames"
 import * as React from "react"
@@ -60,14 +61,16 @@ const styles = (theme: Theme) =>
 export interface IProps {
     userAssignmentCount: number
     location: Location
+    tweetStreamingConnected: boolean
 }
 
 class App extends React.Component<IProps & WithStyles, {}> {
     public render() {
-        const { userAssignmentCount, location, classes } = this.props
+        const { userAssignmentCount, tweetStreamingConnected, location, classes } = this.props
 
         const QueueLink = (props: any) => <Link to="/queue" {...props} />
         const TriageLink = (props: any) => <Link to="/" {...props} />
+        const AdminLink = (props: any) => <Link to="/admin" {...props} />
 
         return (
             <div className={classes.root}>
@@ -109,6 +112,25 @@ class App extends React.Component<IProps & WithStyles, {}> {
                                     className={location.pathname === "/" ? classes.selectedIcon : undefined}
                                 >
                                     <ViewColumnIcon />
+                                </IconButton>
+                            </Tooltip>
+                        </ListItem>
+                        <ListItem
+                            button={false}
+                            component={AdminLink}
+                            className={location.pathname === "/admin" ? classes.selectedListItem : classes.listItem}
+                        >
+                            <Tooltip title="Go to the admin panel">
+                                <IconButton
+                                    aria-label="Admin panel"
+                                    className={location.pathname === "/admin" ? classes.selectedIcon : undefined}
+                                >
+                                    {tweetStreamingConnected === false && (
+                                        <Badge badgeContent={"!"} color="secondary">
+                                            <DNSIcon />
+                                        </Badge>
+                                    )}
+                                    {tweetStreamingConnected === true && <DNSIcon />}
                                 </IconButton>
                             </Tooltip>
                         </ListItem>

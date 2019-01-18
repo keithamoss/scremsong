@@ -64,6 +64,7 @@ export interface IStoreProps {
     isAppLoading: boolean
     userLoggedIn: boolean
     userAssignmentCount: number
+    tweetStreamingConnected: boolean
 }
 
 export interface IDispatchProps {
@@ -98,7 +99,7 @@ export class AppContainer extends React.Component<TComponentProps, {}> {
     }
 
     public render() {
-        const { isAppLoading, userLoggedIn, userAssignmentCount, location, children, classes } = this.props
+        const { isAppLoading, userLoggedIn, userAssignmentCount, tweetStreamingConnected, location, children, classes } = this.props
 
         let component
         if (isAppLoading === true) {
@@ -123,7 +124,14 @@ export class AppContainer extends React.Component<TComponentProps, {}> {
         } else if (userLoggedIn === false) {
             component = <LoginDialog open={true} />
         } else {
-            component = <App userAssignmentCount={userAssignmentCount} location={location} children={children} />
+            component = (
+                <App
+                    userAssignmentCount={userAssignmentCount}
+                    location={location}
+                    tweetStreamingConnected={tweetStreamingConnected}
+                    children={children}
+                />
+            )
         }
 
         return <MuiThemeProvider theme={theme}>{component}</MuiThemeProvider>
@@ -148,6 +156,7 @@ const mapStateToProps = (state: IStore): IStoreProps => {
         isAppLoading: app.loading,
         userLoggedIn: user.user !== null,
         userAssignmentCount,
+        tweetStreamingConnected: app.tweet_streaming_connected,
     }
 }
 
