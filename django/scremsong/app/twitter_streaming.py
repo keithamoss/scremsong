@@ -138,8 +138,11 @@ def open_tweet_stream():
 def is_streaming_connected():
     from celery.task.control import inspect
     i = inspect()
-    for worker_name, tasks in i.active().items():
-        for task in tasks:
-            if task["name"] == "scremsong.celery.task_open_tweet_stream":
-                return True
+    tasks = i.active()
+
+    if tasks is not None:
+        for worker_name, tasks in tasks.items():
+            for task in tasks:
+                if task["name"] == "scremsong.celery.task_open_tweet_stream":
+                    return True
     return False
