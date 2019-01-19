@@ -507,7 +507,7 @@ class TwitterRateLimitAdminViewset(viewsets.ViewSet):
     def rate_limit_status(self, request, format=None):
         api = get_tweepy_api_auth()
         status = api.rate_limit_status(resources="tweets,statuses,search,application")
-        return Response({"resources": status["resources"]}) # Don't pass the access taken back
+        return Response({"resources": status["resources"]})  # Don't pass the access taken back
 
 
 class ScremsongDebugViewset(viewsets.ViewSet):
@@ -518,9 +518,9 @@ class ScremsongDebugViewset(viewsets.ViewSet):
 
     @list_route(methods=['get'])
     def test(self, request, format=None):
-        # from scremsong.app.twitter import get_tweet_from_db, process_new_tweet
+        # from scremsong.app.twitter import get_tweet_from_db, process_new_tweet_reply
         # tweet = get_tweet_from_db("1076752336591118336")
-        # process_new_tweet(tweet.data, TweetSource.STREAMING, False)
+        # process_new_tweet_reply(tweet.data, TweetSource.STREAMING, False)
 
         # from scremsong.util import get_or_none
         # assgignment = get_or_none(SocialAssignments, id=178)

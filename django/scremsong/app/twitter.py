@@ -459,11 +459,11 @@ def build_relationships(replies):
     return sorted(relationships, key=lambda k: list(k.keys())[0])
 
 
-def process_new_tweet(status, tweetSource, sendWebSocketEvent):
+def process_new_tweet_reply(status, tweetSource, sendWebSocketEvent):
     # Deal with tweets arriving / being processed out of order.
     # If it's already part of an assignment then it's been processed and clients have been notified.
     if is_tweet_part_of_an_assignment(status["id_str"]) is True:
-        logger.warning("Got tweet {} that was already part of an assignment (process_new_tweet)".format(status["id_str"]))
+        logger.warning("Got tweet {} that was already part of an assignment (process_new_tweet_reply)".format(status["id_str"]))
         # Only send a web socket event if we're not handling this elsewhere (e.g. backfilling)
         if sendWebSocketEvent is True:
             notify_of_saved_tweet(get_tweet_from_db(status["id_str"]))
