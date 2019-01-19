@@ -22,10 +22,8 @@ def open_tweet_stream():
             if status_code == 420:
                 logger.warning("Streaming got status {}. Disconnecting from stream.".format(status_code))
 
-                sleep(10)
-
                 # Fire off tasks to restart streaming (delayed by 2s)
-                celery_restart_streaming()
+                celery_restart_streaming(wait=10)
 
                 # Returning False in on_error disconnects the stream
                 return False
@@ -38,7 +36,7 @@ def open_tweet_stream():
             logger.critical("Streaming connection to Twitter has timed out.")
 
             # Fire off tasks to restart streaming (delayed by 2s)
-            celery_restart_streaming()
+            celery_restart_streaming(wait=2)
 
             # Returning False in on_timeout disconnects the stream
             return False
@@ -53,7 +51,7 @@ def open_tweet_stream():
             logger.critical("Received a disconnect notice from Twitter. {}".format(notice))
 
             # Fire off tasks to restart streaming (delayed by 2s)
-            celery_restart_streaming()
+            celery_restart_streaming(wait=2)
 
             # Returning False in on_disconnect disconnects the stream
             return False
@@ -129,10 +127,16 @@ def open_tweet_stream():
     except Exception as e:
         logger.error("Exception {}: '{}' during streaming".format(type(e), str(e)))
 
-        sleep(5)
+        websockets.send_channel_message("notifications.send", {
+            "message": "Real-time tweet streaming has encountered an exception. Trying to restart.",
+            "options": {
+                "variant": NotificationVariants.ERROR,
+                "autoHideDuration": 10000
+            }
+        })
 
-        # Fire off tasks to restart streaming (delayed by 2s)
-        celery_restart_streaming()
+        # Fire off tasks to restart streaming
+        celery_restart_streaming(wait=5)
 
 
 def is_streaming_connected():

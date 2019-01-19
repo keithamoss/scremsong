@@ -27,13 +27,12 @@ app.autodiscover_tasks()
 def celery_init_tweet_streaming():
     from scremsong.app.twitter import get_latest_tweet_id_for_streaming
 
-    # Delay by 7s to give streaming time to start up and get the first tweet
+    # Delay by 7s to give streaming time to start up and (maybe) get the first tweet
     logger.info("Initialising tweet streaming. Queue up fill in missing tweets task.")
     task_fill_missing_tweets.apply_async(args=[get_latest_tweet_id_for_streaming()], countdown=7)
 
-    # Delay by 2s to account for 420 Disconnects
     logger.info("Auto-starting tweet streaming in Celery worker")
-    task_open_tweet_stream.apply_async(countdown=2)
+    task_open_tweet_stream.apply_async()
 
 
 def celery_kill_running_streaming_tasks():
@@ -59,8 +58,12 @@ def celery_kill_running_streaming_tasks():
     sleep(5)
 
 
-def celery_restart_streaming():
-    # Stop any running tasks before we try to restart
+def celery_restart_streaming(wait=None):
+    if wait is not None:
+        sleep(wait)
+
+    # Stop any running streaing tasks before we try to restart
+    # e.g. If streaming dies soon after it's connected then task_fill_missing_tweets may still be running
     celery_kill_running_streaming_tasks()
 
     # And restart!
