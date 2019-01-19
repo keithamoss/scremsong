@@ -1,7 +1,8 @@
-import { AppBar, Tab, Tabs, Theme, withStyles, WithStyles } from "@material-ui/core";
-import * as React from "react";
-import LogViewerContainer from "../LogViewer/LogViewerContainer";
-import RealTimeTweetStreamingContainer from "../RealTimeTweetStreaming/RealTimeTweetStreamingContainer";
+import { AppBar, Tab, Tabs, Theme, withStyles, WithStyles } from "@material-ui/core"
+import * as React from "react"
+import LogViewerContainer from "../LogViewer/LogViewerContainer"
+import RealTimeTweetStreamingContainer from "../RealTimeTweetStreaming/RealTimeTweetStreamingContainer"
+import TwitterRateLimitStatusContainer from "../TwitterRateLimitStatus/TwitterRateLimitStatusContainer"
 
 const styles = (theme: Theme) => ({
     root: {
@@ -54,7 +55,11 @@ class AdminPanel extends React.PureComponent<TComponentProps, IState> {
                             <Tab label="Log viewer" />
                         </Tabs>
                     </AppBar>
-                    {activeTab === 0 && <TabContainer>Page One</TabContainer>}
+                    {activeTab === 0 && (
+                        <TabContainer>
+                            <TwitterRateLimitStatusContainer />
+                        </TabContainer>
+                    )}
                     {activeTab === 1 && (
                         <TabContainer>
                             <RealTimeTweetStreamingContainer />

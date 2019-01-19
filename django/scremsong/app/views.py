@@ -13,7 +13,7 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 import tweepy
 from tweepy import TweepError
 from scremsong.app.serializers import UserSerializer, SocialAssignmentSerializer
-from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, fetch_tweets, get_status_from_db, resolve_tweet_parents, resolve_tweet_thread_for_parent, notify_of_saved_tweet, favourite_tweet, unfavourite_tweet, retweet_tweet, unretweet_tweet, reply_to_tweet
+from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, fetch_tweets, get_status_from_db, resolve_tweet_parents, resolve_tweet_thread_for_parent, notify_of_saved_tweet, favourite_tweet, unfavourite_tweet, retweet_tweet, unretweet_tweet, reply_to_tweet, get_tweepy_api_auth
 from scremsong.app.reviewers import getCreationDateOfNewestTweetInAssignment
 from scremsong.celery import celery_restart_streaming
 from scremsong.app.models import Tweets, SocialAssignments, Profile
@@ -495,6 +495,19 @@ class LogsAdminViewset(viewsets.ViewSet):
             response["Cache-Control"] = "no-cache"
 
         return response
+
+
+class TwitterRateLimitAdminViewset(viewsets.ViewSet):
+    """
+    API endpoint that lets us see our consumption of the Twitter APIs.
+    """
+    permission_classes = (IsAuthenticated,)
+
+    @list_route(methods=['get'])
+    def rate_limit_status(self, request, format=None):
+        api = get_tweepy_api_auth()
+        status = api.rate_limit_status(resources="tweets,statuses,search,application")
+        return Response({"resources": status["resources"]}) # Don't pass the access taken back
 
 
 class ScremsongDebugViewset(viewsets.ViewSet):
