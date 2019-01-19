@@ -2,7 +2,7 @@ import tweepy
 from scremsong.util import make_logger
 from scremsong.app.models import SocialPlatforms
 from scremsong.app.enums import SocialPlatformChoice, TweetSource, TweetStatus, NotificationVariants
-from scremsong.celery import celery_init_tweet_streaming, task_process_tweet_reply
+from scremsong.celery import celery_restart_streaming, task_process_tweet_reply
 from scremsong.app.social.columns import get_social_columns
 from scremsong.app.twitter import get_twitter_app, get_tweepy_api_auth, is_a_reply, save_tweet, notify_of_saved_tweet
 from scremsong.app import websockets
@@ -30,7 +30,7 @@ def open_tweet_stream():
                 sleep(10)
 
                 # Fire off tasks to restart streaming (delayed by 2s)
-                celery_init_tweet_streaming()
+                celery_restart_streaming()
 
                 # Returning False in on_error disconnects the stream
                 return False
@@ -43,7 +43,7 @@ def open_tweet_stream():
             logger.critical("Streaming connection to Twitter has timed out.")
 
             # Fire off tasks to restart streaming (delayed by 2s)
-            celery_init_tweet_streaming()
+            celery_restart_streaming()
 
             # Returning False in on_timeout disconnects the stream
             return False
@@ -58,7 +58,7 @@ def open_tweet_stream():
             logger.critical("Received a disconnect notice from Twitter. {}".format(notice))
 
             # Fire off tasks to restart streaming (delayed by 2s)
-            celery_init_tweet_streaming()
+            celery_restart_streaming()
 
             # Returning False in on_disconnect disconnects the stream
             return False
@@ -133,6 +133,11 @@ def open_tweet_stream():
             })
     except Exception as e:
         logger.error("Exception {}: '{}' during streaming".format(type(e), str(e)))
+
+        sleep(5)
+
+        # Fire off tasks to restart streaming (delayed by 2s)
+        celery_restart_streaming()
 
 
 def is_streaming_connected():

@@ -36,9 +36,11 @@ def celery_init_tweet_streaming():
     task_open_tweet_stream.apply_async(countdown=2)
 
 
-def celery_kill_running_tasks():
+def celery_kill_running_streaming_tasks():
     from celery.task.control import inspect, revoke
     i = inspect()
+
+    taskNamesToKill = ["scremsong.celery.task_open_tweet_stream", "scremsong.celery.task_fill_missing_tweets"]
 
     for worker_name, tasks in i.active().items():
         logger.info("Ending tasks for worker {}".format(worker_name))
@@ -49,8 +51,9 @@ def celery_kill_running_tasks():
             # Not an issue for us with how we're using Celery at the moment.
             # A better approach is using AbortableTasks and testing for is_aborted() in the task and here.
             # (See the commit history on this file for WIPy attempts at doing that)
-            logger.info("Revoking task {} ({})".format(task["name"], task["id"]))
-            revoke(task["id"], terminate=True)
+            if task["name"] in taskNamesToKill:
+                logger.info("Revoking task {} ({})".format(task["name"], task["id"]))
+                revoke(task["id"], terminate=True)
 
     # Give the tasks time to properly die
     sleep(5)
@@ -58,7 +61,7 @@ def celery_kill_running_tasks():
 
 def celery_restart_streaming():
     # Stop any running tasks before we try to restart
-    celery_kill_running_tasks()
+    celery_kill_running_streaming_tasks()
 
     # And restart!
     celery_init_tweet_streaming()
@@ -71,7 +74,7 @@ def configure_workers(sender=None, conf=None, **kwargs):
     logger.info("Starting up Celery worker")
 
     # Stop any running tasks before we try to kill our workers
-    celery_kill_running_tasks()
+    celery_kill_running_streaming_tasks()
 
     # Shutdown any existing workers before our new worker connects
     for worker_name, ok in i.ping().items():
