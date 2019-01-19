@@ -506,7 +506,8 @@ class TwitterRateLimitAdminViewset(viewsets.ViewSet):
     @list_route(methods=['get'])
     def rate_limit_status(self, request, format=None):
         api = get_tweepy_api_auth()
-        status = api.rate_limit_status(resources="tweets,statuses,search,application")
+        # status = api.rate_limit_status(resources="tweets,statuses,search,application,favorites")
+        status = api.rate_limit_status()
         return Response({"resources": status["resources"]})  # Don't pass the access taken back
 
 
