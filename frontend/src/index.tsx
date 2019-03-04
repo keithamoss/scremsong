@@ -36,7 +36,11 @@ const Middleware: any[] = []
 
 // Sentry.io
 if (getEnvironment() === eAppEnv.PROD && "REACT_APP_RAVEN_URL" in process.env) {
-    Raven.config(process.env.REACT_APP_RAVEN_URL!).install()
+    Raven.config(process.env.REACT_APP_RAVEN_URL!, {
+        environment: process.env.NODE_ENV,
+        // @ts-ignore
+        site: process.env.REACT_APP_RAVEN_SITE_NAME!,
+    }).install()
     // @ts-ignore
     Middleware.push(createRavenMiddleware(Raven))
 }

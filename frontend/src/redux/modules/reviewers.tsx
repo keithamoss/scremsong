@@ -209,7 +209,7 @@ export function changeCurrentReviewer(userId: number) {
 
 export function assignReviewer(tweetId: string, reviewerId: number) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        await api.get("/api/0.1/social_assignments/assign_reviewer/", dispatch, {
+        await api.get("/0.1/social_assignments/assign_reviewer/", dispatch, {
             tweetId,
             reviewerId,
         })
@@ -218,7 +218,7 @@ export function assignReviewer(tweetId: string, reviewerId: number) {
 
 export function unassignReviewer(assignmentId: number) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        await api.get("/api/0.1/social_assignments/unassign_reviewer/", dispatch, {
+        await api.get("/0.1/social_assignments/unassign_reviewer/", dispatch, {
             assignmentId,
         })
     }
@@ -226,7 +226,7 @@ export function unassignReviewer(assignmentId: number) {
 
 export function reassignReviewer(assignmentId: number, newReviewerId: number) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        await api.get("/api/0.1/social_assignments/reassign_reviewer/", dispatch, {
+        await api.get("/0.1/social_assignments/reassign_reviewer/", dispatch, {
             assignmentId,
             newReviewerId,
         })
@@ -235,7 +235,7 @@ export function reassignReviewer(assignmentId: number, newReviewerId: number) {
 
 export function bulkReassignReviewer(currentReviewerId: number, newReviewerId: number) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        await api.get("/api/0.1/social_assignments/bulk_reassign_reviewer/", dispatch, {
+        await api.get("/0.1/social_assignments/bulk_reassign_reviewer/", dispatch, {
             currentReviewerId,
             newReviewerId,
         })
@@ -244,7 +244,7 @@ export function bulkReassignReviewer(currentReviewerId: number, newReviewerId: n
 
 export function markAssignmentAwaitingReply(assignment: IReviewerAssignment) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        await api.get("/api/0.1/social_assignments/awaiting_reply/", dispatch, {
+        await api.get("/0.1/social_assignments/awaiting_reply/", dispatch, {
             assignmentId: assignment.id,
         })
     }
@@ -252,7 +252,7 @@ export function markAssignmentAwaitingReply(assignment: IReviewerAssignment) {
 
 export function markAssignmentClosed(assignment: IReviewerAssignment) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        await api.get("/api/0.1/social_assignments/close/", dispatch, {
+        await api.get("/0.1/social_assignments/close/", dispatch, {
             assignmentId: assignment.id,
         })
     }
@@ -260,7 +260,7 @@ export function markAssignmentClosed(assignment: IReviewerAssignment) {
 
 export function markAssignmentDone(assignment: IReviewerAssignment) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        await api.get("/api/0.1/social_assignments/done/", dispatch, {
+        await api.get("/0.1/social_assignments/done/", dispatch, {
             assignmentId: assignment.id,
         })
     }
@@ -268,7 +268,7 @@ export function markAssignmentDone(assignment: IReviewerAssignment) {
 
 export function markAssignmentRead(assignment: IReviewerAssignment) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        await api.get("/api/0.1/social_assignments/mark_read/", dispatch, {
+        await api.get("/0.1/social_assignments/mark_read/", dispatch, {
             assignmentId: assignment.id,
         })
     }
@@ -276,7 +276,7 @@ export function markAssignmentRead(assignment: IReviewerAssignment) {
 
 export function setReviewerOnlineStatus(userId: number, isAcceptingAssignments: boolean) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        await api.get("/api/0.1/social_assignments/set_user_accepting_assignments/", dispatch, {
+        await api.get("/0.1/social_assignments/set_user_accepting_assignments/", dispatch, {
             user_id: userId,
             is_accepting_assignments: isAcceptingAssignments,
         })

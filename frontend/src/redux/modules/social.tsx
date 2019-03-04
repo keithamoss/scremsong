@@ -267,7 +267,7 @@ export interface ISocialPrecannedTweetReplies {
 export function fetchTweets(startIndex: number, stopIndex: number, columns: number[] = []) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
         const { json } = await api.get(
-            "/api/0.1/tweets/fetch/",
+            "/0.1/tweets/fetch/",
             dispatch,
             {
                 startIndex,
@@ -283,7 +283,7 @@ export function fetchTweets(startIndex: number, stopIndex: number, columns: numb
 
 export function setTweetState(tweetId: string, tweetState: eSocialTweetState) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        await api.get("/api/0.1/tweets/set_state/", dispatch, {
+        await api.get("/0.1/tweets/set_state/", dispatch, {
             tweetId,
             tweetState,
         })
@@ -292,7 +292,7 @@ export function setTweetState(tweetId: string, tweetState: eSocialTweetState) {
 
 export function favouriteTweet(tweetId: string) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        await api.get("/api/0.1/tweets/favourite/", dispatch, {
+        await api.get("/0.1/tweets/favourite/", dispatch, {
             tweetId,
         })
     }
@@ -300,7 +300,7 @@ export function favouriteTweet(tweetId: string) {
 
 export function unfavouriteTweet(tweetId: string) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        await api.get("/api/0.1/tweets/unfavourite/", dispatch, {
+        await api.get("/0.1/tweets/unfavourite/", dispatch, {
             tweetId,
         })
     }
@@ -308,7 +308,7 @@ export function unfavouriteTweet(tweetId: string) {
 
 export function retweetTweet(tweetId: string) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        await api.get("/api/0.1/tweets/retweet/", dispatch, {
+        await api.get("/0.1/tweets/retweet/", dispatch, {
             tweetId,
         })
     }
@@ -316,7 +316,7 @@ export function retweetTweet(tweetId: string) {
 
 export function unretweetTweet(tweetId: string) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        await api.get("/api/0.1/tweets/unretweet/", dispatch, {
+        await api.get("/0.1/tweets/unretweet/", dispatch, {
             tweetId,
         })
     }
@@ -324,7 +324,7 @@ export function unretweetTweet(tweetId: string) {
 
 export function replyToTweet(inReplyToTweetId: string, replyText: string) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        const { response } = await api.get("/api/0.1/tweets/reply/", dispatch, {
+        const { response } = await api.get("/0.1/tweets/reply/", dispatch, {
             inReplyToTweetId,
             replyText,
         })

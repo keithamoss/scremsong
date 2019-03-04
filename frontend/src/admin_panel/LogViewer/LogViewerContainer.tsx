@@ -16,7 +16,7 @@ export interface IState {
 }
 
 const getAvailableLogFiles = async (): Promise<any> => {
-    const { json } = await window.api.get("/api/0.1/logs_admin/available_logs/", null, {})
+    const { json } = await window.api.get("/0.1/logs_admin/available_logs/", null, {})
     return json
 }
 

@@ -12,7 +12,7 @@ class MyAppConfig(AppConfig):
         import scremsong.app.signals  # noqa
 
         # Raven
-        raven_config = {"dsn": get_env("RAVEN_URL"), "environment": get_env("ENVIRONMENT")}
+        raven_config = {"dsn": get_env("RAVEN_URL"), "environment": get_env("ENVIRONMENT"), "site": get_env("RAVEN_SITE_NAME")}
         # Disable logging errors dev
         from scremsong.app.admin import is_development
         if is_development():

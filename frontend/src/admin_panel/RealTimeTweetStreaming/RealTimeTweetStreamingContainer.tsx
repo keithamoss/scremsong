@@ -44,7 +44,7 @@ export interface ICeleryTaskInfo {
 }
 
 const getTasks = async (): Promise<any> => {
-    const { json } = await window.api.get("/api/0.1/celery_admin/tasks/", null, {})
+    const { json } = await window.api.get("/0.1/celery_admin/tasks/", null, {})
     return json
 }
 
@@ -57,7 +57,7 @@ class RealTimeTweetStreamingContainer extends React.PureComponent<TComponentProp
 
         this.state = { tasks: null }
 
-        this.restartTweetStreaming = () => window.api.get("/api/0.1/celery_admin/restart_streaming/", null, {})
+        this.restartTweetStreaming = () => window.api.get("/0.1/celery_admin/restart_streaming/", null, {})
     }
     public async componentDidMount() {
         this.setState({ tasks: await getTasks() })

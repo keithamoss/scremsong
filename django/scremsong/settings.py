@@ -36,6 +36,7 @@ CORS_ALLOW_CREDENTIALS = True
 if get_env("ENVIRONMENT") == "PRODUCTION":
     DEBUG = False
     CONN_MAX_AGE = 50  # Half our max number of PostgreSQL connections
+
     CORS_ORIGIN_WHITELIST = (
         "scremsong.democracysausage.org"
     )
@@ -43,13 +44,11 @@ if get_env("ENVIRONMENT") == "PRODUCTION":
         "scremsong.democracysausage.org"
     )
     ALLOWED_HOSTS = [
-        "scremsong.democracysausage.org",
-        "scremsong-api.democracysausage.org"
+        "scremsong.democracysausage.org"
     ]
 
-    # @FIXME Hang the backend off scremsong.democracysausage.org/api/ to avoid cookie conflicts with admin.democracysausage.org later on (when we rebuild it in Django)
-    SESSION_COOKIE_DOMAIN = ".democracysausage.org"
-    CSRF_COOKIE_DOMAIN = ".democracysausage.org"
+    SESSION_COOKIE_DOMAIN = "scremsong.democracysausage.org"
+    CSRF_COOKIE_DOMAIN = "scremsong.democracysausage.org"
 
     STATIC_ROOT = "/app/static"
 
@@ -79,13 +78,19 @@ if get_env("ENVIRONMENT") == "PRODUCTION":
     }
 else:
     DEBUG = True
+    CONN_MAX_AGE = 50  # Half our max number of PostgreSQL connections
+
     CORS_ORIGIN_WHITELIST = (
-        "localhost",
+        "scremsong.test.democracysausage.org"
     )
     CSRF_TRUSTED_ORIGINS = (
-        "localhost",
+        "scremsong.test.democracysausage.org"
     )
-    ALLOWED_HOSTS = ["localhost"]
+    ALLOWED_HOSTS = ["scremsong.test.democracysausage.org"]
+
+    SESSION_COOKIE_DOMAIN = "scremsong.test.democracysausage.org"
+    CSRF_COOKIE_DOMAIN = "scremsong.test.democracysausage.org"
+
     STATICFILES_DIRS = [
         os.path.join(BASE_DIR, "static")
     ]
@@ -232,6 +237,14 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Django REST Framework
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
@@ -250,7 +263,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = '/api/static/'
 
 # Celery
 

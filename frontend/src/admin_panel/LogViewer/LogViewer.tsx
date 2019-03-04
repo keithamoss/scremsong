@@ -44,7 +44,7 @@ class LogViewer extends React.PureComponent<TComponentProps, IState> {
     public render() {
         const { availableLogs, currentFilename, onChooseLogfile, classes } = this.props
 
-        const logfileURL = `${getAPIBaseURL()}/api/0.1/logs_admin/get_log/?format=json&log_filename=${currentFilename}`
+        const logfileURL = `${getAPIBaseURL()}/0.1/logs_admin/get_log/?format=json&log_filename=${currentFilename}`
         const LogDownloadLink = (props: any) => <a href={`${logfileURL}&download=1`} {...props} />
 
         return (

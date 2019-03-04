@@ -90,7 +90,7 @@ export enum eQueueSortBy {
 // e.g. thunks, epics, et cetera
 export function fetchUser() {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        const { response, json } = await api.get("/api/0.1/self", dispatch)
+        const { response, json } = await api.get("/0.1/self", dispatch)
         if (response.status === 200) {
             dispatch(loadUser(json))
             return json
@@ -100,14 +100,14 @@ export function fetchUser() {
 
 export function logoutUser() {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        await api.get("/api/0.1/logout", dispatch)
+        await api.get("/0.1/logout", dispatch)
         // window.location.reload()
     }
 }
 
 export function changeUserProfileSettings(settings: Partial<IProfileSettings>) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        const { json } = await api.post("/api/0.1/profile/update_settings/", settings, dispatch)
+        const { json } = await api.post("/0.1/profile/update_settings/", settings, dispatch)
         dispatch(changeSettings(json.settings))
     }
 }
@@ -120,6 +120,6 @@ export function ws_changeUserProfileSettings(settings: Partial<IProfileSettings>
 
 declare var window: IMyWindow
 export async function getColumnPosition(columnId: number): Promise<IProfileColumnPosition> {
-    const { json } = await window.api.get("/api/0.1/profile/get_column_position/", null, { id: columnId })
+    const { json } = await window.api.get("/0.1/profile/get_column_position/", null, { id: columnId })
     return json.position
 }

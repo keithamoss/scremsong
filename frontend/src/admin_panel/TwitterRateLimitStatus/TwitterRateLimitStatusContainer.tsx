@@ -31,7 +31,7 @@ export interface IResourceRateLimit {
 }
 
 const getRateLimitStatus = async (): Promise<any> => {
-    const { json } = await window.api.get("/api/0.1/twitter_api_admin/rate_limit_status/", null, {})
+    const { json } = await window.api.get("/0.1/twitter_api_admin/rate_limit_status/", null, {})
     return json
 }
 
