@@ -41,18 +41,20 @@ def celery_kill_running_streaming_tasks():
 
     taskNamesToKill = ["scremsong.celery.task_open_tweet_stream", "scremsong.celery.task_fill_missing_tweets"]
 
-    for worker_name, tasks in i.active().items():
-        logger.info("Ending tasks for worker {}".format(worker_name))
+    active = i.active()
+    if active is not None:
+        for worker_name, tasks in active.items():
+            logger.info("Ending tasks for worker {}".format(worker_name))
 
-        for task in tasks:
-            # This is bad - per advice about terminate=True potentially killing the process when it's begun another task
-            # http://docs.celeryproject.org/en/latest/userguide/workers.html?highlight=revoke#revoke-revoking-tasks
-            # Not an issue for us with how we're using Celery at the moment.
-            # A better approach is using AbortableTasks and testing for is_aborted() in the task and here.
-            # (See the commit history on this file for WIPy attempts at doing that)
-            if task["name"] in taskNamesToKill:
-                logger.info("Revoking task {} ({})".format(task["name"], task["id"]))
-                revoke(task["id"], terminate=True)
+            for task in tasks:
+                # This is bad - per advice about terminate=True potentially killing the process when it's begun another task
+                # http://docs.celeryproject.org/en/latest/userguide/workers.html?highlight=revoke#revoke-revoking-tasks
+                # Not an issue for us with how we're using Celery at the moment.
+                # A better approach is using AbortableTasks and testing for is_aborted() in the task and here.
+                # (See the commit history on this file for WIPy attempts at doing that)
+                if task["name"] in taskNamesToKill:
+                    logger.info("Revoking task {} ({})".format(task["name"], task["id"]))
+                    revoke(task["id"], terminate=True)
 
     # Give the tasks time to properly die
     sleep(5)

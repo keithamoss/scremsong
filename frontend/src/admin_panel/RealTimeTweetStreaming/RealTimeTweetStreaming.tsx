@@ -58,21 +58,22 @@ class RealTimeTweetStreaming extends React.PureComponent<TComponentProps, IState
                             <Typography variant="h5" gutterBottom={true}>
                                 {taskCategory}
                             </Typography>
-                            {Object.keys(tasks[taskCategory]).map((workerName: string) => (
-                                <React.Fragment key={workerName}>
-                                    <List
-                                        component="ul"
-                                        subheader={<ListSubheader component="div">{workerName}</ListSubheader>}
-                                        className={classes.root}
-                                    >
-                                        {tasks[taskCategory][workerName].map((task: ICeleryTaskInfo) => (
-                                            <ListItem key={task.id}>
-                                                <ListItemText primary={task.name} secondary={task.id} />
-                                            </ListItem>
-                                        ))}
-                                    </List>
-                                </React.Fragment>
-                            ))}
+                            {tasks[taskCategory] !== null &&
+                                Object.keys(tasks[taskCategory]).map((workerName: string) => (
+                                    <React.Fragment key={workerName}>
+                                        <List
+                                            component="ul"
+                                            subheader={<ListSubheader component="div">{workerName}</ListSubheader>}
+                                            className={classes.root}
+                                        >
+                                            {tasks[taskCategory][workerName].map((task: ICeleryTaskInfo) => (
+                                                <ListItem key={task.id}>
+                                                    <ListItemText primary={task.name} secondary={task.id} />
+                                                </ListItem>
+                                            ))}
+                                        </List>
+                                    </React.Fragment>
+                                ))}
                         </div>
                     ))}
                 </div>
