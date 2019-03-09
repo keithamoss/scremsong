@@ -273,6 +273,11 @@ CELERY_RESULT_BACKEND = "django-db"
 # Fixes "Connection reset by peer" errors. At the time of writing (July 2018) this was an open issue in Celery 4.2.1
 # https://github.com/celery/celery/issues/4226
 CELERY_BROKER_POOL_LIMIT = None
+CELERY_BROKER_TRANSPORT_OPTIONS = {
+    'fanout_prefix': True,
+    'fanout_patterns': True
+}
+CELERY_TASK_DEFAULT_QUEUE = "celery-scremsong"
 
 
 # Project-specific settings

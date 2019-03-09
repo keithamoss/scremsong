@@ -2,7 +2,7 @@ from __future__ import absolute_import, unicode_literals
 import os
 from time import sleep
 from celery import Celery
-from celery.signals import celeryd_init, worker_ready
+from celery.signals import celeryd_init, worker_ready, worker_shutting_down, worker_process_shutdown, worker_shutdown
 from scremsong.util import make_logger
 from scremsong.app import websockets
 from scremsong.app.enums import NotificationVariants
@@ -24,67 +24,129 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 
 
-def celery_init_tweet_streaming():
-    from scremsong.app.twitter import get_latest_tweet_id_for_streaming
-
-    # Delay by 7s to give streaming time to start up and (maybe) get the first tweet
-    logger.info("Initialising tweet streaming. Queue up fill in missing tweets task.")
-    task_fill_missing_tweets.apply_async(args=[get_latest_tweet_id_for_streaming()], countdown=7)
-
-    logger.info("Auto-starting tweet streaming in Celery worker")
-    task_open_tweet_stream.apply_async()
+def celery_init_tweet_streaming(wait=2):
+    if is_streaming_task_running() is False:
+        logger.info("Auto-starting tweet streaming in Celery worker")
+        task_open_tweet_stream.apply_async(countdown=wait)
+    else:
+        logger.info("Not starting tweet streaming - it already exists")
 
 
-def celery_kill_running_streaming_tasks():
-    from celery.task.control import inspect, revoke
+# def celery_kill_running_streaming_tasks():
+#     from celery.task.control import revoke
+
+#     tasks = get_tweet_streaming_tasks(activeOnly=False)
+#     for task in tasks:
+#         if task["acknowledged"] is True:
+#             # This is bad - per advice about terminate=True potentially killing the process when it's begun another task
+#             # http://docs.celeryproject.org/en/latest/userguide/workers.html?highlight=revoke#revoke-revoking-tasks
+#             # Not an issue for us with how we're using Celery at the moment.
+#             # A better approach is using AbortableTasks and testing for is_aborted() in the task and here.
+#             # (See the commit history on this file for WIPy attempts at doing that)
+#             logger.info("Revoking acknowledged task {} ({}) on worker {}".format(task["name"], task["id"], task["hostname"]))
+#             revoke(task["id"], terminate=True)
+#         else:
+#             logger.info("Revoking unacknowledged task {} ({}) on worker {}".format(task["name"], task["id"], task["hostname"]))
+#             revoke(task["id"])
+
+#     # Give the tasks time to properly die
+#     sleep(5)
+
+
+def celery_restart_streaming(wait=5):
+    # Stop any running streaing tasks before we try to restart
+    # e.g. If streaming dies soon after it's connected then task_fill_missing_tweets may still be running
+    # logger.info("Trying to kill any running tweet streaming tasks")
+    # celery_kill_running_streaming_tasks()
+
+    # logger.info("Trying to restart tweet streaming")
+    # celery_init_tweet_streaming(wait)
+
+    # logger.info("Launching restart tweet streaming task")
+    # task_restart_streaming.apply_async(countdown=wait)
+
+    # Relies on supervisord (in PROD) restarting the worker for us
+    logger.info("Attempting to restart streaming by shutting down the celery worker")
+    shutdown_celery_worker()
+
+
+def get_celery_tasks(activeOnly=True):
+    from celery.task.control import inspect
     i = inspect()
 
-    taskNamesToKill = ["scremsong.celery.task_open_tweet_stream", "scremsong.celery.task_fill_missing_tweets"]
+    allTasks = []
+
+    # Return in reverse order so that we can revoke tasks that haven't been started yet first
+    if activeOnly is False:
+        reserved = i.reserved()
+        if reserved is not None:
+            for worker_name, tasks in reserved.items():
+                allTasks += tasks
+
+        scheduled = i.scheduled()
+        if scheduled is not None:
+            for worker_name, tasks in scheduled.items():
+                allTasks += tasks
 
     active = i.active()
     if active is not None:
         for worker_name, tasks in active.items():
-            logger.info("Ending tasks for worker {}".format(worker_name))
+            allTasks += tasks
 
-            for task in tasks:
-                # This is bad - per advice about terminate=True potentially killing the process when it's begun another task
-                # http://docs.celeryproject.org/en/latest/userguide/workers.html?highlight=revoke#revoke-revoking-tasks
-                # Not an issue for us with how we're using Celery at the moment.
-                # A better approach is using AbortableTasks and testing for is_aborted() in the task and here.
-                # (See the commit history on this file for WIPy attempts at doing that)
-                if task["name"] in taskNamesToKill:
-                    logger.info("Revoking task {} ({})".format(task["name"], task["id"]))
-                    revoke(task["id"], terminate=True)
-
-    # Give the tasks time to properly die
-    sleep(5)
+    return allTasks
 
 
-def celery_restart_streaming(wait=None):
-    if wait is not None:
-        sleep(wait)
+def get_tweet_streaming_tasks(activeOnly=True):
+    tasks = get_celery_tasks(activeOnly)
+    streamingTaskNames = ["scremsong.celery.task_open_tweet_stream", "scremsong.celery.task_fill_missing_tweets"]
+    tweetStreamingTasks = []
 
-    # Stop any running streaing tasks before we try to restart
-    # e.g. If streaming dies soon after it's connected then task_fill_missing_tweets may still be running
-    celery_kill_running_streaming_tasks()
+    for task in tasks:
+        if task["name"] in streamingTaskNames:
+            tweetStreamingTasks.append(task)
+    return tweetStreamingTasks
 
-    # And restart!
-    celery_init_tweet_streaming()
+
+def is_streaming_task_running():
+    for task in get_tweet_streaming_tasks(activeOnly=True):
+        if task["name"] == "scremsong.celery.task_open_tweet_stream":
+            return True
+    return False
+
+
+def shutdown_celery_worker():
+    from celery.task.control import inspect, broadcast
+    i = inspect()
+
+    logger.info("Attempting to shutdown celery worker")
+
+    for worker_name, ok in i.ping().items():
+        logger.info("Shutting down Celery worker {} ({})".format(worker_name, ok))
+        broadcast("shutdown", destination=[worker_name])
 
 
 @celeryd_init.connect
 def configure_workers(sender=None, conf=None, **kwargs):
-    from celery.task.control import inspect, broadcast
+    from celery.task.control import inspect
     i = inspect()
-    logger.info("Starting up Celery worker")
+
+    logger.info("Celery worker {} has started.".format(sender))
+
+    # Report on what the task queue looks like
+    tasks = get_celery_tasks(activeOnly=True)
+    logger.info("Running tasks in queue: {}".format(len(tasks)))
+    tasks = get_celery_tasks(activeOnly=False)
+    logger.info("Total tasks in queue: {}".format(len(tasks)))
+    tasks = get_tweet_streaming_tasks(activeOnly=True)
+    logger.info("Running treaming tasks in queue: {}".format(len(tasks)))
+    tasks = get_tweet_streaming_tasks(activeOnly=False)
+    logger.info("Total streaming tasks in queue: {}".format(len(tasks)))
 
     # Stop any running tasks before we try to kill our workers
-    celery_kill_running_streaming_tasks()
+    # celery_kill_running_streaming_tasks()
 
     # Shutdown any existing workers before our new worker connects
-    for worker_name, ok in i.ping().items():
-        logger.info("Shutting down Celery worker {}".format(worker_name))
-        broadcast("shutdown", destination=[worker_name])
+    shutdown_celery_worker()
 
     # Give the workers time to properly die
     sleep(2)
@@ -96,12 +158,30 @@ def worker_ready(sender, **kwargs):
     return True
 
 
+@worker_process_shutdown.connect
+def worker_process_shutdown(sender, pid, exitcode, **kwargs):
+    logger.info("Worker {} got worker_process_shutdown. Pid: {}, Exit code: {}".format(sender, pid, exitcode))
+    return True
+
+
+@worker_shutting_down.connect
+def worker_shutting_down(sender, sig, how, exitcode, **kwargs):
+    logger.info("Worker {} got worker_shutting_down. Sig: {}, How: {}, Exit code: {}".format(sender, sig, how, exitcode))
+    return True
+
+
+@worker_shutdown.connect
+def worker_shutdown(sender, **kwargs):
+    logger.info("Worker {} got worker_shutdown.".format(sender))
+    return True
+
+
 @app.task(bind=True)
 def task_open_tweet_stream(self):
     from scremsong.app.twitter_streaming import open_tweet_stream
     open_tweet_stream()
 
-    logger.info("Done streaming tweets!")
+    logger.info("Unexpectedly done streaming tweets!")
 
     websockets.send_channel_message("notifications.send", {
         "message": "Real-time tweet streaming has disconnected (death).",
@@ -117,8 +197,26 @@ def task_open_tweet_stream(self):
     return True
 
 
+# @app.task(bind=True)
+# def task_restart_streaming(self, reason=None):
+#     logger.info("Trying to restart streaming. Reason: ".format(reason))
+
+#     # Stop any running streaing tasks before we try to restart
+#     # e.g. If streaming dies soon after it's connected then task_fill_missing_tweets may still be running
+#     # logger.info("Trying to kill any running tweet streaming tasks")
+#     # celery_kill_running_streaming_tasks()
+
+#     # And restart!
+#     # logger.info("Trying to retstart tweet streaming tasks")
+#     # celery_init_tweet_streaming()
+
+#     return True
+
+
 @app.task(bind=True)
 def task_fill_missing_tweets(self, since_id):
+    logger.info("Initialising task_fill_missing_tweets for {}".format(since_id))
+
     from scremsong.app.twitter import get_next_tweet_id_for_streaming, fill_in_missing_tweets
 
     if since_id is None:

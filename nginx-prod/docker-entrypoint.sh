@@ -21,7 +21,7 @@ if [ "$HTTPS_ENABLED" = "FALSE" ]; then
 else
     nginxconf="/etc/nginx/docker.https.conf"
 fi
-envsubst '\$HTTPS_ENABLED \$SERVER_NAME \$DJANGO_LOCATION' < $nginxconf > /etc/nginx/conf.d/docker.conf
+envsubst '\$HTTPS_ENABLED \$SERVER_NAME \$DJANGO_LOCATION' < $nginxconf > /etc/nginx/conf.d/nginx.conf
 
 CMD="$1"
 if [ "$CMD" = "nginx" ]; then

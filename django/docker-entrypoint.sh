@@ -34,8 +34,16 @@ if [ "$1" = "celery_worker" ]; then
     set -x
 
     # Concurrency: 1 for streaming, 1 for backfill + processing tweets, 1 for solely processing tweets
-    exec celery -A scremsong worker -l info --concurrency=3 --logfile=logs/celery-worker.log
+    exec celery -A scremsong worker -n scremworker@%%h -l info --concurrency=3
+    # exec celery -A scremsong worker -n scremworker@%%h -l info --concurrency=3 --logfile=logs/celery-worker.log
     exit
+fi
+
+if [ "$CMD" = "supervisord" ]; then
+   waitfordb
+   django-admin migrate
+   /usr/bin/supervisord -c /app/supervisord.conf
+   exit
 fi
 
 if [ "$ENVIRONMENT" = "DEVELOPMENT" ]; then
@@ -64,13 +72,5 @@ fi
 #    uwsgi --lazy-apps --uid 1000 --gid 1000 --http-socket :9090 --wsgi scremsong.wsgi --master --processes 8 --threads 8
 #    exit
 # fi
-
-if [ "$CMD" = "supervisord" ]; then
-   waitfordb
-   export ENVIRONMENT=PRODUCTION
-   django-admin migrate
-   /usr/bin/supervisord -c /app/supervisord.conf
-   exit
-fi
 
 exec "$@"

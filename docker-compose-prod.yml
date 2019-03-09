@@ -51,6 +51,7 @@ services:
         image: scremsong/nginx-prod:latest
         volumes:
             - ./keys/:/app/keys/:delegated
+            - ./nginx-prod/nginx/docker.https.conf:/etc/nginx/conf.d/nginx.conf
             - ./logs/nginx:/var/log/nginx:delegated
         depends_on:
             - django

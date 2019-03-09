@@ -2,9 +2,9 @@ import tweepy
 from scremsong.util import make_logger
 from scremsong.app.models import SocialPlatforms
 from scremsong.app.enums import SocialPlatformChoice, TweetSource, NotificationVariants
-from scremsong.celery import celery_restart_streaming, task_process_tweet_reply
+from scremsong.celery import celery_restart_streaming, task_process_tweet_reply, task_fill_missing_tweets
 from scremsong.app.social.columns import get_social_columns
-from scremsong.app.twitter import get_twitter_app, get_tweepy_api_auth
+from scremsong.app.twitter import get_twitter_app, get_tweepy_api_auth, get_latest_tweet_id_for_streaming
 from scremsong.app import websockets
 from time import sleep
 
@@ -110,9 +110,15 @@ def open_tweet_stream():
         else:
             logger.info("track")
             logger.info(track)
+
+            # Fill in any gaps
+            logger.info("Tweet streaming about to start. Queueing up fill in missing tweets task.")
+            task_fill_missing_tweets.apply_async(args=[get_latest_tweet_id_for_streaming()], countdown=5)
+
+            # Begin streaming!
             myStream.filter(track=track, stall_warnings=True)
 
-            logger.info("Oops, looks like tweet streaming has ended.")
+            logger.info("Oops, looks like tweet streaming has ended unexpectedly.")
 
             websockets.send_channel_message("notifications.send", {
                 "message": "Real-time tweet streaming has disconnected.",
