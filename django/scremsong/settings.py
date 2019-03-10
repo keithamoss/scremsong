@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
 from scremsong.util import get_env
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -110,7 +114,6 @@ INSTALLED_APPS = [
     'scremsong.app',
     'rest_framework',
     'corsheaders',
-    'raven.contrib.django.raven_compat',
     'django_celery_results',
 ]
 
@@ -278,6 +281,19 @@ CELERY_BROKER_TRANSPORT_OPTIONS = {
     'fanout_patterns': True
 }
 CELERY_TASK_DEFAULT_QUEUE = "celery-scremsong"
+
+# Sentry SDK
+
+sentry_sdk.init(
+    dsn=get_env("RAVEN_URL"),
+    integrations=[DjangoIntegration()],
+    send_default_pii=True,
+    environment=get_env("ENVIRONMENT")
+)
+
+with sentry_sdk.configure_scope() as scope:
+    scope.level = "warning"
+    scope.set_extra("site", get_env("RAVEN_SITE_NAME"))
 
 
 # Project-specific settings
