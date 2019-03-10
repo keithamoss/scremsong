@@ -18,9 +18,13 @@ services:
             # Enable this to store the PostgreSQL data on the host
             - ./db/data:/var/lib/postgresql/data
     redis:
-        image: redis:5.0.3-alpine3.8
+        image: bitnami/redis:5.0.3-debian-9-r72
         ports:
             - "6379:6379"
+        env_file:
+            - secrets/redis.env
+        volumes:
+            - ./redis:/bitnami/redis/data
         # https://github.com/docker-library/redis/issues/35#issuecomment-360810072
         sysctls:
             net.core.somaxconn: "511"

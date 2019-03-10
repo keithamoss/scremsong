@@ -65,3 +65,5 @@ foo12\.json
 
 initial-data/*
 twitter-dev-application.txt
+
+redis/
