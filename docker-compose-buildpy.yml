@@ -1,13 +1,13 @@
 version: "3.7"
 services:
-    # db:
-    #     image: mdillon/postgis:10-alpine
-    #     command: postgres -c 'config_file=/etc/postgresql/postgresql.conf'
-    #     ports:
-    #         - "5432:5432"
-    #     environment:
-    #         - POSTGRES_PASSWORD=postgres
-    #         - POSTGRES_DB=stack
+    db:
+        image: mdillon/postgis:10-alpine
+        #     command: postgres -c 'config_file=/etc/postgresql/postgresql.conf'
+        ports:
+            - "5432:5432"
+        environment:
+            - POSTGRES_PASSWORD=postgres
+            - POSTGRES_DB=stack
     #     volumes:
     #         # Enable this mapping to inject the tweaked postgresql.conf file into our PostgreSQL container.
     #         - ./db/postgresql.conf:/etc/postgresql/postgresql.conf
@@ -39,13 +39,9 @@ services:
         command: build
         volumes:
             - ./django/:/app:delegated
-            # - ./django/:/app:delegated
             - ./build/:/build:delegated
-            # - ./frontend:/frontend:delegated
         env_file:
             - secrets/scremsong-web.prod-local.env
             - secrets/scremsong-db.env
-        # depends_on:
-        #     - db
-        #     - rabbitmq
-        #     - redis
+        depends_on:
+            - db

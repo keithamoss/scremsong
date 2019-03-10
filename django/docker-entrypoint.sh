@@ -46,12 +46,6 @@ if [ "$CMD" = "supervisord" ]; then
    exit
 fi
 
-if [ "$ENVIRONMENT" = "DEVELOPMENT" ]; then
-  django-admin migrate
-  django-admin runserver "0.0.0.0:8000"
-  exit
-fi
-
 if [ "$CMD" = "build" ]; then
    export ENVIRONMENT=PRODUCTION
 
@@ -61,6 +55,12 @@ if [ "$CMD" = "build" ]; then
    django-admin collectstatic --noinput
    cd /app/static && tar czvf /build/django.tgz . && rm -rf /app/static
    exit
+fi
+
+if [ "$ENVIRONMENT" = "DEVELOPMENT" ]; then
+  django-admin migrate
+  django-admin runserver "0.0.0.0:8000"
+  exit
 fi
 
 # if [ "$CMD" = "uwsgi" ]; then
