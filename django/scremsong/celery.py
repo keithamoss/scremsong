@@ -29,7 +29,7 @@ def celery_init_tweet_streaming(wait=2):
         logger.info("Auto-starting tweet streaming in Celery worker")
         task_open_tweet_stream.apply_async(countdown=wait)
     else:
-        logger.info("Not starting tweet streaming - it already exists")
+        logger.warning("Not starting tweet streaming - it's already running")
 
 
 # def celery_kill_running_streaming_tasks():
@@ -126,7 +126,7 @@ def shutdown_celery_worker():
             logger.info("Shutting down Celery worker {} ({})".format(worker_name, ok))
             broadcast("shutdown", destination=[worker_name])
     else:
-        logger.info("No workers are visible")
+        logger.warning("No workers are visible")
 
 
 @celeryd_init.connect
@@ -185,7 +185,7 @@ def task_open_tweet_stream(self):
     from scremsong.app.twitter_streaming import open_tweet_stream
     open_tweet_stream()
 
-    logger.info("Unexpectedly done streaming tweets!")
+    logger.warning("Unexpectedly done streaming tweets!")
 
     websockets.send_channel_message("notifications.send", {
         "message": "Real-time tweet streaming has disconnected (death).",
@@ -224,7 +224,7 @@ def task_fill_missing_tweets(self, since_id):
     from scremsong.app.twitter import get_next_tweet_id_for_streaming, fill_in_missing_tweets
 
     if since_id is None:
-        logger.info("There's no tweets in the database - skipping filling in missing tweets")
+        logger.warning("There's no tweets in the database - skipping filling in missing tweets")
         return True
 
     # We have to wait until streaming starts AND we receive a tweet to fill in the gaps - otherwise we won't know when to stop filling in the gaps.

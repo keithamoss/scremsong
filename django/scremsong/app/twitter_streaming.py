@@ -118,7 +118,7 @@ def open_tweet_stream():
             # Begin streaming!
             myStream.filter(track=track, stall_warnings=True)
 
-            logger.info("Oops, looks like tweet streaming has ended unexpectedly.")
+            logger.warning("Oops, looks like tweet streaming has ended unexpectedly.")
 
             websockets.send_channel_message("notifications.send", {
                 "message": "Real-time tweet streaming has disconnected.",
