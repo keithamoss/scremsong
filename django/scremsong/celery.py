@@ -120,9 +120,13 @@ def shutdown_celery_worker():
 
     logger.info("Attempting to shutdown celery worker")
 
-    for worker_name, ok in i.ping().items():
-        logger.info("Shutting down Celery worker {} ({})".format(worker_name, ok))
-        broadcast("shutdown", destination=[worker_name])
+    workers = i.ping()
+    if workers is not None:
+        for worker_name, ok in workers.items():
+            logger.info("Shutting down Celery worker {} ({})".format(worker_name, ok))
+            broadcast("shutdown", destination=[worker_name])
+    else:
+        logger.info("No workers are visible")
 
 
 @celeryd_init.connect
