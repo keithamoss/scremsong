@@ -478,7 +478,7 @@ class LogsAdminViewset(viewsets.ViewSet):
 
     @list_route(methods=['get'])
     def get_log(self, request, format=None):
-        def tail(file_path, num_lines=2000):
+        def tail(file_path, num_lines=10000):
             if os.path.exists(file_path) is False:
                 return "File does not exist."
             else:
