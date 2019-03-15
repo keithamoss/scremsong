@@ -1,11 +1,14 @@
 from __future__ import absolute_import, unicode_literals
 import os
 from time import sleep
+
 from celery import Celery
 from celery.signals import celeryd_init, worker_ready, worker_shutting_down, worker_process_shutdown, worker_shutdown
+
 from scremsong.util import make_logger
 from scremsong.app import websockets
 from scremsong.app.enums import NotificationVariants
+from scremsong.app.exceptions import ScremsongException
 
 logger = make_logger(__name__)
 
@@ -86,7 +89,15 @@ def get_celery_tasks(activeOnly=True):
         scheduled = i.scheduled()
         if scheduled is not None:
             for worker_name, tasks in scheduled.items():
-                allTasks += tasks
+                """
+                Extract the "task request info" from
+                {
+                    "eta": "2019-03-15T10:14:24.576064+08:00",
+                    "priority": 6,
+                    "request": {...}
+                }
+                """
+                allTasks += [t["request"] for t in tasks]
 
     active = i.active()
     if active is not None:
@@ -96,15 +107,20 @@ def get_celery_tasks(activeOnly=True):
     return allTasks
 
 
-def get_tweet_streaming_tasks(activeOnly=True):
-    tasks = get_celery_tasks(activeOnly)
-    streamingTaskNames = ["scremsong.celery.task_open_tweet_stream", "scremsong.celery.task_fill_missing_tweets"]
-    tweetStreamingTasks = []
+def get_tasks_by_names(activeOnly=True, taskNames=[]):
+    if taskNames == []:
+        raise ScremsongException("get_tasks_by_names() requires one or more task names to filter by")
 
-    for task in tasks:
-        if task["name"] in streamingTaskNames:
-            tweetStreamingTasks.append(task)
-    return tweetStreamingTasks
+    tasksFiltered = []
+    for task in get_celery_tasks(activeOnly):
+        if task["name"] in taskNames:
+            tasksFiltered.append(task)
+    return tasksFiltered
+
+
+def get_tweet_streaming_tasks(activeOnly=True):
+    streamingTaskNames = ["scremsong.celery.task_open_tweet_stream", "scremsong.celery.task_fill_missing_tweets"]
+    return get_tasks_by_names(activeOnly, streamingTaskNames)
 
 
 def is_streaming_task_running():
@@ -114,11 +130,19 @@ def is_streaming_task_running():
     return False
 
 
+def is_a_matching_fill_missing_tweets_task_already_running(taskId, sinceId):
+    args = "['{}']".format(sinceId)
+    for task in get_tasks_by_names(activeOnly=False, taskNames=["scremsong.celery.task_fill_missing_tweets"]):
+        if task["id"] != taskId and task["args"] == args:
+            return True
+    return False
+
+
 def shutdown_celery_worker():
     from celery.task.control import inspect, broadcast
     i = inspect()
 
-    logger.info("Attempting to shutdown celery worker")
+    logger.info("Attempting to shutdown any existing celery workers")
 
     workers = i.ping()
     if workers is not None:
@@ -218,27 +242,31 @@ def task_open_tweet_stream(self):
 
 
 @app.task(bind=True)
-def task_fill_missing_tweets(self, since_id):
-    logger.info("Initialising task_fill_missing_tweets for {}".format(since_id))
+def task_fill_missing_tweets(self, sinceId):
+    logger.info("Initialising task_fill_missing_tweets for {}".format(sinceId))
 
-    from scremsong.app.twitter import get_next_tweet_id_for_streaming, fill_in_missing_tweets
-
-    if since_id is None:
+    if sinceId is None:
         logger.warning("There's no tweets in the database - skipping filling in missing tweets")
         return True
+
+    if is_a_matching_fill_missing_tweets_task_already_running(self.request.id, sinceId) is True:
+        logger.warning("Abandoning fill missing tweet for {} - an identical task already exists".format(sinceId))
+        return True
+
+    from scremsong.app.twitter import get_next_tweet_id_for_streaming, fill_in_missing_tweets
 
     # We have to wait until streaming starts AND we receive a tweet to fill in the gaps - otherwise we won't know when to stop filling in the gaps.
     # NB: Well I guess we could take a few "tweet already exists in table" errors in a row as a sign that we're there?
     max_id = None
     while max_id is None:
-        max_id = get_next_tweet_id_for_streaming(since_id)
+        max_id = get_next_tweet_id_for_streaming(sinceId)
 
         if max_id is not None:
             # Get everything except max_id itself (because we already have it, duh)
             max_id = str(int(max_id) - 1)
 
-            logger.info("Auto-starting filling in missing tweets since {} and until {} in Celery worker".format(since_id, max_id))
-            tweets_added = fill_in_missing_tweets(since_id, max_id)
+            logger.info("Auto-starting filling in missing tweets since {} and until {} in Celery worker".format(sinceId, max_id))
+            tweets_added = fill_in_missing_tweets(sinceId, max_id)
             logger.info("Filled in {} missing tweets in total".format(tweets_added))
         else:
             # logger.info("Waiting for streaming to start until we can fill missing tweets...")
