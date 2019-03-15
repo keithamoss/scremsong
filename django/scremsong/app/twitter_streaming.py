@@ -48,7 +48,7 @@ def open_tweet_stream():
             https://dev.twitter.com/docs/streaming-apis/messages#Disconnect_messages_disconnect
             """
 
-            logger.critical("Received a disconnect notice from Twitter. {}".format(notice))
+            logger.critical("Received a disconnect notice from Twitter: {}".format(notice))
 
             # Fire off tasks to restart streaming (delayed by 2s)
             celery_restart_streaming(wait=2)
