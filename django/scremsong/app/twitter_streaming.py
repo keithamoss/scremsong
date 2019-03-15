@@ -111,9 +111,13 @@ def open_tweet_stream():
             logger.info("track")
             logger.info(track)
 
-            # Fill in any gaps
-            logger.info("Tweet streaming about to start. Queueing up fill in missing tweets task.")
-            task_fill_missing_tweets.apply_async(args=[get_latest_tweet_id_for_streaming()], countdown=5)
+            # Fill in any gaps in tweets since streaming last stopped
+            sinceId = get_latest_tweet_id_for_streaming()
+            logger.info("Tweet streaming about to start. Queueing up fill in missing tweets task since {}.".format(sinceId))
+            if sinceId is not None:
+                task_fill_missing_tweets.apply_async(args=[sinceId], countdown=5)
+            else:
+                logger.warning("Got sinceId of None when trying to start task_fill_missing_tweets")
 
             # Begin streaming!
             myStream.filter(track=track, stall_warnings=True)
