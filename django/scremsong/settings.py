@@ -277,8 +277,8 @@ CELERY_RESULT_BACKEND = "django-db"
 # https://github.com/celery/celery/issues/4226
 CELERY_BROKER_POOL_LIMIT = None
 CELERY_BROKER_TRANSPORT_OPTIONS = {
-    'fanout_prefix': True,
-    'fanout_patterns': True
+    "fanout_prefix": True,
+    "fanout_patterns": True
 }
 CELERY_TASK_DEFAULT_QUEUE = "celery-scremsong"
 

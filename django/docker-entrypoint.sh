@@ -34,7 +34,7 @@ if [ "$1" = "celery_worker" ]; then
     set -x
 
     # Concurrency: 1 for streaming, 1 for backfill + processing tweets, 1 for solely processing tweets
-    exec celery -A scremsong worker -n scremworker@%%h -l info --concurrency=3
+    exec celery -A scremsong worker -n scremworker@%%h -l info --concurrency=3 --pool gevent
     # exec celery -A scremsong worker -n scremworker@%%h -l info --concurrency=3 --logfile=logs/celery-worker.log
     exit
 fi
