@@ -3,7 +3,7 @@ from channels.generic.websocket import JsonWebsocketConsumer
 from django.conf import settings
 from scremsong.util import make_logger
 from scremsong.app.serializers import UserSerializer, ReviewerUserSerializer
-from scremsong.app.twitter import get_twitter_columns, fetch_tweets_for_columns, get_precanned_tweet_replies
+from scremsong.app.twitter import get_twitter_columns, fetch_tweets_for_columns, get_precanned_tweet_replies, are_we_rate_limited, get_latest_rate_limit_resources
 from scremsong.app.twitter_streaming import is_streaming_connected
 from scremsong.app.reviewers import get_reviewer_users, get_assignments
 from scremsong.app import websockets
@@ -152,11 +152,29 @@ class ScremsongConsumer(JsonWebsocketConsumer):
 
     def tweets_streaming_state(self, event):
         """
-        Called when the real-time tweet streaming state changes (i.e. connected, disconnected)
+        Called when the real-time tweet streaming state changes (i.e. connected, disconnected).
         """
         self.send_json({
             "msg_type": settings.MSG_TYPE_TWEETS_STREAMING_STATE,
             "connected": event["connected"],
+        })
+
+    def tweets_rate_limit_state(self, event):
+        """
+        Called when the we're approaching, or have been, rate limited by Twtter.
+        """
+        self.send_json({
+            "msg_type": settings.MSG_TYPE_TWEETS_RATE_LIMIT_STATE,
+            "state": event["state"],
+        })
+
+    def tweets_rate_limit_resources(self, event):
+        """
+        The current state of our consumption of Twitter's rate limits.
+        """
+        self.send_json({
+            "msg_type": settings.MSG_TYPE_TWEETS_RATE_LIMIT_RESOURCES,
+            "resources": event["resources"],
         })
 
     def tweets_new_tweets(self, event):
@@ -197,6 +215,8 @@ class ScremsongConsumer(JsonWebsocketConsumer):
 
 
 def build_on_connect_data_payload(user):
+    rateLimitResources = get_latest_rate_limit_resources()
+
     return {
         "msg_type": settings.MSG_TYPE_CONNECTED,
         "is_logged_in": True,
@@ -225,6 +245,14 @@ def build_on_connect_data_payload(user):
             {
                 **{"msg_type": settings.MSG_TYPE_TWEETS_STREAMING_STATE},
                 "connected": is_streaming_connected()
+            },
+            {
+                **{"msg_type": settings.MSG_TYPE_TWEETS_RATE_LIMIT_STATE},
+                "state": len(are_we_rate_limited(rateLimitResources).keys()) > 0
+            },
+            {
+                **{"msg_type": settings.MSG_TYPE_TWEETS_RATE_LIMIT_RESOURCES},
+                "resources": rateLimitResources
             }
         ]
     }

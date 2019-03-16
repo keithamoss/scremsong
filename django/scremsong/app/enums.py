@@ -65,3 +65,9 @@ class TweetReplyCategories(str, EnumBase):
     POSITIVE_REPORT = "Positive Report"
     NEGATIVE_REPORT = "Negative Report"
     THANK_YOUS = "Thank Yous"
+
+
+class TwitterRateLimitState(int, EnumBase):
+    EVERYTHING_OK = 1
+    WARNING = 2
+    RATE_LIMITED = 3

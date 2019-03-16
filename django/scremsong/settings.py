@@ -302,6 +302,8 @@ with sentry_sdk.configure_scope() as scope:
 MSG_TYPE_CONNECTED = "ws/scremsong/CONNECTED"
 MSG_TYPE_NOTIFICATION = "ws/scremsong/NOTIFICATION"
 MSG_TYPE_TWEETS_STREAMING_STATE = "ws/scremsong/tweets/STREAMING_STATE"
+MSG_TYPE_TWEETS_RATE_LIMIT_STATE = "ws/scremsong/tweets/RATE_LIMIT_STATE"
+MSG_TYPE_TWEETS_RATE_LIMIT_RESOURCES = "ws/scremsong/tweets/RATE_LIMIT_RESOURCES"
 MSG_TYPE_TWEETS_NEW_TWEETS = "ws/scremsong/tweets/NEW_TWEETS"
 MSG_TYPE_TWEETS_LOAD_TWEETS = "ws/scremsong/tweets/LOAD_TWEETS"
 MSG_TYPE_TWEETS_UPDATE_TWEETS = "ws/scremsong/tweets/UPDATE_TWEETS"

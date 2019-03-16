@@ -1,7 +1,7 @@
 import tweepy
 
 from scremsong.util import make_logger, get_env, get_or_none
-from scremsong.app.models import SocialPlatforms, Tweets, SocialColumns, SocialAssignments, TweetReplies
+from scremsong.app.models import SocialPlatforms, Tweets, SocialColumns, SocialAssignments, TweetReplies, TwitterRateLimitInfo
 from scremsong.app.enums import SocialPlatformChoice, SocialAssignmentStatus, NotificationVariants, TweetStatus, TweetSource
 from scremsong.app.social.columns import get_social_columns
 from scremsong.app.social.twitter_utils import apply_tweet_filter_criteria, column_search_phrase_to_twitter_search_query
@@ -729,3 +729,18 @@ def get_precanned_tweet_replies():
         replies[reply.category].append(reply.reply_text)
 
     return replies
+
+
+def are_we_rate_limited(resources, bufferPercentage=None):
+    rateLimitedResources = {}
+    for resource_group_name, resources in resources.items():
+        for resource_type, rate_limit_info in resources.items():
+            if bufferPercentage is None and rate_limit_info["remaining"] == 0:
+                rateLimitedResources[resource_type] = rate_limit_info
+            elif bufferPercentage is not None and rate_limit_info["remaining"] <= (rate_limit_info["limit"] * bufferPercentage):
+                rateLimitedResources[resource_type] = rate_limit_info
+
+    return rateLimitedResources
+
+def get_latest_rate_limit_resources():
+    return TwitterRateLimitInfo.objects.latest("id").data
