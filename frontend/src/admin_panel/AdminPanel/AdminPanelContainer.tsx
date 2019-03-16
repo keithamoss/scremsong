@@ -1,9 +1,13 @@
 import * as React from "react"
 import { connect } from "react-redux"
 import { IStore } from "../../redux/modules/reducer"
+import { eSocialTwitterRateLimitState } from "../../redux/modules/social"
 import AdminPanel from "./AdminPanel"
 
-export interface IProps {}
+export interface IProps {
+    tweetStreamingConnected: boolean
+    twitterRateLimitState: eSocialTwitterRateLimitState
+}
 
 export interface IStoreProps {
     //     user: IUser | null
@@ -21,23 +25,18 @@ export interface IDispatchProps {
 type TComponentProps = IProps & IStoreProps & IDispatchProps
 class AdminPanelContainer extends React.PureComponent<TComponentProps, {}> {
     public render() {
-        // const { match } = this.props
+        const { tweetStreamingConnected, twitterRateLimitState } = this.props
 
-        return <AdminPanel />
+        return <AdminPanel tweetStreamingConnected={tweetStreamingConnected} twitterRateLimitState={twitterRateLimitState} />
     }
 }
 
 const mapStateToProps = (state: IStore, ownProps: TComponentProps): IStoreProps => {
-    // const { user, reviewers } = state
-
-    // const getSortedAssignmentsFilter = getSortedAssignments(state)
-    // const sortedAssignments = user.user ? getSortedAssignmentsFilter(user.user.settings) : []
+    const { app } = state
 
     return {
-        // user: user.user,
-        // assignments: sortedAssignments,
-        // reviewers: reviewers.users,
-        // currentReviewer: getCurrentReviewer(state),
+        tweetStreamingConnected: app.tweet_streaming_connected,
+        twitterRateLimitState: app.twitter_rate_limit_state,
     }
 }
 

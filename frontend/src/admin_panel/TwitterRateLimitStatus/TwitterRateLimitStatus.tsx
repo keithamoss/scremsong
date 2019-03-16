@@ -1,7 +1,7 @@
 import { LinearProgress, Paper, Theme, Tooltip, Typography, withStyles, WithStyles } from "@material-ui/core"
 import { DateTime } from "luxon"
 import * as React from "react"
-import { IRateLimitStatus, IResourceRateLimit } from "./TwitterRateLimitStatusContainer"
+import { IRateLimitResources, IResourceRateLimit } from "./TwitterRateLimitStatusContainer"
 
 const styles = (theme: Theme) =>
     ({
@@ -44,7 +44,7 @@ const styles = (theme: Theme) =>
     } as any)
 
 export interface IProps {
-    rateLimitStatus: IRateLimitStatus
+    rateLimitResources: IRateLimitResources
 }
 
 export interface IState {}
@@ -53,21 +53,19 @@ type TComponentProps = IProps & WithStyles
 
 class TwitterRateLimitStatus extends React.PureComponent<TComponentProps, IState> {
     public render() {
-        const { rateLimitStatus, classes } = this.props
+        const { rateLimitResources, classes } = this.props
 
         return (
             <React.Fragment>
-                {Object.keys(rateLimitStatus.resources).map((resourceGroupName: string) => (
+                {Object.keys(rateLimitResources).map((resourceGroupName: string) => (
                     <React.Fragment key={resourceGroupName}>
                         <Typography variant="h4" gutterBottom={true}>
                             {resourceGroupName}
                         </Typography>
                         <div className={classes.flexContainerTileWrap}>
-                            {Object.keys(rateLimitStatus.resources[resourceGroupName]).map((resourceName: string) => {
-                                const resource: IResourceRateLimit = rateLimitStatus.resources[resourceGroupName][resourceName]
+                            {Object.keys(rateLimitResources[resourceGroupName]).map((resourceName: string) => {
+                                const resource: IResourceRateLimit = rateLimitResources[resourceGroupName][resourceName]
 
-                                // Typings is missing "fromSeconds"
-                                // @ts-ignore
                                 const resetDateTime = DateTime.fromSeconds(resource.reset)
 
                                 const rateLimitConsumed = ((resource.limit - resource.remaining) / resource.limit) * 100

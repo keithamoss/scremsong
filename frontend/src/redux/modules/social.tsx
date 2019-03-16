@@ -226,6 +226,12 @@ export enum eSocialTweetActionType {
     FAVOURITE = "favourite",
 }
 
+export enum eSocialTwitterRateLimitState {
+    EVERYTHING_OK = 1,
+    WARNING = 2,
+    RATE_LIMITED = 3,
+}
+
 export interface ISocialTweet {
     data: ISocialTweetData
     state: eSocialTweetState

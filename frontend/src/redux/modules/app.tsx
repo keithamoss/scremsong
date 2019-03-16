@@ -1,9 +1,23 @@
 import * as dotProp from "dot-prop-immutable"
 import { Action } from "redux"
-import { IActionNotification, IActionTweetsStreamingState } from "../../websockets/actions"
-import { WS_NOTIFICATION, WS_TWEETS_STREAMING_STATE } from "../../websockets/constants"
+import { createSelector } from "reselect"
+import { IRateLimitResources, IResourceRateLimit } from "../../admin_panel/TwitterRateLimitStatus/TwitterRateLimitStatusContainer"
+import {
+    IActionNotification,
+    IActionTweetsRateLimitResources,
+    IActionTweetsRateLimitState,
+    IActionTweetsStreamingState,
+} from "../../websockets/actions"
+import {
+    WS_NOTIFICATION,
+    WS_TWEETS_RATE_LIMIT_RESOURCES,
+    WS_TWEETS_RATE_LIMIT_STATE,
+    WS_TWEETS_STREAMING_STATE,
+} from "../../websockets/constants"
 import { IThunkExtras } from "./interfaces"
+import { IStore } from "./reducer"
 import { changeCurrentReviewer } from "./reviewers"
+import { eSocialTwitterRateLimitState } from "./social"
 import { fetchUser, ISelf } from "./user"
 // import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 
@@ -31,6 +45,8 @@ const initialState: IModule = {
     sidebarOpen: false,
     notifications: [],
     tweet_streaming_connected: false,
+    twitter_rate_limit_state: null,
+    twitter_rate_limit_resources: null,
 }
 
 // Reducer
@@ -46,6 +62,8 @@ type IAction =
     | IActionNotification
     | IActionSendNotification
     | IActionTweetsStreamingState
+    | IActionTweetsRateLimitState
+    | IActionTweetsRateLimitResources
 export default function reducer(state: IModule = initialState, action: IAction) {
     let requestsInProgress = dotProp.get(state, "requestsInProgress")
 
@@ -69,13 +87,52 @@ export default function reducer(state: IModule = initialState, action: IAction) 
             return dotProp.set(state, "notifications.$end", action)
         case REMOVE_SNACKBAR:
             const notificationIndex = state.notifications.findIndex((notification: INotification) => notification.key === action.key)
-            return dotProp.delete(state, `notifications.${notificationIndex}`)
+            if (notificationIndex >= 0) {
+                return dotProp.delete(state, `notifications.${notificationIndex}`)
+            }
+            return state
         case WS_TWEETS_STREAMING_STATE:
             return dotProp.set(state, "tweet_streaming_connected", action.connected)
+        case WS_TWEETS_RATE_LIMIT_STATE:
+            return dotProp.set(state, "twitter_rate_limit_state", action.state)
+        case WS_TWEETS_RATE_LIMIT_RESOURCES:
+            return dotProp.set(state, "twitter_rate_limit_resources", action.resources)
         default:
             return state
     }
 }
+
+// Selectors
+const getTwitterRateLimitResources = (state: IStore) => state.app.twitter_rate_limit_resources
+
+export const getConsumedTwitterRateLimitResources = createSelector(
+    [getTwitterRateLimitResources],
+    (rateLimitResources: IRateLimitResources | null): any => {
+        const filteredRateLimitResources = {}
+
+        if (rateLimitResources !== null) {
+            for (const [resourceGroupName, resources] of Object.entries(rateLimitResources)) {
+                const filteredResources = Object.keys(resources)
+                    .filter((resourceName: string) => resources[resourceName].remaining < resources[resourceName].limit)
+                    .reduce(
+                        (rateLimitInfo: IResourceRateLimit, resourceName: string) => {
+                            return {
+                                ...rateLimitInfo,
+                                [resourceName]: rateLimitResources[resourceGroupName][resourceName],
+                            }
+                        },
+                        {} as IResourceRateLimit
+                    )
+
+                if (Object.keys(filteredResources).length > 0) {
+                    filteredRateLimitResources[resourceGroupName] = filteredResources
+                }
+            }
+        }
+
+        return Object.keys(filteredRateLimitResources).length > 0 ? filteredRateLimitResources : null
+    }
+)
 
 // Action Creators
 export const loading = (): IActionLoading => ({
@@ -122,6 +179,8 @@ export interface IModule {
     sidebarOpen: boolean
     notifications: []
     tweet_streaming_connected: boolean
+    twitter_rate_limit_state: eSocialTwitterRateLimitState | null
+    twitter_rate_limit_resources: IRateLimitResources | null
 }
 
 export interface IActionLoading extends Action<typeof LOADING> {}
@@ -162,6 +221,8 @@ export interface INotificationOptions {
     variant: eNotificationVariant
     onClickAction?: Function
     autoHideDuration?: number
+    persist?: boolean
+    preventDuplicate?: boolean
     action?: any // Per https://material-ui.com/api/snackbar/#snackbar
 }
 

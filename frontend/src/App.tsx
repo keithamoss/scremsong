@@ -65,12 +65,12 @@ const styles = (theme: Theme) =>
 export interface IProps {
     userAssignmentCount: number
     location: Location
-    tweetStreamingConnected: boolean
+    somethingIsBroken: boolean
 }
 
 class App extends React.Component<IProps & WithStyles, {}> {
     public render() {
-        const { userAssignmentCount, tweetStreamingConnected, location, classes } = this.props
+        const { userAssignmentCount, somethingIsBroken, location, classes } = this.props
 
         const QueueLink = (props: any) => <Link to="/queue" {...props} />
         const TriageLink = (props: any) => <Link to="/" {...props} />
@@ -129,12 +129,12 @@ class App extends React.Component<IProps & WithStyles, {}> {
                                     aria-label="Admin panel"
                                     className={location.pathname === "/admin" ? classes.selectedIcon : undefined}
                                 >
-                                    {tweetStreamingConnected === false && (
+                                    {somethingIsBroken === true && (
                                         <Badge badgeContent={"!"} color="secondary" className={classes.disconnectedBadge}>
                                             <DNSIcon />
                                         </Badge>
                                     )}
-                                    {tweetStreamingConnected === true && <DNSIcon />}
+                                    {somethingIsBroken === false && <DNSIcon />}
                                 </IconButton>
                             </Tooltip>
                         </ListItem>

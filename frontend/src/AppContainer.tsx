@@ -7,6 +7,7 @@ import { LoginDialog } from "./authentication/login-dialog/LoginDialog"
 import { fetchInitialAppState } from "./redux/modules/app"
 import { IStore } from "./redux/modules/reducer"
 import { getUserAssignments } from "./redux/modules/reviewers"
+import { eSocialTwitterRateLimitState } from "./redux/modules/social"
 
 // const Config: IConfig = require("Config") as any
 
@@ -64,7 +65,7 @@ export interface IStoreProps {
     isAppLoading: boolean
     userLoggedIn: boolean
     userAssignmentCount: number
-    tweetStreamingConnected: boolean
+    somethingIsBroken: boolean
 }
 
 export interface IDispatchProps {
@@ -99,7 +100,7 @@ export class AppContainer extends React.Component<TComponentProps, {}> {
     }
 
     public render() {
-        const { isAppLoading, userLoggedIn, userAssignmentCount, tweetStreamingConnected, location, children, classes } = this.props
+        const { isAppLoading, userLoggedIn, userAssignmentCount, somethingIsBroken, location, children, classes } = this.props
 
         let component
         if (isAppLoading === true) {
@@ -128,7 +129,7 @@ export class AppContainer extends React.Component<TComponentProps, {}> {
                 <App
                     userAssignmentCount={userAssignmentCount}
                     location={location}
-                    tweetStreamingConnected={tweetStreamingConnected}
+                    somethingIsBroken={somethingIsBroken}
                     children={children}
                 />
             )
@@ -156,7 +157,7 @@ const mapStateToProps = (state: IStore): IStoreProps => {
         isAppLoading: app.loading,
         userLoggedIn: user.user !== null,
         userAssignmentCount,
-        tweetStreamingConnected: app.tweet_streaming_connected,
+        somethingIsBroken: app.tweet_streaming_connected || app.twitter_rate_limit_state === eSocialTwitterRateLimitState.RATE_LIMITED,
     }
 }
 

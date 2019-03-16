@@ -1,27 +1,23 @@
-import { LinearProgress } from "@material-ui/core"
 import * as React from "react"
 import { connect } from "react-redux"
-import { IMyWindow } from "../../redux/modules/interfaces"
+import { getConsumedTwitterRateLimitResources } from "../../redux/modules/app"
 import { IStore } from "../../redux/modules/reducer"
 import TwitterRateLimitStatus from "./TwitterRateLimitStatus"
-declare var window: IMyWindow
+
 export interface IProps {}
 
-export interface IStoreProps {}
+export interface IStoreProps {
+    rateLimitResources: IRateLimitResources | null
+}
 
 export interface IDispatchProps {}
 
-export interface IState {
-    rateLimitStatus: IRateLimitStatus | null
+export interface IRateLimitResources {
+    [key: string]: IRateLimitResourcesSet
 }
 
-export interface IRateLimitStatus {
-    resources: {
-        application: { [key: string]: IResourceRateLimit }
-        statuses: { [key: string]: IResourceRateLimit }
-        tweets: { [key: string]: IResourceRateLimit }
-        search: { [key: string]: IResourceRateLimit }
-    }
+export interface IRateLimitResourcesSet {
+    [key: string]: IResourceRateLimit
 }
 
 export interface IResourceRateLimit {
@@ -30,42 +26,28 @@ export interface IResourceRateLimit {
     reset: number
 }
 
-const getRateLimitStatus = async (): Promise<any> => {
-    const { json } = await window.api.get("/0.1/twitter_api_admin/rate_limit_status/", null, {})
-    return json
-}
-
 type TComponentProps = IProps & IStoreProps & IDispatchProps
-class TwitterRateLimitStatusContainer extends React.PureComponent<TComponentProps, IState> {
-    public constructor(props: TComponentProps) {
-        super(props)
-
-        this.state = { rateLimitStatus: null }
-    }
-    public async componentDidMount() {
-        this.setState({ rateLimitStatus: await getRateLimitStatus() })
-    }
-
+class TwitterRateLimitStatusContainer extends React.Component<TComponentProps, {}> {
     public render() {
-        const { rateLimitStatus } = this.state
+        const { rateLimitResources } = this.props
 
-        if (rateLimitStatus === null) {
-            return <LinearProgress />
+        if (rateLimitResources === null) {
+            return null
         }
 
-        return <TwitterRateLimitStatus rateLimitStatus={rateLimitStatus} />
+        return <TwitterRateLimitStatus rateLimitResources={rateLimitResources} />
     }
 }
 
-const mapStateToProps = (state: IStore, ownProps: TComponentProps): IStoreProps => {
-    return {}
+const mapStateToProps = (state: IStore, ownProps: IProps): IStoreProps => {
+    return { rateLimitResources: getConsumedTwitterRateLimitResources(state) }
 }
 
 const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {}
 }
 
-export default connect(
+export default connect<IStoreProps, IDispatchProps, IProps, IStore>(
     mapStateToProps,
     mapDispatchToProps
 )(TwitterRateLimitStatusContainer)

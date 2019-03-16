@@ -4,6 +4,8 @@ export const WS_CONNECTED = "ws/scremsong/CONNECTED"
 export const WS_NOTIFICATION = "ws/scremsong/NOTIFICATION"
 
 export const WS_TWEETS_STREAMING_STATE = "ws/scremsong/tweets/STREAMING_STATE"
+export const WS_TWEETS_RATE_LIMIT_STATE = "ws/scremsong/tweets/RATE_LIMIT_STATE"
+export const WS_TWEETS_RATE_LIMIT_RESOURCES = "ws/scremsong/tweets/RATE_LIMIT_RESOURCES"
 export const WS_TWEETS_NEW_TWEETS = "ws/scremsong/tweets/NEW_TWEETS"
 export const WS_TWEETS_LOAD_TWEETS = "ws/scremsong/tweets/LOAD_TWEETS"
 export const WS_TWEETS_UPDATE_TWEETS = "ws/scremsong/tweets/UPDATE_TWEETS"
@@ -25,6 +27,8 @@ export const WS_REVIEWERS_SET_STATUS = "ws/scremsong/reviewers/SET_STATUS"
 export const messageTypes = [
     WS_NOTIFICATION,
     WS_TWEETS_STREAMING_STATE,
+    WS_TWEETS_RATE_LIMIT_STATE,
+    WS_TWEETS_RATE_LIMIT_RESOURCES,
     WS_TWEETS_NEW_TWEETS,
     WS_TWEETS_LOAD_TWEETS,
     WS_TWEETS_UPDATE_TWEETS,

@@ -1,8 +1,10 @@
 import { Action } from "redux"
+import { IRateLimitResources } from "../admin_panel/TwitterRateLimitStatus/TwitterRateLimitStatusContainer"
 import { INotification } from "../redux/modules/app"
 import { IReviewerAssignment, IReviewerUser } from "../redux/modules/reviewers"
 import {
     eSocialTweetState,
+    eSocialTwitterRateLimitState,
     ISocialPrecannedTweetReplies,
     ISocialTweet,
     ISocialTweetList,
@@ -26,6 +28,8 @@ import {
     WS_TWEETS_LOAD_TWEETS,
     WS_TWEETS_NEW_TWEETS,
     WS_TWEETS_PRECANNED_REPLIES,
+    WS_TWEETS_RATE_LIMIT_RESOURCES,
+    WS_TWEETS_RATE_LIMIT_STATE,
     WS_TWEETS_SET_STATE,
     WS_TWEETS_STREAMING_STATE,
     WS_TWEETS_UPDATE_TWEETS,
@@ -97,6 +101,14 @@ export interface ITweetFetchColumn {
 
 export interface IActionTweetsStreamingState extends Action<typeof WS_TWEETS_STREAMING_STATE> {
     connected: boolean
+}
+
+export interface IActionTweetsRateLimitState extends Action<typeof WS_TWEETS_RATE_LIMIT_STATE> {
+    state: eSocialTwitterRateLimitState
+}
+
+export interface IActionTweetsRateLimitResources extends Action<typeof WS_TWEETS_RATE_LIMIT_RESOURCES> {
+    resources: IRateLimitResources
 }
 
 export interface IActionTweetsNew extends Action<typeof WS_TWEETS_NEW_TWEETS> {
