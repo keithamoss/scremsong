@@ -124,6 +124,13 @@ class TweetReplies(models.Model):
     category = models.TextField(choices=[(tag, tag.value) for tag in TweetReplyCategories], null=True)
 
 
+class TwitterRateLimitInfo(models.Model):
+    "Automatically collected information about our consumption of Twitter's rate limits."
+
+    collected_on = models.DateTimeField(auto_now_add=True)
+    data = JSONField()
+
+
 class AllowedUsers(models.Model):
     "Our whitelist of allowed users"
 

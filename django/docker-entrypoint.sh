@@ -33,9 +33,9 @@ if [ "$1" = "celery_worker" ]; then
     # Print all executed commands to the terminal
     set -x
 
-    # Concurrency: 1 for streaming, 1 for backfill + processing tweets, 1 for solely processing tweets
-    exec celery -A scremsong worker -n scremworker@%%h -l info --concurrency=3 --pool gevent
-    # exec celery -A scremsong worker -n scremworker@%%h -l info --concurrency=3 --logfile=logs/celery-worker.log
+    # Concurrency: 1 for streaming, 1 for backfill + processing tweets, 1 for Twitter rate limit collection, and 1 for solely processing tweets
+    exec celery -A scremsong worker -n scremworker@%%h -l info --concurrency=4 --pool gevent
+    # exec celery -A scremsong worker -n scremworker@%%h -l info --concurrency=4 --logfile=logs/celery-worker.log
     exit
 fi
 

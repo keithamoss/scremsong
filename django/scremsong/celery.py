@@ -7,7 +7,7 @@ from celery.signals import celeryd_init, worker_ready, worker_shutting_down, wor
 
 from scremsong.util import make_logger
 from scremsong.app import websockets
-from scremsong.app.enums import NotificationVariants
+from scremsong.app.enums import NotificationVariants, TwitterRateLimitState
 from scremsong.app.exceptions import ScremsongException
 
 logger = make_logger(__name__)
@@ -33,6 +33,10 @@ def celery_init_tweet_streaming(wait=2):
         task_open_tweet_stream.apply_async(countdown=wait)
     else:
         logger.warning("Not starting tweet streaming - it's already running")
+
+    if is_rate_limit_collection_task_running() is False:
+        logger.info("Auto-starting twitter rate limit info collection in Celery worker")
+        task_collect_twitter_rate_limit_info.apply_async()
 
 
 # def celery_kill_running_streaming_tasks():
@@ -107,14 +111,18 @@ def get_celery_tasks(activeOnly=True):
     return allTasks
 
 
-def get_tasks_by_names(activeOnly=True, taskNames=[]):
+def get_tasks_by_names(activeOnly=True, taskNames=[], excludeTaskId=None):
     if taskNames == []:
         raise ScremsongException("get_tasks_by_names() requires one or more task names to filter by")
 
     tasksFiltered = []
     for task in get_celery_tasks(activeOnly):
         if task["name"] in taskNames:
-            tasksFiltered.append(task)
+            if excludeTaskId is not None:
+                if task["id"] != excludeTaskId:
+                    tasksFiltered.append(task)
+            else:
+                tasksFiltered.append(task)
     return tasksFiltered
 
 
@@ -124,10 +132,11 @@ def get_tweet_streaming_tasks(activeOnly=True):
 
 
 def is_streaming_task_running():
-    for task in get_tweet_streaming_tasks(activeOnly=True):
-        if task["name"] == "scremsong.celery.task_open_tweet_stream":
-            return True
-    return False
+    return len(get_tweet_streaming_tasks(activeOnly=True)) > 0
+
+
+def is_rate_limit_collection_task_running(excludeTaskId=None):
+    return len(get_tasks_by_names(activeOnly=True, taskNames=["scremsong.celery.task_collect_twitter_rate_limit_info"], excludeTaskId=excludeTaskId)) > 0
 
 
 def is_a_matching_fill_missing_tweets_task_already_running(taskId, sinceId):
@@ -150,7 +159,7 @@ def shutdown_celery_worker():
             logger.info("Shutting down Celery worker {} ({})".format(worker_name, ok))
             broadcast("shutdown", destination=[worker_name])
     else:
-        logger.warning("No workers are visible")
+        logger.warning("No workers were visible during worker shutdown")
 
 
 @celeryd_init.connect
@@ -222,6 +231,71 @@ def task_open_tweet_stream(self):
         "connected": False,
     })
 
+    return True
+
+
+@app.task(bind=True)
+def task_collect_twitter_rate_limit_info(self):
+    if is_rate_limit_collection_task_running(excludeTaskId=self.request.id) is True:
+        logger.warning("Abandoning starting Twitter rate limit collection - an identical task already exists")
+        return True
+
+    from scremsong.app.twitter import get_tweepy_api_auth, are_we_rate_limited
+    from scremsong.app.models import TwitterRateLimitInfo
+
+    api = get_tweepy_api_auth()
+
+    while True:
+        status = api.rate_limit_status()
+        resources = status["resources"]
+        r = TwitterRateLimitInfo(data=resources)
+        r.save()
+
+        websockets.send_channel_message("tweets.rate_limit_resources", {
+            "resources": resources,
+        })
+
+        rateLimitedResources = are_we_rate_limited(resources, bufferPercentage=0.2)
+
+        if len(rateLimitedResources.keys()) > 0:
+            resourceNames = [resource_name for resource_name in rateLimitedResources.keys()]
+
+            websockets.send_channel_message("notifications.send", {
+                "message": "We've been rate limited by Twitter for {}.".format(", ".join(resourceNames)),
+                "options": {
+                    "variant": NotificationVariants.ERROR,
+                    "autoHideDuration": 20000,
+                }
+            })
+
+            websockets.send_channel_message("tweets.rate_limit_state", {
+                "state": TwitterRateLimitState.RATE_LIMITED,
+            })
+
+        else:
+            rateLimitedResources = are_we_rate_limited(resources, bufferPercentage=0.20)
+
+            if len(rateLimitedResources.keys()) > 0:
+                websockets.send_channel_message("notifications.send", {
+                    "message": "Twitter rate limit approaching for {}.".format(", ".join(resourceNames)),
+                    "options": {
+                        "variant": NotificationVariants.WARNING,
+                        "autoHideDuration": 20000,
+                    }
+                })
+
+                websockets.send_channel_message("tweets.rate_limit_state", {
+                    "state": TwitterRateLimitState.WARNING,
+                })
+
+            else:
+                websockets.send_channel_message("tweets.rate_limit_state", {
+                    "state": TwitterRateLimitState.EVERYTHING_OK,
+                })
+
+        sleep(30)
+
+    logger.warning("Unexpectedly done collecting Twitter rate limit info!")
     return True
 
 
