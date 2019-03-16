@@ -10,7 +10,7 @@ import { getAPIBaseURL } from "../../redux/modules/app"
 const styles = (theme: Theme) => ({
     flexGrid: {
         // display: "flex",
-        minHeight: "100%",
+        minHeight: "95%",
     },
     flexCol: {
         flex: 1,

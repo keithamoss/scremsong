@@ -8,7 +8,7 @@ import TwitterRateLimitStatusContainer from "../TwitterRateLimitStatus/TwitterRa
 const styles = (theme: Theme) => ({
     root: {
         flexGrow: 1,
-        height: "100%",
+        height: "95%",
         backgroundColor: theme.palette.background.paper,
     },
     tabContainer: {
