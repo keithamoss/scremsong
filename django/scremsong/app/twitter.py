@@ -742,5 +742,6 @@ def are_we_rate_limited(resources, bufferPercentage=None):
 
     return rateLimitedResources
 
+
 def get_latest_rate_limit_resources():
     return TwitterRateLimitInfo.objects.latest("id").data

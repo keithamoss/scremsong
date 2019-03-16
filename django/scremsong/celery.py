@@ -164,9 +164,6 @@ def shutdown_celery_worker():
 
 @celeryd_init.connect
 def configure_workers(sender=None, conf=None, **kwargs):
-    from celery.task.control import inspect
-    i = inspect()
-
     logger.info("Celery worker {} has started.".format(sender))
 
     # Report on what the task queue looks like

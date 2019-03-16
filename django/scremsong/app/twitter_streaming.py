@@ -6,7 +6,6 @@ from scremsong.celery import celery_restart_streaming, task_process_tweet_reply,
 from scremsong.app.social.columns import get_social_columns
 from scremsong.app.twitter import get_twitter_app, get_tweepy_api_auth, get_latest_tweet_id_for_streaming
 from scremsong.app import websockets
-from time import sleep
 
 logger = make_logger(__name__)
 
