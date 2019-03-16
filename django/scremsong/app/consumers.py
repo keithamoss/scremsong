@@ -6,6 +6,7 @@ from scremsong.app.serializers import UserSerializer, ReviewerUserSerializer
 from scremsong.app.twitter import get_twitter_columns, fetch_tweets_for_columns, get_precanned_tweet_replies, are_we_rate_limited, get_latest_rate_limit_resources
 from scremsong.app.twitter_streaming import is_streaming_connected
 from scremsong.app.reviewers import get_reviewer_users, get_assignments
+from scremsong.app.enums import TwitterRateLimitState
 from scremsong.app import websockets
 from random import getrandbits
 
@@ -248,7 +249,7 @@ def build_on_connect_data_payload(user):
             },
             {
                 **{"msg_type": settings.MSG_TYPE_TWEETS_RATE_LIMIT_STATE},
-                "state": len(are_we_rate_limited(rateLimitResources).keys()) > 0
+                "state": TwitterRateLimitState.RATE_LIMITED if len(are_we_rate_limited(rateLimitResources).keys()) > 0 else TwitterRateLimitState.EVERYTHING_OK
             },
             {
                 **{"msg_type": settings.MSG_TYPE_TWEETS_RATE_LIMIT_RESOURCES},

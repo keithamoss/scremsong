@@ -157,7 +157,8 @@ const mapStateToProps = (state: IStore): IStoreProps => {
         isAppLoading: app.loading,
         userLoggedIn: user.user !== null,
         userAssignmentCount,
-        somethingIsBroken: app.tweet_streaming_connected || app.twitter_rate_limit_state === eSocialTwitterRateLimitState.RATE_LIMITED,
+        somethingIsBroken:
+            app.tweet_streaming_connected === false || app.twitter_rate_limit_state === eSocialTwitterRateLimitState.RATE_LIMITED,
     }
 }
 
