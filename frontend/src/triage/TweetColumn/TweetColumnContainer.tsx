@@ -46,7 +46,7 @@ export interface IReactVirtualizedIndexes {
 const mapColumnListPropsToTweetPosition = (opts: any /*ListProps["onRowsRendered"]*/, tweetIds: string[]) => {
     // Ref. onRowsRendered() https://github.com/bvaughn/react-virtualized/blob/master/docs/List.md
 
-    if (tweetIds.length === 0) {
+    if (tweetIds.length === 0 || opts === null) {
         return null
     }
 
@@ -121,9 +121,11 @@ const mapDispatchToProps = (dispatch: Function, ownProps: IProps): IDispatchProp
             return dispatch(fetchTweets(indexes.startIndex, indexes.stopIndex, [ownProps.column.id]))
         },
         onPositionUpdate: (columnId: number, positions: IProfileColumnPosition | null) => {
-            const settings = { column_positions: {} }
-            settings.column_positions[columnId] = positions
-            dispatch(ws_changeUserProfileSettings(settings))
+            if (positions !== null) {
+                const settings = { column_positions: {} }
+                settings.column_positions[columnId] = positions
+                dispatch(ws_changeUserProfileSettings(settings))
+            }
         },
         onSetTweetState: (tweetId: string, tweetState: eSocialTweetState) => {
             dispatch(setTweetState(tweetId, tweetState))

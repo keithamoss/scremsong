@@ -74,7 +74,7 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
 
         this._onRowsRendered = (onRowsRendered: Function, opts: any /*ListProps["onRowsRendered"]*/) => {
             if (this.state.ready === true) {
-                // console.log("_onRowsRendered", this.props.column.id)
+                // console.log("_onRowsRendered", this.props.column.id, opts)
                 this.props.onPositionUpdate(this.props.column.id, opts)
                 // We store it in the class rather than React state so we can avoid triggering the React update lifecycle
                 this._firstVisibleTweet = this.props.tweet_ids[opts.startIndex]
