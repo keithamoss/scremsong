@@ -2,7 +2,7 @@ import tweepy
 
 from scremsong.util import make_logger, get_env, get_or_none
 from scremsong.app.models import SocialPlatforms, Tweets, SocialColumns, SocialAssignments, TweetReplies, TwitterRateLimitInfo
-from scremsong.app.enums import SocialPlatformChoice, SocialAssignmentStatus, NotificationVariants, TweetStatus, TweetSource
+from scremsong.app.enums import SocialPlatformChoice, SocialAssignmentStatus, NotificationVariants, TweetStatus, TweetSource, TweetState
 from scremsong.app.social.columns import get_social_columns
 from scremsong.app.social.twitter_utils import apply_tweet_filter_criteria, column_search_phrase_to_twitter_search_query
 from scremsong.app.serializers import SocialColumnsSerializerWithTweetCountSerializer, TweetsSerializer, SocialAssignmentSerializer
@@ -529,6 +529,8 @@ def process_new_tweet_reply(status, tweetSource, sendWebSocketEvent):
                 "assignment": SocialAssignmentSerializer(assignment).data,
                 "tweets": tweets,
             })
+
+            tweet.state = TweetState.ASSIGNED
 
         # Once we're done processing the tweet, or if its parent is not part of an assignment,
         # then we just carry on and save the tweet has processed and send a notification.

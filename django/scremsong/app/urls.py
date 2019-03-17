@@ -8,6 +8,7 @@ from .views import (
     SocialColumnsViewset,
     SocialAssignmentsViewset,
     SocialPlatformsAuthViewset,
+    DashboardViewset,
     CeleryAdminViewset,
     LogsAdminViewset,
     TwitterRateLimitAdminViewset,
@@ -21,6 +22,7 @@ router.register(r'tweets', TweetsViewset, 'Tweets')
 router.register(r'social_columns', SocialColumnsViewset, 'SocialColumns')
 router.register(r'social_assignments', SocialAssignmentsViewset, 'SocialAssignments')
 router.register(r'social_auth', SocialPlatformsAuthViewset, 'SocialPlatformsAuth')
+router.register(r'dashboard', DashboardViewset, 'Dashboard')
 router.register(r'celery_admin', CeleryAdminViewset, 'CeleryAdmin')
 router.register(r'logs_admin', LogsAdminViewset, 'LogsAdmin')
 router.register(r'twitter_api_admin', TwitterRateLimitAdminViewset, 'TwitterRateLimitAdmin')

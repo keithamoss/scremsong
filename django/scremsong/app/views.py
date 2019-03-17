@@ -18,6 +18,8 @@ from scremsong.app.reviewers import getCreationDateOfNewestTweetInAssignment
 from scremsong.celery import celery_restart_streaming
 from scremsong.app.models import Tweets, SocialColumns, SocialAssignments, Profile
 from scremsong.app.enums import SocialPlatformChoice, SocialAssignmentStatus, NotificationVariants, TweetState, TweetStatus
+from scremsong.app.social.assignments import get_social_assignment_stats_for_user
+from scremsong.app.social.columns import get_social_columns
 from scremsong.app import websockets
 from scremsong.util import make_logger, get_or_none
 from scremsong.app.exceptions import ScremsongException
@@ -494,6 +496,38 @@ class SocialPlatformsAuthViewset(viewsets.ViewSet):
             return Response({"error": "Error! Failed to get access token. TweepyError."}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"error": "Error! Failed to get access token. {}".format(str(e))}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class DashboardViewset(viewsets.ViewSet):
+    """
+    API endpoints to power the dashboard view.
+    """
+    permission_classes = (IsAuthenticated,)
+
+    @list_route(methods=['get'])
+    def get_stats(self, request, format=None):
+        stats = {
+            "assignments": {
+                "all_time": {},
+                "past_week": {},
+            },
+            "triage": {
+                "untriaged_tweets": {
+                    "all_time": {},
+                    "past_week": {}
+                }
+            }
+        }
+
+        for user in User.objects.all():
+            stats["assignments"]["all_time"][user.id] = get_social_assignment_stats_for_user(user)
+            stats["assignments"]["past_week"][user.id] = get_social_assignment_stats_for_user(user, sincePastNDays=7)
+        
+        for social_column in get_social_columns(SocialPlatformChoice.TWITTER).order_by("id").all():
+            stats["triage"]["untriaged_tweets"]["all_time"][social_column.id] = social_column.total_active_tweets()
+            stats["triage"]["untriaged_tweets"]["past_week"][social_column.id] = social_column.total_active_tweets(sincePastNDays=7)
+        
+        return Response(stats)
 
 
 class CeleryAdminViewset(viewsets.ViewSet):

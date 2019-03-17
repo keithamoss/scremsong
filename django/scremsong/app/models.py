@@ -1,7 +1,12 @@
+import datetime
+
 from django.db import models
+from django.db.models import F, Func
 from django.contrib.postgres.fields import JSONField
 from django.contrib.auth.models import User
+from django.utils import timezone
 from model_utils import FieldTracker
+
 from scremsong.app.social.twitter_utils import apply_tweet_filter_criteria
 from scremsong.app.enums import ProfileSettingQueueSortBy, SocialPlatformChoice, SocialAssignmentStatus, TweetState, TweetStatus, TweetReplyCategories
 from scremsong.util import make_logger
@@ -85,9 +90,23 @@ class SocialColumns(models.Model):
 
     def total_tweets(self):
         """
-        Count the number of tweets for the object
+        Count the number of tweets for the column
         """
         count = apply_tweet_filter_criteria(self, Tweets.objects).count()
+        if count is None:
+            return 0
+        return count
+
+    def total_active_tweets(self, sincePastNDays=None):
+        """
+        Count the number of active tweets for the column
+        """
+        # @TODO This is horrendously inefficient. We should (a) tag tweets with their columnId when they come in (or the column search terms are updated) and (b) pull created_at out as a PostgreSQL timestmap field.
+        queryset = apply_tweet_filter_criteria(self, Tweets.objects).filter(state=TweetState.ACTIVE)
+        if sincePastNDays is not None:
+            queryset = queryset.annotate(diff_in_days=Func(F("data__created_at"), function="EXTRACT", template="%(function)s(EPOCH FROM CURRENT_TIMESTAMP - to_timestamp(data->>'created_at', 'Dy Mon DD HH24:MI:SS +0000 YYYY')) / 86400")).filter(diff_in_days__lte=sincePastNDays)
+
+        count = queryset.count()
         if count is None:
             return 0
         return count
@@ -123,6 +142,8 @@ class SocialAssignments(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     last_updated_on = models.DateTimeField(auto_now_add=True)
     last_read_on = models.DateTimeField(blank=True, null=True)
+
+    tracker = FieldTracker(fields=["thread_tweets"])
 
     class Meta:
         unique_together = ("platform", "social_id")

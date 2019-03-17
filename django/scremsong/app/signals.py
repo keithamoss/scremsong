@@ -1,15 +1,9 @@
 from django.dispatch import receiver
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.contrib.auth.models import User
-from scremsong.app.models import Profile
-# from .mailgun import send_new_user_welcome_mail, send_new_user_signed_up_admin_mail, send_new_user_welcome_awaiting_approval_mail, send_new_user_admin_awaiting_approval_mail, send_new_user_approved_mail
 
-
-# @receiver(pre_save, sender=Profile)
-# def approve_user(sender, instance, **kwargs):
-#     if is_private_site():
-#         if instance.tracker.has_changed("is_approved") and instance.is_approved is True:
-#             send_new_user_approved_mail(instance.user)
+from scremsong.app.models import Profile, SocialAssignments, Tweets
+from scremsong.app.enums import TweetState
 
 
 @receiver(post_save, sender=User)
@@ -22,3 +16,14 @@ def create_user(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     instance.profile.save()
+
+
+@receiver(post_save, sender=SocialAssignments)
+def set_tweets_as_assigned(sender, instance, created, **kwargs):
+    if created is True or instance.tracker.has_changed("thread_tweets") is True:
+        Tweets.objects.filter(tweet_id__in=instance.thread_tweets + [instance.social_id]).update(state=TweetState.ASSIGNED)
+
+
+@receiver(post_delete, sender=SocialAssignments)
+def set_tweets_as_unassigned(sender, instance, **kwargs):
+    Tweets.objects.filter(tweet_id__in=instance.thread_tweets + [instance.social_id]).update(state=TweetState.ACTIVE)
