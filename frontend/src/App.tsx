@@ -1,6 +1,7 @@
 import { Badge, CssBaseline, Drawer, IconButton, List, ListItem, Theme, Tooltip, withStyles, WithStyles } from "@material-ui/core"
 import blue from "@material-ui/core/colors/blue"
 import AssignmentIndIcon from "@material-ui/icons/AssignmentInd"
+import DashboardIcon from "@material-ui/icons/Dashboard"
 import DNSIcon from "@material-ui/icons/Dns"
 import SettingsIcon from "@material-ui/icons/Settings"
 import ViewColumnIcon from "@material-ui/icons/ViewColumn"
@@ -10,6 +11,7 @@ import { Link, Route } from "react-router-dom"
 import AdminPanelContainer from "./admin_panel/AdminPanel/AdminPanelContainer"
 import "./App.css"
 import AppDisconnectedDialog from "./AppDisconnectedDialog"
+import DashboardViewContainer from "./dashboard/DashboardView/DashboardViewContainer"
 import Notifier from "./notifications/Notifier"
 import UserReviewQueueViewContainer from "./review/UserReviewQueueView/UserReviewQueueViewContainer"
 import SettingsDialogContainer from "./settings/SettingsDialog/SettingsDialogContainer"
@@ -76,7 +78,8 @@ class App extends React.Component<IProps & WithStyles, {}> {
         const { userAssignmentCount, somethingIsBroken, onOpenSettingsDialog, location, classes } = this.props
 
         const QueueLink = (props: any) => <Link to="/queue" {...props} />
-        const TriageLink = (props: any) => <Link to="/" {...props} />
+        const TriageLink = (props: any) => <Link to="/triage" {...props} />
+        const DashboardLink = (props: any) => <Link to="/" {...props} />
         const AdminLink = (props: any) => <Link to="/admin" {...props} />
 
         return (
@@ -111,14 +114,28 @@ class App extends React.Component<IProps & WithStyles, {}> {
                         <ListItem
                             button={false}
                             component={TriageLink}
-                            className={location.pathname === "/" ? classes.selectedListItem : classes.listItem}
+                            className={location.pathname === "/triage" ? classes.selectedListItem : classes.listItem}
                         >
                             <Tooltip title="Go to triage view" enterDelay={1000}>
                                 <IconButton
                                     aria-label="Triage view"
-                                    className={location.pathname === "/" ? classes.selectedIcon : undefined}
+                                    className={location.pathname === "/triage" ? classes.selectedIcon : undefined}
                                 >
                                     <ViewColumnIcon />
+                                </IconButton>
+                            </Tooltip>
+                        </ListItem>
+                        <ListItem
+                            button={false}
+                            component={DashboardLink}
+                            className={location.pathname === "/" ? classes.selectedListItem : classes.listItem}
+                        >
+                            <Tooltip title="Go to dashboard view" enterDelay={1000}>
+                                <IconButton
+                                    aria-label="Dashboard view"
+                                    className={location.pathname === "/" ? classes.selectedIcon : undefined}
+                                >
+                                    <DashboardIcon />
                                 </IconButton>
                             </Tooltip>
                         </ListItem>
@@ -155,8 +172,9 @@ class App extends React.Component<IProps & WithStyles, {}> {
                         [classes.contentShift]: true,
                     })}
                 >
+                    <Route exact={true} path="/" component={DashboardViewContainer} />
                     <Route path="/queue" component={UserReviewQueueViewContainer} />
-                    <Route exact={true} path="/" component={TriageViewContainer} />
+                    <Route path="/triage" component={TriageViewContainer} />
                     <Route path="/admin" component={AdminPanelContainer} />
                 </main>
                 <Notifier />

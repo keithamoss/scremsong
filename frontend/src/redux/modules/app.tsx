@@ -234,6 +234,34 @@ export enum eNotificationVariant {
     INFO = "info",
 }
 
+export interface IDashboardStats {
+    assignments: {
+        all_time: {
+            [key: string]: IDashboardStatsUserAssignments // key = userId
+        }
+        past_week: {
+            [key: string]: IDashboardStatsUserAssignments // key = userId
+        }
+    }
+    triage: {
+        untriaged_tweets: {
+            all_time: {
+                [key: string]: number // key = columnId
+            }
+            past_week: {
+                [key: string]: number // key = columnId
+            }
+        }
+    }
+}
+
+export interface IDashboardStatsUserAssignments {
+    Pending: number
+    "Await Reply": number
+    Closed: number
+    Done: number
+}
+
 // Side effects, only as applicable
 // e.g. thunks, epics, et cetera
 export function getEnvironment(): eAppEnv {
@@ -259,6 +287,16 @@ export function fetchInitialAppState() {
             // Show them the login box
             // If they're logged in a succesful web socket connection fires this
             dispatch(loaded())
+        }
+    }
+}
+
+export function fetchDashboardStats() {
+    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
+        const { response, json } = await api.get("/0.1/dashboard/get_stats/", dispatch)
+
+        if (response.status === 200) {
+            return json
         }
     }
 }
