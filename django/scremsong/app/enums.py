@@ -10,6 +10,7 @@ class EnumBase(Enum):
 class ProfileSettings(str, EnumBase):
     QueueSortBy = "queue_sort_by"
     ColumnPositions = "column_positions"
+    TriageOnlyShowAssignedColumns = "triage_only_show_assigned_columns"
 
 
 class ProfileSettingQueueSortBy(int, EnumBase):

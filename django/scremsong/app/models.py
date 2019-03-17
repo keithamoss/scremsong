@@ -18,8 +18,18 @@ class CompilationError(Exception):
 
 def default_profile_settings():
     return {
-        "queue_sort_by": ProfileSettingQueueSortBy.ByCreation
+        "queue_sort_by": ProfileSettingQueueSortBy.ByCreation,
+        "triage_only_show_assigned_columns": False,
     }
+
+
+class ProfileJSONField(JSONField):
+    description = "Custom JSONField for user profiles to ensure default settings are always included"
+
+    def from_db_value(self, value, expression, connection):
+        if value is None:
+            return value
+        return {**default_profile_settings(), **value}
 
 
 class Profile(models.Model):
@@ -27,7 +37,7 @@ class Profile(models.Model):
     profile_image_url = models.URLField(blank=False)
     is_approved = models.BooleanField(default=False)
     is_accepting_assignments = models.BooleanField(default=False)
-    settings = JSONField(default=default_profile_settings, blank=True)
+    settings = ProfileJSONField(default=default_profile_settings, blank=True)
 
     tracker = FieldTracker()
 
