@@ -4,7 +4,9 @@ import NewReleases from "@material-ui/icons/NewReleases"
 import NewReleasesOutlined from "@material-ui/icons/NewReleasesOutlined"
 import * as React from "react"
 import { isDevEnvironment } from "../../redux/modules/app"
+import { IReviewerUser } from "../../redux/modules/reviewers"
 import { ITriageColumn } from "../../redux/modules/triage"
+import AssignerAvatarContainer from "../AssignerAvatar/AssignerAvatarContainer"
 
 const styles = (theme: Theme) => ({
     grow: {
@@ -18,7 +20,10 @@ const styles = (theme: Theme) => ({
 export interface IProps {
     column: ITriageColumn
     hasBufferedTweets: boolean
+    assignedToUser: IReviewerUser | undefined
     onLoadNewTweetsForColumn: any
+    onAssignTriager: Function
+    onUnassignTriager: Function
 }
 
 export interface IState {}
@@ -26,11 +31,20 @@ export interface IState {}
 type TComponentProps = IProps & WithStyles
 class TweetColumnBar extends React.PureComponent<TComponentProps, IState> {
     public render() {
-        const { column, hasBufferedTweets, onLoadNewTweetsForColumn, classes } = this.props
+        const {
+            column,
+            hasBufferedTweets,
+            assignedToUser,
+            onLoadNewTweetsForColumn,
+            onAssignTriager,
+            onUnassignTriager,
+            classes,
+        } = this.props
 
         return (
             <AppBar position="static">
-                <Toolbar variant="dense">
+                <Toolbar>
+                    <AssignerAvatarContainer assignedToUser={assignedToUser} onAssign={onAssignTriager} onUnassign={onUnassignTriager} />
                     <Typography variant="h6" color="inherit" className={classes.grow}>
                         {column.search_phrases.join(", ")}
                         {isDevEnvironment() && ` (#${column.id})`}

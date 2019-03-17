@@ -2,8 +2,14 @@ import { blueGrey, green, yellow } from "@material-ui/core/colors"
 import * as dotProp from "dot-prop-immutable"
 import { uniq } from "lodash-es"
 import { Action } from "redux"
-import { IActionSocialColumnsList, IActionsTweetsLoadTweets, IActionTweetsNew, ITweetFetchColumn } from "../../websockets/actions"
-import { WS_SOCIAL_COLUMNS_LIST, WS_TWEETS_LOAD_TWEETS, WS_TWEETS_NEW_TWEETS } from "../../websockets/constants"
+import {
+    IActionSocialColumnsList,
+    IActionSocialColumnsUpdate,
+    IActionsTweetsLoadTweets,
+    IActionTweetsNew,
+    ITweetFetchColumn,
+} from "../../websockets/actions"
+import { WS_SOCIAL_COLUMNS_LIST, WS_SOCIAL_COLUMNS_UPDATE, WS_TWEETS_LOAD_TWEETS, WS_TWEETS_NEW_TWEETS } from "../../websockets/constants"
 import { IThunkExtras } from "./interfaces"
 import { eSocialAssignmentStatus, IReviewerAssignment } from "./reviewers"
 import { eSocialTweetState, ISocialTweet, ISocialTweetList, ISocialTweetsAndColumnsResponse } from "./social"
@@ -20,7 +26,13 @@ const initialState: IModule = {
 }
 
 // Reducer
-type IAction = IActionLoadTweets | IActionsTweetsLoadTweets | IActionTweetsNew | IActionLoadBufferedTweets | IActionSocialColumnsList
+type IAction =
+    | IActionLoadTweets
+    | IActionsTweetsLoadTweets
+    | IActionTweetsNew
+    | IActionLoadBufferedTweets
+    | IActionSocialColumnsList
+    | IActionSocialColumnsUpdate
 export default function reducer(state: IModule = initialState, action: IAction) {
     switch (action.type) {
         case LOAD_TWEETS:
@@ -87,6 +99,12 @@ export default function reducer(state: IModule = initialState, action: IAction) 
             state = dotProp.set(state, "column_tweets", columnTweets)
             state = dotProp.set(state, "column_tweets_buffered", columnTweets)
             return dotProp.set(state, "columns", action.columns)
+        case WS_SOCIAL_COLUMNS_UPDATE:
+            action.columns.forEach((column: ITriageColumn) => {
+                const columnIndex = state.columns.findIndex((c: ITriageColumn) => c.id === column.id)
+                state = dotProp.set(state, `columns.${columnIndex}`, column)
+            })
+            return state
         default:
             return state
     }
@@ -127,6 +145,7 @@ export interface ITriageColumn {
     id: number
     platform: eSocialPlatformChoice
     search_phrases: string[]
+    assigned_to: number | null
     total_tweets: number
 }
 
@@ -139,6 +158,23 @@ export interface ITriageColumnTweets {
 export function loadBufferedTweetsForColumn(columnId: number) {
     return (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
         dispatch(loadBufferedTweets(columnId))
+    }
+}
+
+export function assignTriagerToColumn(columnId: number, userId: number) {
+    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
+        await api.get("/0.1/social_columns/assign_triager/", dispatch, {
+            columnId,
+            userId,
+        })
+    }
+}
+
+export function unassignTriagerFromColumn(columnId: number) {
+    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
+        await api.get("/0.1/social_columns/unassign_triager/", dispatch, {
+            columnId,
+        })
     }
 }
 

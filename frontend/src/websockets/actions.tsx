@@ -25,6 +25,7 @@ import {
     WS_REVIEWERS_UNASSIGN,
     WS_REVIEWERS_USER_CONNECTED,
     WS_SOCIAL_COLUMNS_LIST,
+    WS_SOCIAL_COLUMNS_UPDATE,
     WS_TWEETS_LOAD_TWEETS,
     WS_TWEETS_NEW_TWEETS,
     WS_TWEETS_PRECANNED_REPLIES,
@@ -49,6 +50,9 @@ export interface IActionConnected extends Action<typeof WS_CONNECTED> {
 export interface IActionNotification extends Action<typeof WS_NOTIFICATION>, INotification {}
 
 export interface IActionSocialColumnsList extends Action<typeof WS_SOCIAL_COLUMNS_LIST> {
+    columns: ITriageColumn[]
+}
+export interface IActionSocialColumnsUpdate extends Action<typeof WS_SOCIAL_COLUMNS_UPDATE> {
     columns: ITriageColumn[]
 }
 

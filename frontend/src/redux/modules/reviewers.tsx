@@ -145,6 +145,14 @@ export const getCurrentReviewer = createSelector(
     }
 )
 
+export const getReviewerById = createSelector(
+    [getReviewers],
+    (users: IReviewerUser[]) =>
+        memoize((userId: number | null) => {
+            return users.find((user: IReviewerUser) => userId === user.id)
+        })
+)
+
 // Action Creators
 
 export const setCurrentReviewer = (reviewerId: number): IActionReviewersSetCurrentReviewer => ({
@@ -169,6 +177,7 @@ export enum eSocialAssignmentStatus {
 export interface IReviewerUser {
     id: number
     initials: string
+    profile_image_url: string
     is_accepting_assignments: boolean
     name: string
     username: string

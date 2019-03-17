@@ -13,6 +13,7 @@ export const WS_TWEETS_SET_STATE = "ws/scremsong/tweets/SET_STATE"
 export const WS_TWEETS_PRECANNED_REPLIES = "ws/scremsong/tweets/PRECANNED_REPLIES"
 
 export const WS_SOCIAL_COLUMNS_LIST = "ws/scremsong/social_columns/LIST"
+export const WS_SOCIAL_COLUMNS_UPDATE = "ws/scremsong/social_columns/UPDATE"
 
 export const WS_REVIEWERS_USER_CONNECTED = "ws/scremsong/reviewers/USER_CONNECTED"
 export const WS_REVIEWERS_LIST_USERS = "ws/scremsong/reviewers/LIST_USERS"
@@ -35,6 +36,7 @@ export const messageTypes = [
     WS_TWEETS_SET_STATE,
     WS_TWEETS_PRECANNED_REPLIES,
     WS_SOCIAL_COLUMNS_LIST,
+    WS_SOCIAL_COLUMNS_UPDATE,
     WS_REVIEWERS_USER_CONNECTED,
     WS_REVIEWERS_LIST_USERS,
     WS_REVIEWERS_LIST_ASSIGNMENTS,
