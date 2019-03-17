@@ -43,6 +43,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ReviewerUserSerializer(UserSerializer):
+    profile_image_url = serializers.CharField(source='profile.profile_image_url')
     is_accepting_assignments = serializers.BooleanField(source='profile.is_accepting_assignments')
 
     class Meta:
@@ -52,6 +53,7 @@ class ReviewerUserSerializer(UserSerializer):
             'username',
             'name',
             'initials',
+            'profile_image_url',
             'is_accepting_assignments')
 
 
@@ -63,7 +65,8 @@ class SocialColumnsSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'platform',
-            'search_phrases')
+            'search_phrases',
+            'assigned_to')
 
 
 class SocialColumnsSerializerWithTweetCountSerializer(SocialColumnsSerializer):
@@ -75,6 +78,7 @@ class SocialColumnsSerializerWithTweetCountSerializer(SocialColumnsSerializer):
             'id',
             'platform',
             'search_phrases',
+            'assigned_to',
             'total_tweets')
 
 

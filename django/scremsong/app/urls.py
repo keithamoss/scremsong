@@ -5,6 +5,7 @@ from .views import (
     CurrentUserView,
     LogoutUserView,
     TweetsViewset,
+    SocialColumnsViewset,
     SocialAssignmentsViewset,
     SocialPlatformsAuthViewset,
     CeleryAdminViewset,
@@ -17,6 +18,7 @@ from rest_framework import routers
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'tweets', TweetsViewset, 'Tweets')
+router.register(r'social_columns', SocialColumnsViewset, 'SocialColumns')
 router.register(r'social_assignments', SocialAssignmentsViewset, 'SocialAssignments')
 router.register(r'social_auth', SocialPlatformsAuthViewset, 'SocialPlatformsAuth')
 router.register(r'celery_admin', CeleryAdminViewset, 'CeleryAdmin')

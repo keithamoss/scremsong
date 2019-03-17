@@ -151,6 +151,15 @@ class ScremsongConsumer(JsonWebsocketConsumer):
             "is_accepting_assignments": event["is_accepting_assignments"],
         })
 
+    def columns_update(self, event):
+        """
+        Called when something changes in the properties of one or more columns
+        """
+        self.send_json({
+            "msg_type": settings.MSG_TYPE_SOCIAL_COLUMNS_UPDATE,
+            "columns": event["columns"],
+        })
+
     def tweets_streaming_state(self, event):
         """
         Called when the real-time tweet streaming state changes (i.e. connected, disconnected).

@@ -239,7 +239,7 @@ def notify_of_saved_tweet(tweet):
 
 
 def get_twitter_columns():
-    cols = get_social_columns(SocialPlatformChoice.TWITTER).all()
+    cols = get_social_columns(SocialPlatformChoice.TWITTER).order_by("id").all()
     return SocialColumnsSerializerWithTweetCountSerializer(cols, many=True).data
 
 

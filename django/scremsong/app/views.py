@@ -12,11 +12,11 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 
 import tweepy
 from tweepy import TweepError
-from scremsong.app.serializers import UserSerializer, SocialAssignmentSerializer
+from scremsong.app.serializers import UserSerializer, SocialAssignmentSerializer, SocialColumnsSerializerWithTweetCountSerializer
 from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, fetch_tweets, get_status_from_db, resolve_tweet_parents, resolve_tweet_thread_for_parent, notify_of_saved_tweet, favourite_tweet, unfavourite_tweet, retweet_tweet, unretweet_tweet, reply_to_tweet, get_tweepy_api_auth
 from scremsong.app.reviewers import getCreationDateOfNewestTweetInAssignment
 from scremsong.celery import celery_restart_streaming
-from scremsong.app.models import Tweets, SocialAssignments, Profile
+from scremsong.app.models import Tweets, SocialColumns, SocialAssignments, Profile
 from scremsong.app.enums import SocialPlatformChoice, SocialAssignmentStatus, NotificationVariants, TweetState, TweetStatus
 from scremsong.app import websockets
 from scremsong.util import make_logger, get_or_none
@@ -194,6 +194,71 @@ class TweetsViewset(viewsets.ViewSet):
 
         except Exception as e:
             return Response({"error": "Unknown error while sending reply: {}".format(str(e))}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SocialColumnsViewset(viewsets.ViewSet):
+    """
+    API endpoints for handling columns on the triage screen (e.g. assigning columns)
+    """
+    permission_classes = (IsAuthenticated,)
+
+    @list_route(methods=['get'])
+    def assign_triager(self, request, format=None):
+        qp = request.query_params
+        columnId = qp["columnId"] if "columnId" in qp else None
+        userId = qp["userId"] if "userId" in qp else None
+
+        column = SocialColumns.objects.get(id=columnId)
+
+        if column.assigned_to_id is not None and column.assigned_to_id != userId:
+            websockets.send_user_channel_message("notifications.send", {
+                "message": "You have been unassigned from triaging the column \"{}\"".format(" ".join(column.search_phrases)),
+                "options": {
+                    "variant": NotificationVariants.INFO
+                }
+            }, column.assigned_to.username)
+
+        column.assigned_to_id = userId
+        column.save()
+
+        if userId is not None:
+            column = SocialColumns.objects.get(id=columnId)
+            websockets.send_user_channel_message("notifications.send", {
+                "message": "You have been assigned to triage the column \"{}\"".format(" ".join(column.search_phrases)),
+                "options": {
+                    "variant": NotificationVariants.INFO
+                }
+            }, column.assigned_to.username)
+        
+        websockets.send_channel_message("columns.update", {
+            "columns": [SocialColumnsSerializerWithTweetCountSerializer(column).data],
+        })
+
+        return Response({"OK": True})
+
+    @list_route(methods=['get'])
+    def unassign_triager(self, request, format=None):
+        qp = request.query_params
+        columnId = qp["columnId"] if "columnId" in qp else None
+
+        column = SocialColumns.objects.get(id=columnId)
+
+        if column.assigned_to_id is not None:
+            websockets.send_user_channel_message("notifications.send", {
+                "message": "You have been unassigned from triaging the column \"{}\"".format(" ".join(column.search_phrases)),
+                "options": {
+                    "variant": NotificationVariants.INFO
+                }
+            }, column.assigned_to.username)
+
+            column.assigned_to_id = None
+            column.save()
+
+            websockets.send_channel_message("columns.update", {
+                "columns": [SocialColumnsSerializerWithTweetCountSerializer(column).data],
+            })
+
+        return Response({"OK": True})
 
 
 class SocialAssignmentsViewset(viewsets.ViewSet):
