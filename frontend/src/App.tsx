@@ -2,6 +2,7 @@ import { Badge, CssBaseline, Drawer, IconButton, List, ListItem, Theme, Tooltip,
 import blue from "@material-ui/core/colors/blue"
 import AssignmentIndIcon from "@material-ui/icons/AssignmentInd"
 import DNSIcon from "@material-ui/icons/Dns"
+import SettingsIcon from "@material-ui/icons/Settings"
 import ViewColumnIcon from "@material-ui/icons/ViewColumn"
 import classNames from "classnames"
 import * as React from "react"
@@ -11,6 +12,7 @@ import "./App.css"
 import AppDisconnectedDialog from "./AppDisconnectedDialog"
 import Notifier from "./notifications/Notifier"
 import UserReviewQueueViewContainer from "./review/UserReviewQueueView/UserReviewQueueViewContainer"
+import SettingsDialogContainer from "./settings/SettingsDialog/SettingsDialogContainer"
 import TriageViewContainer from "./triage/TriageView/TriageViewContainer"
 
 const drawerWidth = 82
@@ -66,11 +68,12 @@ export interface IProps {
     userAssignmentCount: number
     location: Location
     somethingIsBroken: boolean
+    onOpenSettingsDialog: any
 }
 
 class App extends React.Component<IProps & WithStyles, {}> {
     public render() {
-        const { userAssignmentCount, somethingIsBroken, location, classes } = this.props
+        const { userAssignmentCount, somethingIsBroken, onOpenSettingsDialog, location, classes } = this.props
 
         const QueueLink = (props: any) => <Link to="/queue" {...props} />
         const TriageLink = (props: any) => <Link to="/" {...props} />
@@ -94,7 +97,7 @@ class App extends React.Component<IProps & WithStyles, {}> {
                             component={QueueLink}
                             className={location.pathname === "/queue" ? classes.selectedListItem : classes.listItem}
                         >
-                            <Tooltip title="Go to your queue">
+                            <Tooltip title="Go to your queue" enterDelay={1000}>
                                 <IconButton
                                     aria-label="Your queue"
                                     className={location.pathname === "/queue" ? classes.selectedIcon : undefined}
@@ -110,7 +113,7 @@ class App extends React.Component<IProps & WithStyles, {}> {
                             component={TriageLink}
                             className={location.pathname === "/" ? classes.selectedListItem : classes.listItem}
                         >
-                            <Tooltip title="Go to triage view">
+                            <Tooltip title="Go to triage view" enterDelay={1000}>
                                 <IconButton
                                     aria-label="Triage view"
                                     className={location.pathname === "/" ? classes.selectedIcon : undefined}
@@ -124,7 +127,7 @@ class App extends React.Component<IProps & WithStyles, {}> {
                             component={AdminLink}
                             className={location.pathname === "/admin" ? classes.selectedListItem : classes.listItem}
                         >
-                            <Tooltip title="Go to the admin panel">
+                            <Tooltip title="Go to the admin panel" enterDelay={1000}>
                                 <IconButton
                                     aria-label="Admin panel"
                                     className={location.pathname === "/admin" ? classes.selectedIcon : undefined}
@@ -135,6 +138,13 @@ class App extends React.Component<IProps & WithStyles, {}> {
                                         </Badge>
                                     )}
                                     {somethingIsBroken === false && <DNSIcon />}
+                                </IconButton>
+                            </Tooltip>
+                        </ListItem>
+                        <ListItem button={false} onClick={onOpenSettingsDialog}>
+                            <Tooltip title="Change your settings" enterDelay={1000}>
+                                <IconButton aria-label="Change settings">
+                                    <SettingsIcon />
                                 </IconButton>
                             </Tooltip>
                         </ListItem>
@@ -151,6 +161,7 @@ class App extends React.Component<IProps & WithStyles, {}> {
                 </main>
                 <Notifier />
                 <AppDisconnectedDialog />
+                <SettingsDialogContainer />
             </div>
         )
     }

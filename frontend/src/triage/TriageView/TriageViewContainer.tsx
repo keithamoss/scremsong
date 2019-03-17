@@ -23,7 +23,7 @@ class TriageViewContainer extends React.Component<TComponentProps, {}> {
             return <div />
         }
 
-        return <TriageView columns={columns} />
+        return <TriageView columns={columns} onlyShowAssignedColumns={user.settings.triage_only_show_assigned_columns} userId={user.id} />
     }
 }
 

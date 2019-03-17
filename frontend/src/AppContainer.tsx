@@ -4,7 +4,7 @@ import { connect } from "react-redux"
 import { withRouter } from "react-router-dom"
 import App from "./App"
 import { LoginDialog } from "./authentication/login-dialog/LoginDialog"
-import { fetchInitialAppState } from "./redux/modules/app"
+import { changeSettingsDialogState, fetchInitialAppState } from "./redux/modules/app"
 import { IStore } from "./redux/modules/reducer"
 import { getUserAssignments } from "./redux/modules/reviewers"
 import { eSocialTwitterRateLimitState } from "./redux/modules/social"
@@ -70,6 +70,7 @@ export interface IStoreProps {
 
 export interface IDispatchProps {
     fetchInitialAppState: Function
+    onOpenSettingsDialog: Function
 }
 
 export interface IRouteProps {
@@ -100,7 +101,16 @@ export class AppContainer extends React.Component<TComponentProps, {}> {
     }
 
     public render() {
-        const { isAppLoading, userLoggedIn, userAssignmentCount, somethingIsBroken, location, children, classes } = this.props
+        const {
+            isAppLoading,
+            userLoggedIn,
+            userAssignmentCount,
+            somethingIsBroken,
+            onOpenSettingsDialog,
+            location,
+            children,
+            classes,
+        } = this.props
 
         let component
         if (isAppLoading === true) {
@@ -130,6 +140,7 @@ export class AppContainer extends React.Component<TComponentProps, {}> {
                     userAssignmentCount={userAssignmentCount}
                     location={location}
                     somethingIsBroken={somethingIsBroken}
+                    onOpenSettingsDialog={onOpenSettingsDialog}
                     children={children}
                 />
             )
@@ -166,6 +177,9 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
     return {
         fetchInitialAppState: () => {
             dispatch(fetchInitialAppState())
+        },
+        onOpenSettingsDialog: () => {
+            dispatch(changeSettingsDialogState(true))
         },
     }
 }

@@ -73,6 +73,7 @@ export interface IUser {
 export interface IProfileSettings {
     queue_sort_by: eQueueSortBy
     column_positions: { [key: number]: IProfileColumnPosition }
+    triage_only_show_assigned_columns: boolean
 }
 
 export interface IProfileColumnPosition {
@@ -107,8 +108,11 @@ export function logoutUser() {
 
 export function changeUserProfileSettings(settings: Partial<IProfileSettings>) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        const { json } = await api.post("/0.1/profile/update_settings/", settings, dispatch)
-        dispatch(changeSettings(json.settings))
+        const { response, json } = await api.post("/0.1/profile/update_settings/", settings, dispatch)
+
+        if (response.status === 200) {
+            dispatch(changeSettings(json.settings))
+        }
     }
 }
 

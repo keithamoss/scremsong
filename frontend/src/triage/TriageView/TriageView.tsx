@@ -30,6 +30,8 @@ const styles = () =>
 
 export interface IProps {
     columns: ITriageColumn[]
+    onlyShowAssignedColumns: boolean
+    userId: number
 }
 
 export interface IState {
@@ -56,7 +58,7 @@ class TriageView extends React.Component<TComponentProps, IState> {
         }
     }
     public render() {
-        const { columns, classes } = this.props
+        const { columns, onlyShowAssignedColumns, userId, classes } = this.props
         const { assignerOpen, assignmentId, tweetId } = this.state
 
         return (
@@ -70,12 +72,17 @@ class TriageView extends React.Component<TComponentProps, IState> {
                 />
                 <div className={classes.columnContainerContainer}>
                     <div className={classes.columnContainer}>
-                        {columns.map((column: ITriageColumn, key: number) => (
-                            <div key={column.id} className={classes.column}>
-                                <TweetColumnBarContainer column={column} />
-                                <TweetColumnContainer column={column} onOpenAssigner={this.onOpenAssigner} />
-                            </div>
-                        ))}
+                        {columns.map((column: ITriageColumn, key: number) => {
+                            if (onlyShowAssignedColumns === false || (onlyShowAssignedColumns === true && column.assigned_to === userId)) {
+                                return (
+                                    <div key={column.id} className={classes.column}>
+                                        <TweetColumnBarContainer column={column} />
+                                        <TweetColumnContainer column={column} onOpenAssigner={this.onOpenAssigner} />
+                                    </div>
+                                )
+                            }
+                            return null
+                        })}
                     </div>
                 </div>
             </React.Fragment>

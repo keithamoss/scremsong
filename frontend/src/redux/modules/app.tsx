@@ -33,6 +33,7 @@ const FINISH_FETCH = "scremsong/app/FINISH_FETCH"
 const TOGGLE_SIDEBAR = "scremsong/app/TOGGLE_SIDEBAR"
 const REMOVE_SNACKBAR = "scremsong/app/REMOVE_SNACKBAR"
 const SEND_NOTIFICATION = "scremsong/app/SEND_NOTIFICATION"
+const SETTINGS_DIALOG_STATE = "scremsong/app/SETTINGS_DIALOG_STATE"
 
 export enum eAppEnv {
     DEV = 1,
@@ -49,6 +50,7 @@ const initialState: IModule = {
     tweet_streaming_connected: false,
     twitter_rate_limit_state: null,
     twitter_rate_limit_resources: null,
+    settings_dialog_open: false,
 }
 
 // Reducer
@@ -66,6 +68,7 @@ type IAction =
     | IActionTweetsStreamingState
     | IActionTweetsRateLimitState
     | IActionTweetsRateLimitResources
+    | IActionSettingsDialogState
 export default function reducer(state: IModule = initialState, action: IAction) {
     let requestsInProgress = dotProp.get(state, "requestsInProgress")
 
@@ -99,6 +102,8 @@ export default function reducer(state: IModule = initialState, action: IAction) 
             return dotProp.set(state, "twitter_rate_limit_state", action.state)
         case WS_TWEETS_RATE_LIMIT_RESOURCES:
             return dotProp.set(state, "twitter_rate_limit_resources", action.resources)
+        case SETTINGS_DIALOG_STATE:
+            return dotProp.set(state, "settings_dialog_open", action.state)
         default:
             return state
     }
@@ -173,6 +178,11 @@ export const sendNotification = (notification: Partial<INotification>): IActionS
     ...({ ...notification, key: randomHash(32) } as INotification),
 })
 
+export const changeSettingsDialogState = (state: boolean): IActionSettingsDialogState => ({
+    type: SETTINGS_DIALOG_STATE,
+    state,
+})
+
 // Models
 export interface IModule {
     loading: boolean
@@ -183,6 +193,7 @@ export interface IModule {
     tweet_streaming_connected: boolean
     twitter_rate_limit_state: eSocialTwitterRateLimitState | null
     twitter_rate_limit_resources: IRateLimitResources | null
+    settings_dialog_open: boolean
 }
 
 export interface IActionLoading extends Action<typeof LOADING> {}
@@ -204,6 +215,10 @@ export interface IActionRemoveSnackbar extends Action<typeof REMOVE_SNACKBAR> {
 }
 
 export interface IActionSendNotification extends Action<typeof SEND_NOTIFICATION>, INotification {}
+
+export interface IActionSettingsDialogState extends Action<typeof SETTINGS_DIALOG_STATE> {
+    state: boolean
+}
 
 export interface INotification {
     message: string
