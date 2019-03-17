@@ -4,7 +4,6 @@ import * as qs from "qs"
 import * as Raven from "raven-js"
 import * as React from "react"
 import { beginFetch, eNotificationVariant, finishFetch, getAPIBaseURL, sendNotification } from "../redux/modules/app"
-import { randomHash } from "../utils"
 
 export class APIClient {
     private baseURL: string
@@ -134,7 +133,6 @@ export class APIClient {
                         </Button>
                     ),
                 },
-                key: randomHash(32),
             })
         )
     }

@@ -1,7 +1,9 @@
 import * as dotProp from "dot-prop-immutable"
+import { OptionsObject } from "notistack"
 import { Action } from "redux"
 import { createSelector } from "reselect"
 import { IRateLimitResources, IResourceRateLimit } from "../../admin_panel/TwitterRateLimitStatus/TwitterRateLimitStatusContainer"
+import { randomHash } from "../../utils"
 import {
     IActionNotification,
     IActionTweetsRateLimitResources,
@@ -166,9 +168,9 @@ export const removeSnackbar = (key: string): IActionRemoveSnackbar => ({
     key,
 })
 
-export const sendNotification = (notification: INotification): IActionSendNotification => ({
+export const sendNotification = (notification: Partial<INotification>): IActionSendNotification => ({
     type: SEND_NOTIFICATION,
-    ...notification,
+    ...({ ...notification, key: randomHash(32) } as INotification),
 })
 
 // Models
@@ -205,7 +207,7 @@ export interface IActionSendNotification extends Action<typeof SEND_NOTIFICATION
 
 export interface INotification {
     message: string
-    options: INotificationOptions
+    options: OptionsObject
     key: string
 }
 
@@ -215,15 +217,6 @@ export enum eNotificationVariant {
     SUCCESS = "success",
     WARNING = "warning",
     INFO = "info",
-}
-
-export interface INotificationOptions {
-    variant: eNotificationVariant
-    onClickAction?: Function
-    autoHideDuration?: number
-    persist?: boolean
-    preventDuplicate?: boolean
-    action?: any // Per https://material-ui.com/api/snackbar/#snackbar
 }
 
 // Side effects, only as applicable

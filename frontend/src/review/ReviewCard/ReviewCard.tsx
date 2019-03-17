@@ -8,6 +8,7 @@ import ExpandMore from "@material-ui/icons/ExpandMore"
 import OpenInNew from "@material-ui/icons/OpenInNew"
 import classNames from "classnames"
 import * as React from "react"
+import { eNotificationVariant } from "../../redux/modules/app"
 import { IReviewerAssignment } from "../../redux/modules/reviewers"
 import { getNewestTweetId, getOldestUnreadTweetId, getTweetStyle, ISocialTweetList } from "../../redux/modules/social"
 import TweetColumnAssignerContainer, { eTweetColumnAssignerMode } from "../../triage/TweetColumnAssigner/TweetColumnAssignerContainer"
@@ -52,6 +53,7 @@ export interface IProps {
     assignment: IReviewerAssignment
     tweets: ISocialTweetList
     unreadTweetIds: string[]
+    sendNotificationWithUndo: Function
     onAwaitReply: any
     onMarkAsDone: Function
     onMarkAsClosed: any
@@ -91,15 +93,19 @@ class ReviewCard extends React.PureComponent<TComponentProps, IState> {
         }
 
         this.onBeforeReassign = (callback: any) => {
-            this.handleCardCollapse(callback)
+            this.handleCardCollapseOrExpand(false, callback)
         }
 
         this.onMarkAsDone = (node: HTMLElement) => {
-            this.handleCardCollapse(() => this.props.onMarkAsDone(this.props.assignment))
+            this.handleCardCollapseOrExpand(false, () => {
+                this.sendMarkAsDoneNotification()
+            })
         }
 
         this.onMarkAsClosed = (node: HTMLElement) => {
-            this.handleCardCollapse(() => this.props.onMarkAsClosed(this.props.assignment))
+            this.handleCardCollapseOrExpand(false, () => {
+                this.sendMarkAsClosedNotification()
+            })
         }
 
         this.handleShowThread = () => {
@@ -117,11 +123,63 @@ class ReviewCard extends React.PureComponent<TComponentProps, IState> {
         }
     }
 
-    public handleCardCollapse = (callback: any = undefined) => {
+    public sendMarkAsDoneNotification = () => {
+        this.props.sendNotificationWithUndo({
+            message: "Assignment marked as done",
+            options: {
+                variant: eNotificationVariant.DEFAULT,
+                autoHideDuration: 6000,
+                anchorOrigin: {
+                    vertical: "bottom",
+                    horizontal: "left",
+                },
+                action: (
+                    <Button size="small" color="inherit">
+                        Undo
+                    </Button>
+                ),
+                onClose: (event: React.MouseEvent<any>, reason: string) => {
+                    if (reason === "timeout") {
+                        this.props.onMarkAsDone(this.props.assignment)
+                    } else {
+                        this.handleCardCollapseOrExpand(true)
+                    }
+                },
+            },
+        })
+    }
+
+    public sendMarkAsClosedNotification = () => {
+        this.props.sendNotificationWithUndo({
+            message: "Assignment marked as closed",
+            options: {
+                variant: eNotificationVariant.DEFAULT,
+                autoHideDuration: 6000,
+                anchorOrigin: {
+                    vertical: "bottom",
+                    horizontal: "left",
+                },
+                action: (
+                    <Button size="small" color="inherit">
+                        Undo
+                    </Button>
+                ),
+                onClose: (event: React.MouseEvent<any>, reason: string) => {
+                    if (reason === "timeout") {
+                        this.props.onMarkAsClosed(this.props.assignment)
+                    } else {
+                        this.handleCardCollapseOrExpand(true)
+                    }
+                },
+            },
+        })
+    }
+
+    public handleCardCollapseOrExpand = (shown: boolean, callback: any = undefined) => {
         if (typeof callback === "function") {
-            this.setState({ ...this.state, ...{ shown: false } }, callback)
+            this.setState({ ...this.state, shown }, callback)
         } else {
-            this.setState({ ...this.state, ...{ shown: false } })
+            this.setState({ ...this.state, shown })
         }
     }
 
@@ -175,7 +233,7 @@ class ReviewCard extends React.PureComponent<TComponentProps, IState> {
                             >
                                 <Tooltip
                                     title="Mark this assignment as awaiting a reply (this moves it to the bottom of your assignments list)"
-                                    enterDelay={500}
+                                    enterDelay={1500}
                                 >
                                     <Button color={"primary"} variant="text" className={classes.button} onClick={onAwaitReply}>
                                         <AssignmentReturn className={classNames(classes.leftIcon, classes.iconSmall)} />
@@ -184,7 +242,7 @@ class ReviewCard extends React.PureComponent<TComponentProps, IState> {
                                 </Tooltip>
                                 <Tooltip
                                     title="Mark this assignment as done and remove it from your queue (e.g. the person responded and we've updated the polling place)"
-                                    enterDelay={500}
+                                    enterDelay={1500}
                                 >
                                     <Button color={"primary"} variant="text" className={classes.button} onClick={this.onMarkAsDone}>
                                         <AssignmentTurnedIn className={classNames(classes.leftIcon, classes.iconSmall)} />
@@ -193,7 +251,7 @@ class ReviewCard extends React.PureComponent<TComponentProps, IState> {
                                 </Tooltip>
                                 <Tooltip
                                     title="Mark this assignment as closed and remove it from your queue (e.g. the person never responded)"
-                                    enterDelay={500}
+                                    enterDelay={1500}
                                 >
                                     <Button color={"primary"} variant="text" className={classes.button} onClick={this.onMarkAsClosed}>
                                         <Close className={classNames(classes.leftIcon, classes.iconSmall)} />
@@ -217,7 +275,7 @@ class ReviewCard extends React.PureComponent<TComponentProps, IState> {
                                     Reassign
                                 </Button>
                                 {assignment.thread_tweets.length > 0 && unreadTweetIds.length > 1 && (
-                                    <Tooltip title={`This thread has ${unreadTweetIds.length - 1} more unread tweets`} enterDelay={500}>
+                                    <Tooltip title={`This thread has ${unreadTweetIds.length - 1} more unread tweets`} enterDelay={1500}>
                                         <Badge
                                             badgeContent={unreadTweetIds.length - 1}
                                             color="secondary"

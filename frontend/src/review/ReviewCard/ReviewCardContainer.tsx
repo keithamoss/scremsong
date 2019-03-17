@@ -1,5 +1,6 @@
 import * as React from "react"
 import { connect } from "react-redux"
+import { INotification, sendNotification } from "../../redux/modules/app"
 import { IStore } from "../../redux/modules/reducer"
 import {
     IReviewerAssignment,
@@ -21,6 +22,7 @@ export interface IStoreProps {
 }
 
 export interface IDispatchProps {
+    sendNotificationWithUndo: Function
     onAwaitReply: Function
     onMarkAsDone: Function
     onMarkAsClosed: Function
@@ -30,13 +32,23 @@ export interface IDispatchProps {
 type TComponentProps = IProps & IStoreProps & IDispatchProps
 class ReviewCardContainer extends React.PureComponent<TComponentProps, {}> {
     public render() {
-        const { assignment, tweets, unreadTweetIds, onAwaitReply, onMarkAsDone, onMarkAsClosed, onThreadClosed } = this.props
+        const {
+            assignment,
+            tweets,
+            unreadTweetIds,
+            sendNotificationWithUndo,
+            onAwaitReply,
+            onMarkAsDone,
+            onMarkAsClosed,
+            onThreadClosed,
+        } = this.props
 
         return (
             <ReviewCard
                 assignment={assignment}
                 tweets={tweets}
                 unreadTweetIds={unreadTweetIds}
+                sendNotificationWithUndo={sendNotificationWithUndo}
                 onAwaitReply={onAwaitReply}
                 onMarkAsDone={onMarkAsDone}
                 onMarkAsClosed={onMarkAsClosed}
@@ -59,6 +71,9 @@ const mapStateToProps = (state: IStore, ownProps: IProps): IStoreProps => {
 
 const mapDispatchToProps = (dispatch: Function, ownProps: IProps): IDispatchProps => {
     return {
+        sendNotificationWithUndo: (notification: INotification) => {
+            dispatch(sendNotification(notification))
+        },
         onAwaitReply: () => {
             dispatch(markAssignmentAwaitingReply(ownProps.assignment))
         },
