@@ -3,6 +3,7 @@ import blue from "@material-ui/core/colors/blue"
 import AssignmentIndIcon from "@material-ui/icons/AssignmentInd"
 import DashboardIcon from "@material-ui/icons/Dashboard"
 import DNSIcon from "@material-ui/icons/Dns"
+import HelpIcon from "@material-ui/icons/Help"
 import SettingsIcon from "@material-ui/icons/Settings"
 import ViewColumnIcon from "@material-ui/icons/ViewColumn"
 import classNames from "classnames"
@@ -81,6 +82,13 @@ class App extends React.Component<IProps & WithStyles, {}> {
         const TriageLink = (props: any) => <Link to="/triage" {...props} />
         const DashboardLink = (props: any) => <Link to="/" {...props} />
         const AdminLink = (props: any) => <Link to="/admin" {...props} />
+        const HelpLink = (props: any) => (
+            <a
+                href="https://docs.google.com/presentation/d/1MLIObFgdieLbfXcIrr8G7s0rfpJN5UrC2iaf8zMnows/edit?usp=sharing"
+                target="_blank"
+                {...props}
+            />
+        )
 
         return (
             <div className={classes.root}>
@@ -162,6 +170,13 @@ class App extends React.Component<IProps & WithStyles, {}> {
                             <Tooltip title="Change your settings" enterDelay={1000}>
                                 <IconButton aria-label="Change settings">
                                     <SettingsIcon />
+                                </IconButton>
+                            </Tooltip>
+                        </ListItem>
+                        <ListItem button={false} component={HelpLink}>
+                            <Tooltip title="Scremsong Tour & User Guide" enterDelay={1000}>
+                                <IconButton aria-label="Help">
+                                    <HelpIcon />
                                 </IconButton>
                             </Tooltip>
                         </ListItem>
