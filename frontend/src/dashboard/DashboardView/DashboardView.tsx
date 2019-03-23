@@ -10,7 +10,7 @@ const styles = (theme: Theme) =>
             padding: 10,
         },
         paper: {
-            maxWidth: 700,
+            maxWidth: 800,
             marginTop: theme.spacing.unit * 3,
             overflowX: "auto",
         },
