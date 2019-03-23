@@ -335,7 +335,7 @@ class SocialAssignmentsViewset(viewsets.ViewSet):
                 assignmentsUpdated = []
                 tweetsUpdated = {}
 
-                assignments = SocialAssignments.objects.filter(user_id=currentReviewerId)
+                assignments = SocialAssignments.objects.filter(user_id=currentReviewerId).filter(status__in=[SocialAssignmentStatus.PENDING, SocialAssignmentStatus.AWAIT_REPLY])
                 with transaction.atomic():
                     for assignment in assignments:
                         assignment.user_id = newReviewerId
