@@ -84,7 +84,8 @@ class SocialColumnsSerializerWithTweetCountSerializer(SocialColumnsSerializer):
 
 class SocialAssignmentSerializer(serializers.ModelSerializer):
     platform = serializers.CharField()
-    status = serializers.CharField()
+    state = serializers.CharField()
+    close_reason = serializers.CharField()
     user_id = serializers.IntegerField()
 
     class Meta:
@@ -93,7 +94,8 @@ class SocialAssignmentSerializer(serializers.ModelSerializer):
             'id',
             'platform',
             'social_id',
-            'status',
+            'state',
+            'close_reason',
             'user_id',
             'thread_relationships',
             'thread_tweets',

@@ -256,10 +256,11 @@ export interface IDashboardStats {
 }
 
 export interface IDashboardStatsUserAssignments {
+    "Awaiting Reply": number
+    "Map Updated": number
+    "No Change Required": number
+    "Not Relevant": number
     Pending: number
-    "Await Reply": number
-    Closed: number
-    Done: number
 }
 
 // Side effects, only as applicable

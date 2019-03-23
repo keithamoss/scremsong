@@ -55,8 +55,9 @@ class DashboardView extends React.Component<TComponentProps, IState> {
                                     <TableCell />
                                     <TableCell align="right">In Progress</TableCell>
                                     <TableCell align="right">Awaiting Reply</TableCell>
-                                    <TableCell align="right">Closed</TableCell>
-                                    <TableCell align="right">Done</TableCell>
+                                    <TableCell align="right">Map Updated</TableCell>
+                                    <TableCell align="right">No Change Required</TableCell>
+                                    <TableCell align="right">Not Relevant</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -70,9 +71,10 @@ class DashboardView extends React.Component<TComponentProps, IState> {
                                                 {user!.name}
                                             </TableCell>
                                             <TableCell align="right">{userStats.Pending}</TableCell>
-                                            <TableCell align="right">{userStats["Await Reply"]}</TableCell>
-                                            <TableCell align="right">{userStats.Closed}</TableCell>
-                                            <TableCell align="right">{userStats.Done}</TableCell>
+                                            <TableCell align="right">{userStats["Awaiting Reply"]}</TableCell>
+                                            <TableCell align="right">{userStats["Map Updated"]}</TableCell>
+                                            <TableCell align="right">{userStats["No Change Required"]}</TableCell>
+                                            <TableCell align="right">{userStats["Not Relevant"]}</TableCell>
                                         </TableRow>
                                     )
                                 })}
