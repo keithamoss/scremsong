@@ -109,6 +109,19 @@ export const getUserAssignments = createSelector(
         })
 )
 
+export const getPendingUserAssignments = createSelector(
+    [getActiveAssignments],
+    assignments =>
+        memoize((userId: number | undefined) => {
+            return userId === undefined
+                ? []
+                : assignments.filter(
+                      (assignment: IReviewerAssignment) =>
+                          assignment.user_id === userId && assignment.status === eSocialAssignmentStatus.PENDING
+                  )
+        })
+)
+
 export const getUserAssignmentTotals = createSelector(
     [getActiveAssignments, getReviewers],
     (assignments: IReviewerAssignment[], reviewers: IReviewerUser[]): IReviewerAssignmentCounts => {

@@ -6,7 +6,7 @@ import App from "./App"
 import { LoginDialog } from "./authentication/login-dialog/LoginDialog"
 import { changeSettingsDialogState, fetchInitialAppState } from "./redux/modules/app"
 import { IStore } from "./redux/modules/reducer"
-import { getUserAssignments } from "./redux/modules/reviewers"
+import { getPendingUserAssignments } from "./redux/modules/reviewers"
 import { eSocialTwitterRateLimitState } from "./redux/modules/social"
 
 // const Config: IConfig = require("Config") as any
@@ -157,8 +157,8 @@ export class AppContainer extends React.Component<TComponentProps, {}> {
 const mapStateToProps = (state: IStore): IStoreProps => {
     const { app, user } = state
 
-    const getUserAssignmentsFilter = getUserAssignments(state)
-    const userAssignmentCount = user.user ? getUserAssignmentsFilter(user.user!.id).length : 0
+    const getPendingUserAssignmentsFilter = getPendingUserAssignments(state)
+    const userAssignmentCount = user.user ? getPendingUserAssignmentsFilter(user.user!.id).length : 0
 
     if (userAssignmentCount > 0) {
         document.title = `(${userAssignmentCount}) Screm song!`
