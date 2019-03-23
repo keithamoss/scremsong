@@ -363,8 +363,8 @@ def task_process_tweet_reply(self, status, tweetSource, sendWebSocketEvent):
             logger.debug("Processing tweet {} from streaming".format(status["id_str"]))
             process_new_tweet_reply(status, tweetSource, sendWebSocketEvent)
     except ScremsongException as e:
-        logger.error("Celery task could not process tweet {}. Failed to resolve and update tweet thread. Message: {}".format(status["id_str"], str(e)))
+        logger.info("Celery task could not process tweet {}. Failed to resolve and update tweet thread. Message: {}".format(status["id_str"], str(e)))
     except Exception as e:
-        logger.error("Celery task could not process tweet {}. Failed for an unknown reason. Message: {}".format(status["id_str"], str(e)))
+        logger.info("Celery task could not process tweet {}. Failed for an unknown reason. Message: {}".format(status["id_str"], str(e)))
 
     return True
