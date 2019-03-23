@@ -187,14 +187,14 @@ class ReviewCard extends React.PureComponent<TComponentProps, IState> {
         const { assignment, tweets, unreadTweetIds, onAwaitReply, classes } = this.props
         const { assignerOpen, assignmentId, tweetShown, threadShown } = this.state
 
-        const TwitterLink = (props: any) => (
-            <a href={`https://twitter.com/DemSausage/status/${props["data-tweetid"]}`} {...props} target="_blank" />
-        )
-
         const tweetIdToDisplay =
             unreadTweetIds.length > 0
                 ? getOldestUnreadTweetId(unreadTweetIds)!
                 : getNewestTweetId([assignment.social_id, ...assignment.thread_tweets])!
+
+        const TwitterLink = (props: any) => (
+            <a href={`https://twitter.com/DemSausage/status/${tweetIdToDisplay}`} {...props} target="_blank" />
+        )
 
         return (
             <React.Fragment>
