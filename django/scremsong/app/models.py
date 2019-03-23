@@ -8,7 +8,7 @@ from django.utils import timezone
 from model_utils import FieldTracker
 
 from scremsong.app.social.twitter_utils import apply_tweet_filter_criteria
-from scremsong.app.enums import ProfileSettingQueueSortBy, SocialPlatformChoice, SocialAssignmentStatus, TweetState, TweetStatus, TweetReplyCategories
+from scremsong.app.enums import ProfileSettingQueueSortBy, SocialPlatformChoice, SocialAssignmentState, SocialAssignmentCloseReason, TweetState, TweetStatus, TweetReplyCategories
 from scremsong.util import make_logger
 from scremsong.app.enums import ProfileSettings
 
@@ -136,7 +136,8 @@ class SocialAssignments(models.Model):
     social_id = models.TextField(editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     assigned_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="assigned_by")
-    status = models.TextField(choices=[(tag, tag.value) for tag in SocialAssignmentStatus], default=SocialAssignmentStatus.PENDING)
+    state = models.TextField(choices=[(tag, tag.value) for tag in SocialAssignmentState], default=SocialAssignmentState.PENDING)
+    close_reason = models.TextField(choices=[(tag, tag.value) for tag in SocialAssignmentCloseReason], default=None, null=True)
     thread_relationships = JSONField(default=None, blank=True, null=True)
     thread_tweets = JSONField(default=None, blank=True, null=True)
     created_on = models.DateTimeField(auto_now_add=True)

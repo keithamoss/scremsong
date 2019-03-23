@@ -2,7 +2,7 @@ import tweepy
 
 from scremsong.util import make_logger, get_env, get_or_none
 from scremsong.app.models import SocialPlatforms, Tweets, SocialColumns, SocialAssignments, TweetReplies, TwitterRateLimitInfo
-from scremsong.app.enums import SocialPlatformChoice, SocialAssignmentStatus, NotificationVariants, TweetStatus, TweetSource, TweetState
+from scremsong.app.enums import SocialPlatformChoice, SocialAssignmentState, NotificationVariants, TweetStatus, TweetSource, TweetState
 from scremsong.app.social.columns import get_social_columns
 from scremsong.app.social.twitter_utils import apply_tweet_filter_criteria, column_search_phrase_to_twitter_search_query
 from scremsong.app.serializers import SocialColumnsSerializerWithTweetCountSerializer, TweetsSerializer, SocialAssignmentSerializer
@@ -490,35 +490,20 @@ def process_new_tweet_reply(status, tweetSource, sendWebSocketEvent):
                 platform=SocialPlatformChoice.TWITTER, social_id=parent["data"]["id_str"], defaults={"thread_relationships": relationships, "thread_tweets": replyTweetIds, "last_updated_on": timezone.now()}
             )
 
-            # Adding a new tweet marks the assignment "unread"
-            logger.info("Processing tweet {}: Assignment.status = {} ({})".format(status["id_str"], assignment.status, assignment.status == SocialAssignmentStatus.DONE, assignment.status == SocialAssignmentStatus.AWAIT_REPLY))
-            if assignment.status == SocialAssignmentStatus.DONE or assignment.status == SocialAssignmentStatus.CLOSED:
+            # Adding a new tweet reopens the assignment
+            if assignment.state == SocialAssignmentState.CLOSED:
                 if is_from_demsausage(tweet) is False:
                     logger.info("Processing tweet {}: Set it to pending".format(status["id_str"]))
-                    assignment.status = SocialAssignmentStatus.PENDING
+                    assignment.state = SocialAssignmentState.PENDING
                     assignment.save()
 
-                websockets.send_user_channel_message("notifications.send", {
-                    "message": "One of your completed assignments has had a new reply arrive - it's been marked as pending again",
-                    "options": {
-                        "variant": NotificationVariants.INFO
-                    }
-                },
-                    assignment.user.username)
-
-            elif assignment.status == SocialAssignmentStatus.AWAIT_REPLY:
-                if is_from_demsausage(tweet) is False:
-                    logger.info("Processing tweet {}: Set it to pending".format(status["id_str"]))
-                    assignment.status = SocialAssignmentStatus.PENDING
-                    assignment.save()
-
-                websockets.send_user_channel_message("notifications.send", {
-                    "message": "One of the assignments you had marked as 'awaiting reply' has had a new reply arrive",
-                    "options": {
-                        "variant": NotificationVariants.INFO
-                    }
-                },
-                    assignment.user.username)
+                    websockets.send_user_channel_message("notifications.send", {
+                        "message": "One of your assignments has had a new reply arrive - it's been added back into your queue again",
+                        "options": {
+                            "variant": NotificationVariants.INFO
+                        }
+                    },
+                        assignment.user.username)
 
             else:
                 websockets.send_user_channel_message("notifications.send", {

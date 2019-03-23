@@ -22,11 +22,19 @@ class SocialPlatformChoice(EnumBase):
     TWITTER = "Twitter"
 
 
-class SocialAssignmentStatus(str, EnumBase):
+class SocialAssignmentState(str, EnumBase):
     PENDING = "Pending"
-    AWAIT_REPLY = "Await Reply"
     CLOSED = "Closed"
-    DONE = "Done"
+
+    def __str__(self):
+        return self.value
+
+
+class SocialAssignmentCloseReason(str, EnumBase):
+    AWAITING_REPLY = "Awaiting Reply"
+    MAP_UPDATED = "Map Updated"
+    NO_CHANGE_REQUIRED = "No Change Required"
+    NOT_RELEVANT = "Not Relevant"
 
     def __str__(self):
         return self.value

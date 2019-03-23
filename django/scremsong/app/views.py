@@ -17,7 +17,7 @@ from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_ap
 from scremsong.app.reviewers import getCreationDateOfNewestTweetInAssignment
 from scremsong.celery import celery_restart_streaming
 from scremsong.app.models import Tweets, SocialColumns, SocialAssignments, Profile
-from scremsong.app.enums import SocialPlatformChoice, SocialAssignmentStatus, NotificationVariants, TweetState, TweetStatus
+from scremsong.app.enums import SocialPlatformChoice, SocialAssignmentState, NotificationVariants, TweetState, TweetStatus, SocialAssignmentCloseReason
 from scremsong.app.social.assignments import get_social_assignment_stats_for_user
 from scremsong.app.social.columns import get_social_columns
 from scremsong.app import websockets
@@ -231,7 +231,7 @@ class SocialColumnsViewset(viewsets.ViewSet):
                     "variant": NotificationVariants.INFO
                 }
             }, column.assigned_to.username)
-        
+
         websockets.send_channel_message("columns.update", {
             "columns": [SocialColumnsSerializerWithTweetCountSerializer(column).data],
         })
@@ -335,7 +335,7 @@ class SocialAssignmentsViewset(viewsets.ViewSet):
                 assignmentsUpdated = []
                 tweetsUpdated = {}
 
-                assignments = SocialAssignments.objects.filter(user_id=currentReviewerId).filter(status__in=[SocialAssignmentStatus.PENDING, SocialAssignmentStatus.AWAIT_REPLY])
+                assignments = SocialAssignments.objects.filter(user_id=currentReviewerId).filter(state=SocialAssignmentState.PENDING)
                 with transaction.atomic():
                     for assignment in assignments:
                         assignment.user_id = newReviewerId
@@ -372,50 +372,21 @@ class SocialAssignmentsViewset(viewsets.ViewSet):
         return Response({"OK": True})
 
     @list_route(methods=['get'])
-    def awaiting_reply(self, request, format=None):
-        qp = request.query_params
-        assignmentId = int(qp["assignmentId"]) if "assignmentId" in qp else None
-
-        assignment = SocialAssignments.objects.get(id=assignmentId)
-        assignment.status = SocialAssignmentStatus.AWAIT_REPLY
-        assignment.last_read_on = getCreationDateOfNewestTweetInAssignment(assignment)
-        assignment.save()
-
-        websockets.send_channel_message("reviewers.assignment_metdata_changed", {
-            "assignment": SocialAssignmentSerializer(assignment).data,
-        })
-
-        return Response({"OK": True})
-
-    @list_route(methods=['get'])
     def close(self, request, format=None):
         qp = request.query_params
         assignmentId = int(qp["assignmentId"]) if "assignmentId" in qp else None
+        reason = str(qp["reason"]) if "reason" in qp else None
 
-        assignment = SocialAssignments.objects.get(id=assignmentId)
-        assignment.status = SocialAssignmentStatus.CLOSED
-        assignment.last_read_on = getCreationDateOfNewestTweetInAssignment(assignment)
-        assignment.save()
+        if SocialAssignmentCloseReason.has_value(reason) is True:
+            assignment = SocialAssignments.objects.get(id=assignmentId)
+            assignment.close_reason = reason
+            assignment.state = SocialAssignmentState.CLOSED
+            assignment.last_read_on = getCreationDateOfNewestTweetInAssignment(assignment)
+            assignment.save()
 
-        websockets.send_channel_message("reviewers.assignment_metdata_changed", {
-            "assignment": SocialAssignmentSerializer(assignment).data,
-        })
-
-        return Response({"OK": True})
-
-    @list_route(methods=['get'])
-    def done(self, request, format=None):
-        qp = request.query_params
-        assignmentId = int(qp["assignmentId"]) if "assignmentId" in qp else None
-
-        assignment = SocialAssignments.objects.get(id=assignmentId)
-        assignment.status = SocialAssignmentStatus.DONE
-        assignment.last_read_on = getCreationDateOfNewestTweetInAssignment(assignment)
-        assignment.save()
-
-        websockets.send_channel_message("reviewers.assignment_metdata_changed", {
-            "assignment": SocialAssignmentSerializer(assignment).data,
-        })
+            websockets.send_channel_message("reviewers.assignment_metdata_changed", {
+                "assignment": SocialAssignmentSerializer(assignment).data,
+            })
 
         return Response({"OK": True})
 
@@ -522,11 +493,11 @@ class DashboardViewset(viewsets.ViewSet):
         for user in User.objects.all():
             stats["assignments"]["all_time"][user.id] = get_social_assignment_stats_for_user(user)
             stats["assignments"]["past_week"][user.id] = get_social_assignment_stats_for_user(user, sincePastNDays=7)
-        
+
         for social_column in get_social_columns(SocialPlatformChoice.TWITTER).order_by("id").all():
             stats["triage"]["untriaged_tweets"]["all_time"][social_column.id] = social_column.total_active_tweets()
             stats["triage"]["untriaged_tweets"]["past_week"][social_column.id] = social_column.total_active_tweets(sincePastNDays=1)
-        
+
         return Response(stats)
 
 
