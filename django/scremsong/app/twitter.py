@@ -490,7 +490,7 @@ def process_new_tweet_reply(status, tweetSource, sendWebSocketEvent):
 
             # Adding a new tweet marks the assignment "unread"
             logger.info("Processing tweet {}: Assignment.status = {} ({})".format(status["id_str"], assignment.status, assignment.status == SocialAssignmentStatus.DONE, assignment.status == SocialAssignmentStatus.AWAIT_REPLY))
-            if assignment.status == SocialAssignmentStatus.DONE:
+            if assignment.status == SocialAssignmentStatus.DONE or assignment.status == SocialAssignmentStatus.CLOSED:
                 logger.info("Processing tweet {}: Set it to pending".format(status["id_str"]))
                 assignment.status = SocialAssignmentStatus.PENDING
                 assignment.save()
