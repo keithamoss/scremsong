@@ -115,7 +115,9 @@ export const getUserAssignmentTotals = createSelector(
         const totals: IReviewerAssignmentCounts = {}
         reviewers.forEach((reviewer: IReviewerUser) => (totals[reviewer.id] = 0))
         assignments.forEach((assignment: IReviewerAssignment) => {
-            totals[assignment.user_id] += 1
+            if (assignment.status === eSocialAssignmentStatus.PENDING) {
+                totals[assignment.user_id] += 1
+            }
         })
         return totals
     }
