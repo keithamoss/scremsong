@@ -314,6 +314,8 @@ def get_social_columns_cached(platform=None):
     else:
         return SocialColumns.objects.all()
 
+def is_from_demsausage(tweet):
+    return "data" in tweet and "user" in tweet.data and "screen_name" in tweet.data["user"] and tweet.data["user"]["screen_name"] == "DemSausage"
 
 def get_tweet_text(status):
     """Refer to https://developer.twitter.com/en/docs/tweets/tweet-updates.html"""
@@ -491,9 +493,10 @@ def process_new_tweet_reply(status, tweetSource, sendWebSocketEvent):
             # Adding a new tweet marks the assignment "unread"
             logger.info("Processing tweet {}: Assignment.status = {} ({})".format(status["id_str"], assignment.status, assignment.status == SocialAssignmentStatus.DONE, assignment.status == SocialAssignmentStatus.AWAIT_REPLY))
             if assignment.status == SocialAssignmentStatus.DONE or assignment.status == SocialAssignmentStatus.CLOSED:
-                logger.info("Processing tweet {}: Set it to pending".format(status["id_str"]))
-                assignment.status = SocialAssignmentStatus.PENDING
-                assignment.save()
+                if is_from_demsausage(tweet) is False:
+                    logger.info("Processing tweet {}: Set it to pending".format(status["id_str"]))
+                    assignment.status = SocialAssignmentStatus.PENDING
+                    assignment.save()
 
                 websockets.send_user_channel_message("notifications.send", {
                     "message": "One of your completed assignments has had a new reply arrive - it's been marked as pending again",
@@ -504,9 +507,10 @@ def process_new_tweet_reply(status, tweetSource, sendWebSocketEvent):
                     assignment.user.username)
 
             elif assignment.status == SocialAssignmentStatus.AWAIT_REPLY:
-                logger.info("Processing tweet {}: Set it to pending".format(status["id_str"]))
-                assignment.status = SocialAssignmentStatus.PENDING
-                assignment.save()
+                if is_from_demsausage(tweet) is False:
+                    logger.info("Processing tweet {}: Set it to pending".format(status["id_str"]))
+                    assignment.status = SocialAssignmentStatus.PENDING
+                    assignment.save()
 
                 websockets.send_user_channel_message("notifications.send", {
                     "message": "One of the assignments you had marked as 'awaiting reply' has had a new reply arrive",
