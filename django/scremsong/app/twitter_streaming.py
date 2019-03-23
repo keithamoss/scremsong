@@ -14,7 +14,7 @@ def open_tweet_stream():
     # https://stackoverflow.com/a/33660005/7368493
     class MyStreamListener(tweepy.StreamListener):
         def on_status(self, status):
-            logger.info("Sending tweet {} to the queue to be processed from streaming".format(status._json["id_str"]))
+            logger.debug("Sending tweet {} to the queue to be processed from streaming".format(status._json["id_str"]))
             task_process_tweet_reply.apply_async(args=[status._json, TweetSource.STREAMING, True])
 
         def on_error(self, status_code):
