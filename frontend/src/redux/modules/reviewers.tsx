@@ -95,8 +95,7 @@ export const getActiveAssignments = createSelector(
     [getAssignments],
     (assignments: IReviewerAssignment[]): any => {
         return Object.values(assignments).filter(
-            (assignment: IReviewerAssignment, index: number) =>
-                assignment.status === eSocialAssignmentStatus.PENDING || assignment.status === eSocialAssignmentStatus.AWAIT_REPLY
+            (assignment: IReviewerAssignment, index: number) => assignment.state === eSocialAssignmentState.PENDING
         )
     }
 )
@@ -117,7 +116,7 @@ export const getPendingUserAssignments = createSelector(
                 ? []
                 : assignments.filter(
                       (assignment: IReviewerAssignment) =>
-                          assignment.user_id === userId && assignment.status === eSocialAssignmentStatus.PENDING
+                          assignment.user_id === userId && assignment.state === eSocialAssignmentState.PENDING
                   )
         })
 )
@@ -128,9 +127,7 @@ export const getUserAssignmentTotals = createSelector(
         const totals: IReviewerAssignmentCounts = {}
         reviewers.forEach((reviewer: IReviewerUser) => (totals[reviewer.id] = 0))
         assignments.forEach((assignment: IReviewerAssignment) => {
-            if (assignment.status === eSocialAssignmentStatus.PENDING) {
-                totals[assignment.user_id] += 1
-            }
+            totals[assignment.user_id] += 1
         })
         return totals
     }
@@ -182,11 +179,16 @@ export interface IModule {
     assignments: IReviewerAssignment[]
 }
 
-export enum eSocialAssignmentStatus {
+export enum eSocialAssignmentState {
     PENDING = "Pending",
-    AWAIT_REPLY = "Await Reply",
     CLOSED = "Closed",
-    DONE = "Done",
+}
+
+export enum eSocialAssignmentCloseReason {
+    AWAITING_REPLY = "Awaiting Reply",
+    MAP_UPDATED = "Map Updated",
+    NO_CHANGE_REQUIRED = "No Change Required",
+    NOT_RELEVANT = "Not Relevant",
 }
 
 export interface IReviewerUser {
@@ -202,7 +204,8 @@ export interface IReviewerAssignment {
     id: number
     platform: eSocialPlatformChoice
     social_id: string
-    status: eSocialAssignmentStatus
+    state: eSocialAssignmentState
+    close_reason: eSocialAssignmentCloseReason
     user_id: number
     thread_relationships: IReviewerAssignmentThreadRelationships[]
     thread_tweets: string[]
@@ -270,6 +273,15 @@ export function markAssignmentAwaitingReply(assignment: IReviewerAssignment) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
         await api.get("/0.1/social_assignments/awaiting_reply/", dispatch, {
             assignmentId: assignment.id,
+        })
+    }
+}
+
+export function closeAssignment(assignment: IReviewerAssignment, reason: eSocialAssignmentCloseReason) {
+    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
+        await api.get("/0.1/social_assignments/close/", dispatch, {
+            assignmentId: assignment.id,
+            reason,
         })
     }
 }

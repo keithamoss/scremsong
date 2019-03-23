@@ -8,7 +8,7 @@ import Power from "@material-ui/icons/Power"
 import PowerOff from "@material-ui/icons/PowerOff"
 import classNames from "classnames"
 import * as React from "react"
-import { eSocialAssignmentStatus, IReviewerAssignment, IReviewerUser } from "../../redux/modules/reviewers"
+import { IReviewerAssignment, IReviewerUser } from "../../redux/modules/reviewers"
 import { eQueueSortBy, IProfileSettings } from "../../redux/modules/user"
 import TweetColumnAssignerContainer, { eTweetColumnAssignerMode } from "../../triage/TweetColumnAssigner/TweetColumnAssignerContainer"
 import ReviewCardContainer from "../ReviewCard/ReviewCardContainer"
@@ -112,10 +112,6 @@ class UserReviewQueueView extends React.PureComponent<TComponentProps, IState> {
         const { assignments, reviewers, currentReviewer, userSettings, classes } = this.props
         const { assignerOpen } = this.state
 
-        const assignmentsAwaitingReplies = assignments.filter(
-            (assignment: IReviewerAssignment) => assignment.status === eSocialAssignmentStatus.AWAIT_REPLY
-        )
-
         return (
             <React.Fragment>
                 <TweetColumnAssignerContainer
@@ -212,17 +208,7 @@ class UserReviewQueueView extends React.PureComponent<TComponentProps, IState> {
                 </AppBar>
 
                 <div className={classes.reviewerContainer}>
-                    {assignments
-                        .filter((assignment: IReviewerAssignment) => assignment.status === eSocialAssignmentStatus.PENDING)
-                        .map((assignment: IReviewerAssignment) => (
-                            <ReviewCardContainer key={assignment.id} assignment={assignment} />
-                        ))}
-                    {assignmentsAwaitingReplies.length > 0 && (
-                        <Typography variant="h5" gutterBottom={true}>
-                            Assignments awaiting replies
-                        </Typography>
-                    )}
-                    {assignmentsAwaitingReplies.map((assignment: IReviewerAssignment) => (
+                    {assignments.map((assignment: IReviewerAssignment) => (
                         <ReviewCardContainer key={assignment.id} assignment={assignment} />
                     ))}
                 </div>

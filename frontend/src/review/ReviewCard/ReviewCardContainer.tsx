@@ -3,6 +3,8 @@ import { connect } from "react-redux"
 import { INotification, sendNotification } from "../../redux/modules/app"
 import { IStore } from "../../redux/modules/reducer"
 import {
+    closeAssignment,
+    eSocialAssignmentCloseReason,
     IReviewerAssignment,
     markAssignmentAwaitingReply,
     markAssignmentClosed,
@@ -23,6 +25,7 @@ export interface IStoreProps {
 
 export interface IDispatchProps {
     sendNotificationWithUndo: Function
+    onCloseAssignment: Function
     onAwaitReply: Function
     onMarkAsDone: Function
     onMarkAsClosed: Function
@@ -41,6 +44,7 @@ class ReviewCardContainer extends React.PureComponent<TComponentProps, {}> {
             onMarkAsDone,
             onMarkAsClosed,
             onThreadClosed,
+            onCloseAssignment,
         } = this.props
 
         return (
@@ -53,6 +57,7 @@ class ReviewCardContainer extends React.PureComponent<TComponentProps, {}> {
                 onMarkAsDone={onMarkAsDone}
                 onMarkAsClosed={onMarkAsClosed}
                 onThreadClosed={onThreadClosed}
+                onCloseAssignment={onCloseAssignment}
             />
         )
     }
@@ -73,6 +78,9 @@ const mapDispatchToProps = (dispatch: Function, ownProps: IProps): IDispatchProp
     return {
         sendNotificationWithUndo: (notification: INotification) => {
             dispatch(sendNotification(notification))
+        },
+        onCloseAssignment: (reason: eSocialAssignmentCloseReason) => {
+            dispatch(closeAssignment(ownProps.assignment, reason))
         },
         onAwaitReply: () => {
             dispatch(markAssignmentAwaitingReply(ownProps.assignment))

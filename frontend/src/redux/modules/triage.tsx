@@ -1,4 +1,4 @@
-import { blueGrey, green, yellow } from "@material-ui/core/colors"
+import { blueGrey, green, red, yellow } from "@material-ui/core/colors"
 import * as dotProp from "dot-prop-immutable"
 import { uniq } from "lodash-es"
 import { Action } from "redux"
@@ -11,7 +11,7 @@ import {
 } from "../../websockets/actions"
 import { WS_SOCIAL_COLUMNS_LIST, WS_SOCIAL_COLUMNS_UPDATE, WS_TWEETS_LOAD_TWEETS, WS_TWEETS_NEW_TWEETS } from "../../websockets/constants"
 import { IThunkExtras } from "./interfaces"
-import { eSocialAssignmentStatus, IReviewerAssignment } from "./reviewers"
+import { eSocialAssignmentCloseReason, eSocialAssignmentState, IReviewerAssignment } from "./reviewers"
 import { eSocialTweetState, ISocialTweet, ISocialTweetList, ISocialTweetsAndColumnsResponse } from "./social"
 // import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 
@@ -181,11 +181,21 @@ export function unassignTriagerFromColumn(columnId: number) {
 // Utilities
 export function getActionBarBackgroundColour(tweet: ISocialTweet, assignment: IReviewerAssignment | null) {
     if (assignment !== null) {
-        if (assignment.status === eSocialAssignmentStatus.PENDING) {
+        if (assignment.state === eSocialAssignmentState.PENDING) {
             return yellow[200]
-        } else if (assignment.status === eSocialAssignmentStatus.DONE || assignment.status === eSocialAssignmentStatus.CLOSED) {
-            return green[200]
+        } else if (assignment.state === eSocialAssignmentState.CLOSED) {
+            if (assignment.close_reason === eSocialAssignmentCloseReason.AWAITING_REPLY) {
+                return yellow[200]
+            } else if (
+                assignment.close_reason === eSocialAssignmentCloseReason.MAP_UPDATED ||
+                assignment.close_reason === eSocialAssignmentCloseReason.NO_CHANGE_REQUIRED
+            ) {
+                return green[200]
+            } else if (assignment.close_reason === eSocialAssignmentCloseReason.NOT_RELEVANT) {
+                return blueGrey[200]
+            }
         }
+        return red[200]
     }
 
     if (tweet.state === eSocialTweetState.DISMISSED) {
@@ -193,6 +203,7 @@ export function getActionBarBackgroundColour(tweet: ISocialTweet, assignment: IR
     } else if (tweet.state === eSocialTweetState.DEALT_WITH) {
         return green[200]
     }
+    return red[200]
 
     return "transparent"
 }
