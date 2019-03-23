@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='socialassignments',
             name='status',
-            field=models.TextField(choices=[(scremsong.app.models.SocialAssignmentStatus('Pending'), 'Pending'), (scremsong.app.models.SocialAssignmentStatus('Done'), 'Done')], default=scremsong.app.models.SocialAssignmentStatus('Pending')),
+            field=models.TextField(choices=[(scremsong.app.enums.SocialAssignmentStatus('Pending'), 'Pending'), (scremsong.app.enums.SocialAssignmentStatus('Done'), 'Done')], default=scremsong.app.enums.SocialAssignmentStatus('Pending')),
         ),
     ]
