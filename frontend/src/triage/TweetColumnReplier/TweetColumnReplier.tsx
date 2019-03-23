@@ -1,23 +1,4 @@
-import {
-    Button,
-    Collapse,
-    Dialog,
-    DialogContent,
-    IconButton,
-    List,
-    ListItem,
-    ListItemIcon,
-    ListItemSecondaryAction,
-    ListItemText,
-    ListSubheader,
-    Theme,
-    Tooltip,
-    withStyles,
-    WithStyles,
-} from "@material-ui/core"
-import ExpandMore from "@material-ui/icons/ExpandMore"
-import Shuffle from "@material-ui/icons/Shuffle"
-import ViewList from "@material-ui/icons/ViewList"
+import { Button, Dialog, DialogContent, Theme, withStyles, WithStyles } from "@material-ui/core"
 import * as React from "react"
 import Tweet from "react-tweet"
 import { ISocialPrecannedTweetReplies, ISocialTweet, ISocialTweetDataUserMention } from "../../redux/modules/social"
@@ -71,9 +52,9 @@ class TweetColumnReplier extends React.Component<TComponentProps, IState> {
     private onFieldInvalid: Function
     private onFieldValid: Function
     private onChipChange: Function
-    private handleCategoryClick: Function
-    private handleChooseRandomReplyClick: Function
-    private handleReplyChosen: Function
+    // private handleCategoryClick: Function
+    // private handleChooseRandomReplyClick: Function
+    // private handleReplyChosen: Function
     private onReply: any
 
     public constructor(props: TComponentProps) {
@@ -110,26 +91,26 @@ class TweetColumnReplier extends React.Component<TComponentProps, IState> {
                 return { ...state, mentions: chips, characterPrefixLength: getLengthOfMentions(chips) }
             })
         }
-        this.handleCategoryClick = (category: string) => (e: React.MouseEvent<HTMLElement>) => {
-            this.setState({
-                ...this.state,
-                ...{
-                    categoryCollapseStates: {
-                        ...this.state.categoryCollapseStates,
-                        ...{ [category]: !this.state.categoryCollapseStates[category] },
-                    },
-                },
-            })
-        }
-        this.handleChooseRandomReplyClick = (category: string) => (e: React.MouseEvent<HTMLElement>) => {
-            const randomReplyText = this.props.precanned_replies[category][
-                Math.floor(Math.random() * this.props.precanned_replies[category].length)
-            ]
-            this.setState({ ...this.state, replyFieldValue: randomReplyText })
-        }
-        this.handleReplyChosen = (replyText: string) => (e: React.MouseEvent<HTMLElement>) => {
-            this.setState({ ...this.state, replyFieldValue: replyText })
-        }
+        // this.handleCategoryClick = (category: string) => (e: React.MouseEvent<HTMLElement>) => {
+        //     this.setState({
+        //         ...this.state,
+        //         ...{
+        //             categoryCollapseStates: {
+        //                 ...this.state.categoryCollapseStates,
+        //                 ...{ [category]: !this.state.categoryCollapseStates[category] },
+        //             },
+        //         },
+        //     })
+        // }
+        // this.handleChooseRandomReplyClick = (category: string) => (e: React.MouseEvent<HTMLElement>) => {
+        //     const randomReplyText = this.props.precanned_replies[category][
+        //         Math.floor(Math.random() * this.props.precanned_replies[category].length)
+        //     ]
+        //     this.setState({ ...this.state, replyFieldValue: randomReplyText })
+        // }
+        // this.handleReplyChosen = (replyText: string) => (e: React.MouseEvent<HTMLElement>) => {
+        //     this.setState({ ...this.state, replyFieldValue: replyText })
+        // }
         this.onReply = () => {
             const replyText = `${getMentions(this.state.mentions)} ${this.state.replyFieldValue}`
             this.props.onReply(this.props.tweet.data.id_str, replyText)
@@ -137,8 +118,8 @@ class TweetColumnReplier extends React.Component<TComponentProps, IState> {
     }
 
     public render() {
-        const { open, tweet, precanned_replies, onCloseReplier, classes } = this.props
-        const { replyFieldValue, characterPrefixLength, replyButtonDisabled, categoryCollapseStates } = this.state
+        const { open, tweet, onCloseReplier, classes } = this.props
+        const { replyFieldValue, characterPrefixLength, replyButtonDisabled } = this.state
 
         return (
             <React.Fragment>
@@ -172,7 +153,7 @@ class TweetColumnReplier extends React.Component<TComponentProps, IState> {
                         <Button variant="contained" color="primary" disabled={replyButtonDisabled} onClick={this.onReply}>
                             Reply
                         </Button>
-                        <List
+                        {/* <List
                             component="nav"
                             subheader={<ListSubheader component="div">Choose a pre-defined reply</ListSubheader>}
                             className={classes.precannedRepliesList}
@@ -201,7 +182,7 @@ class TweetColumnReplier extends React.Component<TComponentProps, IState> {
                                             </ListItemSecondaryAction>
                                         </ListItem>
                                         <Collapse in={categoryCollapseStates[category]} timeout="auto" unmountOnExit={true}>
-                                            <List /*component="div"*/ disablePadding={true}>
+                                            <List disablePadding={true}>
                                                 {precanned_replies[category].map((replyText: string, index: number) => (
                                                     <ListItem
                                                         key={index}
@@ -218,7 +199,7 @@ class TweetColumnReplier extends React.Component<TComponentProps, IState> {
                                     </React.Fragment>
                                 )
                             })}
-                        </List>
+                        </List> */}
                     </DialogContent>
                 </Dialog>
             </React.Fragment>
