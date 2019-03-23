@@ -525,7 +525,7 @@ class DashboardViewset(viewsets.ViewSet):
         
         for social_column in get_social_columns(SocialPlatformChoice.TWITTER).order_by("id").all():
             stats["triage"]["untriaged_tweets"]["all_time"][social_column.id] = social_column.total_active_tweets()
-            stats["triage"]["untriaged_tweets"]["past_week"][social_column.id] = social_column.total_active_tweets(sincePastNDays=7)
+            stats["triage"]["untriaged_tweets"]["past_week"][social_column.id] = social_column.total_active_tweets(sincePastNDays=1)
         
         return Response(stats)
 
