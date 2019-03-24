@@ -373,9 +373,15 @@ def get_status_from_api(tweetId):
         return status._json
     except tweepy.TweepError as e:
         if e.api_code == 144:
-            # Tweet doesn't exist - if it existed, it was probably deleted)
-            logger.warning("Does not exist remotely in get_status_from_api! ({})".format(tweetId))
+            # No status found with that ID.	
+            # Corresponds with HTTP 404. The requested Tweet ID is not found (if it existed, it was probably deleted)
+            logger.info("Does not exist remotely in get_status_from_api! ({})".format(tweetId))
             raise ScremsongException("Does not exist remotely in get_status_from_api! ({})".format(tweetId))
+        elif e.api_code == 179:
+            # Sorry, you are not authorized to see this status
+            # Corresponds with HTTP 403. Thrown when a Tweet cannot be viewed by the authenticating user, usually due to the Tweet’s author having protected their Tweets.
+            logger.info("Not authorised to retrieve tweet in get_status_from_api! ({})".format(tweetId))
+            raise ScremsongException("Not authorised to retrieve tweet in get_status_from_api! ({})".format(tweetId))
         else:
             # Uh oh, some other error code was returned
             # NB: tweepy.api can return certain errors via retry_errors
