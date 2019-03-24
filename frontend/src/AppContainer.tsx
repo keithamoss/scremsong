@@ -162,6 +162,8 @@ const mapStateToProps = (state: IStore): IStoreProps => {
 
     if (userAssignmentCount > 0) {
         document.title = `(${userAssignmentCount}) Screm song!`
+    } else {
+        document.title = "Screm song!"
     }
 
     return {
