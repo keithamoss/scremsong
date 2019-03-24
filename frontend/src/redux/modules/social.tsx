@@ -93,7 +93,11 @@ export default function reducer(state: IModule = initialState, action: IAction) 
             }
             return state
         case WS_TWEETS_SET_STATE:
-            return dotProp.set(state, `tweets.${action.tweetId}.state`, action.tweetState)
+            action.tweetStates.forEach(
+                (tweetState: ISocialTweetStateUpdate) =>
+                    (state = dotProp.set(state, `tweets.${tweetState.tweetId}.state`, tweetState.tweetState))
+            )
+            return state
         case WS_TWEETS_PRECANNED_REPLIES:
             return dotProp.set(state, "precanned_replies", action.replies)
         default:
@@ -218,6 +222,7 @@ export enum eSocialTweetState {
     ACTIVE = "Active",
     DEALT_WITH = "Dealt With",
     DISMISSED = "Dismissed",
+    ASSIGNED = "Assigned",
 }
 
 export enum eSocialTweetActionType {
@@ -256,6 +261,11 @@ export interface ISocialTweetDataUserMention {
     id_str: string
     indices: number[]
     screen_name: string
+}
+
+export interface ISocialTweetStateUpdate {
+    tweetId: string
+    tweetState: eSocialTweetState
 }
 
 export enum eSocialTweetReplyCategories {

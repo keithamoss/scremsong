@@ -203,8 +203,7 @@ class ScremsongConsumer(JsonWebsocketConsumer):
         """
         self.send_json({
             "msg_type": settings.MSG_TYPE_TWEETS_SET_STATE,
-            "tweetId": event["tweetId"],
-            "tweetState": event["tweetState"],
+            "tweetStates": event["tweetStates"],
         })
 
     def tweets_update_tweets(self, event):

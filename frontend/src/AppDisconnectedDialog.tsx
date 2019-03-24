@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogContentText, DialogTitle, IconButton, Theme, withStyles, WithStyles } from "@material-ui/core"
+import { Dialog, DialogContent, DialogTitle, IconButton, Theme, withStyles, WithStyles } from "@material-ui/core"
 import SyncProblemIcon from "@material-ui/icons/SyncProblem"
 import * as React from "react"
 import { connect } from "react-redux"
@@ -32,11 +32,10 @@ class AppDisconnectedDialog extends React.PureComponent<TComponentProps, {}> {
                     <IconButton className={classes.disconnectedButton}>
                         <SyncProblemIcon color="error" fontSize="large" />
                     </IconButton>
-                    Disconnected
+                    Connection lost. Reconnecting...
                 </DialogTitle>
                 <DialogContent>
                     <img src="/disconnected.jpg" />
-                    <DialogContentText>We're working on restoring the connection...</DialogContentText>
                 </DialogContent>
             </Dialog>
         )

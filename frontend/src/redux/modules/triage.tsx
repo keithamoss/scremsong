@@ -203,7 +203,6 @@ export function getActionBarBackgroundColour(tweet: ISocialTweet, assignment: IR
     } else if (tweet.state === eSocialTweetState.DEALT_WITH) {
         return green[200]
     }
-    return red[200]
 
     return "transparent"
 }

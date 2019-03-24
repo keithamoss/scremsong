@@ -3,12 +3,12 @@ import { IRateLimitResources } from "../admin_panel/TwitterRateLimitStatus/Twitt
 import { INotification } from "../redux/modules/app"
 import { IReviewerAssignment, IReviewerUser } from "../redux/modules/reviewers"
 import {
-    eSocialTweetState,
     eSocialTwitterRateLimitState,
     ISocialPrecannedTweetReplies,
     ISocialTweet,
     ISocialTweetList,
     ISocialTweetsAndColumnsResponse,
+    ISocialTweetStateUpdate,
 } from "../redux/modules/social"
 import { ITriageColumn } from "../redux/modules/triage"
 import { IUser } from "../redux/modules/user"
@@ -127,8 +127,7 @@ export interface IActionTweetsUpdateTweets extends Action<typeof WS_TWEETS_UPDAT
 }
 
 export interface IActionsTweetsSetState extends Action<typeof WS_TWEETS_SET_STATE> {
-    tweetId: string
-    tweetState: eSocialTweetState
+    tweetStates: ISocialTweetStateUpdate[]
 }
 
 export interface IActionsTweetsPrecannedReplies extends Action<typeof WS_TWEETS_PRECANNED_REPLIES> {

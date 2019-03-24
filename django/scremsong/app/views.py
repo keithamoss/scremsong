@@ -13,7 +13,7 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 import tweepy
 from tweepy import TweepError
 from scremsong.app.serializers import UserSerializer, SocialAssignmentSerializer, SocialColumnsSerializerWithTweetCountSerializer
-from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, fetch_tweets, get_status_from_db, resolve_tweet_parents, resolve_tweet_thread_for_parent, notify_of_saved_tweet, favourite_tweet, unfavourite_tweet, retweet_tweet, unretweet_tweet, reply_to_tweet, get_tweepy_api_auth
+from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, fetch_tweets, get_status_from_db, resolve_tweet_parents, resolve_tweet_thread_for_parent, notify_of_saved_tweet, favourite_tweet, unfavourite_tweet, retweet_tweet, unretweet_tweet, reply_to_tweet, get_tweepy_api_auth, set_tweet_object_state_en_masse
 from scremsong.app.reviewers import getCreationDateOfNewestTweetInAssignment
 from scremsong.celery import celery_restart_streaming
 from scremsong.app.models import Tweets, SocialColumns, SocialAssignments, Profile
@@ -131,8 +131,10 @@ class TweetsViewset(viewsets.ViewSet):
             tweet.save()
 
             websockets.send_channel_message("tweets.set_state", {
-                "tweetId": tweetId,
-                "tweetState": tweetState,
+                "tweetStates": [{
+                    "tweetId": tweetId,
+                    "tweetState": tweetState,
+                }]
             })
 
         return Response({})
@@ -290,7 +292,7 @@ class SocialAssignmentsViewset(viewsets.ViewSet):
 
             websockets.send_channel_message("reviewers.assign", {
                 "assignment": SocialAssignmentSerializer(assignment).data,
-                "tweets": tweets,
+                "tweets": set_tweet_object_state_en_masse(tweets, TweetState.ASSIGNED),
             })
 
             return Response({"OK": True})
@@ -316,7 +318,7 @@ class SocialAssignmentsViewset(viewsets.ViewSet):
 
                 websockets.send_channel_message("reviewers.assign", {
                     "assignment": SocialAssignmentSerializer(assignment).data,
-                    "tweets": tweets,
+                    "tweets": set_tweet_object_state_en_masse(tweets, TweetState.ASSIGNED),
                 })
 
                 return Response({"OK": True})
@@ -345,7 +347,7 @@ class SocialAssignmentsViewset(viewsets.ViewSet):
                         assignmentsUpdated.append(SocialAssignmentSerializer(assignment).data)
                         parent = get_status_from_db(assignment.social_id)
                         parent, tweets, relationships = resolve_tweet_thread_for_parent(parent)
-                        tweetsUpdated = {**tweetsUpdated, **tweets}
+                        tweetsUpdated = {**tweetsUpdated, **set_tweet_object_state_en_masse(tweets, TweetState.ASSIGNED)}
 
                 websockets.send_channel_message("reviewers.bulk_assign", {
                     "assignments": assignmentsUpdated,

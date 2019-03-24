@@ -742,3 +742,8 @@ def are_we_rate_limited(resources, bufferPercentage=None):
 
 def get_latest_rate_limit_resources():
     return TwitterRateLimitInfo.objects.latest("id").data
+
+def set_tweet_object_state_en_masse(tweets, state):
+    for tweetId, tweet in tweets.items():
+        tweets[tweetId]["state"] = state
+    return tweets

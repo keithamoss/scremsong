@@ -286,18 +286,19 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
                     {({ measure }) => (
                         <div style={style}>
                             <div className={classes.actionBar} style={{ borderRight: `6px solid ${backgroundColor}` }}>
-                                {showActionBarButtons === true && tweet.state === eSocialTweetState.ACTIVE && (
-                                    <Tooltip title="Assign this tweet to someone" aria-label="Assign tweet">
-                                        <Button
-                                            size="small"
-                                            className={classes.button}
-                                            aria-label="Assign tweet"
-                                            onClick={this.onOpenAssigner(tweetId, assignmentId)}
-                                        >
-                                            {assignmentId === undefined ? <AssignmentOutlinedIcon /> : <AssignmentIcon />}
-                                        </Button>
-                                    </Tooltip>
-                                )}
+                                {showActionBarButtons === true &&
+                                    (tweet.state === eSocialTweetState.ACTIVE || tweet.state === eSocialTweetState.ASSIGNED) && (
+                                        <Tooltip title="Assign this tweet to someone" aria-label="Assign tweet">
+                                            <Button
+                                                size="small"
+                                                className={classes.button}
+                                                aria-label="Assign tweet"
+                                                onClick={this.onOpenAssigner(tweetId, assignmentId)}
+                                            >
+                                                {assignmentId === undefined ? <AssignmentOutlinedIcon /> : <AssignmentIcon />}
+                                            </Button>
+                                        </Tooltip>
+                                    )}
 
                                 {showActionBarButtons === true && tweet.state === eSocialTweetState.ACTIVE && (
                                     <React.Fragment>
@@ -342,6 +343,7 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
                                         </Tooltip>
                                     )}
                             </div>
+
                             <TweetCardContainer
                                 tweetId={tweetId}
                                 tweetStyles={{ display: "inline", opacity }}
