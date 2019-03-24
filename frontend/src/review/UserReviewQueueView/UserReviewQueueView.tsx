@@ -156,7 +156,7 @@ class UserReviewQueueView extends React.PureComponent<TComponentProps, IState> {
                                 htmlFor="queue-sort-order-control"
                                 classes={{ root: classes.white, focused: classes.focusedInputLabel }}
                             >
-                                Sort queue assignments by
+                                Sort queue by
                             </InputLabel>
                             <Select
                                 value={userSettings.queue_sort_by}

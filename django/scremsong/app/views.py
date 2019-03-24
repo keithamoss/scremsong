@@ -391,6 +391,22 @@ class SocialAssignmentsViewset(viewsets.ViewSet):
         return Response({"OK": True})
 
     @list_route(methods=['get'])
+    def restore(self, request, format=None):
+        qp = request.query_params
+        assignmentId = int(qp["assignmentId"]) if "assignmentId" in qp else None
+
+        assignment = SocialAssignments.objects.get(id=assignmentId)
+        assignment.close_reason = None
+        assignment.state = SocialAssignmentState.PENDING
+        assignment.save()
+
+        websockets.send_channel_message("reviewers.assignment_metdata_changed", {
+            "assignment": SocialAssignmentSerializer(assignment).data,
+        })
+
+        return Response({"OK": True})
+
+    @list_route(methods=['get'])
     def mark_read(self, request, format=None):
         qp = request.query_params
         assignmentId = int(qp["assignmentId"]) if "assignmentId" in qp else None

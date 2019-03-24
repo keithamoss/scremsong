@@ -146,7 +146,7 @@ export const getSortedAssignments = createSelector(
         memoize((userSettings: IProfileSettings) => {
             return sortBy(assignments, (assignment: IReviewerAssignment) =>
                 userSettings.queue_sort_by === eQueueSortBy.ByCreation ? assignment.created_on : assignment.last_updated_on
-            ).reverse()
+            )
         })
 )
 
@@ -269,14 +269,6 @@ export function bulkReassignReviewer(currentReviewerId: number, newReviewerId: n
     }
 }
 
-export function markAssignmentAwaitingReply(assignment: IReviewerAssignment) {
-    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        await api.get("/0.1/social_assignments/awaiting_reply/", dispatch, {
-            assignmentId: assignment.id,
-        })
-    }
-}
-
 export function closeAssignment(assignment: IReviewerAssignment, reason: eSocialAssignmentCloseReason) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
         await api.get("/0.1/social_assignments/close/", dispatch, {
@@ -286,17 +278,9 @@ export function closeAssignment(assignment: IReviewerAssignment, reason: eSocial
     }
 }
 
-export function markAssignmentClosed(assignment: IReviewerAssignment) {
+export function restoreAssignment(assignment: IReviewerAssignment) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        await api.get("/0.1/social_assignments/close/", dispatch, {
-            assignmentId: assignment.id,
-        })
-    }
-}
-
-export function markAssignmentDone(assignment: IReviewerAssignment) {
-    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
-        await api.get("/0.1/social_assignments/done/", dispatch, {
+        await api.get("/0.1/social_assignments/restore/", dispatch, {
             assignmentId: assignment.id,
         })
     }

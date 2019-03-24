@@ -6,10 +6,8 @@ import {
     closeAssignment,
     eSocialAssignmentCloseReason,
     IReviewerAssignment,
-    markAssignmentAwaitingReply,
-    markAssignmentClosed,
-    markAssignmentDone,
     markAssignmentRead,
+    restoreAssignment,
 } from "../../redux/modules/reviewers"
 import { getTweetsForAssignment, getUnreadTweetIds, ISocialTweetList } from "../../redux/modules/social"
 import ReviewCard from "./ReviewCard"
@@ -24,11 +22,9 @@ export interface IStoreProps {
 }
 
 export interface IDispatchProps {
-    sendNotificationWithUndo: Function
     onCloseAssignment: Function
-    onAwaitReply: Function
-    onMarkAsDone: Function
-    onMarkAsClosed: Function
+    sendNotificationWithUndo: Function
+    onRestoreAssignment: Function
     onThreadClosed: Function
 }
 
@@ -39,12 +35,10 @@ class ReviewCardContainer extends React.PureComponent<TComponentProps, {}> {
             assignment,
             tweets,
             unreadTweetIds,
-            sendNotificationWithUndo,
-            onAwaitReply,
-            onMarkAsDone,
-            onMarkAsClosed,
-            onThreadClosed,
             onCloseAssignment,
+            sendNotificationWithUndo,
+            onRestoreAssignment,
+            onThreadClosed,
         } = this.props
 
         return (
@@ -52,12 +46,10 @@ class ReviewCardContainer extends React.PureComponent<TComponentProps, {}> {
                 assignment={assignment}
                 tweets={tweets}
                 unreadTweetIds={unreadTweetIds}
-                sendNotificationWithUndo={sendNotificationWithUndo}
-                onAwaitReply={onAwaitReply}
-                onMarkAsDone={onMarkAsDone}
-                onMarkAsClosed={onMarkAsClosed}
-                onThreadClosed={onThreadClosed}
                 onCloseAssignment={onCloseAssignment}
+                sendNotificationWithUndo={sendNotificationWithUndo}
+                onRestoreAssignment={onRestoreAssignment}
+                onThreadClosed={onThreadClosed}
             />
         )
     }
@@ -76,20 +68,14 @@ const mapStateToProps = (state: IStore, ownProps: IProps): IStoreProps => {
 
 const mapDispatchToProps = (dispatch: Function, ownProps: IProps): IDispatchProps => {
     return {
-        sendNotificationWithUndo: (notification: INotification) => {
-            dispatch(sendNotification(notification))
-        },
         onCloseAssignment: (reason: eSocialAssignmentCloseReason) => {
             dispatch(closeAssignment(ownProps.assignment, reason))
         },
-        onAwaitReply: () => {
-            dispatch(markAssignmentAwaitingReply(ownProps.assignment))
+        sendNotificationWithUndo: (notification: INotification) => {
+            dispatch(sendNotification(notification))
         },
-        onMarkAsDone: () => {
-            dispatch(markAssignmentDone(ownProps.assignment))
-        },
-        onMarkAsClosed: () => {
-            dispatch(markAssignmentClosed(ownProps.assignment))
+        onRestoreAssignment: () => {
+            dispatch(restoreAssignment(ownProps.assignment))
         },
         onThreadClosed: () => {
             dispatch(markAssignmentRead(ownProps.assignment))
