@@ -216,11 +216,19 @@ class ReviewCard extends React.PureComponent<TComponentProps, IState> {
                                     </Button>
                                 </Tooltip>
                                 <Menu anchorEl={anchorEl} open={anchorEl !== null} onClose={this.handleCloseCloseReasonMenu}>
-                                    {Object.keys(eSocialAssignmentCloseReason).map((key: string) => (
-                                        <MenuItem key={key} onClick={this.handleChooseCloseReason(eSocialAssignmentCloseReason[key])}>
-                                            {eSocialAssignmentCloseReason[key]}
-                                        </MenuItem>
-                                    ))}
+                                    {Object.keys(eSocialAssignmentCloseReason).map((key: string) => {
+                                        if (key !== "NOT_ACTIONED") {
+                                            return (
+                                                <MenuItem
+                                                    key={key}
+                                                    onClick={this.handleChooseCloseReason(eSocialAssignmentCloseReason[key])}
+                                                >
+                                                    {eSocialAssignmentCloseReason[key]}
+                                                </MenuItem>
+                                            )
+                                        }
+                                        return null
+                                    })}
                                 </Menu>
                                 <Button
                                     color={"primary"}

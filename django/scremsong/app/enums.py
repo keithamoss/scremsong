@@ -35,6 +35,7 @@ class SocialAssignmentCloseReason(str, EnumBase):
     MAP_UPDATED = "Map Updated"
     NO_CHANGE_REQUIRED = "No Change Required"
     NOT_RELEVANT = "Not Relevant"
+    NOT_ACTIONED = "Not Actioned"
 
     def __str__(self):
         return self.value

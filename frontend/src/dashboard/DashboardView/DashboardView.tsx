@@ -10,7 +10,7 @@ const styles = (theme: Theme) =>
             padding: 10,
         },
         paper: {
-            maxWidth: 800,
+            maxWidth: 900,
             marginTop: theme.spacing.unit * 3,
             overflowX: "auto",
         },
@@ -58,6 +58,7 @@ class DashboardView extends React.Component<TComponentProps, IState> {
                                     <TableCell align="right">Map Updated</TableCell>
                                     <TableCell align="right">No Change Required</TableCell>
                                     <TableCell align="right">Not Relevant</TableCell>
+                                    <TableCell align="right">Not Actioned</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -75,6 +76,7 @@ class DashboardView extends React.Component<TComponentProps, IState> {
                                             <TableCell align="right">{userStats["Map Updated"]}</TableCell>
                                             <TableCell align="right">{userStats["No Change Required"]}</TableCell>
                                             <TableCell align="right">{userStats["Not Relevant"]}</TableCell>
+                                            <TableCell align="right">{userStats["Not Actioned"]}</TableCell>
                                         </TableRow>
                                     )
                                 })}

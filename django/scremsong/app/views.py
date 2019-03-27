@@ -621,6 +621,25 @@ class ScremsongDebugViewset(viewsets.ViewSet):
         return Response({"OK": True})
 
     @list_route(methods=['get'])
+    def find_wot_was_rate_limited(self, request, format=None):
+        from scremsong.app.models import TwitterRateLimitInfo
+
+        rateLimited = {}
+
+        for info in TwitterRateLimitInfo.objects.filter(collected_on__gte="2019-03-22 16:00:00+00").filter(collected_on__lte="2019-03-23 16:00:00+00").all():
+            for group_name, group_info in info.data.items():
+                for item_name, item_info in group_info.items():
+                    if item_info["remaining"] < item_info["limit"]:
+                        if group_name not in rateLimited:
+                            rateLimited[group_name] = []
+                        
+                        if item_name not in rateLimited[group_name]:
+                            rateLimited[group_name].append(item_name)
+
+        print(rateLimited)
+        return Response({"OK": True})
+
+    @list_route(methods=['get'])
     def send_dummy_tweets(self, request, format=None):
         qp = request.query_params
         number_of_tweets = int(qp["number_of_tweets"]) if "number_of_tweets" in qp else None

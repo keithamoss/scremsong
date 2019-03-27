@@ -191,7 +191,10 @@ export function getActionBarBackgroundColour(tweet: ISocialTweet, assignment: IR
                 assignment.close_reason === eSocialAssignmentCloseReason.NO_CHANGE_REQUIRED
             ) {
                 return green[200]
-            } else if (assignment.close_reason === eSocialAssignmentCloseReason.NOT_RELEVANT) {
+            } else if (
+                assignment.close_reason === eSocialAssignmentCloseReason.NOT_RELEVANT ||
+                assignment.close_reason === eSocialAssignmentCloseReason.NOT_ACTIONED
+            ) {
                 return blueGrey[200]
             }
         }
