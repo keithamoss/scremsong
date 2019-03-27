@@ -28,3 +28,14 @@ export const randomHash = (nChar: number) => {
     // return what we made
     return str
 }
+
+export const sortObjectKeys = (obj: object) => {
+    // Until Object.fromEntries reaches Stage 3
+    // https://stackoverflow.com/a/55208887
+    return Object.keys(obj)
+        .sort()
+        .reduce((accumulator, currentValue) => {
+            accumulator[currentValue] = obj[currentValue]
+            return accumulator
+        }, {})
+}

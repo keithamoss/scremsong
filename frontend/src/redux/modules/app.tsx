@@ -3,7 +3,7 @@ import { OptionsObject } from "notistack"
 import { Action } from "redux"
 import { createSelector } from "reselect"
 import { IRateLimitResources, IResourceRateLimit } from "../../admin_panel/TwitterRateLimitStatus/TwitterRateLimitStatusContainer"
-import { randomHash } from "../../utils"
+import { randomHash, sortObjectKeys } from "../../utils"
 import {
     IActionNotification,
     IActionTweetsRateLimitResources,
@@ -137,7 +137,8 @@ export const getConsumedTwitterRateLimitResources = createSelector(
             }
         }
 
-        return Object.keys(filteredRateLimitResources).length > 0 ? filteredRateLimitResources : null
+        // Sort remaining results to maintain a consistent order
+        return Object.keys(filteredRateLimitResources).length > 0 ? sortObjectKeys(filteredRateLimitResources) : null
     }
 )
 
