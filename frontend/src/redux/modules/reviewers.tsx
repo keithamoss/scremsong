@@ -205,7 +205,7 @@ export interface IReviewerAssignment {
     platform: eSocialPlatformChoice
     social_id: string
     state: eSocialAssignmentState
-    close_reason: eSocialAssignmentCloseReason
+    close_reason: eSocialAssignmentCloseReason | null
     user_id: number
     thread_relationships: IReviewerAssignmentThreadRelationships[]
     thread_tweets: string[]
