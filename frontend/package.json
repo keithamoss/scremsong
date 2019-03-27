@@ -58,7 +58,7 @@
         "@types/react-virtualized": "^9.18.12",
         "@types/redux": "^3.6.0",
         "@types/redux-form": "^8.1.0",
-        "core-js": "^2.6.5",
+        "core-js": "^3.0.0",
         "react-scripts": "^2.1.8",
         "redux-devtools-extension": "^2.13.8",
         "tslint": "^5.13.1",
