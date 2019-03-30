@@ -45,7 +45,7 @@ class TweetCard extends React.PureComponent<TComponentProps, IState> {
             <React.Fragment>
                 <TweetColumnReplierContainer open={replierOpen} tweetId={tweet.data.id_str} onCloseReplier={this.onCloseReplier} />
                 <Tweet
-                    data={tweet.data}
+                    data={JSON.parse(JSON.stringify(tweet.data))}
                     linkProps={{ target: "_blank", rel: "noreferrer" }}
                     tweetStyles={tweetStyles}
                     onTweetAction={this.onTweetAction}
