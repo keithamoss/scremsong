@@ -9,6 +9,7 @@ from scremsong.app.serializers import SocialColumnsSerializerWithTweetCountSeria
 from scremsong.app import websockets
 from scremsong.app.exceptions import ScremsongException, FailedToResolveTweet
 from scremsong.app.reviewers_utils import is_tweet_part_of_an_assignment
+from scremsong.app.users import is_user_accepting_assignments
 from scremsong.celery import task_process_tweet_reply
 
 from django.utils import timezone
@@ -315,7 +316,7 @@ def get_social_columns_cached(platform=None):
         return SocialColumns.objects.all()
 
 def is_from_demsausage(tweet):
-    return "data" in tweet and "user" in tweet.data and "screen_name" in tweet.data["user"] and tweet.data["user"]["screen_name"] == "DemSausage"
+    return "user" in tweet.data and "screen_name" in tweet.data["user"] and tweet.data["user"]["screen_name"] == "DemSausage"
 
 def get_tweet_text(status):
     """Refer to https://developer.twitter.com/en/docs/tweets/tweet-updates.html"""
@@ -496,36 +497,46 @@ def process_new_tweet_reply(status, tweetSource, sendWebSocketEvent):
                 platform=SocialPlatformChoice.TWITTER, social_id=parent["data"]["id_str"], defaults={"thread_relationships": relationships, "thread_tweets": replyTweetIds, "last_updated_on": timezone.now()}
             )
 
-            # Adding a new tweet reopens the assignment
-            if assignment.state == SocialAssignmentState.CLOSED:
-                if is_from_demsausage(tweet) is False:
-                    logger.info("Processing tweet {}: Set it to pending".format(status["id_str"]))
-                    assignment.state = SocialAssignmentState.PENDING
-                    assignment.save()
+            # Adding a new tweet reopens the assignment if the user is accepting assignments or unassigns it if they're offline and the assignment is closed
+            if is_user_accepting_assignments(assignment.user_id) is False and assignment.state == SocialAssignmentState.CLOSED and is_from_demsausage(tweet) is False:
+                logger.info("Processing tweet {}: User is offline, so delete the assignment".format(status["id_str"]))
+                assignmentId = assignment.id
+                assignment.delete()
 
+                websockets.send_channel_message("reviewers.unassign", {
+                    "assignmentId": assignmentId,
+                })
+                
+            else:
+                if assignment.state == SocialAssignmentState.CLOSED:
+                    if is_from_demsausage(tweet) is False:
+                            logger.info("Processing tweet {}: Set it to pending".format(status["id_str"]))
+                            assignment.state = SocialAssignmentState.PENDING
+                            assignment.save()
+
+                            websockets.send_user_channel_message("notifications.send", {
+                                "message": "One of your assignments has had a new reply arrive - it's been added back into your queue again",
+                                "options": {
+                                    "variant": NotificationVariants.INFO
+                                }
+                            },
+                                assignment.user.username)
+
+                else:
                     websockets.send_user_channel_message("notifications.send", {
-                        "message": "One of your assignments has had a new reply arrive - it's been added back into your queue again",
+                        "message": "One of your assignments has had a new reply arrive",
                         "options": {
                             "variant": NotificationVariants.INFO
                         }
                     },
                         assignment.user.username)
 
-            else:
-                websockets.send_user_channel_message("notifications.send", {
-                    "message": "One of your assignments has had a new reply arrive",
-                    "options": {
-                        "variant": NotificationVariants.INFO
-                    }
-                },
-                    assignment.user.username)
+                websockets.send_channel_message("reviewers.assignment_updated", {
+                    "assignment": SocialAssignmentSerializer(assignment).data,
+                    "tweets": tweets,
+                })
 
-            websockets.send_channel_message("reviewers.assignment_updated", {
-                "assignment": SocialAssignmentSerializer(assignment).data,
-                "tweets": tweets,
-            })
-
-            tweet.state = TweetState.ASSIGNED
+                tweet.state = TweetState.ASSIGNED
 
         # Once we're done processing the tweet, or if its parent is not part of an assignment,
         # then we just carry on and save the tweet has processed and send a notification.
