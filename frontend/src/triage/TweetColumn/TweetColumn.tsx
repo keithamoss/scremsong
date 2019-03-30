@@ -7,7 +7,7 @@ import LiveTvOutlinedIcon from "@material-ui/icons/LiveTvOutlined"
 import * as React from "react"
 import { AutoSizer, CellMeasurer, CellMeasurerCache, InfiniteLoader, List } from "react-virtualized"
 import "react-virtualized/styles.css"
-import { eSocialAssignmentState, IReviewerAssignment } from "../../redux/modules/reviewers"
+import { eSocialAssignmentCloseReason, eSocialAssignmentState, IReviewerAssignment } from "../../redux/modules/reviewers"
 import { eSocialTweetState, ISocialTweetAssignments, ISocialTweetList } from "../../redux/modules/social"
 import { getActionBarBackgroundColour, ITriageColumn } from "../../redux/modules/triage"
 import { getColumnPosition } from "../../redux/modules/user"
@@ -273,7 +273,11 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
             const assignmentId = tweet_assignments[tweetId]
             const assignment = tweetId in tweet_assignments ? assignments[assignmentId] : null
 
-            const showActionBarButtons = assignment === null || assignment.state === eSocialAssignmentState.PENDING
+            const showActionBarButtons =
+                assignment === null ||
+                assignment.state === eSocialAssignmentState.PENDING ||
+                (assignment.state === eSocialAssignmentState.CLOSED &&
+                    assignment.close_reason === eSocialAssignmentCloseReason.AWAITING_REPLY)
             const backgroundColor = getActionBarBackgroundColour(tweet, assignment)
 
             let opacity = 1
