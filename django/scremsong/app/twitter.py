@@ -498,7 +498,7 @@ def process_new_tweet_reply(status, tweetSource, sendWebSocketEvent):
             )
 
             # Adding a new tweet reopens the assignment if the user is accepting assignments or unassigns it if they're offline and the assignment is closed
-            if is_user_accepting_assignments(assignment.user_id) is False and assignment.state == SocialAssignmentState.CLOSED and is_from_demsausage(tweet) is False:
+            if is_user_accepting_assignments(assignment.user_id) is False and is_from_demsausage(tweet) is False:
                 logger.info("Processing tweet {}: User is offline, so delete the assignment".format(status["id_str"]))
                 assignmentId = assignment.id
                 assignment.delete()
