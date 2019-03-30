@@ -1,5 +1,5 @@
 import { AppBar, Button, FormControl, Input, InputLabel, Theme, Tooltip, Typography, withStyles, WithStyles } from "@material-ui/core"
-import { blueGrey } from "@material-ui/core/colors"
+import { deepOrange } from "@material-ui/core/colors"
 import MenuItem from "@material-ui/core/MenuItem"
 import Select from "@material-ui/core/Select"
 import Toolbar from "@material-ui/core/Toolbar"
@@ -44,9 +44,9 @@ const styles = (theme: Theme) => ({
     },
     buttonOffline: {
         margin: theme.spacing.unit,
-        backgroundColor: blueGrey[500],
+        backgroundColor: deepOrange[500],
         "&:hover:not($disabled)": {
-            backgroundColor: blueGrey[700],
+            backgroundColor: deepOrange[700],
         },
     },
     leftIcon: {
