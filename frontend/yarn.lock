@@ -9248,9 +9248,9 @@ react-transition-group@^2.2.1:
     prop-types "^15.6.2"
     react-lifecycles-compat "^3.0.4"
 
-"react-tweet@https://github.com/keithamoss/react-tweet.git#1.8.4":
-  version "1.8.4"
-  resolved "https://github.com/keithamoss/react-tweet.git#6faf1ceedd049f343327109eaea24bf7a5a6f12d"
+"react-tweet@https://github.com/keithamoss/react-tweet.git#1.8.5":
+  version "1.8.5"
+  resolved "https://github.com/keithamoss/react-tweet.git#6da155bc067d1b985fa03a2a47f8de950eafa97b"
   dependencies:
     babel "6.2.4"
     babel-cli "6.2.0"
