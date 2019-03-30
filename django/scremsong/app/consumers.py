@@ -1,6 +1,11 @@
+from random import getrandbits
+
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import JsonWebsocketConsumer
 from django.conf import settings
+from django.contrib.auth.models import User
+from django.db import transaction
+
 from scremsong.util import make_logger
 from scremsong.app.serializers import UserSerializer, ReviewerUserSerializer
 from scremsong.app.twitter import get_twitter_columns, fetch_tweets_for_columns, get_precanned_tweet_replies, are_we_rate_limited, get_latest_rate_limit_resources
@@ -8,7 +13,6 @@ from scremsong.app.twitter_streaming import is_streaming_connected
 from scremsong.app.reviewers import get_reviewer_users, get_assignments
 from scremsong.app.enums import TwitterRateLimitState
 from scremsong.app import websockets
-from random import getrandbits
 
 logger = make_logger(__name__)
 
@@ -219,8 +223,11 @@ class ScremsongConsumer(JsonWebsocketConsumer):
         """
         Called when we receive new tweets from the Twitter stream, from backfilling, et cetera.
         """
-        self.user.profile.merge_settings(event["settings"])
-        self.user.profile.save()
+        with transaction.atomic():
+            # Get a fresh user object so we have the latest settings
+            user = User.objects.select_for_update().get(id=self.user.id)
+            user.profile.merge_settings(event["settings"])
+            user.profile.save()
 
 
 def build_on_connect_data_payload(user):

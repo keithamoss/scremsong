@@ -81,9 +81,11 @@ class ProfileViewSet(viewsets.ViewSet):
 
     @list_route(methods=['post'])
     def update_settings(self, request):
-        request.user.profile.merge_settings(request.data)
-        request.user.profile.save()
-        return Response({"settings": request.user.profile.settings})
+        with transaction.atomic():
+            user = User.objects.select_for_update().get(id=request.user.id)
+            user.profile.merge_settings(request.data)
+            user.profile.save()
+            return Response({"settings": user.profile.settings})
 
     @list_route(methods=['get'])
     def get_column_position(self, request, format=None):

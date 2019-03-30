@@ -6,6 +6,10 @@ Enhancements and bug fixes for the Federal Election.
 
 -   [Enhancement] A reviewer's current number of assignments now only includes their active assignments (not active + awaiting reply).
 -   [Enhancement] The "Ignore" and "Dealt With" buttons now only display if the tweet isn't already assigned.
+-   [Bug Fix] Fixed the mysterious bug where everyone ended up showing as offline
+-   [Bug Fix] Links in tweets (e.g. to Facebook, Instagram) now open in a new tab.
+-   [Bug Fix] Tweets with Videos/GIFs will now be displayed properly.
+-   [Bug Fix] The issue with scrollin and seeing weird rendering issues on user mentions and hashtags is gone.
 
 ## Queue
 
