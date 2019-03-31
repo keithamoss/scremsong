@@ -310,8 +310,10 @@ def get_social_columns_cached(platform=None):
     else:
         return SocialColumns.objects.filter(disabled=False).all()
 
+
 def is_from_demsausage(tweet):
     return "user" in tweet.data and "screen_name" in tweet.data["user"] and tweet.data["user"]["screen_name"] == "DemSausage"
+
 
 def get_tweet_text(status):
     """Refer to https://developer.twitter.com/en/docs/tweets/tweet-updates.html"""
@@ -369,7 +371,7 @@ def get_status_from_api(tweetId):
         return status._json
     except tweepy.TweepError as e:
         if e.api_code == 144:
-            # No status found with that ID.	
+            # No status found with that ID.
             # Corresponds with HTTP 404. The requested Tweet ID is not found (if it existed, it was probably deleted)
             logger.info("Does not exist remotely in get_status_from_api! ({})".format(tweetId))
             raise ScremsongException("Does not exist remotely in get_status_from_api! ({})".format(tweetId))
@@ -501,7 +503,7 @@ def process_new_tweet_reply(status, tweetSource, sendWebSocketEvent):
                 websockets.send_channel_message("reviewers.unassign", {
                     "assignmentId": assignmentId,
                 })
-                
+
             else:
                 if assignment.state == SocialAssignmentState.CLOSED:
                     if is_from_demsausage(tweet) is False:
@@ -748,6 +750,7 @@ def are_we_rate_limited(resources, bufferPercentage=None):
 
 def get_latest_rate_limit_resources():
     return TwitterRateLimitInfo.objects.latest("id").data
+
 
 def set_tweet_object_state_en_masse(tweets, state):
     for tweetId, tweet in tweets.items():

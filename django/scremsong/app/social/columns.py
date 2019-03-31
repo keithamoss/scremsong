@@ -1,8 +1,5 @@
-from django.db.models import Count
-
-from scremsong.app.models import SocialColumns, Tweets
+from scremsong.app.models import SocialColumns
 from scremsong.app.enums import TweetState
-from scremsong.app.social.twitter_utils import apply_tweet_filter_criteria
 
 
 def get_social_columns(platform=None, columnsIds=[]):

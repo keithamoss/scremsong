@@ -636,7 +636,7 @@ class ScremsongDebugViewset(viewsets.ViewSet):
                     if item_info["remaining"] < item_info["limit"]:
                         if group_name not in rateLimited:
                             rateLimited[group_name] = []
-                        
+
                         if item_name not in rateLimited[group_name]:
                             rateLimited[group_name].append(item_name)
 
