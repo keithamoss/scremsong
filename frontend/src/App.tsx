@@ -4,6 +4,7 @@ import AssignmentIndIcon from "@material-ui/icons/AssignmentInd"
 import DashboardIcon from "@material-ui/icons/Dashboard"
 import DNSIcon from "@material-ui/icons/Dns"
 import HelpIcon from "@material-ui/icons/Help"
+import NewReleases from "@material-ui/icons/NewReleases"
 import SettingsIcon from "@material-ui/icons/Settings"
 import ViewColumnIcon from "@material-ui/icons/ViewColumn"
 import classNames from "classnames"
@@ -88,6 +89,9 @@ class App extends React.Component<IProps & WithStyles, {}> {
                 target="_blank"
                 {...props}
             />
+        )
+        const WhatsNewLink = (props: any) => (
+            <a href="https://github.com/keithamoss/scremsong/blob/master/CHANGELOG.md" target="_blank" {...props} />
         )
 
         return (
@@ -177,6 +181,13 @@ class App extends React.Component<IProps & WithStyles, {}> {
                             <Tooltip title="Scremsong Tour & User Guide" enterDelay={1000}>
                                 <IconButton aria-label="Help">
                                     <HelpIcon />
+                                </IconButton>
+                            </Tooltip>
+                        </ListItem>
+                        <ListItem button={false} component={WhatsNewLink}>
+                            <Tooltip title="Find out what's new and shiny in Scremsong" enterDelay={1000}>
+                                <IconButton aria-label="Help">
+                                    <NewReleases />
                                 </IconButton>
                             </Tooltip>
                         </ListItem>

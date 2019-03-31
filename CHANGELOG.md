@@ -1,6 +1,6 @@
 # v1.1 (DD-MM-YYYY)
 
-Enhancements and bug fixes for the Federal Election.
+Enhancements and bug fixes for the 2019 Federal Election.
 
 ## Triage
 
@@ -24,4 +24,4 @@ Enhancements and bug fixes for the Federal Election.
 
 # v1.0 (22-03-2019)
 
-The first version of Scremsong goes live for the NSW Election
+The first version of Scremsong goes live for the 2019 NSW Election
