@@ -17,7 +17,7 @@ from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_ap
 from scremsong.app.reviewers import getCreationDateOfNewestTweetInAssignment
 from scremsong.celery import celery_restart_streaming
 from scremsong.app.models import Tweets, SocialColumns, SocialAssignments, Profile
-from scremsong.app.enums import SocialPlatformChoice, SocialAssignmentState, NotificationVariants, TweetState, TweetStatus, SocialAssignmentCloseReason
+from scremsong.app.enums import SocialPlatformChoice, SocialAssignmentState, NotificationVariants, TweetState, TweetStatus, SocialAssignmentCloseReason, ProfileOfflineReason
 from scremsong.app.social.assignments import get_social_assignment_stats_for_user
 from scremsong.app.social.columns import get_social_columns
 from scremsong.app import websockets
@@ -433,6 +433,10 @@ class SocialAssignmentsViewset(viewsets.ViewSet):
 
         profile = Profile.objects.get(user_id=user_id)
         profile.is_accepting_assignments = is_accepting_assignments
+        if is_accepting_assignments is True:
+            profile.offline_reason = None
+        else:
+            profile.offline_reason = ProfileOfflineReason.USER_CHOICE
         profile.save()
 
         websockets.send_channel_message("reviewers.set_status", {
@@ -441,7 +445,7 @@ class SocialAssignmentsViewset(viewsets.ViewSet):
         })
 
         if is_accepting_assignments is True:
-            message = "{} has come online and is now ready to receive assignments!".format(UserSerializer(profile.user).data["name"])
+            message = "{} has come online and is ready to receive assignments!".format(UserSerializer(profile.user).data["name"])
         else:
             message = "{} has gone offline".format(UserSerializer(profile.user).data["name"])
 

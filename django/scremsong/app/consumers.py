@@ -11,7 +11,8 @@ from scremsong.app.serializers import UserSerializer, ReviewerUserSerializer
 from scremsong.app.twitter import get_twitter_columns, fetch_tweets_for_columns, get_precanned_tweet_replies, are_we_rate_limited, get_latest_rate_limit_resources
 from scremsong.app.twitter_streaming import is_streaming_connected
 from scremsong.app.reviewers import get_reviewer_users, get_assignments
-from scremsong.app.enums import TwitterRateLimitState
+from scremsong.app.enums import TwitterRateLimitState, NotificationVariants, ProfileOfflineReason
+from scremsong.app.models import Profile
 from scremsong.app import websockets
 
 logger = make_logger(__name__)
@@ -41,9 +42,29 @@ class ScremsongConsumer(JsonWebsocketConsumer):
             # Send a message back to the client on a successful connection
             self.send_json(build_on_connect_data_payload(self.user))
 
+            # If we're reconnecting from a recent disconnection pop the user back online
+            if self.user.profile.is_accepting_assignments is False and self.user.profile.offline_reason == ProfileOfflineReason.DISCONNECTED:
+                Profile.objects.filter(user_id=self.user.id).update(is_accepting_assignments=True, offline_reason=None)
+                self.user.profile.is_accepting_assignments = True
+                self.user.profile.offline_reason = None
+                # reviewers.user_connected takes care of sending our updated profile object
+
             # Send a message to all connected clients that a new user has come online
             # We send the whole object to deal with brand new registered users coming online for the first time
             websockets.send_channel_message("reviewers.user_connected", {"user": ReviewerUserSerializer(self.user).data})
+
+            # Let all connected clients that the user has come online
+            if self.user.profile.is_accepting_assignments is True:
+                message = "{} has come online and is ready to receive assignments!".format(UserSerializer(self.user).data["name"])
+            else:
+                message = "{} has come online but isn't ready to accept assignments yet".format(UserSerializer(self.user).data["name"])
+
+            websockets.send_channel_message("notifications.send", {
+                "message": message,
+                "options": {
+                    "variant": NotificationVariants.INFO
+                }
+            })
 
             logger.debug('scremsong connect channel=%s group=%s group=%s user=%s', self.channel_name, self.group_name, self.user_group_name, self.user)
         else:
@@ -65,11 +86,25 @@ class ScremsongConsumer(JsonWebsocketConsumer):
             self.channel_name
         )
 
-        # @TODO Send a message to all connected clients that this user has gone offline
-        # websockets.send_channel_message("reviewers.set_status", {
-        #     "user_id": self.user.id,
-        #     "is_accepting_assignments": False
-        # })
+        # Mark the user as offline
+        profile = Profile.objects.get(user_id=self.user.id)
+        if profile.is_accepting_assignments is True:
+            profile.is_accepting_assignments = False
+            profile.offline_reason = ProfileOfflineReason.DISCONNECTED
+            profile.save()
+
+            websockets.send_channel_message("reviewers.set_status", {
+                "user_id": self.user.id,
+                "is_accepting_assignments": False
+            })
+
+        # Let all connected clients know that the user has gone offline
+        websockets.send_channel_message("notifications.send", {
+            "message": "{} has disconnected and gone offline".format(UserSerializer(self.user).data["name"]),
+            "options": {
+                "variant": NotificationVariants.INFO
+            }
+        })
 
         logger.debug('scremsong disconnect channel=%s user=%s', self.channel_name, self.user)
 

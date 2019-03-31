@@ -18,6 +18,11 @@ class ProfileSettingQueueSortBy(int, EnumBase):
     ByModified = 2
 
 
+class ProfileOfflineReason(str, EnumBase):
+    DISCONNECTED = "Disconnected"
+    USER_CHOICE = "User Choice"
+
+
 class SocialPlatformChoice(EnumBase):
     TWITTER = "Twitter"
 

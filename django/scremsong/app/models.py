@@ -9,7 +9,7 @@ from django.utils import timezone
 from model_utils import FieldTracker
 
 from scremsong.app.social.twitter_utils import apply_tweet_filter_criteria
-from scremsong.app.enums import ProfileSettingQueueSortBy, SocialPlatformChoice, SocialAssignmentState, SocialAssignmentCloseReason, TweetState, TweetStatus, TweetReplyCategories
+from scremsong.app.enums import ProfileSettingQueueSortBy, SocialPlatformChoice, SocialAssignmentState, SocialAssignmentCloseReason, TweetState, TweetStatus, TweetReplyCategories, ProfileOfflineReason
 from scremsong.util import make_logger
 from scremsong.app.enums import ProfileSettings
 
@@ -43,6 +43,7 @@ class Profile(models.Model):
     profile_image_url = models.URLField(blank=False)
     is_approved = models.BooleanField(default=False)
     is_accepting_assignments = models.BooleanField(default=False)
+    offline_reason = models.TextField(choices=[(tag, tag.value) for tag in ProfileOfflineReason], null=True)
     settings = ProfileJSONField(default=default_profile_settings, blank=True)
 
     tracker = FieldTracker()
