@@ -1,4 +1,16 @@
-import { Paper, Table, TableBody, TableCell, TableHead, TableRow, Theme, Typography, withStyles, WithStyles } from "@material-ui/core"
+import {
+    Avatar,
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableRow,
+    Theme,
+    Typography,
+    withStyles,
+    WithStyles,
+} from "@material-ui/core"
 import * as React from "react"
 import { IDashboardStats } from "../../redux/modules/app"
 import { IReviewerUser } from "../../redux/modules/reviewers"
@@ -10,12 +22,16 @@ const styles = (theme: Theme) =>
             padding: 10,
         },
         paper: {
-            maxWidth: 1000,
+            maxWidth: 1100,
             marginTop: theme.spacing.unit * 3,
             overflowX: "auto",
         },
         table: {
             // maxWidth: 700,
+        },
+        avatar: {
+            float: "left",
+            marginRight: 10,
         },
     } as any)
 
@@ -64,12 +80,13 @@ class DashboardView extends React.Component<TComponentProps, IState> {
                             <TableBody>
                                 {Object.keys(stats.assignments.past_week).map((userId: string) => {
                                     const userStats = stats.assignments.past_week[userId]
-                                    const user = users.find((u: IReviewerUser) => u.id === parseInt(userId, 10))
+                                    const user = users.find((u: IReviewerUser) => u.id === parseInt(userId, 10))!
 
                                     return (
                                         <TableRow key={userId}>
                                             <TableCell component="th" scope="row">
-                                                {user!.name}
+                                                <Avatar className={classes.avatar} src={user.profile_image_url} />
+                                                {user.name}
                                             </TableCell>
                                             <TableCell align="right">{userStats.Pending}</TableCell>
                                             <TableCell align="right">{userStats["Awaiting Reply"]}</TableCell>
@@ -111,7 +128,16 @@ class DashboardView extends React.Component<TComponentProps, IState> {
                                             <TableCell component="th" scope="row">
                                                 {column!.search_phrases.join(" ")}
                                             </TableCell>
-                                            <TableCell>{assignedTo !== undefined ? assignedTo.name : ""}</TableCell>
+                                            <TableCell>
+                                                {assignedTo !== undefined ? (
+                                                    <React.Fragment>
+                                                        <Avatar className={classes.avatar} src={assignedTo.profile_image_url} />
+                                                        {assignedTo.name}
+                                                    </React.Fragment>
+                                                ) : (
+                                                    ""
+                                                )}
+                                            </TableCell>
                                             <TableCell align="right">{stats.triage.past_week[columnId]["TweetState.ACTIVE"]}</TableCell>
                                             <TableCell align="right">{stats.triage.past_week[columnId]["TweetState.ASSIGNED"]}</TableCell>
                                             <TableCell align="right">{stats.triage.past_week[columnId]["TweetState.DEALT_WITH"]}</TableCell>
