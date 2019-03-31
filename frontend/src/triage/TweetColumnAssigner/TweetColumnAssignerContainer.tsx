@@ -5,7 +5,7 @@ import {
     assignReviewer,
     bulkReassignReviewer,
     getCurrentReviewer,
-    getUserAssignmentTotals,
+    getReviewerAssignmentTotals,
     IReviewerAssignment,
     IReviewerAssignmentCounts,
     IReviewerUser,
@@ -91,7 +91,7 @@ const mapStateToProps = (state: IStore, ownProps: IProps): IStoreProps => {
     return {
         currentReviewer: getCurrentReviewer(state)!,
         reviewers: reviewers.users,
-        reviewerAssignmentCounts: getUserAssignmentTotals(state),
+        reviewerAssignmentCounts: getReviewerAssignmentTotals(state),
         assignment,
     }
 }

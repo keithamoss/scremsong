@@ -1,7 +1,8 @@
 import { Button, Theme, Tooltip, withStyles, WithStyles } from "@material-ui/core"
-import AssignmentIcon from "@material-ui/icons/Assignment"
+import AssignmentIndIcon from "@material-ui/icons/AssignmentInd"
 import AssignmentOutlinedIcon from "@material-ui/icons/AssignmentOutlined"
 import BlockOutlinedIcon from "@material-ui/icons/BlockOutlined"
+import BrightnessAutoIcon from "@material-ui/icons/BrightnessAuto"
 import CheckCircleOutlinedIcon from "@material-ui/icons/CheckCircleOutlined"
 import LiveTvOutlinedIcon from "@material-ui/icons/LiveTvOutlined"
 import * as React from "react"
@@ -32,6 +33,7 @@ export interface IProps {
     overscanRowCount: number
     loadMoreRows: any
     onPositionUpdate: any
+    onAutomaticallyAssignTweet: any
     onSetTweetState: any
 }
 
@@ -47,6 +49,7 @@ export interface ISnapshot {
 type TComponentProps = IProps & WithStyles
 class TweetColumn extends React.Component<TComponentProps, IState> {
     private onOpenAssigner: Function
+    private onAutomaticallyAssignTweet: Function
     private onSetTweetState: Function
     private _registerChild: Function
     private _noRowsRenderer: any
@@ -70,6 +73,7 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
         this.state = { ready: false }
 
         this.onOpenAssigner = (tweetId: string, assignmentId: number | null) => () => this.props.onOpenAssigner(tweetId, assignmentId)
+        this.onAutomaticallyAssignTweet = (tweetId: string) => () => this.props.onAutomaticallyAssignTweet(tweetId)
         this.onSetTweetState = (tweetId: string, tweetState: eSocialTweetState) => () => this.props.onSetTweetState(tweetId, tweetState)
 
         this._onRowsRendered = (onRowsRendered: Function, opts: any /*ListProps["onRowsRendered"]*/) => {
@@ -290,6 +294,22 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
                     {({ measure }) => (
                         <div style={style}>
                             <div className={classes.actionBar} style={{ borderRight: `6px solid ${backgroundColor}` }}>
+                                {showActionBarButtons === true && tweet.state === eSocialTweetState.ACTIVE && (
+                                    <Tooltip
+                                        title="Automatically assign this tweet to the reviewer who has the smallest queue"
+                                        aria-label="Assign tweet automatically"
+                                    >
+                                        <Button
+                                            size="small"
+                                            className={classes.button}
+                                            aria-label="Assign tweet automatically"
+                                            onClick={this.onAutomaticallyAssignTweet(tweetId)}
+                                        >
+                                            <BrightnessAutoIcon />
+                                        </Button>
+                                    </Tooltip>
+                                )}
+
                                 {showActionBarButtons === true &&
                                     (tweet.state === eSocialTweetState.ACTIVE || tweet.state === eSocialTweetState.ASSIGNED) && (
                                         <Tooltip title="Assign this tweet to someone" aria-label="Assign tweet">
@@ -299,7 +319,7 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
                                                 aria-label="Assign tweet"
                                                 onClick={this.onOpenAssigner(tweetId, assignmentId)}
                                             >
-                                                {assignmentId === undefined ? <AssignmentOutlinedIcon /> : <AssignmentIcon />}
+                                                {assignmentId === undefined ? <AssignmentOutlinedIcon /> : <AssignmentIndIcon />}
                                             </Button>
                                         </Tooltip>
                                     )}

@@ -2,7 +2,7 @@ import { debounce } from "lodash-es"
 import * as React from "react"
 import { connect } from "react-redux"
 import { IStore } from "../../redux/modules/reducer"
-import { IReviewerAssignment } from "../../redux/modules/reviewers"
+import { automaticallyAssignReviewer, IReviewerAssignment } from "../../redux/modules/reviewers"
 import {
     eSocialTweetState,
     fetchTweets,
@@ -35,6 +35,7 @@ export interface IStoreProps {
 export interface IDispatchProps {
     loadMoreRows: any
     onPositionUpdate: any
+    onAutomaticallyAssignTweet: any
     onSetTweetState: any
 }
 
@@ -81,7 +82,17 @@ class TweetColumnContainer extends React.Component<TComponentProps, {}> {
         )
     }
     public render() {
-        const { column, onOpenAssigner, tweet_ids, tweets, tweet_assignments, assignments, loadMoreRows, onSetTweetState } = this.props
+        const {
+            column,
+            onOpenAssigner,
+            tweet_ids,
+            tweets,
+            tweet_assignments,
+            assignments,
+            loadMoreRows,
+            onAutomaticallyAssignTweet,
+            onSetTweetState,
+        } = this.props
 
         return (
             <TweetColumn
@@ -96,6 +107,7 @@ class TweetColumnContainer extends React.Component<TComponentProps, {}> {
                 overscanRowCount={overscanRowCount}
                 loadMoreRows={loadMoreRows}
                 onPositionUpdate={this.onPositionUpdate}
+                onAutomaticallyAssignTweet={onAutomaticallyAssignTweet}
                 onSetTweetState={onSetTweetState}
             />
         )
@@ -126,6 +138,9 @@ const mapDispatchToProps = (dispatch: Function, ownProps: IProps): IDispatchProp
                 settings.column_positions[columnId] = positions
                 dispatch(ws_changeUserProfileSettings(settings))
             }
+        },
+        onAutomaticallyAssignTweet: (tweetId: string) => {
+            dispatch(automaticallyAssignReviewer(tweetId))
         },
         onSetTweetState: (tweetId: string, tweetState: eSocialTweetState) => {
             dispatch(setTweetState(tweetId, tweetState))

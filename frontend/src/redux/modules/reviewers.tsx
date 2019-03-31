@@ -1,5 +1,5 @@
 import * as dotProp from "dot-prop-immutable"
-import { memoize, sortBy } from "lodash-es"
+import { isEmpty, memoize, sortBy } from "lodash-es"
 // import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 import { Action } from "redux"
 import { createSelector } from "reselect"
@@ -91,6 +91,13 @@ const getAssignments = (state: IStore) => state.reviewers.assignments
 const getReviewers = (state: IStore) => state.reviewers.users
 const getCurrentReviewerUserId = (state: IStore) => (state.reviewers.currentReviewerId ? state.reviewers.currentReviewerId : null)
 
+export const getActiveReviewers = createSelector(
+    [getReviewers],
+    (reviewers: IReviewerUser[]): any => {
+        return Object.values(reviewers).filter((reviewer: IReviewerUser, index: number) => reviewer.is_accepting_assignments === true)
+    }
+)
+
 export const getActiveAssignments = createSelector(
     [getAssignments],
     (assignments: IReviewerAssignment[]): any => {
@@ -121,7 +128,7 @@ export const getPendingUserAssignments = createSelector(
         })
 )
 
-export const getUserAssignmentTotals = createSelector(
+export const getReviewerAssignmentTotals = createSelector(
     [getActiveAssignments, getReviewers],
     (assignments: IReviewerAssignment[], reviewers: IReviewerUser[]): IReviewerAssignmentCounts => {
         const totals: IReviewerAssignmentCounts = {}
@@ -130,6 +137,33 @@ export const getUserAssignmentTotals = createSelector(
             totals[assignment.user_id] += 1
         })
         return totals
+    }
+)
+
+export const getActiveReviewerAssignmentTotals = createSelector(
+    [getActiveAssignments, getActiveReviewers],
+    (assignments: IReviewerAssignment[], reviewers: IReviewerUser[]): IReviewerAssignmentCounts => {
+        const totals: IReviewerAssignmentCounts = {}
+        reviewers.forEach((reviewer: IReviewerUser) => (totals[reviewer.id] = 0))
+        assignments.forEach((assignment: IReviewerAssignment) => {
+            totals[assignment.user_id] += 1
+        })
+        return totals
+    }
+)
+
+export const getActiveReviewerWithLeastAssignments = createSelector(
+    [getActiveReviewerAssignmentTotals],
+    (assignmentsByReviewer: IReviewerAssignmentCounts): number | null => {
+        if (isEmpty(assignmentsByReviewer) === false) {
+            return parseInt(
+                Object.keys(assignmentsByReviewer).reduce((a: any, b: any) =>
+                    assignmentsByReviewer[a] < assignmentsByReviewer[b] ? a : b
+                ),
+                10
+            )
+        }
+        return null
     }
 )
 
@@ -232,6 +266,15 @@ export interface IActionReviewersSetCurrentReviewer extends Action<typeof SET_CU
 export function changeCurrentReviewer(userId: number) {
     return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
         dispatch(setCurrentReviewer(userId))
+    }
+}
+
+export function automaticallyAssignReviewer(tweetId: string) {
+    return async (dispatch: Function, getState: Function, { api, emit }: IThunkExtras) => {
+        const reviewerId = getActiveReviewerWithLeastAssignments(getState())
+        if (reviewerId !== null) {
+            dispatch(assignReviewer(tweetId, reviewerId))
+        }
     }
 }
 

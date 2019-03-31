@@ -9,6 +9,7 @@ Enhancements and bug fixes for the 2019 Federal Election.
 ## Triage
 
 -   [Enhancement] Tweets will now only ever appear in one column (determined by a priority assigned to each column)
+-   [Enhancement] Added a button to automatically assign a tweet to the reviewer who has the smallest queue
 -   [Enhancement] A reviewer's current number of assignments now only includes their active assignments (not active + awaiting reply).
 -   [Enhancement] The "Ignore" and "Dealt With" buttons now only display if the tweet isn't already assigned.
 -   [Enhancement] If a user is offline and one of their assignments receives a new tweet the assignment will be deleted so that the tweets can be re-assigned.
