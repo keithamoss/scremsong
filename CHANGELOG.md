@@ -4,7 +4,7 @@ Enhancements and bug fixes for the 2019 Federal Election.
 
 ## Overall
 
--   [Enhancement] Scremsong will load much faster now!
+-   [Enhancement] Scremsong will load a bit faster now.
 
 ## Triage
 
