@@ -199,7 +199,7 @@ export function getActionBarBackgroundColour(tweet: ISocialTweet, assignment: IR
         return red[200]
     }
 
-    if (tweet.state === eSocialTweetState.DISMISSED) {
+    if (tweet.state === eSocialTweetState.DISMISSED || tweet.state === eSocialTweetState.NOT_ACTIONED) {
         return blueGrey[200]
     } else if (tweet.state === eSocialTweetState.DEALT_WITH) {
         return green[200]

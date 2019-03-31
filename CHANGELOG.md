@@ -16,6 +16,7 @@ Enhancements and bug fixes for the 2019 Federal Election.
 -   [Bug Fix] Links in tweets (e.g. to Facebook, Instagram) now open in a new tab.
 -   [Bug Fix] Tweets with Videos/GIFs will now be displayed properly.
 -   [Bug Fix] The issue with scrollin and seeing weird rendering issues on user mentions and hashtags is gone.
+-   [Bug Fix] Sometimes really old tweets would appear in triage columns. This won't happen any more.
 
 ## Queue
 

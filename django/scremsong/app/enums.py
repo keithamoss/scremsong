@@ -54,6 +54,7 @@ class TweetState(str, EnumBase):
     DEALT_WITH = "Dealt With"
     DISMISSED = "Dismissed"
     ASSIGNED = "Assigned"
+    NOT_ACTIONED = "Not Actioned"
 
 
 class TweetStatus(EnumBase):

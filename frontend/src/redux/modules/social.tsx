@@ -223,6 +223,7 @@ export enum eSocialTweetState {
     DEALT_WITH = "Dealt With",
     DISMISSED = "Dismissed",
     ASSIGNED = "Assigned",
+    NOT_ACTIONED = "Not Actioned",
 }
 
 export enum eSocialTweetActionType {

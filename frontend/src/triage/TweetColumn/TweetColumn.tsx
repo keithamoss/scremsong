@@ -281,7 +281,7 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
             const backgroundColor = getActionBarBackgroundColour(tweet, assignment)
 
             let opacity = 1
-            if (tweet.state === eSocialTweetState.DISMISSED) {
+            if (tweet.state === eSocialTweetState.DISMISSED || tweet.state === eSocialTweetState.NOT_ACTIONED) {
                 opacity = 0.4
             }
 
@@ -331,7 +331,9 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
                                 )}
 
                                 {showActionBarButtons === true &&
-                                    (tweet.state === eSocialTweetState.DISMISSED || tweet.state === eSocialTweetState.DEALT_WITH) && (
+                                    (tweet.state === eSocialTweetState.DISMISSED ||
+                                        tweet.state === eSocialTweetState.NOT_ACTIONED ||
+                                        tweet.state === eSocialTweetState.DEALT_WITH) && (
                                         <Tooltip
                                             title="Make this tweet active again (i.e. unignore it, mark it as 'not dealt with')"
                                             aria-label="Set active"
