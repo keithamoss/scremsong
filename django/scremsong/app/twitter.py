@@ -1,4 +1,7 @@
 import tweepy
+from django.utils import timezone
+from django.db.models import BigIntegerField
+from django.db.models.functions import Cast
 
 from scremsong.util import make_logger, get_env, get_or_none
 from scremsong.app.models import SocialPlatforms, Tweets, SocialColumns, SocialAssignments, TweetReplies, TwitterRateLimitInfo
@@ -11,8 +14,6 @@ from scremsong.app.exceptions import ScremsongException, FailedToResolveTweet
 from scremsong.app.reviewers_utils import is_tweet_part_of_an_assignment
 from scremsong.app.users import is_user_accepting_assignments
 from scremsong.celery import task_process_tweet_reply
-
-from django.utils import timezone
 
 from functools import lru_cache
 from time import sleep
@@ -125,13 +126,13 @@ def fetch_tweets_for_columns(columnPositions, columnIds=[]):
 
 
 def get_tweets_for_column_by_tweet_ids(social_column, since_id=None, max_id=None):
-    queryset = Tweets.objects
+    queryset = Tweets.objects.annotate(tweet_id_bigint=Cast("tweet_id", BigIntegerField()))
 
     if since_id is not None:
-        queryset = queryset.filter(tweet_id__gt=since_id)
+        queryset = queryset.filter(tweet_id_bigint__gt=since_id)
 
     if max_id is not None:
-        queryset = queryset.filter(tweet_id__lte=max_id)
+        queryset = queryset.filter(tweet_id_bigint__lte=max_id)
 
     if since_id is not None and max_id is not None and since_id >= max_id:
         logger.warning("since_id {} is out of range of max_id {} in get_tweets_for_column - it should be a lower number!")
@@ -139,17 +140,17 @@ def get_tweets_for_column_by_tweet_ids(social_column, since_id=None, max_id=None
 
     queryset = apply_tweet_filter_criteria(social_column, queryset)
 
-    return queryset.order_by("-tweet_id").values()
+    return queryset.order_by("-tweet_id_bigint").values()
 
 
 def get_tweets_for_column(social_column, since_id=None, max_id=None, startIndex=None, stopIndex=None, limit=None):
-    queryset = Tweets.objects
+    queryset = Tweets.objects.annotate(tweet_id_bigint=Cast("tweet_id", BigIntegerField()))
 
     if since_id is not None:
-        queryset = queryset.filter(tweet_id__gt=since_id)
+        queryset = queryset.filter(tweet_id_bigint__gt=since_id)
 
     if max_id is not None:
-        queryset = queryset.filter(tweet_id__lte=max_id)
+        queryset = queryset.filter(tweet_id_bigint__lte=max_id)
 
     if since_id is not None and max_id is not None and since_id >= max_id:
         logger.warning("since_id {} is out of range of max_id {} in get_tweets_for_column - it should be a lower number!")
@@ -157,7 +158,7 @@ def get_tweets_for_column(social_column, since_id=None, max_id=None, startIndex=
 
     queryset = apply_tweet_filter_criteria(social_column, queryset)
 
-    tweets = queryset.order_by("-tweet_id").values()
+    tweets = queryset.order_by("-tweet_id_bigint").values()
 
     if limit is not None:
         return tweets[:int(limit)]
