@@ -10,7 +10,7 @@ const styles = (theme: Theme) =>
             padding: 10,
         },
         paper: {
-            maxWidth: 900,
+            maxWidth: 1000,
             marginTop: theme.spacing.unit * 3,
             overflowX: "auto",
         },
@@ -94,11 +94,15 @@ class DashboardView extends React.Component<TComponentProps, IState> {
                                 <TableRow>
                                     <TableCell />
                                     <TableCell>Assigned To</TableCell>
-                                    <TableCell align="right">Untriaged Tweets</TableCell>
+                                    <TableCell align="right">Untriaged</TableCell>
+                                    <TableCell align="right">Assigned</TableCell>
+                                    <TableCell align="right">Dealt With</TableCell>
+                                    <TableCell align="right">Dismissed</TableCell>
+                                    <TableCell align="right">Not Actioned</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {Object.keys(stats.triage.untriaged_tweets.past_week).map((columnId: string) => {
+                                {Object.keys(stats.triage.past_week).map((columnId: string) => {
                                     const column = columns.find((c: ITriageColumn) => c.id === parseInt(columnId, 10))
                                     const assignedTo = users.find((u: IReviewerUser) => u.id === column!.assigned_to)
 
@@ -108,7 +112,13 @@ class DashboardView extends React.Component<TComponentProps, IState> {
                                                 {column!.search_phrases.join(" ")}
                                             </TableCell>
                                             <TableCell>{assignedTo !== undefined ? assignedTo.name : ""}</TableCell>
-                                            <TableCell align="right">{stats.triage.untriaged_tweets.past_week[columnId]}</TableCell>
+                                            <TableCell align="right">{stats.triage.past_week[columnId]["TweetState.ACTIVE"]}</TableCell>
+                                            <TableCell align="right">{stats.triage.past_week[columnId]["TweetState.ASSIGNED"]}</TableCell>
+                                            <TableCell align="right">{stats.triage.past_week[columnId]["TweetState.DEALT_WITH"]}</TableCell>
+                                            <TableCell align="right">{stats.triage.past_week[columnId]["TweetState.DISMISSED"]}</TableCell>
+                                            <TableCell align="right">
+                                                {stats.triage.past_week[columnId]["TweetState.NOT_ACTIONED"]}
+                                            </TableCell>
                                         </TableRow>
                                     )
                                 })}

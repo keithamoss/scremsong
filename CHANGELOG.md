@@ -29,6 +29,10 @@ Enhancements and bug fixes for the 2019 Federal Election.
 -   [Bug Fix] New and updated assignments now appear at the bottom of your queue so they don't interrupt what you're doing by scrolling the page.
 -   [Bug Fix] The "Undo" notifications now close the assignment straightaway, not when they're removed from the screen.
 
+## Dashboard
+
+-   [Enhancement] Triage now shows stats for all triage outcomes (not triaged, assigned, dealt with, et cetera)
+
 # v1.0 (22-03-2019)
 
 The first version of Scremsong goes live for the 2019 NSW Election

@@ -19,7 +19,7 @@ from scremsong.celery import celery_restart_streaming
 from scremsong.app.models import Tweets, SocialColumns, SocialAssignments, Profile
 from scremsong.app.enums import SocialPlatformChoice, SocialAssignmentState, NotificationVariants, TweetState, TweetStatus, SocialAssignmentCloseReason, ProfileOfflineReason
 from scremsong.app.social.assignments import get_social_assignment_stats_for_user
-from scremsong.app.social.columns import get_social_columns
+from scremsong.app.social.columns import get_social_columns, get_stats_for_column
 from scremsong.app import websockets
 from scremsong.util import make_logger, get_or_none
 from scremsong.app.exceptions import ScremsongException
@@ -503,24 +503,22 @@ class DashboardViewset(viewsets.ViewSet):
     def get_stats(self, request, format=None):
         stats = {
             "assignments": {
-                "all_time": {},
+                # "all_time": {},
                 "past_week": {},
             },
             "triage": {
-                "untriaged_tweets": {
-                    "all_time": {},
-                    "past_week": {}
-                }
+                # "all_time": {},
+                "past_week": {},
             }
         }
 
         for user in User.objects.all():
-            stats["assignments"]["all_time"][user.id] = get_social_assignment_stats_for_user(user)
+            # stats["assignments"]["all_time"][user.id] = get_social_assignment_stats_for_user(user)
             stats["assignments"]["past_week"][user.id] = get_social_assignment_stats_for_user(user, sincePastNDays=7)
 
-        for social_column in get_social_columns(SocialPlatformChoice.TWITTER).order_by("id").all():
-            stats["triage"]["untriaged_tweets"]["all_time"][social_column.id] = social_column.total_active_tweets()
-            stats["triage"]["untriaged_tweets"]["past_week"][social_column.id] = social_column.total_active_tweets(sincePastNDays=1)
+        for social_column in get_social_columns(SocialPlatformChoice.TWITTER).order_by("priority").all():
+            # stats["triage"]["all_time"][social_column.id] = get_stats_for_column(social_column)
+            stats["triage"]["past_week"][social_column.id] = get_stats_for_column(social_column, sincePastNDays=7)
 
         return Response(stats)
 

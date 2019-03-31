@@ -237,21 +237,19 @@ export enum eNotificationVariant {
 
 export interface IDashboardStats {
     assignments: {
-        all_time: {
-            [key: string]: IDashboardStatsUserAssignments // key = userId
-        }
+        // all_time: {
+        //     [key: string]: IDashboardStatsUserAssignments // key = userId
+        // }
         past_week: {
             [key: string]: IDashboardStatsUserAssignments // key = userId
         }
     }
     triage: {
-        untriaged_tweets: {
-            all_time: {
-                [key: string]: number // key = columnId
-            }
-            past_week: {
-                [key: string]: number // key = columnId
-            }
+        // all_time: {
+        //     [key: string]: IDashboardStatsTriage // key = columnId
+        // }
+        past_week: {
+            [key: string]: IDashboardStatsTriage // key = columnId
         }
     }
 }
@@ -262,6 +260,14 @@ export interface IDashboardStatsUserAssignments {
     "No Change Required": number
     "Not Relevant": number
     Pending: number
+}
+
+export interface IDashboardStatsTriage {
+    "TweetState.ACTIVE": number
+    "TweetState.DEALT_WITH": number
+    "TweetState.DISMISSED": number
+    "TweetState.ASSIGNED": number
+    "TweetState.NOT_ACTIONED": number
 }
 
 // Side effects, only as applicable

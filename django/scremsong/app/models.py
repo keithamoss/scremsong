@@ -104,12 +104,12 @@ class SocialColumns(models.Model):
             return 0
         return count
 
-    def total_active_tweets(self, sincePastNDays=None):
+    def total_tweets_for_state(self, state, sincePastNDays=None):
         """
         Count the number of active tweets for the column
         """
-        # @TODO This is a bit rubbish. We could pull created_at out as a PostgreSQL timestmap field.
-        queryset = apply_tweet_filter_criteria(self, Tweets.objects).filter(state=TweetState.ACTIVE)
+        # @TODO This is a bit rubbish. We could pull created_at out as a PostgreSQL timestamp field.
+        queryset = apply_tweet_filter_criteria(self, Tweets.objects).filter(state=state)
         if sincePastNDays is not None:
             queryset = queryset.annotate(diff_in_days=Func(F("data__created_at"), function="EXTRACT", template="%(function)s(EPOCH FROM CURRENT_TIMESTAMP - to_timestamp(data->>'created_at', 'Dy Mon DD HH24:MI:SS +0000 YYYY')) / 86400")).filter(diff_in_days__lte=sincePastNDays)
 
