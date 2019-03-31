@@ -214,25 +214,19 @@ def notify_of_saved_tweets(tweets):
     if len(tweets) > 0:
         response = {
             "tweets": {},
-            "columnIds": {},
         }
 
         for tweet in tweets:
             response["tweets"][tweet.tweet_id] = TweetsSerializer(tweet).data
 
-            cols = get_columns_for_tweet(tweet)
-            if len(cols) > 0:
-                response["columnIds"][tweet.tweet_id] = cols
-
         websockets.send_channel_message("tweets.new_tweets", response)
 
 
-def get_columns_for_tweet(tweet):
-    matchedColumnIds = []
-    for column in get_social_columns_cached(SocialPlatformChoice.TWITTER):
+def get_column_for_tweet_with_priority(tweet):
+    for column in get_social_columns_cached(SocialPlatformChoice.TWITTER).order_by("priority"):
         if is_tweet_in_column(tweet.data, column) is True:
-            matchedColumnIds.append(column.id)
-    return matchedColumnIds
+            return column.id
+    return None
 
 
 def notify_of_saved_tweet(tweet):
@@ -240,7 +234,7 @@ def notify_of_saved_tweet(tweet):
 
 
 def get_twitter_columns():
-    cols = get_social_columns(SocialPlatformChoice.TWITTER).order_by("id").all()
+    cols = get_social_columns(SocialPlatformChoice.TWITTER).order_by("priority").all()
     return SocialColumnsSerializerWithTweetCountSerializer(cols, many=True).data
 
 
@@ -311,9 +305,9 @@ def fill_in_missing_tweets(since_id, max_id):
 @lru_cache(maxsize=5)
 def get_social_columns_cached(platform=None):
     if platform is not None:
-        return SocialColumns.objects.filter(platform=platform)
+        return SocialColumns.objects.filter(platform=platform).filter(disabled=False)
     else:
-        return SocialColumns.objects.all()
+        return SocialColumns.objects.filter(disabled=False).all()
 
 def is_from_demsausage(tweet):
     return "user" in tweet.data and "screen_name" in tweet.data["user"] and tweet.data["user"]["screen_name"] == "DemSausage"

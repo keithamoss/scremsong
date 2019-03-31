@@ -1,9 +1,10 @@
 from django.dispatch import receiver
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import pre_save, post_save, post_delete
 from django.contrib.auth.models import User
 
 from scremsong.app.models import Profile, SocialAssignments, Tweets
 from scremsong.app.enums import TweetState
+from scremsong.app.twitter import get_column_for_tweet_with_priority
 from scremsong.app import websockets
 
 
@@ -38,3 +39,11 @@ def set_tweets_as_unassigned(sender, instance, **kwargs):
     websockets.send_channel_message("tweets.set_state", {
         "tweetStates": [{"tweetId": t, "tweetState": TweetState.ACTIVE} for t in tweetIds],
     })
+
+
+@receiver(pre_save, sender=Tweets)
+def set_tweet_column(sender, instance, **kwargs):
+    if instance.column_id is None:
+        columnId = get_column_for_tweet_with_priority(instance)
+        if columnId is not None:
+            instance.column_id = columnId

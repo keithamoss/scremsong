@@ -58,15 +58,13 @@ export default function reducer(state: IModule = initialState, action: IAction) 
             })
             return state
         case WS_TWEETS_NEW_TWEETS:
-            for (const [tweetId, columnIds] of Object.entries(action.columnIds)) {
-                columnIds.forEach((columnId: number) => {
-                    if (dotProp.get(state, `column_tweets.${columnId}`).includes(tweetId) === false) {
-                        state = dotProp.set(state, `column_tweets_buffered.${columnId}`, [
-                            ...state.column_tweets_buffered[columnId],
-                            ...[tweetId],
-                        ])
-                    }
-                })
+            for (const [tweetId, tweet] of Object.entries(action.tweets)) {
+                if (tweet.column_id !== null && dotProp.get(state, `column_tweets.${tweet.column_id}`).includes(tweetId) === false) {
+                    state = dotProp.set(state, `column_tweets_buffered.${tweet.column_id}`, [
+                        ...state.column_tweets_buffered[tweet.column_id],
+                        ...[tweetId],
+                    ])
+                }
             }
             return state
         case LOAD_BUFFERED_TWEETS:

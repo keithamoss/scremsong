@@ -109,7 +109,8 @@ class TweetsSerializer(serializers.ModelSerializer):
         model = Tweets
         fields = (
             'data',
-            'state')
+            'state',
+            'column_id')
 
 
 class TweetRepliesSerializer(serializers.ModelSerializer):

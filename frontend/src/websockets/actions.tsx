@@ -117,9 +117,6 @@ export interface IActionTweetsRateLimitResources extends Action<typeof WS_TWEETS
 
 export interface IActionTweetsNew extends Action<typeof WS_TWEETS_NEW_TWEETS> {
     tweets: ISocialTweet[]
-    columnIds: {
-        [key: string]: number[]
-    }
 }
 
 export interface IActionTweetsUpdateTweets extends Action<typeof WS_TWEETS_UPDATE_TWEETS> {

@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models import F, Func
 from django.contrib.postgres.fields import JSONField
 from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator
 from django.utils import timezone
 from model_utils import FieldTracker
 
@@ -83,6 +84,11 @@ class SocialColumns(models.Model):
 
     assigned_to = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     platform = models.TextField(choices=[(tag, tag.value) for tag in SocialPlatformChoice])
+    priority = models.IntegerField(null=True, validators=[MinValueValidator(1)])
+    disabled = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ("platform", "priority")
 
     # A comma-separated list of phrases which will be used to determine what Tweets will be delivered on the stream. A phrase may be one or more terms separated by spaces, and a phrase will match if all of the terms in the phrase are present in the Tweet, regardless of order and ignoring case. By this model, you can think of commas as logical ORs, while spaces are equivalent to logical ANDs (e.g. ‘the twitter’ is the AND twitter, and ‘the,twitter’ is the OR twitter).
     # https://developer.twitter.com/en/docs/tweets/filter-realtime/guides/basic-stream-parameters#track
@@ -101,7 +107,7 @@ class SocialColumns(models.Model):
         """
         Count the number of active tweets for the column
         """
-        # @TODO This is horrendously inefficient. We should (a) tag tweets with their columnId when they come in (or the column search terms are updated) and (b) pull created_at out as a PostgreSQL timestmap field.
+        # @TODO This is a bit rubbish. We could pull created_at out as a PostgreSQL timestmap field.
         queryset = apply_tweet_filter_criteria(self, Tweets.objects).filter(state=TweetState.ACTIVE)
         if sincePastNDays is not None:
             queryset = queryset.annotate(diff_in_days=Func(F("data__created_at"), function="EXTRACT", template="%(function)s(EPOCH FROM CURRENT_TIMESTAMP - to_timestamp(data->>'created_at', 'Dy Mon DD HH24:MI:SS +0000 YYYY')) / 86400")).filter(diff_in_days__lte=sincePastNDays)
@@ -120,6 +126,7 @@ class Tweets(models.Model):
     state = models.TextField(choices=[(tag, tag.value) for tag in TweetState], default=TweetState.ACTIVE)
     status = models.TextField(choices=[(tag, tag.value) for tag in TweetStatus])
     source = JSONField(default=list, blank=True)  # TweetSource
+    column = models.ForeignKey(SocialColumns, on_delete=models.PROTECT, null=True)
 
     class Meta:
         indexes = [

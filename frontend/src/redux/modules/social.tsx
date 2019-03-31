@@ -240,6 +240,7 @@ export enum eSocialTwitterRateLimitState {
 export interface ISocialTweet {
     data: ISocialTweetData
     state: eSocialTweetState
+    column_id: number | null
 }
 
 export interface ISocialTweetData {
