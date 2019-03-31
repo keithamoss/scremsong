@@ -20,8 +20,8 @@
         "strictNullChecks": true,
         "suppressImplicitAnyIndexErrors": true,
         "noUnusedLocals": true,
-        "sourceMap": true
+        "sourceMap": true,
+        "incremental": true
     },
-    "include": ["src"],
-    "outDir": "build/dist"
+    "include": ["src"]
 }

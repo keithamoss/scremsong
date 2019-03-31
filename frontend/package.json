@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "dependencies": {
-        "@material-ui/core": "^3.9.2",
+        "@material-ui/core": "3.9.3",
         "@material-ui/icons": "^3.0.2",
         "classnames": "^2.2.6",
         "dot-prop-immutable": "^1.5.0",
@@ -61,10 +61,10 @@
         "core-js": "^3.0.0",
         "react-scripts": "^2.1.8",
         "redux-devtools-extension": "^2.13.8",
-        "tslint": "^5.13.1",
+        "tslint": "5.14.0",
         "tslint-config-prettier": "^1.18.0",
-        "tslint-react": "^3.6.0",
-        "typescript": "^3.3.3333"
+        "tslint-react": "4.0.0",
+        "typescript": "^3.4.1"
     },
     "browserslist": [
         ">0.2%",
