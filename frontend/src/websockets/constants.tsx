@@ -25,6 +25,8 @@ export const WS_REVIEWERS_ASSIGNMENT_UPDATED = "ws/scremsong/reviewers/ASSIGNMEN
 export const WS_REVIEWERS_ASSIGNMENT_METADATA_CHANGED = "ws/scremsong/reviewers/ASSIGNMENT_METADATA_CHANGED"
 export const WS_REVIEWERS_SET_STATUS = "ws/scremsong/reviewers/SET_STATUS"
 
+export const WS_SOCIALPLATFORMS_SETTINGS = "ws/scremsong/socialplatforms/SETTINGS"
+
 export const messageTypes = [
     WS_NOTIFICATION,
     WS_TWEETS_STREAMING_STATE,
@@ -46,4 +48,5 @@ export const messageTypes = [
     WS_REVIEWERS_ASSIGNMENT_UPDATED,
     WS_REVIEWERS_ASSIGNMENT_METADATA_CHANGED,
     WS_REVIEWERS_SET_STATUS,
+    WS_SOCIALPLATFORMS_SETTINGS,
 ]

@@ -1,5 +1,6 @@
 import * as React from "react"
 import { connect } from "react-redux"
+import { getTwitterSettings } from "../../redux/modules/app"
 import { IStore } from "../../redux/modules/reducer"
 import {
     eSocialTweetActionType,
@@ -21,6 +22,7 @@ export interface IProps {
 
 export interface IStoreProps {
     tweet: ISocialTweet
+    muzzled: boolean
 }
 
 export interface IDispatchProps {
@@ -30,13 +32,14 @@ export interface IDispatchProps {
 type TComponentProps = IProps & IStoreProps & IDispatchProps
 class TweetCardContainer extends React.PureComponent<TComponentProps, {}> {
     public render() {
-        const { tweet, tweetStyles, onTweetAction, onMediaLoad, onMediaLoadError } = this.props
+        const { tweet, muzzled, tweetStyles, onTweetAction, onMediaLoad, onMediaLoadError } = this.props
 
         return (
             <TweetCard
                 tweet={tweet}
                 tweetStyles={tweetStyles}
                 onTweetAction={onTweetAction}
+                muzzled={muzzled}
                 onMediaLoad={onMediaLoad}
                 onMediaLoadError={onMediaLoadError}
             />
@@ -47,8 +50,12 @@ class TweetCardContainer extends React.PureComponent<TComponentProps, {}> {
 const mapStateToProps = (state: IStore, ownProps: IProps): IStoreProps => {
     const { social } = state
 
+    const twitterSettings = getTwitterSettings(state)
+
     return {
         tweet: social.tweets[ownProps.tweetId],
+        // @TODO Clean up
+        muzzled: "muzzled" in twitterSettings && twitterSettings.muzzled === true ? true : false,
     }
 }
 

@@ -8,10 +8,10 @@ from django.db import transaction
 
 from scremsong.util import make_logger
 from scremsong.app.serializers import UserSerializer, ReviewerUserSerializer
-from scremsong.app.twitter import get_twitter_columns, fetch_tweets_for_columns, get_precanned_tweet_replies, are_we_rate_limited, get_latest_rate_limit_resources
+from scremsong.app.twitter import get_twitter_columns, fetch_tweets_for_columns, get_precanned_tweet_replies, are_we_rate_limited, get_latest_rate_limit_resources, get_twitter_app
 from scremsong.app.twitter_streaming import is_streaming_connected
 from scremsong.app.reviewers import get_reviewer_users, get_assignments
-from scremsong.app.enums import TwitterRateLimitState, NotificationVariants, ProfileOfflineReason
+from scremsong.app.enums import TwitterRateLimitState, NotificationVariants, ProfileOfflineReason, SocialPlatformChoice
 from scremsong.app.models import Profile
 from scremsong.app import websockets
 
@@ -253,6 +253,15 @@ class ScremsongConsumer(JsonWebsocketConsumer):
             "tweets": event["tweets"],
         })
 
+    def socialplatforms_settings(self, event):
+        """
+        Called when there's a change to the settings for one of the social platforms (e.g. Changing muzzled mode for Twitter)
+        """
+        self.send_json({
+            "msg_type": settings.MSG_TYPE_SOCIALPLATFORMS_SETTINGS,
+            "settings": event["settings"],
+        })
+
     def user_change_settings(self, event):
         """
         Called when we receive new tweets from the Twitter stream, from backfilling, et cetera.
@@ -267,11 +276,23 @@ class ScremsongConsumer(JsonWebsocketConsumer):
 def build_on_connect_data_payload(user):
     rateLimitResources = get_latest_rate_limit_resources()
 
+    # @TODO Clean up and abstract
+    socialplatform_settings = None
+    t = get_twitter_app()
+    if t is not None:
+        socialplatform_settings = {
+            str(SocialPlatformChoice.TWITTER): t.settings
+        }
+
     return {
         "msg_type": settings.MSG_TYPE_CONNECTED,
         "is_logged_in": True,
         "user": UserSerializer(user).data,
         "actions": [
+            {
+                "msg_type": settings.MSG_TYPE_SOCIALPLATFORMS_SETTINGS,
+                "settings": socialplatform_settings
+            },
             {
                 "msg_type": settings.MSG_TYPE_SOCIAL_COLUMNS_LIST,
                 "columns": get_twitter_columns()

@@ -13,10 +13,10 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 import tweepy
 from tweepy import TweepError
 from scremsong.app.serializers import UserSerializer, SocialAssignmentSerializer, SocialColumnsSerializerWithTweetCountSerializer
-from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, fetch_tweets, get_status_from_db, resolve_tweet_parents, resolve_tweet_thread_for_parent, notify_of_saved_tweet, favourite_tweet, unfavourite_tweet, retweet_tweet, unretweet_tweet, reply_to_tweet, get_tweepy_api_auth, set_tweet_object_state_en_masse
+from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, fetch_tweets, get_status_from_db, resolve_tweet_parents, resolve_tweet_thread_for_parent, notify_of_saved_tweet, favourite_tweet, unfavourite_tweet, retweet_tweet, unretweet_tweet, reply_to_tweet, get_tweepy_api_auth, set_tweet_object_state_en_masse, get_twitter_app
 from scremsong.app.reviewers import getCreationDateOfNewestTweetInAssignment
 from scremsong.celery import celery_restart_streaming
-from scremsong.app.models import Tweets, SocialColumns, SocialAssignments, Profile
+from scremsong.app.models import Tweets, SocialColumns, SocialAssignments, Profile, SocialPlatforms
 from scremsong.app.enums import SocialPlatformChoice, SocialAssignmentState, NotificationVariants, TweetState, TweetStatus, SocialAssignmentCloseReason, ProfileOfflineReason
 from scremsong.app.social.assignments import get_social_assignment_stats_for_user
 from scremsong.app.social.columns import get_social_columns, get_stats_for_column
@@ -464,6 +464,37 @@ class SocialPlatformsAuthViewset(viewsets.ViewSet):
     API endpoints for handling authenticating against social platforms.
     """
     permission_classes = (IsAuthenticated,)
+
+    @list_route(methods=['get'])
+    def set_muzzled(self, request):
+        qp = request.query_params
+        muzzled = True if "muzzled" in qp and qp["muzzled"] == "1" else False
+
+        with transaction.atomic():
+            t = get_twitter_app()
+            if t is None:
+                raise ScremsongException("We haven't authenticated against Twitter yet.")
+
+            t.settings = {**t.settings, "muzzled": muzzled}
+            t.save()
+
+            # Update settings for connected clients
+            websockets.send_channel_message("socialplatforms.settings", {
+                "settings": {
+                    str(SocialPlatformChoice.TWITTER): t.settings
+                }
+            })
+
+            # Send a notification to all connected clients
+            message = "We've been muzzled by Twitter! Replying, favouriting, and retweeting will now open tweets in a new tab. See WhatsApp for more information. **And please reload Scremsong!**" if muzzled is True else "It's all good. We've been unmuzzled by Twitter. Scremsong is returning to normal operations 🎉 **And please reload Scremsong!**"
+            websockets.send_channel_message("notifications.send", {
+                "message": message,
+                "options": {
+                    "variant": NotificationVariants.WARNING
+                }
+            })
+
+            return Response({"settings": t.settings})
 
     @list_route(methods=['get'])
     def twitter_auth_step1(self, request, format=None):

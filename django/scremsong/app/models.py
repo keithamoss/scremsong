@@ -69,11 +69,27 @@ class Profile(models.Model):
                     self.settings[item] = val
 
 
+def default_socialplatform_settings():
+    return {
+        "muzzled": False,
+    }
+
+
+class SocialPlatormsJSONField(JSONField):
+    description = "Custom JSONField for social platform settings profiles to ensure default settings are always available"
+
+    def from_db_value(self, value, expression, connection):
+        if value is None:
+            return value
+        return {**default_socialplatform_settings(), **value}
+
+
 class SocialPlatforms(models.Model):
     "Configuration, credentials, and log store for social platforms."
 
     platform = models.TextField(primary_key=True, choices=[(tag, tag.value) for tag in SocialPlatformChoice])
     credentials = JSONField(default=None, blank=True, null=True)  # Credentials store for long-lived secrets for social platforms
+    settings = SocialPlatormsJSONField(default=default_socialplatform_settings, blank=True)
 
 
 class SocialColumns(models.Model):

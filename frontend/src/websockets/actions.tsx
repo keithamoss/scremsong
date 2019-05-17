@@ -1,6 +1,6 @@
 import { Action } from "redux"
 import { IRateLimitResources } from "../admin_panel/TwitterRateLimitStatus/TwitterRateLimitStatusContainer"
-import { INotification } from "../redux/modules/app"
+import { INotification, ISocialPlatformSettings } from "../redux/modules/app"
 import { IReviewerAssignment, IReviewerUser } from "../redux/modules/reviewers"
 import {
     eSocialTwitterRateLimitState,
@@ -24,6 +24,7 @@ import {
     WS_REVIEWERS_SET_STATUS,
     WS_REVIEWERS_UNASSIGN,
     WS_REVIEWERS_USER_CONNECTED,
+    WS_SOCIALPLATFORMS_SETTINGS,
     WS_SOCIAL_COLUMNS_LIST,
     WS_SOCIAL_COLUMNS_UPDATE,
     WS_TWEETS_LOAD_TWEETS,
@@ -132,3 +133,7 @@ export interface IActionsTweetsPrecannedReplies extends Action<typeof WS_TWEETS_
 }
 
 export interface IActionsTweetsLoadTweets extends Action<typeof WS_TWEETS_LOAD_TWEETS>, ISocialTweetsAndColumnsResponse {}
+
+export interface IActionsSocialPlatformsSettings extends Action<typeof WS_SOCIALPLATFORMS_SETTINGS> {
+    settings: ISocialPlatformSettings
+}

@@ -7,6 +7,7 @@ export interface IProps {
     tweet: ISocialTweet
     tweetStyles?: React.CSSProperties
     onTweetAction: any
+    muzzled: boolean
     onMediaLoad?: any
     onMediaLoadError?: any
 }
@@ -37,8 +38,18 @@ class TweetCard extends React.PureComponent<TComponentProps, IState> {
         }
     }
 
+    // public componentDidUpdate(prevProps: TComponentProps) {
+    //     this.onTweetAction = (tweetAction: eSocialTweetActionType, tweet: ISocialTweetData) => {x
+    //         if (tweetAction === eSocialTweetActionType.REPLY) {
+    //             this.setState({ replierOpen: true })
+    //         } else {
+    //             this.props.onTweetAction(tweetAction, tweet)
+    //         }
+    //     }
+    // }
+
     public render() {
-        const { tweet, tweetStyles, onMediaLoad, onMediaLoadError } = this.props
+        const { tweet, muzzled, tweetStyles, onMediaLoad, onMediaLoadError } = this.props
         const { replierOpen } = this.state
 
         return (
@@ -48,7 +59,7 @@ class TweetCard extends React.PureComponent<TComponentProps, IState> {
                     data={JSON.parse(JSON.stringify(tweet.data))}
                     linkProps={{ target: "_blank", rel: "noreferrer" }}
                     tweetStyles={tweetStyles}
-                    onTweetAction={this.onTweetAction}
+                    onTweetAction={muzzled === false ? this.onTweetAction : undefined}
                     onMediaLoad={onMediaLoad}
                     onMediaLoadError={onMediaLoadError}
                 />

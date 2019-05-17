@@ -6,12 +6,14 @@ import { IRateLimitResources, IResourceRateLimit } from "../../admin_panel/Twitt
 import { randomHash, sortObjectKeys } from "../../utils"
 import {
     IActionNotification,
+    IActionsSocialPlatformsSettings,
     IActionTweetsRateLimitResources,
     IActionTweetsRateLimitState,
     IActionTweetsStreamingState,
 } from "../../websockets/actions"
 import {
     WS_NOTIFICATION,
+    WS_SOCIALPLATFORMS_SETTINGS,
     WS_TWEETS_RATE_LIMIT_RESOURCES,
     WS_TWEETS_RATE_LIMIT_STATE,
     WS_TWEETS_STREAMING_STATE,
@@ -20,6 +22,7 @@ import { IThunkExtras } from "./interfaces"
 import { IStore } from "./reducer"
 import { changeCurrentReviewer } from "./reviewers"
 import { eSocialTwitterRateLimitState } from "./social"
+import { eSocialPlatformChoice } from "./triage"
 import { fetchUser, ISelf } from "./user"
 // import { IAnalyticsMeta } from "../../shared/analytics/GoogleAnalytics"
 
@@ -51,6 +54,7 @@ const initialState: IModule = {
     twitter_rate_limit_state: null,
     twitter_rate_limit_resources: null,
     settings_dialog_open: false,
+    socialplatform_settings: {},
 }
 
 // Reducer
@@ -69,6 +73,7 @@ type IAction =
     | IActionTweetsRateLimitState
     | IActionTweetsRateLimitResources
     | IActionSettingsDialogState
+    | IActionsSocialPlatformsSettings
 export default function reducer(state: IModule = initialState, action: IAction) {
     let requestsInProgress = dotProp.get(state, "requestsInProgress")
 
@@ -104,6 +109,8 @@ export default function reducer(state: IModule = initialState, action: IAction) 
             return dotProp.set(state, "twitter_rate_limit_resources", action.resources)
         case SETTINGS_DIALOG_STATE:
             return dotProp.set(state, "settings_dialog_open", action.state)
+        case WS_SOCIALPLATFORMS_SETTINGS:
+            return dotProp.set(state, "socialplatform_settings", action.settings)
         default:
             return state
     }
@@ -111,6 +118,14 @@ export default function reducer(state: IModule = initialState, action: IAction) 
 
 // Selectors
 const getTwitterRateLimitResources = (state: IStore) => state.app.twitter_rate_limit_resources
+const getSocialPlatformSettings = (state: IStore) => state.app.socialplatform_settings
+
+export const getTwitterSettings = createSelector(
+    [getSocialPlatformSettings],
+    (settings: ISocialPlatformSettings): any => {
+        return settings[eSocialPlatformChoice.TWITTER]
+    }
+)
 
 export const getConsumedTwitterRateLimitResources = createSelector(
     [getTwitterRateLimitResources],
@@ -195,6 +210,7 @@ export interface IModule {
     twitter_rate_limit_state: eSocialTwitterRateLimitState | null
     twitter_rate_limit_resources: IRateLimitResources | null
     settings_dialog_open: boolean
+    socialplatform_settings: ISocialPlatformSettings
 }
 
 export interface IActionLoading extends Action<typeof LOADING> {}
@@ -219,6 +235,14 @@ export interface IActionSendNotification extends Action<typeof SEND_NOTIFICATION
 
 export interface IActionSettingsDialogState extends Action<typeof SETTINGS_DIALOG_STATE> {
     state: boolean
+}
+
+export interface ISocialPlatformSettings {
+    [key: string]: ISocialPlatformSettingsDetail
+}
+
+export interface ISocialPlatformSettingsDetail {
+    muzzled: boolean
 }
 
 export interface INotification {
