@@ -495,45 +495,46 @@ def process_new_tweet_reply(status, tweetSource, sendWebSocketEvent):
             )
 
             # Adding a new tweet reopens the assignment if the user is accepting assignments or unassigns it if they're offline and the assignment is closed
-            if is_user_accepting_assignments(assignment.user_id) is False and is_from_demsausage(tweet) is False:
-                logger.info("Processing tweet {}: User is offline, so delete the assignment".format(status["id_str"]))
-                assignmentId = assignment.id
-                assignment.delete()
+            # if is_user_accepting_assignments(assignment.user_id) is False and is_from_demsausage(tweet) is False:
+            #     logger.info("Processing tweet {}: User is offline, so delete the assignment".format(status["id_str"]))
+            #     assignmentId = assignment.id
+            #     assignment.delete()
 
-                websockets.send_channel_message("reviewers.unassign", {
-                    "assignmentId": assignmentId,
-                })
+            #     websockets.send_channel_message("reviewers.unassign", {
+            #         "assignmentId": assignmentId,
+            #     })
 
-            else:
-                if assignment.state == SocialAssignmentState.CLOSED:
-                    if is_from_demsausage(tweet) is False:
-                            logger.info("Processing tweet {}: Set it to pending".format(status["id_str"]))
-                            assignment.state = SocialAssignmentState.PENDING
-                            assignment.save()
+            # else:
+            # Adding a new tweet reopens the assignment if the user is accepting assignments
+            if assignment.state == SocialAssignmentState.CLOSED:
+                if is_from_demsausage(tweet) is False:
+                    logger.info("Processing tweet {}: Set it to pending".format(status["id_str"]))
+                    assignment.state = SocialAssignmentState.PENDING
+                    assignment.save()
 
-                            websockets.send_user_channel_message("notifications.send", {
-                                "message": "One of your assignments has had a new reply arrive - it's been added back into your queue again",
-                                "options": {
-                                    "variant": NotificationVariants.INFO
-                                }
-                            },
-                                assignment.user.username)
-
-                else:
                     websockets.send_user_channel_message("notifications.send", {
-                        "message": "One of your assignments has had a new reply arrive",
+                        "message": "One of your assignments has had a new reply arrive - it's been added back into your queue again",
                         "options": {
                             "variant": NotificationVariants.INFO
                         }
                     },
                         assignment.user.username)
 
-                websockets.send_channel_message("reviewers.assignment_updated", {
-                    "assignment": SocialAssignmentSerializer(assignment).data,
-                    "tweets": tweets,
-                })
+            else:
+                websockets.send_user_channel_message("notifications.send", {
+                    "message": "One of your assignments has had a new reply arrive",
+                    "options": {
+                        "variant": NotificationVariants.INFO
+                    }
+                },
+                    assignment.user.username)
 
-                tweet.state = TweetState.ASSIGNED
+            websockets.send_channel_message("reviewers.assignment_updated", {
+                "assignment": SocialAssignmentSerializer(assignment).data,
+                "tweets": tweets,
+            })
+
+            tweet.state = TweetState.ASSIGNED
 
         # Once we're done processing the tweet, or if its parent is not part of an assignment,
         # then we just carry on and save the tweet has processed and send a notification.
