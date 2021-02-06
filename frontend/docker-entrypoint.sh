@@ -4,7 +4,8 @@ command="$1"
 cd /app
 
 if [ "$REACT_APP_ENVIRONMENT" = "DEVELOPMENT" ]; then
-  yarn
+  # @TODO Troubleshoot why this throws this error: Couldn't find the binary git | info Visit https://yarnpkg.com/en/docs/cli/install for documentation about this command.
+  # yarn
   yarn run start
   exit
 fi
