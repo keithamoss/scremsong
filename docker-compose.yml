@@ -1,80 +1,80 @@
 version: "3.7"
 services:
-    db:
-        image: mdillon/postgis:10-alpine
-        command: postgres -c 'config_file=/etc/postgresql/postgresql.conf'
-        ports:
-            - "5432:5432"
-        environment:
-            - POSTGRES_PASSWORD=postgres
-            - POSTGRES_DB=stack
-        volumes:
-            # Enable this mapping to inject the tweaked postgresql.conf file into our PostgreSQL container.
-            - ./db/postgresql.conf:/etc/postgresql/postgresql.conf
+  db:
+    image: mdillon/postgis:10-alpine
+    command: postgres -c 'config_file=/etc/postgresql/postgresql.conf'
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=stack
+    volumes:
+      # Enable this mapping to inject the tweaked postgresql.conf file into our PostgreSQL container.
+      - ./db/postgresql.conf:/etc/postgresql/postgresql.conf
 
-            # Enable this mapping and create ./dev/pg_log/ to get easier access to PostgreSQL's log files for debugging.
-            # - ./dev/pg_log/:/var/lib/postgresql/data/pg_log/
+      # Enable this mapping and create ./dev/pg_log/ to get easier access to PostgreSQL's log files for debugging.
+      # - ./dev/pg_log/:/var/lib/postgresql/data/pg_log/
 
-            # Enable this to store the PostgreSQL data on the host
-            - ./db/data:/var/lib/postgresql/data
-    redis:
-        image: bitnami/redis:5.0.3-debian-9-r72
-        ports:
-            - "6379:6379"
-        env_file:
-            - secrets/redis.env
-        volumes:
-            - ./redis:/bitnami/redis/data
-        # https://github.com/docker-library/redis/issues/35#issuecomment-360810072
-        sysctls:
-            net.core.somaxconn: "511"
-    frontend:
-        image: node:10.14.2-alpine
-        volumes:
-            - ./frontend:/app:delegated
-        entrypoint: /app/docker-entrypoint.sh
-        ports:
-            - "3000:3000"
-        env_file:
-            - secrets/scremsong-frontend.dev.env
-    django:
-        build: django/
-        entrypoint: /app/docker-entrypoint.sh
-        # command: supervisord
-        volumes:
-            - ./django/:/app:delegated
-            - ./logs/scremsong-django:/app/logs:delegated
-        ports:
-            - "8000:8000"
-        env_file:
-            - secrets/scremsong-web.dev.env
-            - secrets/scremsong-db.env
-        depends_on:
-            - db
-            - redis
-    celery_worker:
-        build: django/
-        entrypoint: /app/docker-entrypoint.sh
-        command: celery_worker
-        volumes:
-            - ./django/:/app:delegated
-        env_file:
-            - secrets/scremsong-web.dev.env
-            - secrets/scremsong-db.env
-        depends_on:
-            - db
-            - redis
-    nginx:
-        build: nginx/
-        volumes:
-            - ./nginx:/app
-            - ./nginx/nginx/docker.https.dev.conf:/etc/nginx/conf.d/nginx.conf
-            - ./keys/:/app/keys/:delegated
-        depends_on:
-            - django
-            - frontend
-        links:
-            - django
-        ports:
-            - "443:443"
-            - "8001:8001"
+      # Enable this to store the PostgreSQL data on the host
+      - ./db/data:/var/lib/postgresql/data
+  redis:
+    image: bitnami/redis:5.0.3-debian-9-r72
+    ports:
+      - "6379:6379"
+    env_file:
+      - secrets/redis.env
+    volumes:
+      - ./redis:/bitnami/redis/data
+    # https://github.com/docker-library/redis/issues/35#issuecomment-360810072
+    sysctls:
+      net.core.somaxconn: "511"
+  frontend:
+    image: node:14.15.4-alpine3.12
+    volumes:
+      - ./frontend:/app:delegated
+    entrypoint: /app/docker-entrypoint.sh
+    ports:
+      - "3000:3000"
+    env_file:
+      - secrets/scremsong-frontend.dev.env
+  django:
+    build: django/
+    entrypoint: /app/docker-entrypoint.sh
+    # command: supervisord
+    volumes:
+      - ./django/:/app:delegated
+      - ./logs/scremsong-django:/app/logs:delegated
+    ports:
+      - "8000:8000"
+    env_file:
+      - secrets/scremsong-web.dev.env
+      - secrets/scremsong-db.env
+    depends_on:
+      - db
+      - redis
+  celery_worker:
+    build: django/
+    entrypoint: /app/docker-entrypoint.sh
+    command: celery_worker
+    volumes:
+      - ./django/:/app:delegated
+    env_file:
+      - secrets/scremsong-web.dev.env
+      - secrets/scremsong-db.env
+    depends_on:
+      - db
+      - redis
+  nginx:
+    build: nginx/
+    volumes:
+      - ./nginx:/app
+      - ./nginx/nginx/docker.https.dev.conf:/etc/nginx/conf.d/nginx.conf
+      - ./keys/:/app/keys/:delegated
+    depends_on:
+      - django
+      - frontend
+    links:
+      - django
+    ports:
+      - "443:443"
+      - "8001:8001"
