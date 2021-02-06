@@ -4,6 +4,7 @@ command="$1"
 cd /app
 
 if [ "$REACT_APP_ENVIRONMENT" = "DEVELOPMENT" ]; then
+  yarn
   yarn run start
   exit
 fi
