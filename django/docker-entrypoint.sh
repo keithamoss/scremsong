@@ -58,6 +58,7 @@ if [ "$CMD" = "build" ]; then
 fi
 
 if [ "$ENVIRONMENT" = "DEVELOPMENT" ]; then
+  waitfordb
   django-admin migrate
   django-admin runserver "0.0.0.0:8000"
   exit
