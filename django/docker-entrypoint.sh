@@ -28,6 +28,7 @@ CMD="$1"
 
 # celery_worker entrypoint
 if [ "$1" = "celery_worker" ]; then
+    waitfordb
     echo "[Run] Starting celery_worker"
 
     # Print all executed commands to the terminal
