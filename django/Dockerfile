@@ -22,6 +22,10 @@ WORKDIR /app
 RUN apk update
 RUN apk add postgresql-libs && apk add --virtual .build-deps gcc musl-dev postgresql-dev && apk add supervisor && rm -rf /var/cache/apk/*
 
+# So we can install the Python cryptography used by gevent (and others)
+# https://stackoverflow.com/a/63836279/7368493
+RUN apk add --update alpine-sdk && apk add libffi-dev openssl-dev
+
 # Upgrade SetupTools from 28.8 to latest due to a bug installing python-memcached on Python 3.6
 # c.f. https://github.com/pypa/setuptools/issues/866
 RUN pip install --upgrade setuptools
