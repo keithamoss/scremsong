@@ -1,6 +1,6 @@
 # Scremsong
 
-![alt](app/public/alex.jpg)
+![Alex the parrot](https://github.com/keithamoss/scremsong/raw/master/frontend/public/alex.jpg)
 
 # Development
 
@@ -22,14 +22,14 @@ Assuming you're configuring Google as a backend for auth:
 
 Refer to [PySocialAuth Google](http://python-social-auth.readthedocs.io/en/latest/backends/google.html) and [Google - Using OAuth 2.0 to Access Google APIs](https://developers.google.com/identity/protocols/OAuth2?csw=1#Registering).
 
--   Create a Web application OAuth 2 Client in the Google API's Console
-    -   Add `https://localhost:8001` as an **Authorised JavaScript origin**
-    -   Add `https://localhost:8001/complete/google-oauth2/` as an **Authorised redirect URI**
-    -   Enable the Google+ API
--   Copy `django/web-variables.env.tmpl` to `django/web-varibles.env`
--   Add the resulting Client Id and Secret to `django/web-variables.env`
--   Nuke and restart your Docker containers
--   Navigate to `https://localhost`, choose Google as your signon option, and you should be sent through the Google OAuth flow and end up back at `https://localhost` with your username displayed on the app.
+- Create a Web application OAuth 2 Client in the Google API's Console
+  - Add `https://localhost:8001` as an **Authorised JavaScript origin**
+  - Add `https://localhost:8001/complete/google-oauth2/` as an **Authorised redirect URI**
+  - Enable the Google+ API
+- Copy `django/web-variables.env.tmpl` to `django/web-varibles.env`
+- Add the resulting Client Id and Secret to `django/web-variables.env`
+- Nuke and restart your Docker containers
+- Navigate to `https://localhost`, choose Google as your signon option, and you should be sent through the Google OAuth flow and end up back at `https://localhost` with your username displayed on the app.
 
 Now you're up and running!
 
@@ -59,10 +59,10 @@ user.profile.save()
 
 ## Deployment
 
--   AWS S3 hosts the `Public` and `Admin` sites.
--   CloudFlare sits in front and handles caching and gives us HTTPS.
--   Travis CI handles automatic deploys from GitHub for us.
--   Duck CLI to ftp sync the legacy PHP API.
+- AWS S3 hosts the `Public` and `Admin` sites.
+- CloudFlare sits in front and handles caching and gives us HTTPS.
+- Travis CI handles automatic deploys from GitHub for us.
+- Duck CLI to ftp sync the legacy PHP API.
 
 1.  S3 bucket setup for static website hosting, bucket policy set to public, and error document set to `index.html` to let React Router work.
     1.1 A second www.democracysausage.org bucket is setup to redirect requests to https://democracysausage.org
@@ -74,17 +74,17 @@ user.profile.save()
 
 ```json
 {
-    "Version": "2012-10-17",
-    "Id": "PublicBucketPolicy",
-    "Statement": [
-        {
-            "Sid": "Stmt1482880670019",
-            "Effect": "Allow",
-            "Principal": "*",
-            "Action": "s3:GetObject",
-            "Resource": "arn:aws:s3:::BUCKET_NAME_HERE/*"
-        }
-    ]
+  "Version": "2012-10-17",
+  "Id": "PublicBucketPolicy",
+  "Statement": [
+    {
+      "Sid": "Stmt1482880670019",
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::BUCKET_NAME_HERE/*"
+    }
+  ]
 }
 ```
 
@@ -92,8 +92,8 @@ user.profile.save()
 
 We've rolled our own CD system using Travis-CI and Digital Ocean's API.
 
--   [Docker Whale in Digital Ocean [or] Automated Continuous Delivery Flow For Simple Projects](https://medium.com/@trekhleb/docker-whale-in-digital-ocean-or-automated-continuous-delivery-flow-for-simple-projects-fbfb2c26bf14) (Ultimately we didn't take this approach because of (a) the Docker Cloud dependency [the fewer third party deps the better] and (b) it wasn't clear if we could do a 100% rock solid CD with Docker Cloud [i.e. Wait until whole stack is up, exfiltrate log files])
--   [How To Use Floating IPs on DigitalOcean](https://www.digitalocean.com/community/tutorials/how-to-use-floating-ips-on-digitalocean) (Includes discussion of using Floating IPs for high availability - which we're not doing [yet!])
+- [Docker Whale in Digital Ocean [or] Automated Continuous Delivery Flow For Simple Projects](https://medium.com/@trekhleb/docker-whale-in-digital-ocean-or-automated-continuous-delivery-flow-for-simple-projects-fbfb2c26bf14) (Ultimately we didn't take this approach because of (a) the Docker Cloud dependency [the fewer third party deps the better] and (b) it wasn't clear if we could do a 100% rock solid CD with Docker Cloud [i.e. Wait until whole stack is up, exfiltrate log files])
+- [How To Use Floating IPs on DigitalOcean](https://www.digitalocean.com/community/tutorials/how-to-use-floating-ips-on-digitalocean) (Includes discussion of using Floating IPs for high availability - which we're not doing [yet!])
 
 #### Encrypting Secrets for Travis
 
@@ -133,16 +133,16 @@ Paying for Travis-CI would have let us [just add SSH keys directly via the Web U
 
 In working out how to do this we ran across quite a few hiccups and "WTF" moments. Here's a collection of useful resources for our own record, and for any brave future explorers how happen upon this readme in search of the same solution.
 
--   [How to Encrypt/Decrypt SSH Keys for Deployment](https://github.com/dwyl/learn-travis/blob/master/encrypted-ssh-keys-deployment.md) (The guide we followed - its GitHub issue is [here](https://github.com/dwyl/learn-travis/issues/42).)
--   Related, a [Gist demonstrating how to encrypt keys and secrets in `.travis.yml` files](https://gist.github.com/kzap/5819745)
--   Another Gist showing how to [squeeze private SSH key into `.travis.yml` file](https://gist.github.com/lukewpatterson/4242707)
--   [Using `subprocess` to run commands and await output](https://stackoverflow.com/a/2502883)
+- [How to Encrypt/Decrypt SSH Keys for Deployment](https://github.com/dwyl/learn-travis/blob/master/encrypted-ssh-keys-deployment.md) (The guide we followed - its GitHub issue is [here](https://github.com/dwyl/learn-travis/issues/42).)
+- Related, a [Gist demonstrating how to encrypt keys and secrets in `.travis.yml` files](https://gist.github.com/kzap/5819745)
+- Another Gist showing how to [squeeze private SSH key into `.travis.yml` file](https://gist.github.com/lukewpatterson/4242707)
+- [Using `subprocess` to run commands and await output](https://stackoverflow.com/a/2502883)
 
 ### Hardening Servers
 
--   [Best practices for hardening new sever in 2017](https://www.digitalocean.com/community/questions/best-practices-for-hardening-new-sever-in-2017)
--   [7 Security Measures to Protect Your Servers](https://www.digitalocean.com/community/tutorials/7-security-measures-to-protect-your-servers)
--   [What do you do with your first five minutes on a new server?](https://www.digitalocean.com/community/questions/what-do-you-do-with-your-first-five-minutes-on-a-new-server)
+- [Best practices for hardening new sever in 2017](https://www.digitalocean.com/community/questions/best-practices-for-hardening-new-sever-in-2017)
+- [7 Security Measures to Protect Your Servers](https://www.digitalocean.com/community/tutorials/7-security-measures-to-protect-your-servers)
+- [What do you do with your first five minutes on a new server?](https://www.digitalocean.com/community/questions/what-do-you-do-with-your-first-five-minutes-on-a-new-server)
 
 ## SSL and CloudFlare
 
@@ -180,10 +180,10 @@ docker push keithmoss/scremsong-django
 
 ### Resources
 
--   [Moving a static website to AWS S3 + CloudFront with HTTPS](https://medium.com/@willmorgan/moving-a-static-website-to-aws-s3-cloudfront-with-https-1fdd95563106)
--   [Host a Static Site on AWS, using S3 and CloudFront](https://www.davidbaumgold.com/tutorials/host-static-site-aws-s3-cloudfront/)
--   [S3 Deployment with Travis](https://renzo.lucioni.xyz/s3-deployment-with-travis/)
--   [Setting up a continuously deployed static website with SSL](https://blog.kolibri.is/setting-up-a-continuously-deployed-static-website-with-ssl-39670b37b5c6)
--   [Deploying a static site to Github Pages using Travis and Cloudflare](https://jmsbrdy.com/2017/07/deploying-a-static-site-to-github-pages-using-travis-and-cloudflare/)
--   [Secure and fast GitHub Pages with CloudFlare](https://blog.cloudflare.com/secure-and-fast-github-pages-with-cloudflare/)
--   [How to get your SSL for free on a Shared Azure website with CloudFlare](https://www.troyhunt.com/how-to-get-your-ssl-for-free-on-shared/)
+- [Moving a static website to AWS S3 + CloudFront with HTTPS](https://medium.com/@willmorgan/moving-a-static-website-to-aws-s3-cloudfront-with-https-1fdd95563106)
+- [Host a Static Site on AWS, using S3 and CloudFront](https://www.davidbaumgold.com/tutorials/host-static-site-aws-s3-cloudfront/)
+- [S3 Deployment with Travis](https://renzo.lucioni.xyz/s3-deployment-with-travis/)
+- [Setting up a continuously deployed static website with SSL](https://blog.kolibri.is/setting-up-a-continuously-deployed-static-website-with-ssl-39670b37b5c6)
+- [Deploying a static site to Github Pages using Travis and Cloudflare](https://jmsbrdy.com/2017/07/deploying-a-static-site-to-github-pages-using-travis-and-cloudflare/)
+- [Secure and fast GitHub Pages with CloudFlare](https://blog.cloudflare.com/secure-and-fast-github-pages-with-cloudflare/)
+- [How to get your SSL for free on a Shared Azure website with CloudFlare](https://www.troyhunt.com/how-to-get-your-ssl-for-free-on-shared/)
