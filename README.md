@@ -14,6 +14,32 @@ To get started:
 
 > docker-compose up
 
+## First time setup
+
+1. Run `docker-compose up db` and run `CREATE SCHEMA "scremsong";`
+2. Load CSVs from the `initial-data` folder
+   2.1 Load `columns.csv` into `app_socialcolumns`
+   2.2 Load `emails.csv` into `app_allowedusers`
+   2.3 Load `tweet_replies.csv` into `app_tweetreplies`
+3. `yarn install` in `frontend/`
+4. Add `127.0.0.1 scremsong.test.democracysausage.org` to `/etc/hosts`
+5. Create your self-signed SSL cert (see below)
+6. Create Twitter credentials per the steps in `twitter_auth_step1()` in `views.py`
+
+You're good to go! Navigate to https://scremsong.test.democracysausage.org
+
+### SSL Cert
+
+```
+brew install mkcert
+mkcert -install
+```
+
+```
+mkdir keys && cd $_
+mkcert wildcard.democracysausage.org
+```
+
 # Django Setup
 
 Add a [Python Social Auth](http://python-social-auth.readthedocs.io/en/latest) backend of your choice. e.g. [Social backends](http://python-social-auth.readthedocs.io/en/latest/backends/index.html#social-backends).
@@ -37,7 +63,7 @@ Now you're up and running!
 
 Making yourself an admin:
 
-Hop into your running `ealgis_web` Docker container:
+Hop into your running `django` Docker container:
 
 `docker exec -i -t scremsong_django_1 sh`
 
@@ -56,6 +82,13 @@ user.profile.save()
 ```
 
 # DevOps
+
+## Deployment (Actual!)
+
+Choose the next `VERSION` number.
+
+1. `./prodbuild.sh all`
+2. `./prodbuild-dockerpush.sh VERSION all`
 
 ## Deployment
 
