@@ -1,22 +1,28 @@
-import tweepy
-from django.utils import timezone
-from django.db.models import BigIntegerField
-from django.db.models.functions import Cast
-
-from scremsong.util import make_logger, get_env, get_or_none
-from scremsong.app.models import SocialPlatforms, Tweets, SocialColumns, SocialAssignments, TweetReplies, TwitterRateLimitInfo
-from scremsong.app.enums import SocialPlatformChoice, SocialAssignmentState, NotificationVariants, TweetStatus, TweetSource, TweetState
-from scremsong.app.social.columns import get_social_columns
-from scremsong.app.social.twitter_utils import apply_tweet_filter_criteria, column_search_phrase_to_twitter_search_query
-from scremsong.app.serializers import SocialColumnsSerializerWithTweetCountSerializer, TweetsSerializer, SocialAssignmentSerializer
-from scremsong.app import websockets
-from scremsong.app.exceptions import ScremsongException, FailedToResolveTweet
-from scremsong.app.reviewers_utils import is_tweet_part_of_an_assignment
-from scremsong.app.users import is_user_accepting_assignments
-from scremsong.celery import task_process_tweet_reply
-
 from functools import lru_cache
 from time import sleep
+
+import tweepy
+from django.db.models import BigIntegerField
+from django.db.models.functions import Cast
+from django.utils import timezone
+from scremsong.app import websockets
+from scremsong.app.enums import (NotificationVariants, SocialAssignmentState,
+                                 SocialPlatformChoice, TweetSource, TweetState,
+                                 TweetStatus)
+from scremsong.app.exceptions import FailedToResolveTweet, ScremsongException
+from scremsong.app.models import (SocialAssignments, SocialColumns,
+                                  SocialPlatforms, TweetReplies, Tweets,
+                                  TwitterRateLimitInfo)
+from scremsong.app.reviewers_utils import is_tweet_part_of_an_assignment
+from scremsong.app.serializers import (
+    SocialAssignmentSerializer,
+    SocialColumnsSerializerWithTweetCountSerializer, TweetsSerializer)
+from scremsong.app.social.columns import get_social_columns
+from scremsong.app.social.twitter_utils import (
+    apply_tweet_filter_criteria, column_search_phrase_to_twitter_search_query)
+from scremsong.app.users import is_user_accepting_assignments
+from scremsong.celery import task_process_tweet_reply
+from scremsong.util import get_env, get_or_none, make_logger
 
 logger = make_logger(__name__)
 
@@ -750,7 +756,7 @@ def are_we_rate_limited(resources, bufferPercentage=None):
 
 
 def get_latest_rate_limit_resources():
-    return TwitterRateLimitInfo.objects.latest("id").data
+    return TwitterRateLimitInfo.objects.latest("id").data if TwitterRateLimitInfo.objects.exists() else {}
 
 
 def set_tweet_object_state_en_masse(tweets, state):

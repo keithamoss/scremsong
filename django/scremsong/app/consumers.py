@@ -5,15 +5,19 @@ from channels.generic.websocket import JsonWebsocketConsumer
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import transaction
-
-from scremsong.util import make_logger
-from scremsong.app.serializers import UserSerializer, ReviewerUserSerializer
-from scremsong.app.twitter import get_twitter_columns, fetch_tweets_for_columns, get_precanned_tweet_replies, are_we_rate_limited, get_latest_rate_limit_resources, get_twitter_app
-from scremsong.app.twitter_streaming import is_streaming_connected
-from scremsong.app.reviewers import get_reviewer_users, get_assignments
-from scremsong.app.enums import TwitterRateLimitState, NotificationVariants, ProfileOfflineReason, SocialPlatformChoice
-from scremsong.app.models import Profile
 from scremsong.app import websockets
+from scremsong.app.enums import (NotificationVariants, ProfileOfflineReason,
+                                 SocialPlatformChoice, TwitterRateLimitState)
+from scremsong.app.models import Profile
+from scremsong.app.reviewers import get_assignments, get_reviewer_users
+from scremsong.app.serializers import ReviewerUserSerializer, UserSerializer
+from scremsong.app.twitter import (are_we_rate_limited,
+                                   fetch_tweets_for_columns,
+                                   get_latest_rate_limit_resources,
+                                   get_precanned_tweet_replies,
+                                   get_twitter_app, get_twitter_columns)
+from scremsong.app.twitter_streaming import is_streaming_connected
+from scremsong.util import make_logger
 
 logger = make_logger(__name__)
 
@@ -87,24 +91,25 @@ class ScremsongConsumer(JsonWebsocketConsumer):
         )
 
         # Mark the user as offline
-        profile = Profile.objects.get(user_id=self.user.id)
-        if profile.is_accepting_assignments is True:
-            profile.is_accepting_assignments = False
-            profile.offline_reason = ProfileOfflineReason.DISCONNECTED
-            profile.save()
+        if self.user.id is not None:
+            profile = Profile.objects.get(user_id=self.user.id)
+            if profile.is_accepting_assignments is True:
+                profile.is_accepting_assignments = False
+                profile.offline_reason = ProfileOfflineReason.DISCONNECTED
+                profile.save()
 
-            websockets.send_channel_message("reviewers.set_status", {
-                "user_id": self.user.id,
-                "is_accepting_assignments": False
+                websockets.send_channel_message("reviewers.set_status", {
+                    "user_id": self.user.id,
+                    "is_accepting_assignments": False
+                })
+
+            # Let all connected clients know that the user has gone offline
+            websockets.send_channel_message("notifications.send", {
+                "message": "{} has disconnected and gone offline".format(UserSerializer(self.user).data["name"]),
+                "options": {
+                    "variant": NotificationVariants.INFO
+                }
             })
-
-        # Let all connected clients know that the user has gone offline
-        websockets.send_channel_message("notifications.send", {
-            "message": "{} has disconnected and gone offline".format(UserSerializer(self.user).data["name"]),
-            "options": {
-                "variant": NotificationVariants.INFO
-            }
-        })
 
         logger.debug('scremsong disconnect channel=%s user=%s', self.channel_name, self.user)
 
