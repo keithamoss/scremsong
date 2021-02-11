@@ -17,6 +17,8 @@ services:
 
       # Enable this to store the PostgreSQL data on the host
       - ./db/data:/var/lib/postgresql/data
+
+      - ./db/scripts:/var/lib/postgresql/scripts
   redis:
     image: bitnami/redis:5.0.3-debian-9-r72
     ports:
