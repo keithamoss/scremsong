@@ -1,14 +1,16 @@
 from __future__ import absolute_import, unicode_literals
+
 import os
 from time import sleep
 
 from celery import Celery
-from celery.signals import celeryd_init, worker_ready, worker_shutting_down, worker_process_shutdown, worker_shutdown
-
-from scremsong.util import make_logger
+from celery.signals import (celeryd_init, worker_process_shutdown,
+                            worker_ready, worker_shutdown,
+                            worker_shutting_down)
 from scremsong.app import websockets
 from scremsong.app.enums import NotificationVariants, TwitterRateLimitState
 from scremsong.app.exceptions import ScremsongException
+from scremsong.util import make_logger
 
 logger = make_logger(__name__)
 
@@ -148,7 +150,7 @@ def is_a_matching_fill_missing_tweets_task_already_running(taskId, sinceId):
 
 
 def shutdown_celery_worker():
-    from celery.task.control import inspect, broadcast
+    from celery.task.control import broadcast, inspect
     i = inspect()
 
     logger.info("Attempting to shutdown any existing celery workers")
@@ -237,8 +239,8 @@ def task_collect_twitter_rate_limit_info(self):
         logger.warning("Abandoning starting Twitter rate limit collection - an identical task already exists")
         return True
 
-    from scremsong.app.twitter import get_tweepy_api_auth, are_we_rate_limited
     from scremsong.app.models import TwitterRateLimitInfo
+    from scremsong.app.twitter import are_we_rate_limited, get_tweepy_api_auth
 
     api = get_tweepy_api_auth()
 
@@ -317,14 +319,17 @@ def task_fill_missing_tweets(self, sinceId):
     logger.info("Initialising task_fill_missing_tweets for {}".format(sinceId))
 
     if sinceId is None:
-        logger.warning("There's no tweets in the database - skipping filling in missing tweets")
+        logger.warning("There's no tweets in the database - skipping filling in missing tweets. We need both a start and end tweet to be able to backfill.")
         return True
 
     if is_a_matching_fill_missing_tweets_task_already_running(self.request.id, sinceId) is True:
         logger.warning("Abandoning fill missing tweet for {} - an identical task already exists".format(sinceId))
         return True
 
-    from scremsong.app.twitter import get_next_tweet_id_for_streaming, fill_in_missing_tweets
+    from scremsong.app.twitter import (fill_in_missing_tweets,
+                                       get_next_tweet_id_for_streaming)
+
+    logger.info("Commence waiting for a tweet to be sent. We need both a start and end tweet to be able to backfill.")
 
     # We have to wait until streaming starts AND we receive a tweet to fill in the gaps - otherwise we won't know when to stop filling in the gaps.
     # NB: Well I guess we could take a few "tweet already exists in table" errors in a row as a sign that we're there?
@@ -349,9 +354,10 @@ def task_fill_missing_tweets(self, sinceId):
 
 @app.task(bind=True)
 def task_process_tweet_reply(self, status, tweetSource, sendWebSocketEvent):
-    from scremsong.app.twitter import is_a_reply, notify_of_saved_tweet, save_tweet, process_new_tweet_reply
     from scremsong.app.enums import TweetSource, TweetStatus
     from scremsong.app.exceptions import ScremsongException
+    from scremsong.app.twitter import (is_a_reply, notify_of_saved_tweet,
+                                       process_new_tweet_reply, save_tweet)
     logger.info("Started processing tweet {} from {}".format(status["id_str"], tweetSource))
 
     try:
