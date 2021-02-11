@@ -1,33 +1,48 @@
-from django.contrib.auth.models import User
-from django.contrib.auth import logout
-from django.http.response import HttpResponseRedirect, HttpResponse
-from django.http import HttpResponseNotFound
-from django.db import transaction
-
-from rest_framework import viewsets, status
-from rest_framework.views import APIView
-from rest_framework.decorators import list_route
-from rest_framework.response import Response
-from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
-
-import tweepy
-from tweepy import TweepError
-from scremsong.app.serializers import UserSerializer, SocialAssignmentSerializer, SocialColumnsSerializerWithTweetCountSerializer
-from scremsong.app.twitter import twitter_user_api_auth_stage_1, twitter_user_api_auth_stage_2, fetch_tweets, get_status_from_db, resolve_tweet_parents, resolve_tweet_thread_for_parent, notify_of_saved_tweet, favourite_tweet, unfavourite_tweet, retweet_tweet, unretweet_tweet, reply_to_tweet, get_tweepy_api_auth, set_tweet_object_state_en_masse, get_twitter_app
-from scremsong.app.reviewers import getCreationDateOfNewestTweetInAssignment
-from scremsong.celery import celery_restart_streaming
-from scremsong.app.models import Tweets, SocialColumns, SocialAssignments, Profile, SocialPlatforms
-from scremsong.app.enums import SocialPlatformChoice, SocialAssignmentState, NotificationVariants, TweetState, TweetStatus, SocialAssignmentCloseReason, ProfileOfflineReason
-from scremsong.app.social.assignments import get_social_assignment_stats_for_user
-from scremsong.app.social.columns import get_social_columns, get_stats_for_column
-from scremsong.app import websockets
-from scremsong.util import make_logger, get_or_none
-from scremsong.app.exceptions import ScremsongException
-
-from time import sleep
-from copy import deepcopy
 import glob
 import os
+from copy import deepcopy
+from time import sleep
+
+import tweepy
+from django.contrib.auth import logout
+from django.contrib.auth.models import User
+from django.db import transaction
+from django.http import HttpResponseNotFound
+from django.http.response import HttpResponse, HttpResponseRedirect
+from rest_framework import status, viewsets
+from rest_framework.decorators import list_route
+from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from scremsong.app import websockets
+from scremsong.app.enums import (NotificationVariants, ProfileOfflineReason,
+                                 SocialAssignmentCloseReason,
+                                 SocialAssignmentState, SocialPlatformChoice,
+                                 TweetState, TweetStatus)
+from scremsong.app.exceptions import ScremsongException
+from scremsong.app.models import (Profile, SocialAssignments, SocialColumns,
+                                  SocialPlatforms, Tweets)
+from scremsong.app.reviewers import getCreationDateOfNewestTweetInAssignment
+from scremsong.app.serializers import (
+    SocialAssignmentSerializer,
+    SocialColumnsSerializerWithTweetCountSerializer, UserSerializer)
+from scremsong.app.social.assignments import \
+    get_social_assignment_stats_for_user
+from scremsong.app.social.columns import (get_social_columns,
+                                          get_stats_for_column)
+from scremsong.app.twitter import (favourite_tweet, fetch_tweets,
+                                   get_status_from_db, get_tweepy_api_auth,
+                                   get_twitter_app, notify_of_saved_tweet,
+                                   reply_to_tweet, resolve_tweet_parents,
+                                   resolve_tweet_thread_for_parent,
+                                   retweet_tweet,
+                                   set_tweet_object_state_en_masse,
+                                   twitter_user_api_auth_stage_1,
+                                   twitter_user_api_auth_stage_2,
+                                   unfavourite_tweet, unretweet_tweet)
+from scremsong.celery import celery_restart_streaming
+from scremsong.util import get_or_none, make_logger
+from tweepy import TweepError
 
 logger = make_logger(__name__)
 
@@ -601,7 +616,7 @@ class LogsAdminViewset(viewsets.ViewSet):
 
     @list_route(methods=['get'])
     def get_log(self, request, format=None):
-        def tail(file_path, num_lines=10000):
+        def tail(file_path, num_lines=20000):
             if os.path.exists(file_path) is False:
                 return "File does not exist."
             else:
