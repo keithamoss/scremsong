@@ -1,5 +1,4 @@
 /* eslint-disable import/no-named-default */
-import { routerReducer } from 'react-router-redux'
 import * as Redux from 'redux'
 import { reducer as formReducer } from 'redux-form'
 import { default as app, IModule as IAppModule } from './app'
@@ -25,7 +24,6 @@ const rootReducer: Redux.Reducer<IStore> = Redux.combineReducers<IStore>({
   triage,
   reviewers,
   user,
-  routing: routerReducer,
   form: formReducer.plugin({}),
 } as any)
 

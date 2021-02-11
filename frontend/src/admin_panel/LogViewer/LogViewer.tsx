@@ -2,10 +2,7 @@ import { Button, FormControl, InputLabel, MenuItem, Select, Theme, withStyles, W
 import CloudDownload from '@material-ui/icons/CloudDownload'
 import classNames from 'classnames'
 import * as React from 'react'
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import { LazyLog } from 'react-lazylog/es5'
-import 'react-lazylog/es5/index.css'
+import { LazyLog } from 'react-lazylog'
 import { getAPIBaseURL } from '../../redux/modules/app'
 
 const styles = (theme: Theme) => ({

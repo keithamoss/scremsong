@@ -4,13 +4,10 @@ import * as Raven from 'raven-js'
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
-// React Router
 import { BrowserRouter } from 'react-router-dom'
 // Redux & Redux Thunks
 import { applyMiddleware, createStore, Store } from 'redux'
 import { composeWithDevTools } from 'redux-devtools-extension'
-// import { syncHistoryWithStore } from "react-router-redux"
-// import getRoutes from "./routes"
 // Redux Responsive
 // import { responsiveStoreEnhancer } from "redux-responsive"
 import thunkMiddleware from 'redux-thunk'
@@ -57,13 +54,12 @@ if (getEnvironment() === EAppEnv.PROD && 'REACT_APP_RAVEN_URL' in process.env) {
 const composeEnhancers = composeWithDevTools({
   // Specify name here, actionsBlacklist, actionsCreators and other options if needed
 })
+
 const store: Store<IStore> = createStore(
   reducers,
   composeEnhancers(applyMiddleware(thunkMiddleware.withExtraArgument({ api: window.api, emit }), ...Middleware))
 )
 websocketInit(store)
-
-// const history = syncHistoryWithStore(browserHistory as any, store)
 
 ReactDOM.render(
   <Provider store={store}>
