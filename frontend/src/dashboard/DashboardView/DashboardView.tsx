@@ -23,7 +23,7 @@ const styles = (theme: Theme) =>
     },
     paper: {
       maxWidth: 1100,
-      marginTop: theme.spacing.unit * 3,
+      marginTop: theme.spacing(3),
       overflowX: 'auto',
     },
     table: {

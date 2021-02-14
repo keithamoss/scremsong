@@ -15,13 +15,13 @@ const styles = (theme: Theme) => ({
   },
   formControl: {
     minWidth: 165,
-    paddingRight: theme.spacing.unit * 3,
+    paddingRight: theme.spacing(3),
   },
   button: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing(1),
   },
   leftIcon: {
-    marginRight: theme.spacing.unit,
+    marginRight: theme.spacing(1),
   },
   iconSmall: {
     fontSize: 20,

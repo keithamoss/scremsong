@@ -1,4 +1,4 @@
-import { createMuiTheme, LinearProgress, MuiThemeProvider, Theme, withStyles, WithStyles } from '@material-ui/core'
+import { createMuiTheme, LinearProgress, Theme, ThemeProvider, withStyles, WithStyles } from '@material-ui/core'
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
@@ -17,9 +17,6 @@ const theme = createMuiTheme({
   //     primary: purple,
   //     secondary: green,
   // },
-  typography: {
-    useNextVariants: true,
-  },
   // status: {
   //     danger: "orange",
   // },
@@ -173,7 +170,7 @@ export class AppContainer extends React.Component<TComponentProps, {}> {
       )
     }
 
-    return <MuiThemeProvider theme={theme}>{component}</MuiThemeProvider>
+    return <ThemeProvider theme={theme}>{component}</ThemeProvider>
   }
 }
 

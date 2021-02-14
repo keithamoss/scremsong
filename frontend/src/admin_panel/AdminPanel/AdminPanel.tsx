@@ -13,7 +13,7 @@ const styles = (theme: Theme) => ({
   },
   tabContainer: {
     height: '100%',
-    padding: theme.spacing.unit * 3,
+    padding: theme.spacing(3),
   },
   disconnectedBadge: {
     fontWeight: 700,

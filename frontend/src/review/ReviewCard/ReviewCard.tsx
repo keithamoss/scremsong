@@ -31,11 +31,11 @@ import TweetThread from '../TweetThread/TweetThread'
 const styles = (theme: Theme) =>
   ({
     card: {
-      marginBottom: theme.spacing.unit,
+      marginBottom: theme.spacing(1),
       minHeight: 145,
     },
     cardContent: {
-      paddingBottom: theme.spacing.unit,
+      paddingBottom: theme.spacing(1),
       display: 'flex',
       flexDirection: 'row',
     },
@@ -55,7 +55,7 @@ const styles = (theme: Theme) =>
       justifyContent: 'start',
     },
     leftIcon: {
-      marginRight: theme.spacing.unit,
+      marginRight: theme.spacing(1),
     },
     iconSmall: {
       fontSize: 20,

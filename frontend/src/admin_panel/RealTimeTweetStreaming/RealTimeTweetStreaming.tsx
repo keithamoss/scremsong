@@ -23,13 +23,13 @@ const styles = (theme: Theme) => ({
     flex: 1,
   },
   button: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing(1),
   },
   restartStreamingButton: {
-    marginBottom: theme.spacing.unit * 3,
+    marginBottom: theme.spacing(3),
   },
   leftIcon: {
-    marginRight: theme.spacing.unit,
+    marginRight: theme.spacing(1),
   },
   iconSmall: {
     fontSize: 20,

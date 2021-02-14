@@ -5,11 +5,11 @@ import * as React from 'react'
 
 const styles = (theme: Theme) => ({
   root: {
-    marginTop: theme.spacing.unit * 2,
-    marginBottom: theme.spacing.unit * 2,
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
   },
   chip: {
-    marginRight: theme.spacing.unit,
+    marginRight: theme.spacing(1),
   },
 })
 

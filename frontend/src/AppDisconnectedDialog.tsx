@@ -16,8 +16,8 @@ const styles = (theme: Theme) =>
   ({
     disconnectedButton: {
       position: 'absolute',
-      right: theme.spacing.unit,
-      top: theme.spacing.unit,
+      right: theme.spacing(1),
+      top: theme.spacing(1),
     },
   } as any)
 

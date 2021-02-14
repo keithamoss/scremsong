@@ -32,7 +32,7 @@ const styles = (theme: Theme) => ({
   },
   formControl: {
     minWidth: 165,
-    paddingRight: theme.spacing.unit * 3,
+    paddingRight: theme.spacing(3),
   },
   focusedInputLabel: {
     color: 'white !important',
@@ -53,17 +53,17 @@ const styles = (theme: Theme) => ({
     flexGrow: 1,
   },
   button: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing(1),
   },
   buttonOffline: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing(1),
     backgroundColor: deepOrange[500],
     '&:hover:not($disabled)': {
       backgroundColor: deepOrange[700],
     },
   },
   leftIcon: {
-    marginRight: theme.spacing.unit,
+    marginRight: theme.spacing(1),
   },
   iconSmall: {
     fontSize: 20,

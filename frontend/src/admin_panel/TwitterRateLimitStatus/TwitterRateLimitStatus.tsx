@@ -12,8 +12,8 @@ const styles = (theme: Theme) =>
     },
     paper: {
       ...theme.mixins.gutters(),
-      paddingTop: theme.spacing.unit,
-      paddingBottom: theme.spacing.unit,
+      paddingTop: theme.spacing(1),
+      paddingBottom: theme.spacing(1),
       margin: 13,
     },
     flexTable: {

@@ -7,16 +7,16 @@ import TweetReplyChipInput from './TweetReplyChipInput'
 
 const styles = (theme: Theme) => ({
   replyTextField: {
-    marginTop: theme.spacing.unit,
+    marginTop: theme.spacing(1),
   },
   precannedRepliesList: {
-    marginTop: theme.spacing.unit,
+    marginTop: theme.spacing(1),
   },
   listItemIconToggleState: {
     paddingRight: 15,
   },
   nestedListItem: {
-    paddingLeft: theme.spacing.unit,
+    paddingLeft: theme.spacing(1),
   },
 })
 

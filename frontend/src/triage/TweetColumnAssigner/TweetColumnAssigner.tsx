@@ -40,7 +40,7 @@ const styles = (theme: Theme) => ({
     backgroundImage: 'linear-gradient(135deg, #bbdefb 50%, #ffcdd2 50%)',
   },
   badgeMargin: {
-    margin: theme.spacing.unit * 2,
+    margin: theme.spacing(2),
   },
 })
 
