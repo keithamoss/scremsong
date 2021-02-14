@@ -1,4 +1,4 @@
-import { withSnackbar, withSnackbarProps } from 'notistack'
+import { withSnackbar, WithSnackbarProps } from 'notistack'
 import { Component } from 'react'
 import { connect } from 'react-redux'
 import { removeSnackbar } from '../redux/modules/app'
@@ -17,7 +17,7 @@ export interface IStateProps {
   displayed: string[]
 }
 
-type TComponentProps = IStoreProps & IDispatchProps & withSnackbarProps
+type TComponentProps = IStoreProps & IDispatchProps & WithSnackbarProps
 class Notifier extends Component<TComponentProps, IStateProps> {
   public constructor(props: TComponentProps) {
     super(props)

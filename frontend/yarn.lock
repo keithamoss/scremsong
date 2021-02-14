@@ -1856,7 +1856,7 @@
     jest-diff "^26.0.0"
     pretty-format "^26.0.0"
 
-"@types/js-cookie@^2.2.1":
+"@types/js-cookie@^2.2.6":
   version "2.2.6"
   resolved "https://registry.yarnpkg.com/@types/js-cookie/-/js-cookie-2.2.6.tgz#f1a1cb35aff47bc5cfb05cb0c441ca91e914c26f"
   integrity sha512-+oY0FDTO2GYKEV0YPvSshGq9t7YozVkgvXLty7zogQNuCxBhT9/3INX9Q7H1aRZ4SUDRXAKlJuA4EA5nTt7SNw==
@@ -1871,7 +1871,7 @@
   resolved "https://registry.yarnpkg.com/@types/json5/-/json5-0.0.29.tgz#ee28707ae94e11d2b827bcbe5270bcea7f3e71ee"
   integrity sha1-7ihweulOEdK4J7y+UnC86n8+ce4=
 
-"@types/lodash-es@^4.17.3":
+"@types/lodash-es@^4.17.4":
   version "4.17.4"
   resolved "https://registry.yarnpkg.com/@types/lodash-es/-/lodash-es-4.17.4.tgz#b2e440d2bf8a93584a9fd798452ec497986c9b97"
   integrity sha512-BBz79DCJbD2CVYZH67MBeHZRX++HF+5p8Mo5MzjZi64Wac39S3diedJYHZtScbRVf4DjZyN6LzA0SB0zy+HSSQ==
@@ -1928,7 +1928,7 @@
   resolved "https://registry.yarnpkg.com/@types/q/-/q-1.5.4.tgz#15925414e0ad2cd765bfef58842f7e26a7accb24"
   integrity sha512-1HcDas8SEj4z1Wc696tH56G8OlRaH/sqZOynNNB+HF0WOeXPaxTtbYzJY2oEfiUxjSKjhCKr+MvR7dCHcEelug==
 
-"@types/qs@^6.5.2":
+"@types/qs@^6.9.5":
   version "6.9.5"
   resolved "https://registry.yarnpkg.com/@types/qs/-/qs-6.9.5.tgz#434711bdd49eb5ee69d90c1d67c354a9a8ecb18b"
   integrity sha512-/JHkVHtx/REVG0VVToGRGH2+23hsYLHdyG+GrvoUGlGAd0ErauXDyvHtRI/7H7mzLm+tBCKA7pfcpkQ1lf58iQ==
@@ -2004,7 +2004,7 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-virtualized@^9.18.12":
+"@types/react-virtualized@^9.21.11":
   version "9.21.11"
   resolved "https://registry.yarnpkg.com/@types/react-virtualized/-/react-virtualized-9.21.11.tgz#8eb60ed12ef0b2625769819f9fd10ad4bb1bdce0"
   integrity sha512-ngNe2AY/2CHuZQstOS0Jo5jnSjeyKTdSgqrXCQEltRMXLp9rwPUpJdgkoWzES6wn427Z8zo8dkBN8Sx7hlRmig==
@@ -2028,7 +2028,7 @@
     "@types/prop-types" "*"
     csstype "^3.0.2"
 
-"@types/redux-form@^8.1.0":
+"@types/redux-form@^8.3.1":
   version "8.3.1"
   resolved "https://registry.yarnpkg.com/@types/redux-form/-/redux-form-8.3.1.tgz#a5e67396fb86cf58d511bed7e4c0c9c65d01042a"
   integrity sha512-8lmJFxHtUBMWoI7lLX8Q+lhz9/nmkerEtrxgHZzhRwhQzD73MWkP9EA9w6Gx7cc02Fz3FkpYlfTN+9ELGUXZQQ==
@@ -4262,7 +4262,7 @@ cliui@^6.0.0:
     strip-ansi "^6.0.0"
     wrap-ansi "^6.2.0"
 
-clsx@^1.0.4:
+clsx@^1.0.4, clsx@^1.1.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/clsx/-/clsx-1.1.1.tgz#98b3134f9abbdf23b2663491ace13c5c03a73188"
   integrity sha512-6/bPho624p3S2pMyvP5kKBPXnI3ufHLObBFCfgx+LkeR5lg2XYy2hqZqUf45ypD8COn2bhgGJSUE+l5dhNBieA==
@@ -8048,7 +8048,7 @@ jest@26.6.0:
     import-local "^3.0.2"
     jest-cli "^26.6.0"
 
-js-cookie@^2.2.0:
+js-cookie@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/js-cookie/-/js-cookie-2.2.1.tgz#69e106dc5d5806894562902aa5baec3744e9b2b8"
   integrity sha512-HvdH2LzI/EAZcUwA8+0nKNtWHqS+ZmijLA30RwZA0bo7ToCckjK5MkGhjED9KoRcXO6BaGI3I9UIzSA1FKFPOQ==
@@ -8458,7 +8458,7 @@ locate-path@^5.0.0:
   dependencies:
     p-locate "^4.1.0"
 
-lodash-es@^4.17.11:
+lodash-es@^4.17.20:
   version "4.17.20"
   resolved "https://registry.yarnpkg.com/lodash-es/-/lodash-es-4.17.20.tgz#29f6332eefc60e849f869c264bc71126ad61e8f7"
   integrity sha512-JD1COMZsq8maT6mnuz1UMV0jvYD0E0aUsSOdrr1/nAG3dhqQXwRRgeW0cSqH1U43INKcqxaiVIQNOUDld7gRDA==
@@ -9154,13 +9154,13 @@ normalize-url@^3.0.0:
   resolved "https://registry.yarnpkg.com/normalize-url/-/normalize-url-3.3.0.tgz#b2e1c4dc4f7c6d57743df733a4f5978d18650559"
   integrity sha512-U+JJi7duF1o+u2pynbp2zXDW2/PADgC30f0GsHZtRh+HOcXHnw137TrNlyxxRvWW5fjKd3bcLHPxofWuCjaeZg==
 
-notistack@0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/notistack/-/notistack-0.5.0.tgz#4fece949c973cad6d1d4a9d34da8024ef3158b5e"
-  integrity sha512-DYAix/jnN/Qv/AHwgbNFcQ2d6HjeQ8duEge6OJr5rn0pmxUutQjuGpZ+3dJ/4FBJtfRbnv0BX59ZtHrn2tE+Jw==
+notistack@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/notistack/-/notistack-1.0.3.tgz#ce86a5e8c2b192d713d655c0778347beb3ebead3"
+  integrity sha512-bRGF/eg2qNQ8BwagPLkHiqrz+W00PYtGY5Xl33I0Of1BTm7arksZO1JxssPTlti0qw127CxuWxm637ipn0eZ9g==
   dependencies:
-    classnames "^2.2.6"
-    prop-types "^15.6.2"
+    clsx "^1.1.0"
+    hoist-non-react-statics "^3.3.0"
 
 npm-run-path@^2.0.0:
   version "2.0.2"
@@ -10664,7 +10664,7 @@ qs@6.7.0:
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.7.0.tgz#41dc1a015e3d581f1621776be31afb2876a9b1bc"
   integrity sha512-VCdBRNFTX1fyE7Nb6FYoURo/SPe62QCaAyzJvUjwRaIsc+NePBEniHlvxFmmX56+HZphIGtV0XeCirBtpDrTyQ==
 
-qs@^6.6.0:
+qs@^6.9.6:
   version "6.9.6"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.9.6.tgz#26ed3c8243a431b2924aca84cc90471f35d5a0ee"
   integrity sha512-TIRk4aqYLNoJUbd+g2lEdz5kLWIuTMRagAXxl78Q0RiVjAOugHmeKNGdd3cwo/ktpf9aL9epCfFqWDEKysUlLQ==
@@ -11006,7 +11006,7 @@ react-video-wrapper@1.0.3:
     blacklist "^1.1.2"
     classnames "^2.2.0"
 
-react-virtualized@^9.21.0:
+react-virtualized@^9.21.0, react-virtualized@^9.22.3:
   version "9.22.3"
   resolved "https://registry.yarnpkg.com/react-virtualized/-/react-virtualized-9.22.3.tgz#f430f16beb0a42db420dbd4d340403c0de334421"
   integrity sha512-MKovKMxWTcwPSxE1kK1HcheQTWfuCxAuBoSTf2gwyMM21NdX/PXUhnoP8Uc5dRKd+nKm8v41R36OellhdCpkrw==
@@ -11150,7 +11150,7 @@ redux-devtools-extension@^2.13.8:
   resolved "https://registry.yarnpkg.com/redux-devtools-extension/-/redux-devtools-extension-2.13.8.tgz#37b982688626e5e4993ff87220c9bbb7cd2d96e1"
   integrity sha512-8qlpooP2QqPtZHQZRhx3x3OP5skEV1py/zUdMY28WNAocbafxdG2tRD1MWE7sp8obGMNYuLWanhhQ7EQvT1FBg==
 
-redux-form@^8.1.0:
+redux-form@^8.3.7:
   version "8.3.7"
   resolved "https://registry.yarnpkg.com/redux-form/-/redux-form-8.3.7.tgz#24eb6d8b8b37098b4702fc4c52b6596b01a71c82"
   integrity sha512-CUv6z5Gpog3shB3Ptsd+x6dmeQ1AzIlx1Tniri3j7Gf+oBBtLrD7dHMLOcTbJKsaEwG49SB/z1Pik3Hy04mNcQ==
@@ -11169,7 +11169,7 @@ redux-thunk@^2.3.0:
   resolved "https://registry.yarnpkg.com/redux-thunk/-/redux-thunk-2.3.0.tgz#51c2c19a185ed5187aaa9a2d08b666d0d6467622"
   integrity sha512-km6dclyFnmcvxhAcrQV2AkZmPQjzPDjgVlQtR0EQjxZPyJ0BnMf3in1ryuR8A2qU0HldVRfxYXbFSKlI3N7Slw==
 
-redux@*, redux@>=3.7.2, "redux@^3.6.0 || ^4.0.0", redux@^4.0.0, redux@^4.0.1:
+redux@*, redux@>=3.7.2, "redux@^3.6.0 || ^4.0.0", redux@^4.0.0, redux@^4.0.5:
   version "4.0.5"
   resolved "https://registry.yarnpkg.com/redux/-/redux-4.0.5.tgz#4db5de5816e17891de8a80c424232d06f051d93f"
   integrity sha512-VSz1uMAH24DM6MF72vcojpYPtrTUu3ByVWfPL1nPfVRb5mZVTve5GnNCUV53QM/BZ66xfWrm0CTWoM+Xlz8V1w==
@@ -13258,7 +13258,7 @@ wbuf@^1.1.0, wbuf@^1.7.3:
   dependencies:
     minimalistic-assert "^1.0.0"
 
-web-vitals@^1.0.1:
+web-vitals@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/web-vitals/-/web-vitals-1.1.0.tgz#7f410d9a1f7a1cd5d952806b45776204b47dc274"
   integrity sha512-1cx54eRxY/+M0KNKdNpNnuXAXG+vJEvwScV4DiV9rOYDguHoeDIzm09ghBohOPtkqPO5OtPC14FWkNva3SDisg==
