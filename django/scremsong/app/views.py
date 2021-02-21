@@ -518,8 +518,8 @@ class SocialPlatformsAuthViewset(viewsets.ViewSet):
         #   - https://scremsong.test.democracysausage.org/api/0.1/social_auth/twitter_auth_step2/
         #   - https://scremsong.democracysausage.org/api/0.1/social_auth/twitter_auth_step2/
         # 3. In a new tab, go to Twitter and login as @DemSausage
-        # 4. Go to https://scremsong.democracysausage.org and login
-        # 5. Navigate to https://scremsong.test.democracysausage.org/api/0.1/social_auth/twitter_auth_step1/?format=json
+        # 4. Go to https://scremsong.[test.]democracysausage.org and login
+        # 5. Navigate to https://scremsong.[test.]democracysausage.org/api/0.1/social_auth/twitter_auth_step1/?format=json
         # 6. It will send you to Twitter and prompt you to Authorize Scremsong to use your account. (Important: Make sure you're logged in as @DemSausage before continuing!)
         # 7. You'll be returned to a page called "Social Platforms Auth Viewset" that says '"OK": true'
         try:

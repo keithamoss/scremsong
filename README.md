@@ -24,7 +24,8 @@ To get started:
 3. `yarn install` in `frontend/`
 4. Add `127.0.0.1 scremsong.test.democracysausage.org` to `/etc/hosts`
 5. Create your self-signed SSL cert (see below)
-6. Create Twitter credentials per the steps in `twitter_auth_step1()` in `views.py`
+6. Run `db/scripts/replace-dev-with-prod.sh` to initialise your database with the latest state in PROD and then empty the `app_socialplatforms` table to clear our stored credentials
+7. Create a new set of Twitter credentials per the steps in `twitter_auth_step1()` in `views.py`
 
 You're good to go! Navigate to https://scremsong.test.democracysausage.org
 
@@ -211,7 +212,15 @@ docker push keithmoss/scremsong-django
 
 (Remember to `docker login` to Docker Hub first.)
 
-### Resources
+## Maintenance
+
+- yarn outdated
+- yarn upgrade --latest
+- depcheck
+
+**Note::** babel-loader@8.1.0 because CRA needs at least 8.1.0 and react-tweet has (mistakenly) probably got the older version declared as a regular dependency
+
+## Resources
 
 - [Moving a static website to AWS S3 + CloudFront with HTTPS](https://medium.com/@willmorgan/moving-a-static-website-to-aws-s3-cloudfront-with-https-1fdd95563106)
 - [Host a Static Site on AWS, using S3 and CloudFront](https://www.davidbaumgold.com/tutorials/host-static-site-aws-s3-cloudfront/)
