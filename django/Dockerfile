@@ -1,44 +1,38 @@
-# FROM python:3.9.1-alpine3.12
-FROM python:3.6-alpine3.12
+FROM python:3.6-slim-stretch
 LABEL maintainer="<keithamoss@gmail.com>"
 
-ENV PYTHONUNBUFFERED 1
-ENV VIRTUAL_ENV /env
-# ENV PYTHON_PIP_VERSION 21.0.1
-ENV DJANGO_SETTINGS_MODULE scremsong.settings
+# Python
+ENV PYTHONUNBUFFERED=1 \
+    # Prevents Python from creating .pyc files
+    PYTHONDONTWRITEBYTECODE=1 \
+    \
+    # Poetry
+    # https://python-poetry.org/docs/configuration/#using-environment-variables
+    # Make poetry install to this location
+    POETRY_HOME="/opt/poetry" \
+    # Make poetry create the virtual environment in the project's root it gets named `.venv`
+    POETRY_VIRTUALENVS_CREATE=false \
+    # Do not ask any interactive question
+    POETRY_NO_INTERACTION=1 \
+    \
+    # Django
+    DJANGO_SETTINGS_MODULE="scremsong.settings"
 
-RUN python -m venv "$VIRTUAL_ENV"
-# RUN python -m venv "$VIRTUAL_ENV" && \
-#   "$VIRTUAL_ENV"/bin/pip install -U pip==$PYTHON_PIP_VERSION
+# prepend poetry to path
+ENV PATH="$POETRY_HOME/bin:$PATH"
 
-ENV PATH "$VIRTUAL_ENV"/bin:$PATH
+RUN apt-get update && apt-get -y upgrade
 
-RUN mkdir /app
-
+ADD . /app
 WORKDIR /app
 
-# psycopg2 requires pg_config to be available.
-# Installing pg_config takes a little more work on Alpine images.
-# Credit: https://stackoverflow.com/a/47871121
-RUN apk update
-RUN apk add postgresql-libs && apk add --virtual .build-deps gcc musl-dev postgresql-dev && apk add supervisor && rm -rf /var/cache/apk/*
+# Python deps management
+RUN apt-get install -y curl
+RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+RUN poetry install --no-dev
 
-# So we can install the Python cryptography used by gevent (and others)
-# https://stackoverflow.com/a/63836279/7368493
-RUN apk add --update alpine-sdk && apk add libffi-dev openssl-dev
-
-# Upgrade SetupTools from 28.8 to latest due to a bug installing python-memcached on Python 3.6
-# c.f. https://github.com/pypa/setuptools/issues/866
-RUN pip install --upgrade setuptools
-
-RUN python -m pip install --upgrade pip
-RUN pip install wheel
-
-ADD requirements.txt /app/
-RUN pip install -r requirements.txt --no-cache-dir
-
-ADD . /app/
-RUN pip install -e .
-RUN apk --purge del .build-deps gcc musl-dev
+RUN apt-get remove -y --purge curl && \
+    apt-get autoremove -y && \
+    rm -rf /var/lib/apt/lists/*
 
 ENTRYPOINT ["/app/docker-entrypoint.sh"]

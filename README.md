@@ -214,11 +214,17 @@ docker push keithmoss/scremsong-django
 
 ## Maintenance
 
+### Frontend
+
 - yarn outdated
 - yarn upgrade --latest
 - depcheck
 
 **Note::** babel-loader@8.1.0 because CRA needs at least 8.1.0 and react-tweet has (mistakenly) probably got the older version declared as a regular dependency
+
+### Backend
+
+poetry show --outdated
 
 ## Resources
 
