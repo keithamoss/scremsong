@@ -1,20 +1,12 @@
-from django.conf.urls import url, include
-from .views import (
-    UserViewSet,
-    ProfileViewSet,
-    CurrentUserView,
-    LogoutUserView,
-    TweetsViewset,
-    SocialColumnsViewset,
-    SocialAssignmentsViewset,
-    SocialPlatformsAuthViewset,
-    DashboardViewset,
-    CeleryAdminViewset,
-    LogsAdminViewset,
-    TwitterRateLimitAdminViewset,
-    ScremsongDebugViewset,
-    api_not_found)
+from django.conf.urls import include, url
 from rest_framework import routers
+
+from .views import (CeleryAdminViewset, CurrentUserView, DashboardViewset,
+                    LogoutUserView, LogsAdminViewset, ProfileViewSet,
+                    ScremsongDebugViewset, SocialAssignmentsViewset,
+                    SocialColumnsViewset, SocialPlatformsAuthViewset,
+                    TweetsViewset, TwitterRateLimitAdminViewset, UserViewSet,
+                    api_not_found)
 
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
@@ -28,11 +20,6 @@ router.register(r'logs_admin', LogsAdminViewset, 'LogsAdmin')
 router.register(r'twitter_api_admin', TwitterRateLimitAdminViewset, 'TwitterRateLimitAdmin')
 router.register(r'debug', ScremsongDebugViewset, 'ScremsongDebugViewset')
 router.register(r'profile', ProfileViewSet, 'ProfileViewSet')
-
-# Need to set base_name because Reasons
-# http://www.django-rest-framework.org/api-guide/routers/#usage (see note re `base_name`)
-# http://stackoverflow.com/questions/22083090/what-base-name-parameter-do-i-need-in-my-route-to-make-this-django-api-work
-# router.register(r'profile', ProfileViewSet, 'ProfileViewSet')
 
 urlpatterns = [
     url(r'^api/0.1/', include(router.urls)),
