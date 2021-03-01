@@ -10,7 +10,7 @@ from django.db import transaction
 from django.http import HttpResponseNotFound
 from django.http.response import HttpResponse, HttpResponseRedirect
 from rest_framework import status, viewsets
-from rest_framework.decorators import list_route
+from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -94,7 +94,7 @@ class ProfileViewSet(viewsets.ViewSet):
     """
     permission_classes = (IsAuthenticated,)
 
-    @list_route(methods=['post'])
+    @action(detail=False, methods=['post'])
     def update_settings(self, request):
         with transaction.atomic():
             user = User.objects.select_for_update().get(id=request.user.id)
@@ -102,7 +102,7 @@ class ProfileViewSet(viewsets.ViewSet):
             user.profile.save()
             return Response({"settings": user.profile.settings})
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def get_column_position(self, request, format=None):
         qp = request.query_params
         columnId = str(qp["id"]) if "id" in qp else None
@@ -119,7 +119,7 @@ class TweetsViewset(viewsets.ViewSet):
     """
     permission_classes = (IsAuthenticated,)
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def fetch(self, request, format=None):
         qp = request.query_params
 
@@ -136,7 +136,7 @@ class TweetsViewset(viewsets.ViewSet):
 
         return Response(fetch_tweets(startIndex, stopIndex, sinceId, maxId, columnIds))
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def set_state(self, request, format=None):
         qp = request.query_params
         tweetId = qp["tweetId"] if "tweetId" in qp else None
@@ -156,7 +156,7 @@ class TweetsViewset(viewsets.ViewSet):
 
         return Response({})
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def favourite(self, request, format=None):
         qp = request.query_params
         tweetId = qp["tweetId"] if "tweetId" in qp else None
@@ -165,7 +165,7 @@ class TweetsViewset(viewsets.ViewSet):
 
         return Response({})
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def unfavourite(self, request, format=None):
         qp = request.query_params
         tweetId = qp["tweetId"] if "tweetId" in qp else None
@@ -174,7 +174,7 @@ class TweetsViewset(viewsets.ViewSet):
 
         return Response({})
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def retweet(self, request, format=None):
         qp = request.query_params
         tweetId = qp["tweetId"] if "tweetId" in qp else None
@@ -183,7 +183,7 @@ class TweetsViewset(viewsets.ViewSet):
 
         return Response({})
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def unretweet(self, request, format=None):
         qp = request.query_params
         tweetId = qp["tweetId"] if "tweetId" in qp else None
@@ -192,7 +192,7 @@ class TweetsViewset(viewsets.ViewSet):
 
         return Response({})
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def reply(self, request, format=None):
         qp = request.query_params
         inReplyToTweetId = qp["inReplyToTweetId"] if "inReplyToTweetId" in qp else None
@@ -223,7 +223,7 @@ class SocialColumnsViewset(viewsets.ViewSet):
     """
     permission_classes = (IsAuthenticated,)
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def assign_triager(self, request, format=None):
         qp = request.query_params
         columnId = qp["columnId"] if "columnId" in qp else None
@@ -257,7 +257,7 @@ class SocialColumnsViewset(viewsets.ViewSet):
 
         return Response({"OK": True})
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def unassign_triager(self, request, format=None):
         qp = request.query_params
         columnId = qp["columnId"] if "columnId" in qp else None
@@ -288,7 +288,7 @@ class SocialAssignmentsViewset(viewsets.ViewSet):
     """
     permission_classes = (IsAuthenticated,)
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def assign_reviewer(self, request, format=None):
         qp = request.query_params
         tweetId = qp["tweetId"] if "tweetId" in qp else None
@@ -317,7 +317,7 @@ class SocialAssignmentsViewset(viewsets.ViewSet):
         except ScremsongException as e:
             return Response({"error": "Could not assign tweet {}. Failed to resolve and update tweet thread. Message: {}".format(tweetId, str(e))}, status=status.HTTP_400_BAD_REQUEST)
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def reassign_reviewer(self, request, format=None):
         qp = request.query_params
         assignmentId = int(qp["assignmentId"]) if "assignmentId" in qp else None
@@ -343,7 +343,7 @@ class SocialAssignmentsViewset(viewsets.ViewSet):
             except ScremsongException as e:
                 return Response({"error": "Could not reassign assignment {}. Failed to resolve and update tweet thread. Message: {}".format(assignmentId, str(e))}, status=status.HTTP_400_BAD_REQUEST)
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def bulk_reassign_reviewer(self, request, format=None):
         qp = request.query_params
         currentReviewerId = int(qp["currentReviewerId"]) if "currentReviewerId" in qp else None
@@ -376,7 +376,7 @@ class SocialAssignmentsViewset(viewsets.ViewSet):
             except ScremsongException as e:
                 return Response({"error": "Could not bulk reassign assignments for {} to {}. Failed to resolve and update tweet thread. Message: {}".format(currentReviewerId, newReviewerId, str(e))}, status=status.HTTP_400_BAD_REQUEST)
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def unassign_reviewer(self, request, format=None):
         qp = request.query_params
         assignmentId = int(qp["assignmentId"]) if "assignmentId" in qp else None
@@ -390,7 +390,7 @@ class SocialAssignmentsViewset(viewsets.ViewSet):
 
         return Response({"OK": True})
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def close(self, request, format=None):
         qp = request.query_params
         assignmentId = int(qp["assignmentId"]) if "assignmentId" in qp else None
@@ -409,7 +409,7 @@ class SocialAssignmentsViewset(viewsets.ViewSet):
 
         return Response({"OK": True})
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def restore(self, request, format=None):
         qp = request.query_params
         assignmentId = int(qp["assignmentId"]) if "assignmentId" in qp else None
@@ -425,7 +425,7 @@ class SocialAssignmentsViewset(viewsets.ViewSet):
 
         return Response({"OK": True})
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def mark_read(self, request, format=None):
         qp = request.query_params
         assignmentId = int(qp["assignmentId"]) if "assignmentId" in qp else None
@@ -440,7 +440,7 @@ class SocialAssignmentsViewset(viewsets.ViewSet):
 
         return Response({"OK": True})
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def set_user_accepting_assignments(self, request, format=None):
         qp = request.query_params
         user_id = int(qp["user_id"]) if "user_id" in qp else None
@@ -480,7 +480,7 @@ class SocialPlatformsAuthViewset(viewsets.ViewSet):
     """
     permission_classes = (IsAuthenticated,)
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def set_muzzled(self, request):
         qp = request.query_params
         muzzled = True if "muzzled" in qp and qp["muzzled"] == "1" else False
@@ -511,7 +511,7 @@ class SocialPlatformsAuthViewset(viewsets.ViewSet):
 
             return Response({"settings": t.settings})
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def twitter_auth_step1(self, request, format=None):
         # 1. Login to https://developer.twitter.com/en/apps as @DemSausage
         # 2. Register an app and set these callback URLs:
@@ -528,7 +528,7 @@ class SocialPlatformsAuthViewset(viewsets.ViewSet):
         except TweepError:
             return Response({"error": "Error! Failed to get request token."}, status=status.HTTP_400_BAD_REQUEST)
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def twitter_auth_step2(self, request, format=None):
         try:
             if twitter_user_api_auth_stage_2(request.query_params) is True:
@@ -545,7 +545,7 @@ class DashboardViewset(viewsets.ViewSet):
     """
     permission_classes = (IsAuthenticated,)
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def get_stats(self, request, format=None):
         stats = {
             "assignments": {
@@ -575,7 +575,7 @@ class CeleryAdminViewset(viewsets.ViewSet):
     """
     permission_classes = (IsAuthenticated,)
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def tasks(self, request, format=None):
         from celery.task.control import inspect
         i = inspect()
@@ -588,13 +588,13 @@ class CeleryAdminViewset(viewsets.ViewSet):
             "reserved": i.reserved()
         })
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def workers(self, request, format=None):
         from celery.task.control import inspect
         i = inspect()
         return Response(i.ping())
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def restart_streaming(self, request, format=None):
         celery_restart_streaming()
         return Response({"OK": True})
@@ -606,7 +606,7 @@ class LogsAdminViewset(viewsets.ViewSet):
     """
     permission_classes = (IsAuthenticated,)
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def available_logs(self, request, format=None):
         filenames = []
         for filename in glob.iglob("/app/logs/*.log", recursive=True):
@@ -614,7 +614,7 @@ class LogsAdminViewset(viewsets.ViewSet):
 
         return Response(filenames)
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def get_log(self, request, format=None):
         def tail(file_path, num_lines=20000):
             if os.path.exists(file_path) is False:
@@ -643,7 +643,7 @@ class TwitterRateLimitAdminViewset(viewsets.ViewSet):
     """
     permission_classes = (IsAuthenticated,)
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def rate_limit_status(self, request, format=None):
         api = get_tweepy_api_auth()
         # status = api.rate_limit_status(resources="tweets,statuses,search,application,favorites")
@@ -657,7 +657,7 @@ class ScremsongDebugViewset(viewsets.ViewSet):
     """
     permission_classes = (IsAuthenticated,)
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def test(self, request, format=None):
         # from scremsong.app.twitter import get_tweet_from_db, process_new_tweet_reply
         # tweet = get_tweet_from_db("1076752336591118336")
@@ -670,7 +670,7 @@ class ScremsongDebugViewset(viewsets.ViewSet):
 
         return Response({"OK": True})
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def find_wot_was_rate_limited(self, request, format=None):
         from scremsong.app.models import TwitterRateLimitInfo
 
@@ -689,7 +689,7 @@ class ScremsongDebugViewset(viewsets.ViewSet):
         print(rateLimited)
         return Response({"OK": True})
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def send_dummy_tweets(self, request, format=None):
         qp = request.query_params
         number_of_tweets = int(qp["number_of_tweets"]) if "number_of_tweets" in qp else None
