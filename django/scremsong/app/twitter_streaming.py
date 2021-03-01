@@ -1,11 +1,15 @@
 import tweepy
-from scremsong.util import make_logger
-from scremsong.app.models import SocialPlatforms
-from scremsong.app.enums import SocialPlatformChoice, TweetSource, NotificationVariants
-from scremsong.celery import celery_restart_streaming, task_process_tweet_reply, task_fill_missing_tweets
-from scremsong.app.social.columns import get_social_columns
-from scremsong.app.twitter import get_twitter_app, get_tweepy_api_auth, get_latest_tweet_id_for_streaming
 from scremsong.app import websockets
+from scremsong.app.enums import (NotificationVariants, SocialPlatformChoice,
+                                 TweetSource)
+from scremsong.app.models import SocialPlatforms
+from scremsong.app.social.columns import get_social_columns
+from scremsong.app.twitter import (get_latest_tweet_id_for_streaming,
+                                   get_tweepy_api_auth, get_twitter_app)
+from scremsong.celery import (app, celery_restart_streaming,
+                              task_fill_missing_tweets,
+                              task_process_tweet_reply)
+from scremsong.util import make_logger
 
 logger = make_logger(__name__)
 
@@ -149,8 +153,7 @@ def open_tweet_stream():
 
 
 def is_streaming_connected():
-    from celery.task.control import inspect
-    i = inspect()
+    i = app.control.inspect()
     tasks = i.active()
 
     if tasks is not None:

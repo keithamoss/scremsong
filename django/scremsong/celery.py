@@ -80,8 +80,7 @@ def celery_restart_streaming(wait=5):
 
 
 def get_celery_tasks(activeOnly=True):
-    from celery.task.control import inspect
-    i = inspect()
+    i = app.control.inspect()
 
     allTasks = []
 
@@ -150,8 +149,7 @@ def is_a_matching_fill_missing_tweets_task_already_running(taskId, sinceId):
 
 
 def shutdown_celery_worker():
-    from celery.task.control import broadcast, inspect
-    i = inspect()
+    i = app.control.inspect()
 
     logger.info("Attempting to shutdown any existing celery workers")
 
@@ -159,7 +157,7 @@ def shutdown_celery_worker():
     if workers is not None:
         for worker_name, ok in workers.items():
             logger.info("Shutting down Celery worker {} ({})".format(worker_name, ok))
-            broadcast("shutdown", destination=[worker_name])
+            app.control.broadcast("shutdown", destination=[worker_name])
     else:
         logger.warning("No workers were visible during worker shutdown")
 

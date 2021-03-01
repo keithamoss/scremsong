@@ -40,7 +40,7 @@ from scremsong.app.twitter import (favourite_tweet, fetch_tweets,
                                    twitter_user_api_auth_stage_1,
                                    twitter_user_api_auth_stage_2,
                                    unfavourite_tweet, unretweet_tweet)
-from scremsong.celery import celery_restart_streaming
+from scremsong.celery import app, celery_restart_streaming
 from scremsong.util import get_or_none, make_logger
 from tweepy import TweepError
 
@@ -577,8 +577,7 @@ class CeleryAdminViewset(viewsets.ViewSet):
 
     @action(detail=False, methods=['get'])
     def tasks(self, request, format=None):
-        from celery.task.control import inspect
-        i = inspect()
+        i = app.control.inspect()
         return Response({
             # These are all the tasks that are currently being executed.
             "running": i.active(),
@@ -590,8 +589,7 @@ class CeleryAdminViewset(viewsets.ViewSet):
 
     @action(detail=False, methods=['get'])
     def workers(self, request, format=None):
-        from celery.task.control import inspect
-        i = inspect()
+        i = app.control.inspect()
         return Response(i.ping())
 
     @action(detail=False, methods=['get'])
