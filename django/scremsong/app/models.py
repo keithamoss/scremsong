@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 from django.db import models
@@ -33,7 +35,7 @@ class ProfileJSONField(JSONField):
     def from_db_value(self, value, expression, connection):
         if value is None:
             return value
-        return {**default_profile_settings(), **value}
+        return {**default_profile_settings(), **json.loads(value)}
 
 
 class Profile(models.Model):
@@ -82,7 +84,7 @@ class SocialPlatormsJSONField(JSONField):
     def from_db_value(self, value, expression, connection):
         if value is None:
             return value
-        return {**default_socialplatform_settings(), **value}
+        return {**default_socialplatform_settings(), **json.loads(value)}
 
 
 class SocialPlatforms(models.Model):
