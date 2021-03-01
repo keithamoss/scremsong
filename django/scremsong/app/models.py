@@ -1,14 +1,15 @@
-from django.db import models
-from django.db.models import F, Func
-from django.contrib.postgres.fields import JSONField
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
+from django.db import models
+from django.db.models import F, Func, JSONField
 from model_utils import FieldTracker
-
+from scremsong.app.enums import (ProfileOfflineReason,
+                                 ProfileSettingQueueSortBy, ProfileSettings,
+                                 SocialAssignmentCloseReason,
+                                 SocialAssignmentState, SocialPlatformChoice,
+                                 TweetReplyCategories, TweetState, TweetStatus)
 from scremsong.app.social.twitter_utils import apply_tweet_filter_criteria
-from scremsong.app.enums import ProfileSettingQueueSortBy, SocialPlatformChoice, SocialAssignmentState, SocialAssignmentCloseReason, TweetState, TweetStatus, TweetReplyCategories, ProfileOfflineReason
 from scremsong.util import make_logger
-from scremsong.app.enums import ProfileSettings
 
 logger = make_logger(__name__)
 
