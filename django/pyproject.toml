@@ -5,7 +5,7 @@ description = ""
 authors = ["Keith Moss <keithamoss@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.8"
 Django = "^3.1.7"
 psycopg2-binary = "^2.8.6"
 djangorestframework = "^3.12.2"
