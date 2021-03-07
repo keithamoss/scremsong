@@ -22,6 +22,7 @@ ENV PYTHONUNBUFFERED=1 \
 ENV PATH="$POETRY_HOME/bin:$PATH"
 
 RUN apt-get update && apt-get -y upgrade
+RUN apt-get install -y supervisor
 
 ADD . /app
 WORKDIR /app
