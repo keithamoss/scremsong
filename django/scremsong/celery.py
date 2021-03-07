@@ -36,9 +36,9 @@ def celery_init_tweet_streaming(wait=2):
     else:
         logger.warning("Not starting tweet streaming - it's already running")
 
-    # if is_rate_limit_collection_task_running() is False:
-    #     logger.info("Auto-starting twitter rate limit info collection in Celery worker")
-    #     task_collect_twitter_rate_limit_info.apply_async()
+    if is_rate_limit_collection_task_running() is False:
+        logger.info("Auto-starting twitter rate limit info collection in Celery worker")
+        task_collect_twitter_rate_limit_info.apply_async()
 
 
 # def celery_kill_running_streaming_tasks():
