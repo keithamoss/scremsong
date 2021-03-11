@@ -597,6 +597,21 @@ class CeleryAdminViewset(viewsets.ViewSet):
         celery_restart_streaming()
         return Response({"OK": True})
 
+    # @action(detail=False, methods=['get'])
+    # def experiment(self, request, format=None):
+    #     from celery.result import AsyncResult
+    #     res = AsyncResult('0166e825-d9d9-4fb2-b2e2-957893a6b215', app=app)
+
+    #     i = app.control.inspect()
+    #     return Response({
+    #         "result": {
+    #             "state": res.state,
+    #             # "get": res.get()
+    #         },
+    #         "query_task": i.query_task("0166e825-d9d9-4fb2-b2e2-957893a6b215"),
+    #         "running": i.stats(),
+    #     })
+
 
 class LogsAdminViewset(viewsets.ViewSet):
     """
