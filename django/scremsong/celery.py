@@ -351,7 +351,13 @@ def task_fill_missing_tweets(self, sinceId):
             # logger.info("Waiting for streaming to start until we can fill missing tweets...")
             sleep(5)
 
-    logger.info("Done filling missing tweets!")
+    logger.info("Done filling missing tweets for {}".format(sinceId))
+
+    logger.info("Deleting sinceId {} from TaskFillMissingTweets".format(sinceId))
+    from scremsong.app.models import TaskFillMissingTweets
+    t = TaskFillMissingTweets.objects.filter(since_id=sinceId)
+    t.delete()
+    logger.info("There are now {} sinceIds remaining in TaskFillMissingTweets".format(TaskFillMissingTweets.objects.count()))
     return True
 
 

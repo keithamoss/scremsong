@@ -11,8 +11,8 @@ from scremsong.app.enums import (NotificationVariants, SocialAssignmentState,
                                  TweetStatus)
 from scremsong.app.exceptions import FailedToResolveTweet, ScremsongException
 from scremsong.app.models import (SocialAssignments, SocialColumns,
-                                  SocialPlatforms, TweetReplies, Tweets,
-                                  TwitterRateLimitInfo)
+                                  SocialPlatforms, TaskFillMissingTweets,
+                                  TweetReplies, Tweets, TwitterRateLimitInfo)
 from scremsong.app.reviewers_utils import is_tweet_part_of_an_assignment
 from scremsong.app.serializers import (
     SocialAssignmentSerializer,
@@ -178,9 +178,21 @@ def get_tweets_for_column(social_column, since_id=None, max_id=None, startIndex=
 
 def get_latest_tweet_id_for_streaming():
     try:
-        t = Tweets.objects.filter(status=TweetStatus.OK).filter(source__contains=TweetSource.STREAMING).latest("tweet_id")
-        if t is not None:
-            return t.tweet_id
+        if TaskFillMissingTweets.objects.count() == 0:
+            logger.info("No TaskFillMissingTweets are active, so using the most recent tweet we've seen instead")
+
+            t = Tweets.objects.filter(status=TweetStatus.OK).filter(source__contains=TweetSource.STREAMING).latest("tweet_id")
+            if t is not None:
+                logger.info("TaskFillMissingTweets added {}".format(t.tweet_id))
+                tsk = TaskFillMissingTweets(since_id=t.tweet_id)
+                tsk.save()
+
+                return t.tweet_id
+        else:
+            t = TaskFillMissingTweets.objects.first()
+            logger.info("TaskFillMissingTweets contains a tweet_id ({}), so using that".format(t.since_id))
+            logger.info("TaskFillMissingTweets contains {} sinceIds".format(TaskFillMissingTweets.objects.count()))
+            return t.since_id
         return None
     except Tweets.DoesNotExist:
         return None

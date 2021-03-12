@@ -192,3 +192,9 @@ class AllowedUsers(models.Model):
     "Our whitelist of allowed users"
 
     email = models.EmailField(unique=True, blank=False)
+
+
+class TaskFillMissingTweets(models.Model):
+    "Our instructions for the task_fill_missing_tweets() Celery task"
+
+    since_id = models.TextField(editable=False, unique=True)
