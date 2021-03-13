@@ -1,11 +1,13 @@
 version: "3.7"
 services:
-    frontend:
-        image: node:10.14.2-alpine
-        command: build
-        entrypoint: /app/docker-entrypoint.sh
-        volumes:
-            - ./frontend:/app:delegated
-            - ./build:/build:delegated
-        env_file:
-            - secrets/scremsong-frontend.prod.env
+  frontend:
+    image: node:10.14.2-alpine
+    command: build
+    entrypoint: /app/docker-entrypoint.sh
+    volumes:
+      - ./frontend:/app:delegated
+      - ./build:/build:delegated
+    env_file:
+      # Toggle this for builds to test locally vs builds to deploy
+      - secrets/scremsong-frontend.prod.env
+      # - secrets/scremsong-frontend.prod-local.env
