@@ -24,9 +24,9 @@ if [ "$CMD" = "frontend" ] || [ "$CMD" = "all" ]; then
   cp build/frontend.tgz build/django.tgz nginx-prod/build # this is horrible, fixme
 
   # For local testing with docker-compose-prod.yml only
-  # echo building prod nginx container
-  # (cd nginx-prod && docker build -t scremsong/nginx-prod:latest .)
-  # (cd nginx-prod && docker build --no-cache -t scremsong/nginx-prod:latest . && cd ..)
+  echo building prod nginx container
+  (cd nginx-prod && docker build -t scremsong/nginx-prod:latest .)
+  (cd nginx-prod && docker build --no-cache -t scremsong/nginx-prod:latest . && cd ..)
 fi
 
 if [ "$CMD" = "django" ] || [ "$CMD" = "all" ]; then
