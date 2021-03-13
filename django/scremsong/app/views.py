@@ -40,7 +40,8 @@ from scremsong.app.twitter import (favourite_tweet, fetch_tweets,
                                    twitter_user_api_auth_stage_1,
                                    twitter_user_api_auth_stage_2,
                                    unfavourite_tweet, unretweet_tweet)
-from scremsong.celery import app, celery_restart_streaming
+from scremsong.celery import (app, celery_kill_streaming_tasks,
+                              celery_restart_streaming)
 from scremsong.util import get_or_none, make_logger
 from tweepy import TweepError
 
@@ -595,6 +596,11 @@ class CeleryAdminViewset(viewsets.ViewSet):
     @action(detail=False, methods=['get'])
     def restart_streaming(self, request, format=None):
         celery_restart_streaming()
+        return Response({"OK": True})
+
+    @action(detail=False, methods=['get'])
+    def kill_streaming_tasks(self, request, format=None):
+        celery_kill_streaming_tasks()
         return Response({"OK": True})
 
     # @action(detail=False, methods=['get'])

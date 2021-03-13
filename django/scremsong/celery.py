@@ -46,39 +46,39 @@ def celery_init_tweet_streaming(wait=2):
         task_collect_twitter_rate_limit_info.apply_async()
 
 
-# def celery_kill_running_streaming_tasks():
-#     from celery.task.control import revoke
+def celery_kill_running_streaming_tasks():
+    tasks = get_tweet_streaming_tasks(activeOnly=False)
+    for task in tasks:
+        if task["acknowledged"] is True:
+            # This is bad - per advice about terminate=True potentially killing the process when it's begun another task
+            # http://docs.celeryproject.org/en/latest/userguide/workers.html?highlight=revoke#revoke-revoking-tasks
+            # Not an issue for us with how we're using Celery at the moment.
+            # A better approach is using AbortableTasks and testing for is_aborted() in the task and here.
+            # (See the commit history on this file for WIPy attempts at doing that)
+            logger.info("Revoking acknowledged task {} ({}) on worker {}".format(task["name"], task["id"], task["hostname"]))
+            app.control.revoke(task["id"], terminate=True)
+        else:
+            logger.info("Revoking unacknowledged task {} ({}) on worker {}".format(task["name"], task["id"], task["hostname"]))
+            app.control.revoke(task["id"])
 
-#     tasks = get_tweet_streaming_tasks(activeOnly=False)
-#     for task in tasks:
-#         if task["acknowledged"] is True:
-#             # This is bad - per advice about terminate=True potentially killing the process when it's begun another task
-#             # http://docs.celeryproject.org/en/latest/userguide/workers.html?highlight=revoke#revoke-revoking-tasks
-#             # Not an issue for us with how we're using Celery at the moment.
-#             # A better approach is using AbortableTasks and testing for is_aborted() in the task and here.
-#             # (See the commit history on this file for WIPy attempts at doing that)
-#             logger.info("Revoking acknowledged task {} ({}) on worker {}".format(task["name"], task["id"], task["hostname"]))
-#             revoke(task["id"], terminate=True)
-#         else:
-#             logger.info("Revoking unacknowledged task {} ({}) on worker {}".format(task["name"], task["id"], task["hostname"]))
-#             revoke(task["id"])
+    # Give the tasks time to properly die
+    sleep(5)
 
-#     # Give the tasks time to properly die
-#     sleep(5)
+
+def celery_kill_streaming_tasks(wait=5):
+    # Stop any running streaing tasks before we try to restart
+    # e.g. If streaming dies soon after it's connected then task_fill_missing_tweets may still be running
+    logger.info("Trying to kill any running tweet streaming tasks")
+    celery_kill_running_streaming_tasks()
+
+    logger.info("Trying to restart tweet streaming")
+    celery_init_tweet_streaming(wait)
+
+    logger.info("Launching restart tweet streaming task")
+    task_restart_streaming.apply_async(countdown=wait)
 
 
 def celery_restart_streaming(wait=5):
-    # Stop any running streaing tasks before we try to restart
-    # e.g. If streaming dies soon after it's connected then task_fill_missing_tweets may still be running
-    # logger.info("Trying to kill any running tweet streaming tasks")
-    # celery_kill_running_streaming_tasks()
-
-    # logger.info("Trying to restart tweet streaming")
-    # celery_init_tweet_streaming(wait)
-
-    # logger.info("Launching restart tweet streaming task")
-    # task_restart_streaming.apply_async(countdown=wait)
-
     # Relies on supervisord (in PROD) restarting the worker for us
     logger.info("Attempting to restart streaming by shutting down the celery worker")
     shutdown_celery_worker()
@@ -301,20 +301,20 @@ def task_collect_twitter_rate_limit_info(self):
     return True
 
 
-# @app.task(bind=True)
-# def task_restart_streaming(self, reason=None):
-#     logger.info("Trying to restart streaming. Reason: ".format(reason))
+@app.task(bind=True)
+def task_restart_streaming(self, reason=None):
+    logger.info("Trying to restart streaming. Reason: {}".format(reason))
 
-#     # Stop any running streaing tasks before we try to restart
-#     # e.g. If streaming dies soon after it's connected then task_fill_missing_tweets may still be running
-#     # logger.info("Trying to kill any running tweet streaming tasks")
-#     # celery_kill_running_streaming_tasks()
+    # Stop any running streaing tasks before we try to restart
+    # e.g. If streaming dies soon after it's connected then task_fill_missing_tweets may still be running
+    logger.info("Trying to kill any running tweet streaming tasks")
+    celery_kill_running_streaming_tasks()
 
-#     # And restart!
-#     # logger.info("Trying to retstart tweet streaming tasks")
-#     # celery_init_tweet_streaming()
+    # And restart!
+    logger.info("Trying to retstart tweet streaming tasks")
+    celery_init_tweet_streaming()
 
-#     return True
+    return True
 
 
 @app.task(bind=True)

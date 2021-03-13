@@ -25,7 +25,7 @@ const styles = (theme: Theme) => ({
   button: {
     margin: theme.spacing(1),
   },
-  restartStreamingButton: {
+  taskControlButtons: {
     marginBottom: theme.spacing(3),
   },
   leftIcon: {
@@ -39,6 +39,7 @@ const styles = (theme: Theme) => ({
 export interface IProps {
   tasks: ICeleryTasks
   restartTweetStreaming: any
+  killTweetStreaming: any
 }
 
 export interface IState {}
@@ -47,19 +48,31 @@ type TComponentProps = IProps & WithStyles
 
 class RealTimeTweetStreaming extends React.PureComponent<TComponentProps, IState> {
   public render() {
-    const { tasks, restartTweetStreaming, classes } = this.props
+    const { tasks, restartTweetStreaming, killTweetStreaming, classes } = this.props
 
     return (
       <React.Fragment>
-        <Tooltip title="Restart the real-time tweet stream">
+        <Tooltip title="Restart the real-time tweet streaming worker process">
           <Button
             variant="contained"
             color="primary"
-            className={classNames(classes.button, classes.restartStreamingButton)}
+            className={classNames(classes.button, classes.taskControlButtons)}
             onClick={restartTweetStreaming}
           >
             <Refresh className={classNames(classes.leftIcon, classes.iconSmall)} />
             Restart tweet streaming
+          </Button>
+        </Tooltip>
+
+        <Tooltip title="Kill the real-time tweet streaming tasks">
+          <Button
+            variant="contained"
+            color="primary"
+            className={classNames(classes.button, classes.taskControlButtons)}
+            onClick={killTweetStreaming}
+          >
+            <Refresh className={classNames(classes.leftIcon, classes.iconSmall)} />
+            Kill tweet streaming tasks
           </Button>
         </Tooltip>
 

@@ -28,12 +28,15 @@ type TComponentProps = IProps & IStoreProps & IDispatchProps
 class RealTimeTweetStreamingContainer extends React.PureComponent<TComponentProps, IState> {
   private restartTweetStreaming: any
 
+  private killTweetStreaming: any
+
   public constructor(props: TComponentProps) {
     super(props)
 
     this.state = { tasks: null }
 
     this.restartTweetStreaming = () => window.api.get('/0.1/celery_admin/restart_streaming/', null, {})
+    this.killTweetStreaming = () => window.api.get('/0.1/celery_admin/kill_streaming_tasks/', null, {})
   }
 
   public async componentDidMount() {
@@ -47,7 +50,13 @@ class RealTimeTweetStreamingContainer extends React.PureComponent<TComponentProp
       return <LinearProgress />
     }
 
-    return <RealTimeTweetStreaming tasks={tasks} restartTweetStreaming={this.restartTweetStreaming} />
+    return (
+      <RealTimeTweetStreaming
+        tasks={tasks}
+        restartTweetStreaming={this.restartTweetStreaming}
+        killTweetStreaming={this.killTweetStreaming}
+      />
+    )
   }
 }
 
