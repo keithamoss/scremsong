@@ -146,9 +146,23 @@ def is_rate_limit_collection_task_running(excludeTaskId=None):
 
 def is_a_matching_fill_missing_tweets_task_already_running(taskId, sinceId):
     args = ["{}".format(sinceId)]
-    for task in get_tasks_by_names(activeOnly=False, taskNames=["scremsong.celery.task_fill_missing_tweets"]):
+    tasks = get_tasks_by_names(activeOnly=False, taskNames=["scremsong.celery.task_fill_missing_tweets"])
+    countOfMatchingTasks = 0
+
+    for task in tasks:
+        # print("Found task id={} args={}, json.dumps({})".format(task["id"], task["args"], json.dumps(task["args"])))
+        if task["id"] == taskId and task["args"] == args:
+            countOfMatchingTasks += 1
+
         if task["id"] != taskId and task["args"] == args:
+            print("Matched taskIds!")
             return True
+
+    print("countOfMatchingTasks={}".format(countOfMatchingTasks))
+    if countOfMatchingTasks > 1:
+        print("Bailing due to countOfMatchingTasks for taskId={}".format(taskId))
+        return True
+
     return False
 
 
