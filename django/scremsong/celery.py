@@ -17,11 +17,6 @@ logger = make_logger(__name__)
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'proj.settings')
 
-# Opt out of async safety until I can work out how Channels and Celery want to play with Django 3
-# https://docs.djangoproject.com/en/3.1/topics/async/#envvar-DJANGO_ALLOW_ASYNC_UNSAFE
-# See the comments here: https://stackoverflow.com/a/43325237/7368493
-os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
-
 app = Celery('proj')
 
 # Using a string here means the worker doesn't have to serialize
@@ -330,7 +325,7 @@ def task_fill_missing_tweets(self, sinceId):
         return True
 
     if is_a_matching_fill_missing_tweets_task_already_running(self.request.id, sinceId) is True:
-        logger.warning("Abandoning fill missing tweet for {} - an identical task already exists".format(sinceId))
+        logger.warning("Abandoning fill missing tweets for {} in {} - an identical task already exists".format(sinceId, self.request.id))
         return True
 
     from scremsong.app.twitter import (fill_in_missing_tweets,

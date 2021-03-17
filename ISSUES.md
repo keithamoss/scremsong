@@ -20,8 +20,8 @@ https://github.com/tweepy/tweepy/issues/237
 
 Django 3 is partway through migrating to use Python 3's new async functionality. Unfortunately for us, the ORM is hasn't been migrated yet - so we're sometimes seeing these 'sync to async' errors being thrown when Celery tasks call the ORM.
 
-`You cannot use AsyncToSync in the same thread as an async event loop - just await the async function directly.`
+We tried to opt out of seeing warnings by setting DJANGO_ALLOW_ASYNC_UNSAFE=true per https://docs.djangoproject.com/en/3.1/topics/async/#envvar-DJANGO_ALLOW_ASYNC_UNSAFE, but that didn't work and we still kept seeing the errors.
 
-We've opted out of seeing warnings by setting DJANGO_ALLOW_ASYNC_UNSAFE=true per https://docs.djangoproject.com/en/3.1/topics/async/#envvar-DJANGO_ALLOW_ASYNC_UNSAFE
+`You cannot use AsyncToSync in the same thread as an async event loop - just await the async function directly.`
 
 c.f. see the comments here: https://stackoverflow.com/a/43325237/7368493
