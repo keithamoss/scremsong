@@ -145,7 +145,7 @@ def is_rate_limit_collection_task_running(excludeTaskId=None):
 
 
 def is_a_matching_fill_missing_tweets_task_already_running(taskId, sinceId):
-    args = "['{}']".format(sinceId)
+    args = ["{}".format(sinceId)]
     for task in get_tasks_by_names(activeOnly=False, taskNames=["scremsong.celery.task_fill_missing_tweets"]):
         if task["id"] != taskId and task["args"] == args:
             return True
