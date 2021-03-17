@@ -39,7 +39,8 @@ const styles = (theme: Theme) => ({
 export interface IProps {
   tasks: ICeleryTasks
   restartTweetStreaming: any
-  killTweetStreaming: any
+  killAndRestartTweetStreaming: any
+  launchTaskFillMissingTweets: any
 }
 
 export interface IState {}
@@ -48,7 +49,13 @@ type TComponentProps = IProps & WithStyles
 
 class RealTimeTweetStreaming extends React.PureComponent<TComponentProps, IState> {
   public render() {
-    const { tasks, restartTweetStreaming, killTweetStreaming, classes } = this.props
+    const {
+      tasks,
+      restartTweetStreaming,
+      killAndRestartTweetStreaming,
+      launchTaskFillMissingTweets,
+      classes,
+    } = this.props
 
     return (
       <React.Fragment>
@@ -69,10 +76,22 @@ class RealTimeTweetStreaming extends React.PureComponent<TComponentProps, IState
             variant="contained"
             color="primary"
             className={classNames(classes.button, classes.taskControlButtons)}
-            onClick={killTweetStreaming}
+            onClick={killAndRestartTweetStreaming}
           >
             <Refresh className={classNames(classes.leftIcon, classes.iconSmall)} />
             Kill tweet streaming tasks
+          </Button>
+        </Tooltip>
+
+        <Tooltip title="Run the fill missing tweets task">
+          <Button
+            variant="contained"
+            color="primary"
+            className={classNames(classes.button, classes.taskControlButtons)}
+            onClick={launchTaskFillMissingTweets}
+          >
+            <Refresh className={classNames(classes.leftIcon, classes.iconSmall)} />
+            Run the fill missing tweets task
           </Button>
         </Tooltip>
 

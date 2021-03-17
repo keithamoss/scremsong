@@ -31,6 +31,7 @@ from scremsong.app.social.assignments import \
 from scremsong.app.social.columns import (get_social_columns,
                                           get_stats_for_column)
 from scremsong.app.twitter import (favourite_tweet, fetch_tweets,
+                                   get_latest_tweet_id_for_streaming,
                                    get_status_from_db, get_tweepy_api_auth,
                                    get_twitter_app, notify_of_saved_tweet,
                                    reply_to_tweet, resolve_tweet_parents,
@@ -41,7 +42,8 @@ from scremsong.app.twitter import (favourite_tweet, fetch_tweets,
                                    twitter_user_api_auth_stage_2,
                                    unfavourite_tweet, unretweet_tweet)
 from scremsong.celery import (app, celery_kill_and_restart_streaming_tasks,
-                              celery_restart_streaming)
+                              celery_restart_streaming,
+                              task_fill_missing_tweets)
 from scremsong.util import get_or_none, make_logger
 from tweepy import TweepError
 
@@ -601,6 +603,16 @@ class CeleryAdminViewset(viewsets.ViewSet):
     @action(detail=False, methods=['get'])
     def kill_and_restart_streaming_tasks(self, request, format=None):
         celery_kill_and_restart_streaming_tasks()
+        return Response({"OK": True})
+
+    @action(detail=False, methods=['get'])
+    def launch_task_fill_missing_tweets(self, request, format=None):
+        sinceId = get_latest_tweet_id_for_streaming()
+        logger.info("Manually launching fill in missing tweets task for tweets since {}.".format(sinceId))
+        if sinceId is not None:
+            task_fill_missing_tweets.apply_async(args=[sinceId], countdown=5)
+        else:
+            logger.warning("Got sinceId of None when trying to manually start task_fill_missing_tweets")
         return Response({"OK": True})
 
     # @action(detail=False, methods=['get'])

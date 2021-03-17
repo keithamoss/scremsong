@@ -28,7 +28,9 @@ type TComponentProps = IProps & IStoreProps & IDispatchProps
 class RealTimeTweetStreamingContainer extends React.PureComponent<TComponentProps, IState> {
   private restartTweetStreaming: any
 
-  private killTweetStreaming: any
+  private killAndRestartTweetStreaming: any
+
+  private launchTaskFillMissingTweets: any
 
   public constructor(props: TComponentProps) {
     super(props)
@@ -36,7 +38,10 @@ class RealTimeTweetStreamingContainer extends React.PureComponent<TComponentProp
     this.state = { tasks: null }
 
     this.restartTweetStreaming = () => window.api.get('/0.1/celery_admin/restart_streaming/', null, {})
-    this.killTweetStreaming = () => window.api.get('/0.1/celery_admin/kill_streaming_tasks/', null, {})
+    this.killAndRestartTweetStreaming = () =>
+      window.api.get('/0.1/celery_admin/kill_and_restart_streaming_tasks/', null, {})
+    this.launchTaskFillMissingTweets = () =>
+      window.api.get('/0.1/celery_admin/launch_task_fill_missing_tweets/', null, {})
   }
 
   public async componentDidMount() {
@@ -54,7 +59,8 @@ class RealTimeTweetStreamingContainer extends React.PureComponent<TComponentProp
       <RealTimeTweetStreaming
         tasks={tasks}
         restartTweetStreaming={this.restartTweetStreaming}
-        killTweetStreaming={this.killTweetStreaming}
+        killAndRestartTweetStreaming={this.killAndRestartTweetStreaming}
+        launchTaskFillMissingTweets={this.launchTaskFillMissingTweets}
       />
     )
   }
