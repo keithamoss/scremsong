@@ -30,6 +30,7 @@ def open_tweet_stream():
 
                 # Returning False in on_error disconnects the stream
                 return False
+            # Returning non-False reconnects the stream, with backoff
             logger.warning("Streaming got status {}. Taking no action.".format(status_code))
 
         def on_limit(self, track):
