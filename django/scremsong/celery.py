@@ -65,7 +65,7 @@ def celery_kill_running_streaming_tasks():
     sleep(5)
 
 
-def celery_kill_streaming_tasks(wait=5):
+def celery_kill_and_restart_streaming_tasks(wait=5):
     # Stop any running streaing tasks before we try to restart
     # e.g. If streaming dies soon after it's connected then task_fill_missing_tweets may still be running
     logger.info("Trying to kill any running tweet streaming tasks")
@@ -74,14 +74,18 @@ def celery_kill_streaming_tasks(wait=5):
     logger.info("Trying to restart tweet streaming")
     celery_init_tweet_streaming(wait)
 
-    logger.info("Launching restart tweet streaming task")
-    task_restart_streaming.apply_async(countdown=wait)
+    # This just does the same as the above
+    # logger.info("Launching restart tweet streaming task")
+    # task_restart_streaming.apply_async(countdown=wait)
 
 
 def celery_restart_streaming(wait=5):
+    celery_kill_and_restart_streaming_tasks(wait)
+
     # Relies on supervisord (in PROD) restarting the worker for us
-    logger.info("Attempting to restart streaming by shutting down the celery worker")
-    shutdown_celery_worker()
+    # This DOESN'T seem to work at the moment (see ISSUES.md)
+    # logger.info("Attempting to restart streaming by shutting down the celery worker")
+    # shutdown_celery_worker()
 
 
 def get_celery_tasks(activeOnly=True):
