@@ -8,6 +8,18 @@ https://github.com/celery/celery/issues/5209
 Celery Execution Pools: What is it all about?
 https://www.distributedpython.com/2018/10/26/celery-execution-pool/
 
+Maybe it could be a Kombu thing? That came up a lot in older discussions about this issue.
+
+WORKAROUND: Went back to the old method of killing and restarting tasks (rather than trying to kill the whole worker)
+
+# Celery: Duplicate tasks with the same taskIds and args are being created/run (March 2021)
+
+This is a tricky one! Not sure what's causing it.
+
+This old forum thread has a good examination of the same issue: https://groups.google.com/g/celery-users/c/W0Qf09ahjas?pli=1 (In their case it was Flower restoring unacked tasks)
+
+WORKAROUND: is_a_matching_fill_missing_tweets_task_already_running() now kills all duplicate tasks and we've added a button to manually trigger task_fill_missing_tweets()
+
 # Tweepy: Connection broken: IncompleteRead (March 2021)
 
 Fixed in https://github.com/tweepy/tweepy/commit/68e19cc6b9b23d72369ca1520093770eb18a5a9f and slated for the 4.0 release.
@@ -15,6 +27,8 @@ Fixed in https://github.com/tweepy/tweepy/commit/68e19cc6b9b23d72369ca1520093770
 Relevant issues:
 https://github.com/tweepy/tweepy/issues/448
 https://github.com/tweepy/tweepy/issues/237
+
+WORKAROUND: Ignore it for now and wait for Tweepy 4.0
 
 # Django, Celery, and sync to async (March 2021)
 
@@ -25,3 +39,5 @@ We tried to opt out of seeing warnings by setting DJANGO_ALLOW_ASYNC_UNSAFE=true
 `You cannot use AsyncToSync in the same thread as an async event loop - just await the async function directly.`
 
 c.f. see the comments here: https://stackoverflow.com/a/43325237/7368493
+
+WORKAROUND: Rollback to the latest in the Django 2.x series

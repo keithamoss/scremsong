@@ -78,7 +78,7 @@ def celery_restart_streaming(wait=5):
     celery_kill_and_restart_streaming_tasks(wait)
 
     # Relies on supervisord (in PROD) restarting the worker for us
-    # This DOESN'T seem to work at the moment (see ISSUES.md)
+    # This DOESN'T seem to work at the moment for some reason we don't understand (see ISSUES.md)
     # logger.info("Attempting to restart streaming by shutting down the celery worker")
     # shutdown_celery_worker()
 
