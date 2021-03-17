@@ -1,9 +1,8 @@
-import json
-
 from django.contrib.auth.models import User
+from django.contrib.postgres.fields import JSONField
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models import F, Func, JSONField
+from django.db.models import F, Func
 from model_utils import FieldTracker
 from scremsong.app.enums import (ProfileOfflineReason,
                                  ProfileSettingQueueSortBy, ProfileSettings,
@@ -35,7 +34,8 @@ class ProfileJSONField(JSONField):
     def from_db_value(self, value, expression, connection):
         if value is None:
             return value
-        return {**default_profile_settings(), **json.loads(value)}
+        return {**default_profile_settings(), **value}
+        # return {**default_profile_settings(), **json.loads(value)}
 
 
 class Profile(models.Model):
@@ -84,7 +84,8 @@ class SocialPlatormsJSONField(JSONField):
     def from_db_value(self, value, expression, connection):
         if value is None:
             return value
-        return {**default_socialplatform_settings(), **json.loads(value)}
+        return {**default_socialplatform_settings(), **value}
+        # return {**default_socialplatform_settings(), **json.loads(value)}
 
 
 class SocialPlatforms(models.Model):

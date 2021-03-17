@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('app', '0003_auto_20210301_1216'),
+        ('app', '0002_socialplatforms_settings'),
     ]
 
     operations = [
