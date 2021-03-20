@@ -40,7 +40,7 @@
     "@testing-library/user-event": "^12.8.3",
     "@types/classnames": "^2.2.11",
     "@types/core-js": "^2.5.4",
-    "@types/jest": "^26.0.20",
+    "@types/jest": "^26.0.21",
     "@types/js-cookie": "^2.2.6",
     "@types/lodash-es": "^4.17.4",
     "@types/luxon": "^1.26.2",
