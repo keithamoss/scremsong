@@ -1,9 +1,14 @@
 #!/bin/bash
 
-ver="$1"
-CMD="$2"
+if [ ! -f ./VERSION ]; then
+    echo "File not found!"
+    exit 1
+fi
 
-if [ x"$ver" = x ]; then
+VERSION=`cat VERSION`
+CMD="$1"
+
+if [ x"$VERSION" = x ]; then
         echo "set a version!"
         exit 1
 fi
@@ -14,4 +19,4 @@ if [ x"$CMD" = x ]; then
 fi
 
 . prodbuild.sh $CMD
-. prodbuild-dockerpush.sh $ver $CMD
+. prodbuild-dockerpush.sh $VERSION $CMD
