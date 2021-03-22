@@ -68,7 +68,7 @@ if get_env("ENVIRONMENT") == "PRODUCTION":
             "file": {
                 "level": "INFO",
                 "class": "logging.FileHandler",
-                "filename": "/app/logs/django.log",
+                "filename": "/app/logs/scremsong_app_django.log",
                 "formatter": "verbose",
             },
         },
