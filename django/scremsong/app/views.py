@@ -651,8 +651,14 @@ class LogsAdminViewset(viewsets.ViewSet):
             if os.path.exists(file_path) is False:
                 return "File does not exist."
             else:
-                from sh import tail
-                return tail("-n", int(num_lines), file_path)
+                try:
+                    if os.path.getsize(file_path) == 0:
+                        return "File is empty."
+                    else:
+                        from sh import tail
+                        return tail("-n", int(num_lines), file_path)
+                except OSError as err:
+                    return "Failed getting file size: {}".format(err)
 
         qp = request.query_params
         log_filename = str(qp["log_filename"]) if "log_filename" in qp else None
