@@ -1,12 +1,12 @@
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  ExpansionPanel,
-  ExpansionPanelDetails,
-  ExpansionPanelSummary,
   List,
   ListItem,
   ListItemIcon,
@@ -100,12 +100,12 @@ class SettingsDialog extends React.PureComponent<TComponentProps, IState> {
       >
         <DialogTitle id="settings-dialog-title">Settings</DialogTitle>
         <DialogContent>
-          <ExpansionPanel expanded={expanded === 'triage_panel'} onChange={this.handleChange('triage_panel')}>
-            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+          <Accordion expanded={expanded === 'triage_panel'} onChange={this.handleChange('triage_panel')}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography className={classes.heading}>Triage</Typography>
               <Typography className={classes.secondaryHeading}>Settings for folks on triage duty</Typography>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>
+            </AccordionSummary>
+            <AccordionDetails>
               <List className={classes.root}>
                 <ListItem>
                   <ListItemIcon>
@@ -123,8 +123,8 @@ class SettingsDialog extends React.PureComponent<TComponentProps, IState> {
                   </ListItemSecondaryAction>
                 </ListItem>
               </List>
-            </ExpansionPanelDetails>
-          </ExpansionPanel>
+            </AccordionDetails>
+          </Accordion>
         </DialogContent>
         <DialogActions>
           <Button onClick={this.handleClose} color="primary">
