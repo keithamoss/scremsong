@@ -67,5 +67,6 @@ module.exports = {
     'jsx-a11y/anchor-has-content': 'off',
     'jsx-a11y/alt-text': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
+    'react/react-in-jsx-scope': 'off', // Not needed since React 17
   },
 }

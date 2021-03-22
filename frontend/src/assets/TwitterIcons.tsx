@@ -1,5 +1,4 @@
 import { SvgIcon, Theme, withStyles, WithStyles } from '@material-ui/core'
-import * as React from 'react'
 
 const styles = (theme: Theme) => ({
   colorPrimary: {
