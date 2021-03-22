@@ -17,6 +17,9 @@ const styles = (theme: Theme) => ({
     minWidth: 165,
     paddingRight: theme.spacing(3),
   },
+  anchor: {
+    textDecoration: 'none',
+  },
   button: {
     margin: theme.spacing(1),
   },
@@ -43,7 +46,6 @@ class LogViewer extends React.PureComponent<TComponentProps, IState> {
     const { availableLogs, currentFilename, onChooseLogfile, classes } = this.props
 
     const logfileURL = `${getAPIBaseURL()}/0.1/logs_admin/get_log/?format=json&log_filename=${currentFilename}`
-    const LogDownloadLink = (props: any) => <a href={`${logfileURL}&download=1`} {...props} />
 
     return (
       <React.Fragment>
@@ -66,16 +68,17 @@ class LogViewer extends React.PureComponent<TComponentProps, IState> {
             </Select>
           </FormControl>
 
-          <Button
-            variant="contained"
-            color="primary"
-            className={classNames(classes.button, classes.restartStreamingButton)}
-            component={LogDownloadLink}
-            disabled={currentFilename === null}
-          >
-            <CloudDownload className={classNames(classes.leftIcon, classes.iconSmall)} />
-            Download
-          </Button>
+          <a href={`${logfileURL}&download=1`} className={classes.anchor}>
+            <Button
+              variant="contained"
+              color="primary"
+              className={classNames(classes.button, classes.restartStreamingButton)}
+              disabled={currentFilename === null}
+            >
+              <CloudDownload className={classNames(classes.leftIcon, classes.iconSmall)} />
+              Download
+            </Button>
+          </a>
 
           {currentFilename !== null && (
             <LazyLog url={logfileURL} fetchOptions={{ credentials: 'include' }} follow selectableLines />
