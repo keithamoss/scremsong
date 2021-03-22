@@ -24,8 +24,9 @@ To get started:
 3. `yarn install` in `frontend/`
 4. Add `127.0.0.1 scremsong.test.democracysausage.org` to `/etc/hosts`
 5. Create your self-signed SSL cert (see below)
-6. Run `db/scripts/replace-dev-with-prod.sh` to initialise your database with the latest state in PROD and then empty the `app_socialplatforms` table to clear our stored credentials
-7. Create a new set of Twitter credentials per the steps in `twitter_auth_step1()` in `views.py`
+6. Run `db/scripts/replace-dev-with-prod.sh` to initialise your database with the latest state in PROD
+7. `docker-compose up db` and empty the `app_socialplatforms` table to clear our stored credentials
+8. Create a new set of Twitter credentials per the steps in `twitter_auth_step1()` in `views.py`
 
 You're good to go! Navigate to https://scremsong.test.democracysausage.org
 
