@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-
-from scremsong.app.models import Profile, SocialColumns, Tweets, SocialAssignments, TweetReplies, SocialPlatforms
+from scremsong.app.models import (Profile, SocialAssignments, SocialColumns,
+                                  SocialPlatforms, TweetReplies, Tweets)
 
 
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
@@ -59,6 +59,7 @@ class ReviewerUserSerializer(UserSerializer):
             'username',
             'name',
             'initials',
+            'is_active',
             'profile_image_url',
             'is_accepting_assignments')
 

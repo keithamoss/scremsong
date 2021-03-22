@@ -2,6 +2,7 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import { IReviewerUser } from '../../redux/modules/interfaces.reviewers'
 import { IStore } from '../../redux/modules/reducer'
+import { getActiveReviewers } from '../../redux/modules/reviewers'
 import AssignerAvatar from './AssignerAvatar'
 
 export interface IProps {
@@ -31,10 +32,8 @@ class AssignerAvatarContainer extends React.PureComponent<TComponentProps, {}> {
 }
 
 const mapStateToProps = (state: IStore, _ownProps: IProps): IStoreProps => {
-  const { reviewers } = state
-
   return {
-    triagers: reviewers.users,
+    triagers: getActiveReviewers(state),
   }
 }
 

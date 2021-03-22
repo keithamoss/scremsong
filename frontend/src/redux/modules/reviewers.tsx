@@ -95,15 +95,22 @@ export default function reducer(state: IModule = initialState, action: IAction) 
 
 // Selectors
 const getAssignments = (state: IStore) => state.reviewers.assignments
-const getReviewers = (state: IStore) => state.reviewers.users
+export const getReviewers = (state: IStore) => state.reviewers.users
 const getCurrentReviewerUserId = (state: IStore) =>
   state.reviewers.currentReviewerId ? state.reviewers.currentReviewerId : null
 
 export const getActiveReviewers = createSelector([getReviewers], (reviewers: IReviewerUser[]): any => {
-  return Object.values(reviewers).filter(
-    (reviewer: IReviewerUser, _index: number) => reviewer.is_accepting_assignments === true
-  )
+  return Object.values(reviewers).filter((reviewer: IReviewerUser, _index: number) => reviewer.is_active === true)
 })
+
+export const getReviewersAcceptingAssignments = createSelector(
+  [getActiveReviewers],
+  (reviewers: IReviewerUser[]): any => {
+    return Object.values(reviewers).filter(
+      (reviewer: IReviewerUser, _index: number) => reviewer.is_accepting_assignments === true
+    )
+  }
+)
 
 export const getActiveAssignments = createSelector([getAssignments], (assignments: IReviewerAssignment[]): any => {
   return Object.values(assignments).filter(
@@ -145,7 +152,7 @@ export const getReviewerAssignmentTotals = createSelector(
 )
 
 export const getActiveReviewerAssignmentTotals = createSelector(
-  [getActiveAssignments, getActiveReviewers],
+  [getActiveAssignments, getReviewersAcceptingAssignments],
   (assignments: IReviewerAssignment[], reviewers: IReviewerUser[]): IReviewerAssignmentCounts => {
     const totals: IReviewerAssignmentCounts = {}
     reviewers.forEach((reviewer: IReviewerUser) => {

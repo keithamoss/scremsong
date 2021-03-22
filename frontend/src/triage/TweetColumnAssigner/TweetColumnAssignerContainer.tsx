@@ -5,6 +5,7 @@ import { IStore } from '../../redux/modules/reducer'
 import {
   assignReviewer,
   bulkReassignReviewer,
+  getActiveReviewers,
   getCurrentReviewer,
   getReviewerAssignmentTotals,
   reassignReviewer,
@@ -88,7 +89,7 @@ const mapStateToProps = (state: IStore, ownProps: IProps): IStoreProps => {
 
   return {
     currentReviewer: getCurrentReviewer(state)!,
-    reviewers: reviewers.users,
+    reviewers: getActiveReviewers(state),
     reviewerAssignmentCounts: getReviewerAssignmentTotals(state),
     assignment,
   }

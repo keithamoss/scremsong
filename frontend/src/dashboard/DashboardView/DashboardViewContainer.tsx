@@ -5,6 +5,7 @@ import { IDashboardStats } from '../../redux/modules/app'
 import { IThunkExtras } from '../../redux/modules/interfaces'
 import { IReviewerUser } from '../../redux/modules/interfaces.reviewers'
 import { IStore } from '../../redux/modules/reducer'
+import { getReviewers } from '../../redux/modules/reviewers'
 import { ITriageColumn } from '../../redux/modules/triage'
 import DashboardView from './DashboardView'
 
@@ -60,10 +61,10 @@ class DashboardViewContainer extends React.Component<TComponentProps, IState> {
 }
 
 const mapStateToProps = (state: IStore, _ownProps: IProps): IStoreProps => {
-  const { reviewers, triage } = state
+  const { triage } = state
 
   return {
-    users: reviewers.users,
+    users: getReviewers(state),
     columns: triage.columns,
   }
 }

@@ -13,7 +13,7 @@ logger = make_logger(__name__)
 
 
 def get_reviewer_users():
-    users = User.objects.filter(is_staff=False, is_active=True).order_by("first_name").all()
+    users = User.objects.filter().order_by("first_name").all()
     return ReviewerUserSerializer(users, many=True).data
 
 

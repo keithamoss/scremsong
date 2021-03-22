@@ -5,6 +5,7 @@ import { IStore } from '../../redux/modules/reducer'
 import {
   changeCurrentReviewer,
   getCurrentReviewer,
+  getReviewers,
   getSortedAssignments,
   setReviewerOnlineStatus,
 } from '../../redux/modules/reviewers'
@@ -58,7 +59,7 @@ class UserReviewQueueViewContainer extends React.Component<TComponentProps, {}> 
 }
 
 const mapStateToProps = (state: IStore, _ownProps: TComponentProps): IStoreProps => {
-  const { user, reviewers } = state
+  const { user } = state
 
   const getSortedAssignmentsFilter = getSortedAssignments(state)
   const sortedAssignments = user.user ? getSortedAssignmentsFilter(user.user.settings) : []
@@ -66,7 +67,7 @@ const mapStateToProps = (state: IStore, _ownProps: TComponentProps): IStoreProps
   return {
     user: user.user,
     assignments: sortedAssignments,
-    reviewers: reviewers.users,
+    reviewers: getReviewers(state),
     currentReviewer: getCurrentReviewer(state),
   }
 }

@@ -47,6 +47,7 @@ export interface IReviewerAssignment {
 export interface IReviewerUser {
   id: number
   initials: string
+  is_active: boolean
   profile_image_url: string
   is_accepting_assignments: boolean
   name: string
