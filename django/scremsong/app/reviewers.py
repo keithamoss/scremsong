@@ -1,11 +1,13 @@
-from django.contrib.auth.models import User
-
-from scremsong.app.models import SocialAssignments
-from scremsong.app.twitter import get_tweets_by_ids, get_tweet_from_db
-from scremsong.app.serializers import ReviewerUserSerializer, TweetsSerializer, SocialAssignmentSerializer
-from scremsong.util import make_logger
-
 from datetime import datetime, timedelta
+
+from django.contrib.auth.models import User
+from scremsong.app.enums import SocialAssignmentState
+from scremsong.app.models import SocialAssignments
+from scremsong.app.serializers import (ReviewerUserSerializer,
+                                       SocialAssignmentSerializer,
+                                       TweetsSerializer)
+from scremsong.app.twitter import get_tweet_from_db, get_tweets_by_ids
+from scremsong.util import make_logger
 
 logger = make_logger(__name__)
 
@@ -15,11 +17,14 @@ def get_reviewer_users():
     return ReviewerUserSerializer(users, many=True).data
 
 
-def get_assignments(user=None):
+def get_assignments(user=None, state=None):
     queryset = SocialAssignments.objects
 
     if user is not None:
         queryset = queryset.filter(user=user)
+
+    if state is not None:
+        queryset = queryset.filter(state=state)
 
     queryset = queryset.order_by("-id").values()
 
@@ -40,6 +45,10 @@ def get_assignments(user=None):
         assignmentsById[assignment["id"]] = SocialAssignmentSerializer(assignment).data
 
     return {"assignments": assignmentsById, "tweets": tweets}
+
+
+def get_pending_assignments(user=None):
+    return get_assignments(user, state=SocialAssignmentState.PENDING)
 
 
 def getCreationDateOfNewestTweetInAssignment(assignment):

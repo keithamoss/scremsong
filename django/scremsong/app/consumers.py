@@ -9,7 +9,7 @@ from scremsong.app import websockets
 from scremsong.app.enums import (NotificationVariants, ProfileOfflineReason,
                                  SocialPlatformChoice, TwitterRateLimitState)
 from scremsong.app.models import Profile
-from scremsong.app.reviewers import get_assignments, get_reviewer_users
+from scremsong.app.reviewers import get_pending_assignments, get_reviewer_users
 from scremsong.app.serializers import ReviewerUserSerializer, UserSerializer
 from scremsong.app.twitter import (are_we_rate_limited,
                                    fetch_tweets_for_columns,
@@ -308,7 +308,7 @@ def build_on_connect_data_payload(user):
             },
             {
                 **{"msg_type": settings.MSG_TYPE_REVIEWERS_LIST_ASSIGNMENTS},
-                **get_assignments()
+                **get_pending_assignments()
             },
             {
                 **{"msg_type": settings.MSG_TYPE_TWEETS_LOAD_TWEETS},
