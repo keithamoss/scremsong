@@ -12,10 +12,13 @@ if [ "$CMD" = "frontend" ] || [ "$CMD" = "all" ]; then
   mkdir -p nginx-prod/build/
 
   # build the frontend assets (this takes quite a while due to minification)
-  docker-compose -f docker-compose-buildjs.yml run frontend
-  docker-compose -f docker-compose-buildjs.yml stop
+  echo "building frontend assets"
+  # docker-compose -f docker-compose-buildjs.yml run frontend
+  # docker-compose -f docker-compose-buildjs.yml stop
+  frontend/build.sh
 
   # build the django assets
+  echo "building django assets"
   docker-compose -f docker-compose-buildpy.yml build
   docker-compose -f docker-compose-buildpy.yml run django
   docker-compose -f docker-compose-buildpy.yml stop
@@ -24,7 +27,7 @@ if [ "$CMD" = "frontend" ] || [ "$CMD" = "all" ]; then
   cp build/frontend.tgz build/django.tgz nginx-prod/build # this is horrible, fixme
 
   # For local testing with docker-compose-prod.yml only
-  echo building prod nginx container
+  echo "building prod nginx container for local testing"
   (cd nginx-prod && docker build -t scremsong/nginx-prod:latest .)
   (cd nginx-prod && docker build --no-cache -t scremsong/nginx-prod:latest . && cd ..)
 fi
