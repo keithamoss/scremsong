@@ -91,27 +91,6 @@ class App extends React.Component<IProps & WithStyles, {}> {
   public render() {
     const { userAssignmentCount, somethingIsBroken, onOpenSettingsDialog, location, classes } = this.props
 
-    const QueueLink = (props: any) => <Link to="/queue" {...props} />
-    const TriageLink = (props: any) => <Link to="/triage" {...props} />
-    const DashboardLink = (props: any) => <Link to="/" {...props} />
-    const AdminLink = (props: any) => <Link to="/admin" {...props} />
-    const HelpLink = (props: any) => (
-      <a
-        href="https://docs.google.com/presentation/d/1MLIObFgdieLbfXcIrr8G7s0rfpJN5UrC2iaf8zMnows/edit?usp=sharing"
-        target="_blank"
-        rel="noreferrer"
-        {...props}
-      />
-    )
-    const WhatsNewLink = (props: any) => (
-      <a
-        href="https://github.com/keithamoss/scremsong/blob/master/CHANGELOG.md"
-        target="_blank"
-        rel="noreferrer"
-        {...props}
-      />
-    )
-
     return (
       <div className={classes.root}>
         <CssBaseline />
@@ -127,7 +106,8 @@ class App extends React.Component<IProps & WithStyles, {}> {
           <List className={classes.list}>
             <ListItem
               button={false}
-              component={QueueLink}
+              component={Link}
+              to="/queue"
               className={location.pathname === '/queue' ? classes.selectedListItem : classes.listItem}
             >
               <Tooltip title="Go to your queue" enterDelay={1000}>
@@ -143,7 +123,8 @@ class App extends React.Component<IProps & WithStyles, {}> {
             </ListItem>
             <ListItem
               button={false}
-              component={TriageLink}
+              component={Link}
+              to="/triage"
               className={location.pathname === '/triage' ? classes.selectedListItem : classes.listItem}
             >
               <Tooltip title="Go to triage view" enterDelay={1000}>
@@ -157,7 +138,8 @@ class App extends React.Component<IProps & WithStyles, {}> {
             </ListItem>
             <ListItem
               button={false}
-              component={DashboardLink}
+              component={Link}
+              to="/"
               className={location.pathname === '/' ? classes.selectedListItem : classes.listItem}
             >
               <Tooltip title="Go to dashboard view" enterDelay={1000}>
@@ -171,7 +153,8 @@ class App extends React.Component<IProps & WithStyles, {}> {
             </ListItem>
             <ListItem
               button={false}
-              component={AdminLink}
+              component={Link}
+              to="/admin"
               className={location.pathname === '/admin' ? classes.selectedListItem : classes.listItem}
             >
               <Tooltip title="Go to the admin panel" enterDelay={1000}>
@@ -195,14 +178,26 @@ class App extends React.Component<IProps & WithStyles, {}> {
                 </IconButton>
               </Tooltip>
             </ListItem>
-            <ListItem button={false} component={HelpLink}>
+            <ListItem
+              button={false}
+              component={Link}
+              to="https://docs.google.com/presentation/d/1MLIObFgdieLbfXcIrr8G7s0rfpJN5UrC2iaf8zMnows/edit?usp=sharing"
+              target="_blank"
+              rel="noreferrer"
+            >
               <Tooltip title="Scremsong Tour & User Guide" enterDelay={1000}>
                 <IconButton aria-label="Help">
                   <HelpIcon />
                 </IconButton>
               </Tooltip>
             </ListItem>
-            <ListItem button={false} component={WhatsNewLink}>
+            <ListItem
+              button={false}
+              component={Link}
+              to="https://github.com/keithamoss/scremsong/blob/master/CHANGELOG.md"
+              target="_blank"
+              rel="noreferrer"
+            >
               <Tooltip title="Find out what's new and shiny in Scremsong" enterDelay={1000}>
                 <IconButton aria-label="Help">
                   <NewReleases />
