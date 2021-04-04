@@ -10,7 +10,7 @@ ENV PYTHONUNBUFFERED=1 \
     # https://python-poetry.org/docs/configuration/#using-environment-variables
     # Make poetry install to this location
     POETRY_HOME="/opt/poetry" \
-    # Make poetry create the virtual environment in the project's root it gets named `.venv`
+    # Prevent poetry from creating a virtual environment
     POETRY_VIRTUALENVS_CREATE=false \
     # Do not ask any interactive question
     POETRY_NO_INTERACTION=1 \
