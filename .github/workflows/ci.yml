@@ -46,11 +46,17 @@ jobs:
       # So we can daemonise yarn start
       #     - run: sudo yarn global add pm2
 
-      # Install frontend and backend
-      - run: cd frontend
-      - run: yarn install
-      - run: yarn lint
-      - run: yarn build
+      - name: Install frontend
+        run: yarn install
+        working-directory: frontend
+
+      - name: Lint frontend
+        run: yarn lint
+        working-directory: frontend
+
+      - name: Build frontend
+        run: yarn build
+        working-directory: frontend
 
     # Start daemonised local dev
 #     - run: pm2 start node_modules/react-scripts/scripts/start.js --name react-app
