@@ -62,25 +62,27 @@ const store: Store<IStore> = createStore(
 websocketInit(store)
 
 ReactDOM.render(
-  <Provider store={store}>
-    {/* For Google Analytics, add the onUpdate prop to <Router> */}
-    {/* <Router history={history as any} onUpdate={"REACT_APP_GOOGLE_ANALYTICS_UA" in process.env ? fireAnalyticsTracking : undefined}> */}
+  <React.StrictMode>
+    <Provider store={store}>
+      {/* For Google Analytics, add the onUpdate prop to <Router> */}
+      {/* <Router history={history as any} onUpdate={"REACT_APP_GOOGLE_ANALYTICS_UA" in process.env ? fireAnalyticsTracking : undefined}> */}
 
-    <BrowserRouter>
-      <SnackbarProvider
-        maxSnack={3}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right',
-        }}
-      >
-        {/* To deal with TypeScript complaining about React being included but not used */}
-        <React.Fragment>
-          <AppContainer />
-        </React.Fragment>
-      </SnackbarProvider>
-    </BrowserRouter>
-  </Provider>,
+      <BrowserRouter>
+        <SnackbarProvider
+          maxSnack={3}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right',
+          }}
+        >
+          {/* To deal with TypeScript complaining about React being included but not used */}
+          <React.Fragment>
+            <AppContainer />
+          </React.Fragment>
+        </SnackbarProvider>
+      </BrowserRouter>
+    </Provider>
+  </React.StrictMode>,
   document.getElementById('root')
 )
 
