@@ -14,7 +14,7 @@
     "lodash-es": "^4.17.21",
     "luxon": "^1.26.0",
     "material-ui-chip-input": "^1.1.0",
-    "notistack": "^1.0.5",
+    "notistack": "^1.0.6",
     "qs": "^6.10.1",
     "raven": "^2.6.4",
     "raven-for-redux": "^1.4.0",
