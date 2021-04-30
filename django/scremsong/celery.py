@@ -251,70 +251,70 @@ def task_open_tweet_stream(self):
 
 @app.task(bind=True)
 def task_collect_twitter_rate_limit_info(self):
-    logger.warning("task_collect_twitter_rate_limit_info() is disabled when an election is not running")
-    return True
-
-    # if is_rate_limit_collection_task_running(excludeTaskId=self.request.id) is True:
-    #     logger.warning("Abandoning starting Twitter rate limit collection - an identical task already exists")
-    #     return True
-
-    # from scremsong.app.models import TwitterRateLimitInfo
-    # from scremsong.app.twitter import are_we_rate_limited, get_tweepy_api_auth
-
-    # api = get_tweepy_api_auth()
-
-    # while True:
-    #     status = api.rate_limit_status()
-    #     resources = status["resources"]
-    #     r = TwitterRateLimitInfo(data=resources)
-    #     r.save()
-
-    #     websockets.send_channel_message("tweets.rate_limit_resources", {
-    #         "resources": resources,
-    #     })
-
-    #     rateLimitedResources = are_we_rate_limited(resources, bufferPercentage=0.2)
-
-    #     if len(rateLimitedResources.keys()) > 0:
-    #         resourceNames = [resource_name for resource_name in rateLimitedResources.keys()]
-
-    #         websockets.send_channel_message("notifications.send", {
-    #             "message": "We've been rate limited by Twitter for {}.".format(", ".join(resourceNames)),
-    #             "options": {
-    #                 "variant": NotificationVariants.ERROR,
-    #                 "autoHideDuration": 20000,
-    #             }
-    #         })
-
-    #         websockets.send_channel_message("tweets.rate_limit_state", {
-    #             "state": TwitterRateLimitState.RATE_LIMITED,
-    #         })
-
-    #     else:
-    #         rateLimitedResources = are_we_rate_limited(resources, bufferPercentage=0.20)
-
-    #         if len(rateLimitedResources.keys()) > 0:
-    #             websockets.send_channel_message("notifications.send", {
-    #                 "message": "Twitter rate limit approaching for {}.".format(", ".join(resourceNames)),
-    #                 "options": {
-    #                     "variant": NotificationVariants.WARNING,
-    #                     "autoHideDuration": 20000,
-    #                 }
-    #             })
-
-    #             websockets.send_channel_message("tweets.rate_limit_state", {
-    #                 "state": TwitterRateLimitState.WARNING,
-    #             })
-
-    #         else:
-    #             websockets.send_channel_message("tweets.rate_limit_state", {
-    #                 "state": TwitterRateLimitState.EVERYTHING_OK,
-    #             })
-
-    #     sleep(30)
-
-    # logger.warning("Unexpectedly done collecting Twitter rate limit info!")
+    # logger.warning("task_collect_twitter_rate_limit_info() is disabled when an election is not running")
     # return True
+
+    if is_rate_limit_collection_task_running(excludeTaskId=self.request.id) is True:
+        logger.warning("Abandoning starting Twitter rate limit collection - an identical task already exists")
+        return True
+
+    from scremsong.app.models import TwitterRateLimitInfo
+    from scremsong.app.twitter import are_we_rate_limited, get_tweepy_api_auth
+
+    api = get_tweepy_api_auth()
+
+    while True:
+        status = api.rate_limit_status()
+        resources = status["resources"]
+        r = TwitterRateLimitInfo(data=resources)
+        r.save()
+
+        websockets.send_channel_message("tweets.rate_limit_resources", {
+            "resources": resources,
+        })
+
+        rateLimitedResources = are_we_rate_limited(resources, bufferPercentage=0.2)
+
+        if len(rateLimitedResources.keys()) > 0:
+            resourceNames = [resource_name for resource_name in rateLimitedResources.keys()]
+
+            websockets.send_channel_message("notifications.send", {
+                "message": "We've been rate limited by Twitter for {}.".format(", ".join(resourceNames)),
+                "options": {
+                    "variant": NotificationVariants.ERROR,
+                    "autoHideDuration": 20000,
+                }
+            })
+
+            websockets.send_channel_message("tweets.rate_limit_state", {
+                "state": TwitterRateLimitState.RATE_LIMITED,
+            })
+
+        else:
+            rateLimitedResources = are_we_rate_limited(resources, bufferPercentage=0.20)
+
+            if len(rateLimitedResources.keys()) > 0:
+                websockets.send_channel_message("notifications.send", {
+                    "message": "Twitter rate limit approaching for {}.".format(", ".join(resourceNames)),
+                    "options": {
+                        "variant": NotificationVariants.WARNING,
+                        "autoHideDuration": 20000,
+                    }
+                })
+
+                websockets.send_channel_message("tweets.rate_limit_state", {
+                    "state": TwitterRateLimitState.WARNING,
+                })
+
+            else:
+                websockets.send_channel_message("tweets.rate_limit_state", {
+                    "state": TwitterRateLimitState.EVERYTHING_OK,
+                })
+
+        sleep(30)
+
+    logger.warning("Unexpectedly done collecting Twitter rate limit info!")
+    return True
 
 
 @app.task(bind=True)
