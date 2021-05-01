@@ -66,6 +66,10 @@ def celery_kill_and_restart_streaming_tasks(wait=5):
     logger.info("Trying to kill any running tweet streaming tasks")
     celery_kill_running_streaming_tasks()
 
+    # Allow even more time for the tasks to properly die
+    # celery_kill_running_streaming_tasks() already waits for 5s
+    sleep(5)
+
     logger.info("Trying to restart tweet streaming")
     celery_init_tweet_streaming(wait)
 
