@@ -313,7 +313,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "django"
-version = "2.2.19"
+version = "2.2.24"
 description = "A high-level Python Web framework that encourages rapid development and clean, pragmatic design."
 category = "main"
 optional = false
@@ -909,7 +909,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "77a43178271cf351e25635722fbbf8921b0924b762e9d5b0b914121de47518ef"
+content-hash = "39d3f6e7255f68d0dbbc5ae20e1095e5c0059c10078f9748d0c2682a92c37067"
 
 [metadata.files]
 aioredis = [
@@ -1057,8 +1057,8 @@ defusedxml = [
     {file = "defusedxml-0.7.0rc2.tar.gz", hash = "sha256:24173aa6820e52524921533ff5af04bf5f0096f21c1628195ae59b44731acc5c"},
 ]
 django = [
-    {file = "Django-2.2.19-py3-none-any.whl", hash = "sha256:e319a7164d6d30cb177b3fd74d02c52f1185c37304057bb76d74047889c605d9"},
-    {file = "Django-2.2.19.tar.gz", hash = "sha256:30c235dec87e05667597e339f194c9fed6c855bda637266ceee891bf9093da43"},
+    {file = "Django-2.2.24-py3-none-any.whl", hash = "sha256:f2084ceecff86b1e631c2cd4107d435daf4e12f1efcdf11061a73bf0b5e95f92"},
+    {file = "Django-2.2.24.tar.gz", hash = "sha256:3339ff0e03dee13045aef6ae7b523edff75b6d726adf7a7a48f53d5a501f7db7"},
 ]
 django-celery-results = [
     {file = "django_celery_results-2.0.1-py2.py3-none-any.whl", hash = "sha256:a2f7d172f7f57dd972538acc6e80a5bf50c673fb4d82fe027189c8659c60dfce"},
