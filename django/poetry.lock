@@ -329,7 +329,7 @@ bcrypt = ["bcrypt"]
 
 [[package]]
 name = "django-celery-results"
-version = "2.1.0"
+version = "2.2.0"
 description = "Celery result backends for Django."
 category = "main"
 optional = false
@@ -910,7 +910,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "15e35ac345f2c2c8d94c7c70e5599522df9aa4b4db25629ec5b56cbd4f7165d8"
+content-hash = "bcba30bfd2b6618b3e3825f4950b0727cb0bfbb7af1276d634a1f378928d88e5"
 
 [metadata.files]
 aioredis = [
@@ -1062,8 +1062,8 @@ django = [
     {file = "Django-2.2.24.tar.gz", hash = "sha256:3339ff0e03dee13045aef6ae7b523edff75b6d726adf7a7a48f53d5a501f7db7"},
 ]
 django-celery-results = [
-    {file = "django_celery_results-2.1.0-py2.py3-none-any.whl", hash = "sha256:f0965bf43f7d09ffe792806a2a36f6874256fb0bd56037528676dfb051be0794"},
-    {file = "django_celery_results-2.1.0.tar.gz", hash = "sha256:b5abe0c03c91dc8fe657e0c2a34c9604175838af13cb8c7f64654b3ad27febcf"},
+    {file = "django_celery_results-2.2.0-py2.py3-none-any.whl", hash = "sha256:d5f83fad9091e52cd6dbb3ca80632153ad14b6cdac4d73258e040f92717237cb"},
+    {file = "django_celery_results-2.2.0.tar.gz", hash = "sha256:cc0285090a306f97f1d4b7929ed98af0475bf6db2568976b3387de4fbe812edc"},
 ]
 django-cors-headers = [
     {file = "django-cors-headers-3.7.0.tar.gz", hash = "sha256:96069c4aaacace786a34ee7894ff680780ec2644e4268b31181044410fecd12e"},
