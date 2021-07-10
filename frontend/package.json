@@ -46,7 +46,7 @@
     "@types/luxon": "^1.27.0",
     "@types/node": "^16.0.0",
     "@types/qs": "^6.9.6",
-    "@types/raven": "^2.5.3",
+    "@types/raven": "^2.5.4",
     "@types/raven-for-redux": "^1.1.2",
     "@types/raven-js": "^3.10.0",
     "@types/react": "^17.0.13",
