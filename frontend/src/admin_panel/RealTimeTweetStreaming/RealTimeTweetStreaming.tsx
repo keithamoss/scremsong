@@ -49,13 +49,8 @@ type TComponentProps = IProps & WithStyles
 
 class RealTimeTweetStreaming extends React.PureComponent<TComponentProps, IState> {
   public render() {
-    const {
-      tasks,
-      restartTweetStreaming,
-      killAndRestartTweetStreaming,
-      launchTaskFillMissingTweets,
-      classes,
-    } = this.props
+    const { tasks, restartTweetStreaming, killAndRestartTweetStreaming, launchTaskFillMissingTweets, classes } =
+      this.props
 
     return (
       <React.Fragment>

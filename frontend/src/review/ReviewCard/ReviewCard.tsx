@@ -142,16 +142,15 @@ class ReviewCard extends React.PureComponent<TComponentProps, IState> {
     this.handleOpenCloseReasonMenu = (event: React.MouseEvent<HTMLElement>) => {
       this.setState({ ...this.state, anchorEl: event.currentTarget })
     }
-    this.handleChooseCloseReason = (reason: ESocialAssignmentCloseReason) => (
-      _event: React.MouseEvent<HTMLElement>
-    ) => {
-      this.handleCloseCloseReasonMenu()
+    this.handleChooseCloseReason =
+      (reason: ESocialAssignmentCloseReason) => (_event: React.MouseEvent<HTMLElement>) => {
+        this.handleCloseCloseReasonMenu()
 
-      this.handleCardCollapseOrExpand(false, () => {
-        this.props.onCloseAssignment(reason)
-        this.sendUndoableNotification()
-      })
-    }
+        this.handleCardCollapseOrExpand(false, () => {
+          this.props.onCloseAssignment(reason)
+          this.sendUndoableNotification()
+        })
+      }
     this.handleCloseCloseReasonMenu = () => {
       this.setState({ ...this.state, anchorEl: null })
     }

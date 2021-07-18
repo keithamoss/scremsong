@@ -29,14 +29,8 @@ export interface IDispatchProps {
 type TComponentProps = IProps & IStoreProps & IDispatchProps
 class TweetColumnBarContainer extends React.PureComponent<TComponentProps, {}> {
   public render() {
-    const {
-      column,
-      hasBufferedTweets,
-      assignedToUser,
-      onLoadNewTweetsForColumn,
-      onAssignTriager,
-      onUnassignTriager,
-    } = this.props
+    const { column, hasBufferedTweets, assignedToUser, onLoadNewTweetsForColumn, onAssignTriager, onUnassignTriager } =
+      this.props
 
     return (
       <TweetColumnBar

@@ -112,14 +112,8 @@ class TextFieldWithCharacterCount extends React.Component<TComponentProps, IStat
   }
 
   public render() {
-    const {
-      characterLimit,
-      onFieldChange,
-      onFieldInvalid,
-      onFieldValid,
-      characterPrefixLength,
-      ...textFieldProps
-    } = this.props
+    const { characterLimit, onFieldChange, onFieldInvalid, onFieldValid, characterPrefixLength, ...textFieldProps } =
+      this.props
     const { id, FormHelperTextProps } = this.props
     const { errored } = this.state
 
