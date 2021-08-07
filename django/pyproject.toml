@@ -23,7 +23,7 @@ sh = "^1.14.2"
 channels = "^3.0.4"
 channels-redis = "^3.3.0"
 celery = "^5.1.2"
-gevent = "^21.1.2"
+gevent = "^21.8.0"
 sqlalchemy = "^1.4.0"
 
 [tool.poetry.dev-dependencies]
