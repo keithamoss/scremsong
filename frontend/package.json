@@ -44,7 +44,7 @@
     "@types/js-cookie": "^2.2.7",
     "@types/lodash-es": "^4.17.4",
     "@types/luxon": "^2.0.0",
-    "@types/node": "^16.4.13",
+    "@types/node": "^16.6.1",
     "@types/qs": "^6.9.7",
     "@types/raven": "^2.5.4",
     "@types/raven-for-redux": "^1.1.2",
