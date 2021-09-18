@@ -42,7 +42,7 @@
     "@types/core-js": "^2.5.5",
     "@types/jest": "^27.0.1",
     "@types/js-cookie": "^2.2.7",
-    "@types/lodash-es": "^4.17.4",
+    "@types/lodash-es": "^4.17.5",
     "@types/luxon": "^2.0.3",
     "@types/node": "^16.9.1",
     "@types/qs": "^6.9.7",
