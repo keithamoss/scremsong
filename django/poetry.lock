@@ -568,14 +568,6 @@ docs = ["sphinx", "sphinx-rtd-theme"]
 test = ["flaky", "pretend", "pytest (>=3.0.1)"]
 
 [[package]]
-name = "pysocks"
-version = "1.7.1"
-description = "A Python SOCKS client module. See https://github.com/Anorov/PySocks for more information."
-category = "main"
-optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-
-[[package]]
 name = "python3-openid"
 version = "3.2.0"
 description = "OpenID support for modern servers and consumers."
@@ -621,7 +613,6 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 certifi = ">=2017.4.17"
 chardet = ">=3.0.2,<5"
 idna = ">=2.5,<3"
-PySocks = {version = ">=1.5.6,<1.5.7 || >1.5.7", optional = true, markers = "extra == \"socks\""}
 urllib3 = ">=1.21.1,<1.27"
 
 [package.extras]
@@ -785,20 +776,21 @@ python-versions = ">=3.5"
 
 [[package]]
 name = "tweepy"
-version = "3.10.0"
+version = "4.0.1"
 description = "Twitter library for Python"
 category = "main"
 optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+python-versions = ">=3.6"
 
 [package.dependencies]
-requests = {version = ">=2.11.1", extras = ["socks"]}
-requests-oauthlib = ">=0.7.0"
-six = ">=1.10.0"
+requests = ">=2.11.1,<3"
+requests-oauthlib = ">=1.0.0,<2"
 
 [package.extras]
-dev = ["coveralls (>=1.8.2)", "tox (>=2.4.0)"]
-test = ["mock (>=1.0.1)", "nose (>=1.3.3)", "vcrpy (>=1.10.3)"]
+async = ["aiohttp (>=3.7.3,<4)", "oauthlib (>=3.1.0,<4)"]
+dev = ["coveralls (>=2.1.0)", "tox (>=2.4.0)"]
+socks = ["requests[socks] (>=2.11.1,<3)"]
+test = ["vcrpy (>=1.10.3)"]
 
 [[package]]
 name = "twisted"
@@ -922,7 +914,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "0556cf801faaf3df8e5ad029d3eba84bea9b2328c93f054955ef85548da70e68"
+content-hash = "7ef38e3beb612b880c703a379f93e5760de128594e280f28a2127c8b177fc906"
 
 [metadata.files]
 aioredis = [
@@ -1344,11 +1336,6 @@ pyopenssl = [
     {file = "pyOpenSSL-20.0.1-py2.py3-none-any.whl", hash = "sha256:818ae18e06922c066f777a33f1fca45786d85edfe71cd043de6379337a7f274b"},
     {file = "pyOpenSSL-20.0.1.tar.gz", hash = "sha256:4c231c759543ba02560fcd2480c48dcec4dae34c9da7d3747c508227e0624b51"},
 ]
-pysocks = [
-    {file = "PySocks-1.7.1-py27-none-any.whl", hash = "sha256:08e69f092cc6dbe92a0fdd16eeb9b9ffbc13cadfe5ca4c7bd92ffb078b293299"},
-    {file = "PySocks-1.7.1-py3-none-any.whl", hash = "sha256:2725bd0a9925919b9b51739eea5f9e2bae91e83288108a9ad338b2e3a4435ee5"},
-    {file = "PySocks-1.7.1.tar.gz", hash = "sha256:3f8804571ebe159c380ac6de37643bb4685970655d3bba243530d6558b799aa0"},
-]
 python3-openid = [
     {file = "python3-openid-3.2.0.tar.gz", hash = "sha256:33fbf6928f401e0b790151ed2b5290b02545e8775f982485205a066f874aaeaf"},
     {file = "python3_openid-3.2.0-py3-none-any.whl", hash = "sha256:6626f771e0417486701e0b4daff762e7212e820ca5b29fcc0d05f6f8736dfa6b"},
@@ -1431,8 +1418,8 @@ sqlparse = [
     {file = "sqlparse-0.4.1.tar.gz", hash = "sha256:0f91fd2e829c44362cbcfab3e9ae12e22badaa8a29ad5ff599f9ec109f0454e8"},
 ]
 tweepy = [
-    {file = "tweepy-3.10.0-py2.py3-none-any.whl", hash = "sha256:5e22003441a11f6f4c2ea4d05ec5532f541e9f5d874c3908270f0c28e649b53a"},
-    {file = "tweepy-3.10.0.tar.gz", hash = "sha256:76e6954b806ca470dda877f57db8792fff06a0beba0ed43efc3805771e39f06a"},
+    {file = "tweepy-4.0.1-py2.py3-none-any.whl", hash = "sha256:e2fcc6e7e8cc6dc79b8e6678c5b108e515aff4699594462b08a1db7c08328621"},
+    {file = "tweepy-4.0.1.tar.gz", hash = "sha256:3bbb14a0ddef1ca8c9e8686ab2f647163afa02a6bab83507335ce647e9653a90"},
 ]
 twisted = [
     {file = "Twisted-21.7.0-py3-none-any.whl", hash = "sha256:13c1d1d2421ae556d91e81e66cf0d4f4e4e1e4a36a0486933bee4305c6a4fb9b"},
