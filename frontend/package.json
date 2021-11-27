@@ -30,7 +30,7 @@
     "redux": "^4.1.2",
     "redux-devtools-extension": "^2.13.9",
     "redux-form": "^8.3.8",
-    "redux-thunk": "^2.4.0",
+    "redux-thunk": "^2.4.1",
     "reselect": "^4.1.4",
     "web-vitals": "^2.1.2"
   },
