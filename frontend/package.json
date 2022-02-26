@@ -12,7 +12,7 @@
     "dot-prop-immutable": "^2.1.1",
     "js-cookie": "^3.0.1",
     "lodash-es": "^4.17.21",
-    "luxon": "^2.3.0",
+    "luxon": "^2.3.1",
     "material-ui-chip-input": "^1.1.0",
     "notistack": "^1.0.10",
     "qs": "^6.10.3",
