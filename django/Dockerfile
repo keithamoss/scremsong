@@ -21,7 +21,8 @@ ENV PYTHONUNBUFFERED=1 \
 # prepend poetry to path
 ENV PATH="$POETRY_HOME/bin:$PATH"
 
-RUN apt-get update && apt-get -y upgrade
+RUN apt-get update
+RUN apt-get -y upgrade
 RUN apt-get install -y supervisor
 
 ADD . /app
