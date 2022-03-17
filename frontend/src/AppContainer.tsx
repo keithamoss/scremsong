@@ -106,7 +106,7 @@ export class AppContainer extends React.Component<TComponentProps, {}> {
   public playAudio = () => {
     const audio = document.getElementById('scremsong-sound') as HTMLMediaElement
     if (canPlayAudio(audio)) {
-      audio.volume = 0.5
+      audio.volume = 0.25
       audio.play().catch((_error: any) => null)
     }
   }
@@ -139,12 +139,8 @@ export class AppContainer extends React.Component<TComponentProps, {}> {
           <div className={classes.flexboxCentredContainer}>
             <div className={classes.flexboxCentredBox}>
               <div>
-                <img
-                  src="/alex.jpg"
-                  onMouseEnter={this.playAudio}
-                  onMouseOut={this.stopAudio}
-                  onBlur={this.stopAudio}
-                />
+                {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
+                <img src="/alex.jpg" onMouseDown={this.playAudio} onMouseUp={this.stopAudio} onBlur={this.stopAudio} />
               </div>
               <div>
                 <h1>Screm song! Screm song!</h1>
