@@ -294,6 +294,8 @@ def task_collect_twitter_rate_limit_info(self):
                 "state": TwitterRateLimitState.RATE_LIMITED,
             })
 
+            logger.info("We've been rate limited by Twitter for {}.".format(", ".join(resourceNames)))
+
         else:
             rateLimitedResources = are_we_rate_limited(resources, bufferPercentage=0.20)
 
@@ -310,10 +312,14 @@ def task_collect_twitter_rate_limit_info(self):
                     "state": TwitterRateLimitState.WARNING,
                 })
 
+                logger.info("Twitter rate limit approaching for {}.".format(", ".join(resourceNames)))
+
             else:
                 websockets.send_channel_message("tweets.rate_limit_state", {
                     "state": TwitterRateLimitState.EVERYTHING_OK,
                 })
+
+                logger.info("Twitter rate limit = everything is fine here, we're all fine here, how are you?")
 
         sleep(30)
 
