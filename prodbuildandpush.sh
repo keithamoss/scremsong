@@ -19,4 +19,4 @@ if [ x"$CMD" = x ]; then
 fi
 
 . prodbuild.sh $CMD
-. prodbuild-dockerpush.sh $VERSION $CMD
+. prodbuild-dockerpush.sh $CMD
