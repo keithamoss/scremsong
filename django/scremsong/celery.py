@@ -194,7 +194,7 @@ def configure_workers(sender=None, conf=None, **kwargs):
     tasks = get_celery_tasks(activeOnly=False)
     logger.info("Total tasks in queue: {}".format(len(tasks)))
     tasks = get_tweet_streaming_tasks(activeOnly=True)
-    logger.info("Running treaming tasks in queue: {}".format(len(tasks)))
+    logger.info("Running streaming tasks in queue: {}".format(len(tasks)))
     tasks = get_tweet_streaming_tasks(activeOnly=False)
     logger.info("Total streaming tasks in queue: {}".format(len(tasks)))
 
