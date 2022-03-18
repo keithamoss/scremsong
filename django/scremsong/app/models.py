@@ -1,8 +1,7 @@
 from django.contrib.auth.models import User
-from django.contrib.postgres.fields import JSONField
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models import F, Func
+from django.db.models import F, Func, JSONField
 from model_utils import FieldTracker
 from scremsong.app.enums import (ProfileOfflineReason,
                                  ProfileSettingQueueSortBy, ProfileSettings,

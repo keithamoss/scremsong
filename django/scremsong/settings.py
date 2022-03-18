@@ -45,7 +45,7 @@ if get_env("ENVIRONMENT") == "PRODUCTION":
         "https://scremsong.democracysausage.org",
     )
     CSRF_TRUSTED_ORIGINS = (
-        "scremsong.democracysausage.org",
+        "https://scremsong.democracysausage.org",
     )
     ALLOWED_HOSTS = [
         "scremsong.democracysausage.org"
@@ -88,7 +88,7 @@ else:
         "https://scremsong.test.democracysausage.org",
     )
     CSRF_TRUSTED_ORIGINS = (
-        "scremsong.test.democracysausage.org",
+        "https://scremsong.test.democracysausage.org",
     )
     ALLOWED_HOSTS = ["scremsong.test.democracysausage.org"]
 
