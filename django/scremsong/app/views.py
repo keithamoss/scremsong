@@ -410,6 +410,18 @@ class SocialAssignmentsViewset(viewsets.ViewSet):
                 "assignment": SocialAssignmentSerializer(assignment).data,
             })
 
+            tweetId = assignment.social_id
+            tweet = Tweets.objects.get(tweet_id=tweetId)
+            tweet.state = TweetState.DEALT_WITH
+            tweet.save()
+
+            websockets.send_channel_message("tweets.set_state", {
+                "tweetStates": [{
+                    "tweetId": tweetId,
+                    "tweetState": TweetState.DEALT_WITH,
+                }]
+            })
+
         return Response({"OK": True})
 
     @action(detail=False, methods=['get'])
@@ -424,6 +436,18 @@ class SocialAssignmentsViewset(viewsets.ViewSet):
 
         websockets.send_channel_message("reviewers.assignment_metdata_changed", {
             "assignment": SocialAssignmentSerializer(assignment).data,
+        })
+
+        tweetId = assignment.social_id
+        tweet = Tweets.objects.get(tweet_id=tweetId)
+        tweet.state = TweetState.ASSIGNED
+        tweet.save()
+
+        websockets.send_channel_message("tweets.set_state", {
+            "tweetStates": [{
+                "tweetId": tweetId,
+                "tweetState": TweetState.ASSIGNED,
+            }]
         })
 
         return Response({"OK": True})
