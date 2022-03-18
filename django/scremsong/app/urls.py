@@ -1,4 +1,4 @@
-from django.conf.urls import include, url
+from django.urls import include, path
 from rest_framework import routers
 
 from .views import (CeleryAdminViewset, CurrentUserView, DashboardViewset,
@@ -22,9 +22,9 @@ router.register(r'debug', ScremsongDebugViewset, 'ScremsongDebugViewset')
 router.register(r'profile', ProfileViewSet, 'ProfileViewSet')
 
 urlpatterns = [
-    url(r'^api/0.1/', include(router.urls)),
-    url(r'^api/0.1/self$', CurrentUserView.as_view(), name='api-self'),
-    url(r'^api/0.1/logout$', LogoutUserView.as_view(), name='api-logout'),
+    path('api/0.1/', include(router.urls)),
+    path('api/0.1/self', CurrentUserView.as_view(), name='api-self'),
+    path('api/0.1/logout', LogoutUserView.as_view(), name='api-logout'),
     # make sure that the API never serves up the react app
-    url(r'^api/0.1/.*', api_not_found),
+    path('api/0.1/.*', api_not_found),
 ]
