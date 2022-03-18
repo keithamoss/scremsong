@@ -45,7 +45,7 @@ from scremsong.celery import (app, celery_kill_and_restart_streaming_tasks,
                               celery_restart_streaming,
                               task_fill_missing_tweets)
 from scremsong.util import get_or_none, make_logger
-from tweepy import TweepError
+from tweepy import TweepyException
 
 logger = make_logger(__name__)
 
@@ -205,10 +205,10 @@ class TweetsViewset(viewsets.ViewSet):
             reply_to_tweet(inReplyToTweetId, replyText)
             return Response({})
 
-        except tweepy.RateLimitError:
+        except tweepy.TooManyRequests:
             return Response({"error": "Error sending reply. It looks like we've been rate limited for replying to / favouriting tweets. Try again in a little while."}, status=status.HTTP_403_FORBIDDEN)
 
-        except tweepy.TweepError as e:
+        except TweepyException as e:
             if e.api_code == 403:
                 return Response({"error": "Error sending reply. It looks like that exactly reply recently got sent. Change the reply text and try again."}, status=status.HTTP_403_FORBIDDEN)
             else:
@@ -552,7 +552,7 @@ class SocialPlatformsAuthViewset(viewsets.ViewSet):
         try:
             redirect_url = twitter_user_api_auth_stage_1()
             return HttpResponseRedirect(redirect_to=redirect_url)
-        except TweepError:
+        except TweepyException:
             return Response({"error": "Error! Failed to get request token."}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=['get'])
@@ -560,7 +560,7 @@ class SocialPlatformsAuthViewset(viewsets.ViewSet):
         try:
             if twitter_user_api_auth_stage_2(request.query_params) is True:
                 return Response({"OK": True})
-        except TweepError:
+        except TweepyException:
             return Response({"error": "Error! Failed to get access token. TweepyError."}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"error": "Error! Failed to get access token. {}".format(str(e))}, status=status.HTTP_400_BAD_REQUEST)

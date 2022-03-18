@@ -5,7 +5,7 @@ from scremsong.app.enums import (NotificationVariants, SocialPlatformChoice,
 from scremsong.app.models import SocialPlatforms
 from scremsong.app.social.columns import get_social_columns
 from scremsong.app.twitter import (get_latest_tweet_id_for_streaming,
-                                   get_tweepy_api_auth, get_twitter_app)
+                                   get_tweepy_api_creds, get_twitter_app)
 from scremsong.celery import (app, celery_restart_streaming,
                               task_fill_missing_tweets,
                               task_process_tweet_reply)
@@ -16,19 +16,19 @@ logger = make_logger(__name__)
 
 def open_tweet_stream():
     # https://stackoverflow.com/a/33660005/7368493
-    class MyStreamListener(tweepy.StreamListener):
+    class ScremsongStream(tweepy.Stream):
         def on_status(self, status):
             logger.debug("Sending tweet {} to the queue to be processed from streaming".format(status._json["id_str"]))
             task_process_tweet_reply.apply_async(args=[status._json, TweetSource.STREAMING, True])
 
-        def on_error(self, status_code):
+        def on_request_error(self, status_code):
             if status_code == 420:
                 logger.warning("Streaming got status {}. Disconnecting from stream.".format(status_code))
 
                 # Fire off tasks to restart streaming (delayed by 2s)
                 celery_restart_streaming(wait=10)
 
-                # Returning False in on_error disconnects the stream
+                # Returning False in on_request_error disconnects the stream
                 return False
             # Returning non-False reconnects the stream, with backoff
             logger.warning("Streaming got status {}. Taking no action.".format(status_code))
@@ -36,16 +36,16 @@ def open_tweet_stream():
         def on_limit(self, track):
             logger.warning("Received an on limit message from Twitter.")
 
-        def on_timeout(self):
+        def on_connection_error(self):
             logger.critical("Streaming connection to Twitter has timed out.")
 
             # Fire off tasks to restart streaming (delayed by 2s)
             celery_restart_streaming(wait=2)
 
-            # Returning False in on_timeout disconnects the stream
+            # Returning False in on_connection_error disconnects the stream
             return False
 
-        def on_disconnect(self, notice):
+        def on_disconnect_message(self, notice):
             """Called when twitter sends a disconnect notice
 
             Disconnect codes are listed here:
@@ -57,7 +57,7 @@ def open_tweet_stream():
             # Fire off tasks to restart streaming (delayed by 2s)
             celery_restart_streaming(wait=2)
 
-            # Returning False in on_disconnect disconnects the stream
+            # Returning False in on_disconnect_message disconnects the stream
             return False
 
         def on_warning(self, notice):
@@ -78,16 +78,16 @@ def open_tweet_stream():
 
         def on_data(self, raw_data):
             logger.info("on_data")
-            return super(MyStreamListener, self).on_data(raw_data)
+            return super(ScremsongStream, self).on_data(raw_data)
 
         def on_delete(self, status_id, user_id):
             """Called when a delete notice arrives for a status"""
             logger.warning("on_delete: {}, {}".format(status_id, user_id))
             return
 
-        def keep_alive(self):
+        def on_keep_alive(self):
             """Called when a keep-alive arrived"""
-            logger.info("keep_alive")
+            logger.info("on_keep_alive")
             return
 
     # Create Twitter app credentials + config store if it doesn't exist
@@ -98,14 +98,13 @@ def open_tweet_stream():
         t = get_twitter_app()
 
     # Begin streaming!
-    api = get_tweepy_api_auth()
-    if api is None:
-        logger.critical("No Twitter credentials available! Please generate them by-hand.")
-        return None
-
     try:
-        myStreamListener = MyStreamListener()
-        myStream = tweepy.Stream(auth=api.auth, listener=myStreamListener)
+        creds = get_tweepy_api_creds()
+        if creds is None:
+            logger.critical("No Twitter credentials available! Please generate them by-hand.")
+            return None
+
+        stream = ScremsongStream(creds["consumer_key"], creds["consumer_secret"], creds["access_token"], creds["access_token_secret"])
 
         track = []
         [track.extend(column.search_phrases) for column in get_social_columns(SocialPlatformChoice.TWITTER)]
@@ -124,7 +123,7 @@ def open_tweet_stream():
                 logger.warning("Got sinceId of None when trying to start task_fill_missing_tweets")
 
             # Begin streaming!
-            myStream.filter(track=track, stall_warnings=True)
+            stream.filter(track=track, stall_warnings=True)
 
             logger.warning("Oops, looks like tweet streaming has ended unexpectedly.")
 

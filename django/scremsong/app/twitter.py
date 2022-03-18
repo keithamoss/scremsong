@@ -31,13 +31,26 @@ def get_twitter_app():
     return SocialPlatforms.objects.filter(platform=SocialPlatformChoice.TWITTER).first()
 
 
-def get_tweepy_api_auth(compression=False, wait_on_rate_limit=True, wait_on_rate_limit_notify=True):
+def get_tweepy_api_creds():
     t = get_twitter_app()
 
     if t.credentials is not None and "access_token" in t.credentials and "access_token_secret" in t.credentials:
-        auth = tweepy.OAuthHandler(get_env("TWITTER_CONSUMER_KEY"), get_env("TWITTER_CONSUMER_SECRET"))
-        auth.set_access_token(t.credentials["access_token"], t.credentials["access_token_secret"])
-        return tweepy.API(auth, compression=compression, wait_on_rate_limit=wait_on_rate_limit, wait_on_rate_limit_notify=wait_on_rate_limit_notify)
+        return {
+            "consumer_key": get_env("TWITTER_CONSUMER_KEY"),
+            "consumer_secret": get_env("TWITTER_CONSUMER_SECRET"),
+            "access_token": t.credentials["access_token"],
+            "access_token_secret": t.credentials["access_token_secret"]
+        }
+    return None
+
+
+def get_tweepy_api_auth(wait_on_rate_limit=True):
+    creds = get_tweepy_api_creds()
+
+    if creds is not None:
+        auth = tweepy.OAuthHandler(creds["consumer_key"], creds["consumer_secret"])
+        auth.set_access_token(creds["access_token"], creds["access_token_secret"])
+        return tweepy.API(auth, wait_on_rate_limit=wait_on_rate_limit)
     return None
 
 
@@ -267,8 +280,8 @@ def tweepy_rate_limit_handled(cursor, waitFor=None):
     while True:
         try:
             yield cursor.next()
-        except tweepy.RateLimitError:
-            logger.warning("Got a RateLimitError from Tweepy while using a cursor. Waiting fof 60s.")
+        except tweepy.TooManyRequests:
+            logger.warning("Got a TooManyRequests from Tweepy while using a cursor. Waiting fof 60s.")
 
             if waitFor is not None:
                 waitCounter += 1
@@ -295,7 +308,7 @@ def fill_in_missing_tweets(since_id, max_id):
     for column in get_social_columns(SocialPlatformChoice.TWITTER):
         tweets_added = 0
         q = column_search_phrase_to_twitter_search_query(column)
-        for status in tweepy_rate_limit_handled(tweepy.Cursor(api.search, q=q, result_type="recent", tweet_mode="extended", include_entities=True, since_id=since_id, max_id=max_id).items()):
+        for status in tweepy_rate_limit_handled(tweepy.Cursor(api.search_tweets, q=q, result_type="recent", tweet_mode="extended", include_entities=True, since_id=since_id, max_id=max_id).items()):
             tweet, created = save_tweet(status._json, source=TweetSource.BACKFILL, status=TweetStatus.OK)
             tweets.append(tweet)
 
@@ -387,7 +400,7 @@ def get_status_from_api(tweetId):
         api = get_tweepy_api_auth()
         status = api.get_status(tweetId, tweet_mode="extended", include_entities=True)
         return status._json
-    except tweepy.TweepError as e:
+    except tweepy.TweepyException as e:
         if e.api_code == 144:
             # No status found with that ID.
             # Corresponds with HTTP 404. The requested Tweet ID is not found (if it existed, it was probably deleted)
@@ -401,8 +414,8 @@ def get_status_from_api(tweetId):
         else:
             # Uh oh, some other error code was returned
             # NB: tweepy.api can return certain errors via retry_errors
-            logger.error("TweepError from get_status_from_api({})".format(tweetId), e)
-            raise ScremsongException("TweepError from get_status_from_api({})".format(tweetId))
+            logger.error("TweepyException from get_status_from_api({})".format(tweetId), e)
+            raise ScremsongException("TweepyException from get_status_from_api({})".format(tweetId))
     return None
 
 
@@ -596,7 +609,7 @@ def favourite_tweet(tweetId):
 
         ws_send_updated_tweet(tweet)
 
-    except tweepy.TweepError as e:
+    except tweepy.TweepyException as e:
         if e.api_code == 139:
             # The tweet was already favourited somewhere else (e.g. another Twitter client). Update local state tweet and respond as if we succeeded.
             tweet.data["favorited"] = True
@@ -632,7 +645,7 @@ def unfavourite_tweet(tweetId):
 
         ws_send_updated_tweet(tweet)
 
-    except tweepy.TweepError as e:
+    except tweepy.TweepyException as e:
         if e.api_code == 144:
             # The tweet was already unfavourited somewhere else (e.g. another Twitter client). Update local state tweet and respond as if we succeeded.
             # NB: No idea why they use 144 as the response code. 144 is supposed to be "No status found with that ID"
@@ -673,7 +686,7 @@ def retweet_tweet(tweetId):
             "tweets": {tweet.tweet_id: TweetsSerializer(tweet).data, retweet.tweet_id: TweetsSerializer(retweet).data},
         })
 
-    except tweepy.TweepError as e:
+    except tweepy.TweepyException as e:
         if e.api_code == 327:
             # The tweet was already retweeted somewhere else (e.g. another Twitter client). Update local state tweet and respond as if we succeeded.
             tweet.data["retweeted"] = True
@@ -709,7 +722,7 @@ def unretweet_tweet(tweetId):
 
         ws_send_updated_tweet(tweet)
 
-    except tweepy.TweepError as e:
+    except tweepy.TweepyException as e:
         raise e
 
         if e.api_code == 327:
@@ -735,12 +748,12 @@ def reply_to_tweet(inReplyToTweetId, replyText):
             "tweets": {reply.tweet_id: TweetsSerializer(reply).data},
         })
 
-    except tweepy.RateLimitError as e:
-        logger.warning("Got a RateLimitError from Tweepy while sending a reply to {}".format(inReplyToTweetId))
+    except tweepy.TooManyRequests as e:
+        logger.warning("Got a TooManyRequests from Tweepy while sending a reply to {}".format(inReplyToTweetId))
         raise e
 
-    except tweepy.TweepError as e:
-        logger.warning("Got a TweepError {} from Tweepy while sending a reply to {}".format(e.api_code, inReplyToTweetId))
+    except tweepy.TweepyException as e:
+        logger.warning("Got a TweepyException {} from Tweepy while sending a reply to {}".format(e.api_code, inReplyToTweetId))
         raise e
 
 
