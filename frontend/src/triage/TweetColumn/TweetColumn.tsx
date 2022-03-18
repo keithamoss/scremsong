@@ -10,11 +10,7 @@ import LiveTvOutlinedIcon from '@material-ui/icons/LiveTvOutlined'
 import * as React from 'react'
 import { AutoSizer, CellMeasurer, CellMeasurerCache, InfiniteLoader, List } from 'react-virtualized'
 import 'react-virtualized/styles.css'
-import {
-  ESocialAssignmentCloseReason,
-  ESocialAssignmentState,
-  IReviewerAssignment,
-} from '../../redux/modules/interfaces.reviewers'
+import { IReviewerAssignment } from '../../redux/modules/interfaces.reviewers'
 import { ESocialTweetState, ISocialTweetAssignments, ISocialTweetList } from '../../redux/modules/social'
 import { getActionBarBackgroundColour, ITriageColumn } from '../../redux/modules/triage'
 import { getColumnPosition } from '../../redux/modules/user'
@@ -256,11 +252,14 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
       const assignmentId = tweet_assignments[tweetId]
       const assignment = tweetId in tweet_assignments ? assignments[assignmentId] : null
 
-      const showActionBarButtons =
-        assignment === null ||
-        assignment.state === ESocialAssignmentState.PENDING ||
-        (assignment.state === ESocialAssignmentState.CLOSED &&
-          assignment.close_reason === ESocialAssignmentCloseReason.AWAITING_REPLY)
+      // Can't remember why we had logic here...even closed assignments get the "mark as active again" button
+      const showActionBarButtons = true
+      // const showActionBarButtons =
+      //   assignment === null ||
+      //   assignment.state === ESocialAssignmentState.PENDING ||
+      //   (assignment.state === ESocialAssignmentState.CLOSED &&
+      //     assignment.close_reason === ESocialAssignmentCloseReason.AWAITING_REPLY)
+
       const backgroundColor = getActionBarBackgroundColour(tweet, assignment)
 
       let opacity = 1
