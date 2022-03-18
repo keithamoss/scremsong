@@ -167,15 +167,15 @@ class ReviewCard extends React.PureComponent<TComponentProps, IState> {
           horizontal: 'left',
         },
         action: (
-          <Button size="small" color="inherit">
+          <Button size="small" color="inherit" onClick={() => this.props.onRestoreAssignment(this.props.assignment)}>
             Undo
           </Button>
         ),
-        onClose: (_event: React.MouseEvent<HTMLElement>, reason: string) => {
-          if (reason !== 'timeout') {
-            this.props.onRestoreAssignment(this.props.assignment)
-          }
-        },
+        // onClose: (_event: React.MouseEvent<HTMLElement>, reason: string) => {
+        //   if (reason !== 'timeout') {
+        //     this.props.onRestoreAssignment(this.props.assignment)
+        //   }
+        // },
       },
     })
   }
