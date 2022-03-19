@@ -3,7 +3,7 @@ import json
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models import F, Func, JSONField
+from django.db.models import CharField, Func, JSONField
 from model_utils import FieldTracker
 from scremsong.app.enums import (ProfileOfflineReason,
                                  ProfileSettingQueueSortBy, ProfileSettings,
@@ -127,7 +127,14 @@ class SocialColumns(models.Model):
         # @TODO This is a bit rubbish. We could pull created_at out as a PostgreSQL timestamp field.
         queryset = apply_tweet_filter_criteria(self, Tweets.objects).filter(state=state)
         if sincePastNDays is not None:
-            queryset = queryset.annotate(diff_in_days=Func(F("data__created_at"), function="EXTRACT", template="%(function)s(EPOCH FROM CURRENT_TIMESTAMP - to_timestamp(data->>'created_at', 'Dy Mon DD HH24:MI:SS +0000 YYYY')) / 86400")).filter(diff_in_days__lte=sincePastNDays)
+            queryset = queryset.annotate(
+                diff_in_days=Func(
+                    function="EXTRACT",
+                    template="%(function)s(EPOCH FROM CURRENT_TIMESTAMP - to_timestamp(data->>'created_at', 'Dy Mon DD HH24:MI:SS +0000 YYYY')) / 86400",
+                    output_field=CharField()
+                )
+
+            ).filter(diff_in_days__lte=sincePastNDays)
 
         count = queryset.count()
         if count is None:
