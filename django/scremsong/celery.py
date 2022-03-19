@@ -10,7 +10,7 @@ from celery.signals import (celeryd_init, worker_process_shutdown,
 from scremsong.app import websockets
 from scremsong.app.enums import NotificationVariants, TwitterRateLimitState
 from scremsong.app.exceptions import ScremsongException
-from scremsong.util import make_logger
+from scremsong.util import async_hacky_fix, make_logger
 
 logger = make_logger(__name__)
 
@@ -271,8 +271,7 @@ def task_collect_twitter_rate_limit_info(self):
 
     while True:
         status = api.rate_limit_status()
-        resources = status["resources"]
-        resources = json.loads(json.dumps(status["resources"]))
+        resources = async_hacky_fix(status["resources"])
         r = TwitterRateLimitInfo(data=resources)
         r.save()
 

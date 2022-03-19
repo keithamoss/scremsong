@@ -54,3 +54,10 @@ def get_or_none(classmodel, **kwargs):
         return classmodel.objects.get(**kwargs)
     except classmodel.DoesNotExist:
         return None
+
+
+# Workaround until Celery supports async natively
+# Ref: https://stackoverflow.com/a/43325237/7368493
+def async_hacky_fix(item):
+    import json
+    return json.loads(json.dumps(item))
