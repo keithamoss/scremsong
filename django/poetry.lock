@@ -303,7 +303,7 @@ test = ["pytest (>=6.2.0)", "pytest-cov", "pytest-subtests", "pytest-xdist", "pr
 
 [[package]]
 name = "daphne"
-version = "3.0.1"
+version = "3.0.2"
 description = "Django ASGI (HTTP/WebSocket) server"
 category = "main"
 optional = false
@@ -937,7 +937,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "6101a9902331a873e5d817215614a3a9bd2ace59b5a4eb99e15d8f4873f38e9c"
+content-hash = "cef735f11cc3150abc1cfc2c8e802055e17f3d8578109a95321754c21f3f5157"
 
 [metadata.files]
 aioredis = [
@@ -1090,8 +1090,8 @@ cryptography = [
     {file = "cryptography-36.0.2.tar.gz", hash = "sha256:70f8f4f7bb2ac9f340655cbac89d68c527af5bb4387522a8413e841e3e6628c9"},
 ]
 daphne = [
-    {file = "daphne-3.0.1-py3-none-any.whl", hash = "sha256:0052c9887600c57054a5867d4b0240159fa009faa3bcf6a1627271d9cdcb005a"},
-    {file = "daphne-3.0.1.tar.gz", hash = "sha256:c22b692707f514de9013651ecb687f2abe4f35cf6fe292ece634e9f1737bc7e3"},
+    {file = "daphne-3.0.2-py3-none-any.whl", hash = "sha256:a9af943c79717bc52fe64a3c236ae5d3adccc8b5be19c881b442d2c3db233393"},
+    {file = "daphne-3.0.2.tar.gz", hash = "sha256:76ffae916ba3aa66b46996c14fa713e46004788167a4873d647544e750e0e99f"},
 ]
 defusedxml = [
     {file = "defusedxml-0.7.1-py2.py3-none-any.whl", hash = "sha256:a352e7e428770286cc899e2542b6cdaedb2b4953ff269a210103ec58f6198a61"},
