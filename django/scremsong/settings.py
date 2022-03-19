@@ -95,10 +95,6 @@ else:
     SESSION_COOKIE_DOMAIN = "scremsong.test.democracysausage.org"
     CSRF_COOKIE_DOMAIN = "scremsong.test.democracysausage.org"
 
-    STATICFILES_DIRS = [
-        os.path.join(BASE_DIR, "static")
-    ]
-
 
 # Application definition
 
