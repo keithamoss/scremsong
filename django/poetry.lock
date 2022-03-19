@@ -734,7 +734,7 @@ social-auth-core = ">=3.3.0"
 
 [[package]]
 name = "social-auth-core"
-version = "4.1.0"
+version = "4.2.0"
 description = "Python social authentication made simple."
 category = "main"
 optional = false
@@ -750,11 +750,11 @@ requests = ">=2.9.1"
 requests-oauthlib = ">=0.6.1"
 
 [package.extras]
-all = ["python-jose (>=3.0.0)", "python3-saml (>=1.2.1)", "cryptography (>=2.1.1)"]
-allpy3 = ["python-jose (>=3.0.0)", "python3-saml (>=1.2.1)", "cryptography (>=2.1.1)"]
+all = ["python-jose (>=3.0.0)", "python3-saml (>=1.2.1)", "lxml (<4.7)", "cryptography (>=2.1.1)"]
+allpy3 = ["python-jose (>=3.0.0)", "python3-saml (>=1.2.1)", "lxml (<4.7)", "cryptography (>=2.1.1)"]
 azuread = ["cryptography (>=2.1.1)"]
 openidconnect = ["python-jose (>=3.0.0)"]
-saml = ["python3-saml (>=1.2.1)"]
+saml = ["python3-saml (>=1.2.1)", "lxml (<4.7)"]
 
 [[package]]
 name = "sqlalchemy"
@@ -935,7 +935,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "7d346a883748579678ebce55e6475f1a7dbc93a40890c063ddb3d44d709d54e9"
+content-hash = "4249e99b9c0218ce1b1272b42ae25a0a0f7e19c9c338cfbc0c851e08605fb3da"
 
 [metadata.files]
 aioredis = [
@@ -1436,8 +1436,8 @@ social-auth-app-django = [
     {file = "social_auth_app_django-4.0.0-py3-none-any.whl", hash = "sha256:567ad0e028311541d7dfed51d3bf2c60440a6fd236d5d4d06c5a618b3d6c57c5"},
 ]
 social-auth-core = [
-    {file = "social-auth-core-4.1.0.tar.gz", hash = "sha256:5ab43b3b15dce5f059db69cc3082c216574739f0edbc98629c8c6e8769c67eb4"},
-    {file = "social_auth_core-4.1.0-py3-none-any.whl", hash = "sha256:983b53167ac56e7ba4909db555602a6e7a98c97ca47183bb222eb85ba627bf2b"},
+    {file = "social-auth-core-4.2.0.tar.gz", hash = "sha256:af6fc7d9ee39f0aa697cd953121add638fc32a49816341a9838a67904c39e034"},
+    {file = "social_auth_core-4.2.0-py3-none-any.whl", hash = "sha256:08fe6645b98950cff9d6970b6704345f821d78729df0164bca0002c624b001e1"},
 ]
 sqlalchemy = [
     {file = "SQLAlchemy-1.4.32-cp27-cp27m-macosx_10_14_x86_64.whl", hash = "sha256:4b2bcab3a914715d332ca783e9bda13bc570d8b9ef087563210ba63082c18c16"},
