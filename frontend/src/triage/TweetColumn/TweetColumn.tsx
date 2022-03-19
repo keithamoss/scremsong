@@ -68,8 +68,8 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
 
   private _cache = new CellMeasurerCache({
     defaultHeight: 175,
-    // defaultWidth: 420,
-    // minWidth: 420,
+    defaultWidth: 420,
+    minWidth: 420,
     fixedWidth: true,
     keyMapper: (rowIndex: number) => {
       return this.props.tweet_ids[rowIndex]
