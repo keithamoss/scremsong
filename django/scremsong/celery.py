@@ -262,6 +262,8 @@ def task_collect_twitter_rate_limit_info(self):
         logger.warning("Abandoning starting Twitter rate limit collection - an identical task already exists")
         return True
 
+    import json
+
     from scremsong.app.models import TwitterRateLimitInfo
     from scremsong.app.twitter import are_we_rate_limited, get_tweepy_api_auth
 
@@ -270,6 +272,7 @@ def task_collect_twitter_rate_limit_info(self):
     while True:
         status = api.rate_limit_status()
         resources = status["resources"]
+        resources = json.loads(json.dumps(status["resources"]))
         r = TwitterRateLimitInfo(data=resources)
         r.save()
 
