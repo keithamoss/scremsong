@@ -20,16 +20,6 @@ This old forum thread has a good examination of the same issue: https://groups.g
 
 WORKAROUND: is_a_matching_fill_missing_tweets_task_already_running() now kills all duplicate tasks and we've added a button to manually trigger task_fill_missing_tweets()
 
-# Tweepy: Connection broken: IncompleteRead (March 2021)
-
-Fixed in https://github.com/tweepy/tweepy/commit/68e19cc6b9b23d72369ca1520093770eb18a5a9f and slated for the 4.0 release.
-
-Relevant issues:
-https://github.com/tweepy/tweepy/issues/448
-https://github.com/tweepy/tweepy/issues/237
-
-WORKAROUND: Ignore it for now and wait for Tweepy 4.0
-
 # Django, Celery, and sync to async (March 2021)
 
 Django 3 is partway through migrating to use Python 3's new async functionality. Unfortunately for us, the ORM is hasn't been migrated yet - so we're sometimes seeing these 'sync to async' errors being thrown when Celery tasks call the ORM.
