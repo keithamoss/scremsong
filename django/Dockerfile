@@ -1,4 +1,4 @@
-FROM python:3.8-slim-buster
+FROM python:3.9-slim-buster
 LABEL maintainer="<keithamoss@gmail.com>"
 
 # Python
@@ -29,6 +29,7 @@ ADD . /app
 WORKDIR /app
 
 # Python deps management
+RUN pip install --upgrade pip
 RUN apt-get install -y curl
 RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
 RUN poetry update
