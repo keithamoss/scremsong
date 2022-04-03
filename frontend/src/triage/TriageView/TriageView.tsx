@@ -25,7 +25,7 @@ const styles = () =>
       height: '100%',
     },
     column: {
-      width: '420px',
+      width: '437px',
       height: '100%',
       marginRight: '5px',
     },
