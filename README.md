@@ -213,7 +213,7 @@ docker push keithmoss/scremsong-django
 
 (Remember to `docker login` to Docker Hub first.)
 
-## Maintenance
+## Maintenance and upgrading
 
 ### Frontend
 
@@ -227,6 +227,18 @@ docker push keithmoss/scremsong-django
 
 poetry show --outdated
 
+1. Start with non-core Python packages,
+2. work our way down to Django and friends, and
+3. then to the Docker images
+
+#### Non-core Python packages
+
+- rq, django-rq
+- channels, daphne, channels-redis, redis
+- tweepy
+- django, djangorestframework, django-cors-headers, django-model-utils, social-auth-core, social-auth-app-django
+- sh, sentry-sdk, pytz
+
 ## Resources
 
 - [Moving a static website to AWS S3 + CloudFront with HTTPS](https://medium.com/@willmorgan/moving-a-static-website-to-aws-s3-cloudfront-with-https-1fdd95563106)
@@ -236,3 +248,7 @@ poetry show --outdated
 - [Deploying a static site to Github Pages using Travis and Cloudflare](https://jmsbrdy.com/2017/07/deploying-a-static-site-to-github-pages-using-travis-and-cloudflare/)
 - [Secure and fast GitHub Pages with CloudFlare](https://blog.cloudflare.com/secure-and-fast-github-pages-with-cloudflare/)
 - [How to get your SSL for free on a Shared Azure website with CloudFlare](https://www.troyhunt.com/how-to-get-your-ssl-for-free-on-shared/)
+
+## Logs
+
+scp -r scremsong-big:/apps/digitalocean-stack/logs/ .
