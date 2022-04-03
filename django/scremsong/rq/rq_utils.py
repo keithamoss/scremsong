@@ -186,17 +186,17 @@ def cancel_jobs(jobs):
 
 
 def report_job_success(job, connection, result, *args, **kwargs):
-    logger.info(f"report_job_success for job {job.func_name} ({job.id})")
+    logger.debug(f"report_job_success for job {job.func_name} ({job.id})")
     report_job_result(TaskStatus.SUCCESS, job, connection, result, *args, **kwargs)
 
 
 def report_job_failure(job, connection, result, *args, **kwargs):
-    logger.info(f"report_job_failure for job {job.func_name} ({job.id})")
+    logger.debug(f"report_job_failure for job {job.func_name} ({job.id})")
     report_job_result(TaskStatus.FAILED, job, connection, result, *args, **kwargs)
 
 
 def report_job_result(status, job, connection, result, *args, **kwargs):
-    logger.info("_report_job_result starting")
+    logger.debug("_report_job_result starting")
 
     from scremsong.app.models import TaskResults
     task = TaskResults(job_id=job.id, job_name=get_job_name_from_meta_or_none(job), job_func_name=job.func_name, queue=job.origin, worker="", status=status, result=result, meta=job.meta, job_args=job.args, job_kwargs=job.kwargs, date_enqueued=make_aware(job.enqueued_at, timezone=timezone("UTC")), date_done=make_aware(job.ended_at, timezone=timezone("UTC")))

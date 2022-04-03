@@ -51,10 +51,10 @@ class ScremsongWorker(Worker):
         job = args[0]
 
         does_job_want_to_be_unique_check = does_job_want_to_be_unique(job.meta)
-        logger.info(f"job {job.func_name} ({job.id}) does_job_want_to_be_unique = {does_job_want_to_be_unique_check}")
+        logger.debug(f"job {job.func_name} ({job.id}) does_job_want_to_be_unique = {does_job_want_to_be_unique_check}")
 
         duplicate_jobs = get_duplicate_jobs(job)
-        logger.info(f"job {job.func_name} ({job.id}) get_duplicate_jobs for {job.func_name} = {duplicate_jobs}")
+        logger.debug(f"job {job.func_name} ({job.id}) get_duplicate_jobs for {job.func_name} = {duplicate_jobs}")
 
         if does_job_want_to_be_unique_check is True and len(duplicate_jobs) > 0:
             logger.warning(f"Avoiding performing job {job.func_name} ({job.id}) in queue {job.origin} because it is already queued or started somewhere else")
