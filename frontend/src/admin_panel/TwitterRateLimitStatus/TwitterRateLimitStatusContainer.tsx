@@ -1,3 +1,4 @@
+import { Typography } from '@material-ui/core'
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { getConsumedTwitterRateLimitResources } from '../../redux/modules/app'
@@ -18,8 +19,12 @@ class TwitterRateLimitStatusContainer extends React.Component<TComponentProps, {
   public render() {
     const { rateLimitResources } = this.props
 
-    if (rateLimitResources === null) {
-      return null
+    if (rateLimitResources === null || Object.keys(rateLimitResources).length === 0) {
+      return (
+        <Typography variant="subtitle1" gutterBottom>
+          We haven&lsquo;t used any of our rate limit allowances with Twitter yet.
+        </Typography>
+      )
     }
 
     return <TwitterRateLimitStatus rateLimitResources={rateLimitResources} />
