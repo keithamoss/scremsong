@@ -17,23 +17,6 @@ services:
 
     #         # Enable this to store the PostgreSQL data on the host
     #         - ./db/data:/var/lib/postgresql/data
-    # rabbitmq:
-    #     image: rabbitmq:3.7.8-alpine
-    #     volumes:
-    #         # Might need to `docker commit` too if we ever change settings? Not sure. (Ref. https://github.com/docker-library/rabbitmq/issues/106#issuecomment-380519695)
-    #         - ./rabbitmq/data:/var/lib/rabbitmq
-    #     ports:
-    #         - "5672:5672"
-    #     env_file:
-    #         - secrets/rabbitmq.env
-    # redis:
-    #     image: redis:5.0.3-alpine3.8
-    #     ports:
-    #         - "6379:6379"
-    #     # https://github.com/docker-library/redis/issues/35#issuecomment-360810072
-    #     sysctls:
-    #         net.core.somaxconn: "511"
-    django:
         build: django/
         entrypoint: /app/docker-entrypoint.sh
         command: build
