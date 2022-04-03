@@ -59,7 +59,7 @@ if [ "$CMD" = "python_rq_supervisord" ]; then
     echo "[Run] Starting python_rq_supervisord"
 
    python /app/scremsong/rq/init.py
-   /usr/bin/supervisord -c /app/scremsong/rq/supervisord.conf
+   /usr/bin/supervisord -c /app/scremsong/rq/supervisord.dev.conf
    exit
 fi
 
