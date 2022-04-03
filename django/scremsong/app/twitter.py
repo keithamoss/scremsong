@@ -21,8 +21,8 @@ from scremsong.app.social.columns import get_social_columns
 from scremsong.app.social.twitter_utils import (
     apply_tweet_filter_criteria, column_search_phrase_to_twitter_search_query)
 from scremsong.app.users import is_user_accepting_assignments
-from scremsong.celery import task_process_tweet_reply
-from scremsong.util import async_hacky_fix, get_env, get_or_none, make_logger
+from scremsong.rq.jobs import task_process_tweet_reply
+from scremsong.util import get_env, get_or_none, make_logger
 
 logger = make_logger(__name__)
 
@@ -251,7 +251,7 @@ def notify_of_saved_tweets(tweets):
         for tweet in tweets:
             response["tweets"][tweet.tweet_id] = TweetsSerializer(tweet).data
 
-        websockets.send_channel_message("tweets.new_tweets", async_hacky_fix(response))
+        websockets.send_channel_message("tweets.new_tweets", response)
 
 
 def get_column_for_tweet_with_priority(tweet):
@@ -328,7 +328,7 @@ def fill_in_missing_tweets(since_id, max_id):
             save_tweet(tweet.data, source=TweetSource.BACKFILL, status=TweetStatus.DIRTY)
 
             logger.info("Sending tweet {} to the queue to be processed for backfill".format(tweet.tweet_id))
-            task_process_tweet_reply.apply_async(args=[tweet.data, TweetSource.BACKFILL, False])
+            task_process_tweet_reply.delay(tweet.data, TweetSource.BACKFILL, False)
 
     notify_of_saved_tweets(tweets)
     return total_tweets_added

@@ -71,3 +71,4 @@ redis/
 cockpit.md
 TODO.md
 UPGRADE_NOTES.md
+django/supervisord.pid

@@ -88,3 +88,11 @@ class TwitterRateLimitState(int, EnumBase):
     EVERYTHING_OK = 1
     WARNING = 2
     RATE_LIMITED = 3
+
+
+class TaskStatus(str, EnumBase):
+    SUCCESS = "Success"
+    FAILED = "Failed"
+
+    def __str__(self):
+        return self.value

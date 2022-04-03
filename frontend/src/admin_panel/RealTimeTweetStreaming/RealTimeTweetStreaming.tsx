@@ -13,7 +13,7 @@ import {
 import Refresh from '@material-ui/icons/Refresh'
 import classNames from 'classnames'
 import * as React from 'react'
-import { ICeleryTaskInfo, ICeleryTasks } from './types'
+import { ITaskInfo, ITaskQueueInfo } from './types'
 
 const styles = (theme: Theme) => ({
   flexGrid: {
@@ -37,8 +37,8 @@ const styles = (theme: Theme) => ({
 })
 
 export interface IProps {
-  tasks: ICeleryTasks
-  restartTweetStreaming: any
+  tasks: ITaskQueueInfo
+  restartRateLimitCollection: any
   killAndRestartTweetStreaming: any
   launchTaskFillMissingTweets: any
 }
@@ -49,24 +49,24 @@ type TComponentProps = IProps & WithStyles
 
 class RealTimeTweetStreaming extends React.PureComponent<TComponentProps, IState> {
   public render() {
-    const { tasks, restartTweetStreaming, killAndRestartTweetStreaming, launchTaskFillMissingTweets, classes } =
+    const { tasks, restartRateLimitCollection, killAndRestartTweetStreaming, launchTaskFillMissingTweets, classes } =
       this.props
 
     return (
       <React.Fragment>
-        <Tooltip title="Restart the real-time tweet streaming worker process">
+        <Tooltip title="Restart the rate limit collection task">
           <Button
             variant="contained"
             color="primary"
             className={classNames(classes.button, classes.taskControlButtons)}
-            onClick={restartTweetStreaming}
+            onClick={restartRateLimitCollection}
           >
             <Refresh className={classNames(classes.leftIcon, classes.iconSmall)} />
             Restart tweet streaming
           </Button>
         </Tooltip>
 
-        <Tooltip title="Kill the real-time tweet streaming tasks">
+        <Tooltip title="Kill the restart tweet streaming tasks">
           <Button
             variant="contained"
             color="primary"
@@ -91,20 +91,20 @@ class RealTimeTweetStreaming extends React.PureComponent<TComponentProps, IState
         </Tooltip>
 
         <div className={classes.flexGrid}>
-          {Object.keys(tasks).map((taskCategory: string) => (
-            <div key={taskCategory} className={classes.flexCol}>
+          {Object.keys(tasks).map((queueName: string) => (
+            <div key={queueName} className={classes.flexCol}>
               <Typography variant="h5" gutterBottom>
-                {taskCategory}
+                {queueName}
               </Typography>
-              {tasks[taskCategory] !== null &&
-                Object.keys(tasks[taskCategory]).map((workerName: string) => (
-                  <React.Fragment key={workerName}>
+              {tasks[queueName] !== null &&
+                Object.keys(tasks[queueName]).map((registryName: string) => (
+                  <React.Fragment key={registryName}>
                     <List
                       component="ul"
-                      subheader={<ListSubheader component="div">{workerName}</ListSubheader>}
+                      subheader={<ListSubheader component="div">{registryName}</ListSubheader>}
                       className={classes.root}
                     >
-                      {tasks[taskCategory][workerName].map((task: ICeleryTaskInfo) => (
+                      {tasks[queueName][registryName].map((task: ITaskInfo) => (
                         <ListItem key={task.id}>
                           <ListItemText primary={task.name} secondary={task.id} />
                         </ListItem>

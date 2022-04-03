@@ -41,9 +41,11 @@ from scremsong.app.twitter import (favourite_tweet, fetch_tweets,
                                    twitter_user_api_auth_stage_1,
                                    twitter_user_api_auth_stage_2,
                                    unfavourite_tweet, unretweet_tweet)
-from scremsong.celery import (app, celery_kill_and_restart_streaming_tasks,
-                              celery_restart_streaming,
-                              task_fill_missing_tweets)
+from scremsong.rq.jobs import (task_cancel_and_restart_tweet_streaming,
+                               task_collect_twitter_rate_limit_info,
+                               task_fill_missing_tweets)
+from scremsong.rq.rq_utils import (get_queued_tasks, get_redis_connection,
+                                   get_started_tasks)
 from scremsong.util import get_or_none, make_logger
 from tweepy import TweepyException
 
@@ -596,63 +598,44 @@ class DashboardViewset(viewsets.ViewSet):
         return Response(stats)
 
 
-class CeleryAdminViewset(viewsets.ViewSet):
+class TaskAdminViewset(viewsets.ViewSet):
     """
-    API endpoint that lets us manage our celery instance.
+    API endpoint that lets us manage our task queue.
     """
     permission_classes = (IsAuthenticated,)
 
     @action(detail=False, methods=['get'])
     def tasks(self, request, format=None):
-        i = app.control.inspect()
-        return Response({
-            # These are all the tasks that are currently being executed.
-            "running": i.active(),
-            # These are tasks reserved by the worker when they have an eta or countdown argument set.
-            "scheduled": i.scheduled(),
-            # This will list all tasks that have been prefetched by the worker, and is currently waiting to be executed (doesn’t include tasks with an ETA value set).
-            "reserved": i.reserved()
-        })
+        from rq import Queue
+
+        tasks_by_queue = {}
+        redis = get_redis_connection()
+        for queue in Queue.all(connection=redis):
+            tasks_by_queue[queue.name] = {
+                "running": get_started_tasks(queue.name),
+                "scheduled": get_queued_tasks(queue.name),
+            }
+        return Response(tasks_by_queue)
 
     @action(detail=False, methods=['get'])
-    def workers(self, request, format=None):
-        i = app.control.inspect()
-        return Response(i.ping())
-
-    @action(detail=False, methods=['get'])
-    def restart_streaming(self, request, format=None):
-        celery_restart_streaming()
+    def restart_rate_limit_collection_task(self, request, format=None):
+        task_collect_twitter_rate_limit_info.delay()
         return Response({"OK": True})
 
     @action(detail=False, methods=['get'])
     def kill_and_restart_streaming_tasks(self, request, format=None):
-        celery_kill_and_restart_streaming_tasks()
+        task_cancel_and_restart_tweet_streaming.delay()
         return Response({"OK": True})
 
     @action(detail=False, methods=['get'])
-    def launch_task_fill_missing_tweets(self, request, format=None):
+    def launch_task_fill_missing_tweets_task(self, request, format=None):
         sinceId = get_latest_tweet_id_for_streaming()
         logger.info("Manually launching fill in missing tweets task for tweets since {}.".format(sinceId))
         if sinceId is not None:
-            task_fill_missing_tweets.apply_async(args=[sinceId], countdown=5)
+            task_fill_missing_tweets.delay(sinceId=sinceId)
         else:
             logger.warning("Got sinceId of None when trying to manually start task_fill_missing_tweets")
         return Response({"OK": True})
-
-    # @action(detail=False, methods=['get'])
-    # def experiment(self, request, format=None):
-    #     from celery.result import AsyncResult
-    #     res = AsyncResult('0166e825-d9d9-4fb2-b2e2-957893a6b215', app=app)
-
-    #     i = app.control.inspect()
-    #     return Response({
-    #         "result": {
-    #             "state": res.state,
-    #             # "get": res.get()
-    #         },
-    #         "query_task": i.query_task("0166e825-d9d9-4fb2-b2e2-957893a6b215"),
-    #         "running": i.stats(),
-    #     })
 
 
 class LogsAdminViewset(viewsets.ViewSet):

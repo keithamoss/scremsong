@@ -16,7 +16,7 @@ from scremsong.app.twitter import (are_we_rate_limited,
                                    get_latest_rate_limit_resources,
                                    get_precanned_tweet_replies,
                                    get_twitter_app, get_twitter_columns)
-from scremsong.app.twitter_streaming import is_streaming_connected
+from scremsong.rq.rq_utils import is_job_started
 from scremsong.util import make_logger
 
 logger = make_logger(__name__)
@@ -320,7 +320,7 @@ def build_on_connect_data_payload(user):
             },
             {
                 **{"msg_type": settings.MSG_TYPE_TWEETS_STREAMING_STATE},
-                "connected": is_streaming_connected()
+                "connected": is_job_started("task_open_tweet_stream")
             },
             {
                 **{"msg_type": settings.MSG_TYPE_TWEETS_RATE_LIMIT_STATE},

@@ -1,10 +1,10 @@
 from django.urls import include, path
 from rest_framework import routers
 
-from .views import (CeleryAdminViewset, CurrentUserView, DashboardViewset,
-                    LogoutUserView, LogsAdminViewset, ProfileViewSet,
-                    ScremsongDebugViewset, SocialAssignmentsViewset,
-                    SocialColumnsViewset, SocialPlatformsAuthViewset,
+from .views import (CurrentUserView, DashboardViewset, LogoutUserView,
+                    LogsAdminViewset, ProfileViewSet, ScremsongDebugViewset,
+                    SocialAssignmentsViewset, SocialColumnsViewset,
+                    SocialPlatformsAuthViewset, TaskAdminViewset,
                     TweetsViewset, TwitterRateLimitAdminViewset, UserViewSet,
                     api_not_found)
 
@@ -15,7 +15,7 @@ router.register(r'social_columns', SocialColumnsViewset, 'SocialColumns')
 router.register(r'social_assignments', SocialAssignmentsViewset, 'SocialAssignments')
 router.register(r'social_auth', SocialPlatformsAuthViewset, 'SocialPlatformsAuth')
 router.register(r'dashboard', DashboardViewset, 'Dashboard')
-router.register(r'celery_admin', CeleryAdminViewset, 'CeleryAdmin')
+router.register(r'task_admin', TaskAdminViewset, 'TaskAdmin')
 router.register(r'logs_admin', LogsAdminViewset, 'LogsAdmin')
 router.register(r'twitter_api_admin', TwitterRateLimitAdminViewset, 'TwitterRateLimitAdmin')
 router.register(r'debug', ScremsongDebugViewset, 'ScremsongDebugViewset')

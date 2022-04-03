@@ -6,9 +6,9 @@ from scremsong.app.models import SocialPlatforms
 from scremsong.app.social.columns import get_social_columns
 from scremsong.app.twitter import (get_latest_tweet_id_for_streaming,
                                    get_tweepy_api_creds, get_twitter_app)
-from scremsong.celery import (app, celery_restart_streaming,
-                              task_fill_missing_tweets,
-                              task_process_tweet_reply)
+from scremsong.rq.jobs import (task_cancel_and_restart_tweet_streaming,
+                               task_fill_missing_tweets,
+                               task_process_tweet_reply)
 from scremsong.util import make_logger
 
 logger = make_logger(__name__)
@@ -19,14 +19,13 @@ def open_tweet_stream():
     class ScremsongStream(tweepy.Stream):
         def on_status(self, status):
             logger.debug("Sending tweet {} to the queue to be processed from streaming".format(status._json["id_str"]))
-            task_process_tweet_reply.apply_async(args=[status._json, TweetSource.STREAMING, True])
+            task_process_tweet_reply.delay(status._json, TweetSource.STREAMING, True)
 
         def on_request_error(self, status_code):
             if status_code == 420:
                 logger.warning("Streaming got status {}. Disconnecting from stream.".format(status_code))
 
-                # Fire off tasks to restart streaming (delayed by 2s)
-                celery_restart_streaming(wait=10)
+                task_cancel_and_restart_tweet_streaming.delay()
 
                 # Returning False in on_request_error disconnects the stream
                 return False
@@ -39,8 +38,7 @@ def open_tweet_stream():
         def on_connection_error(self):
             logger.critical("Streaming connection to Twitter has timed out.")
 
-            # Fire off tasks to restart streaming (delayed by 2s)
-            celery_restart_streaming(wait=2)
+            task_cancel_and_restart_tweet_streaming.delay()
 
             # Returning False in on_connection_error disconnects the stream
             return False
@@ -54,8 +52,7 @@ def open_tweet_stream():
 
             logger.critical("Received a disconnect notice from Twitter: {}".format(notice))
 
-            # Fire off tasks to restart streaming (delayed by 2s)
-            celery_restart_streaming(wait=2)
+            task_cancel_and_restart_tweet_streaming.delay()
 
             # Returning False in on_disconnect_message disconnects the stream
             return False
@@ -118,7 +115,7 @@ def open_tweet_stream():
             sinceId = get_latest_tweet_id_for_streaming()
             logger.info("Tweet streaming about to start. Queueing up fill in missing tweets task since {}.".format(sinceId))
             if sinceId is not None:
-                task_fill_missing_tweets.apply_async(args=[sinceId], countdown=5)
+                task_fill_missing_tweets.delay(sinceId=sinceId)
             else:
                 logger.warning("Got sinceId of None when trying to start task_fill_missing_tweets")
 
@@ -134,31 +131,26 @@ def open_tweet_stream():
                     "autoHideDuration": None
                 }
             })
+
             websockets.send_channel_message("tweets.streaming_state", {
                 "connected": False,
             })
+
+            task_cancel_and_restart_tweet_streaming.delay()
+
     except Exception as e:
         logger.error("Exception {}: '{}' during streaming".format(type(e), str(e)))
 
         websockets.send_channel_message("notifications.send", {
-            "message": "Real-time tweet streaming has encountered an exception. Trying to restart.",
+            "message": "Real-time tweet streaming has disconnected (death).",
             "options": {
                 "variant": NotificationVariants.ERROR,
-                "autoHideDuration": 10000
+                "autoHideDuration": None
             }
         })
 
-        # Fire off tasks to restart streaming
-        celery_restart_streaming(wait=5)
+        websockets.send_channel_message("tweets.streaming_state", {
+            "connected": False,
+        })
 
-
-def is_streaming_connected():
-    i = app.control.inspect()
-    tasks = i.active()
-
-    if tasks is not None:
-        for worker_name, tasks in tasks.items():
-            for task in tasks:
-                if task["name"] == "scremsong.celery.task_open_tweet_stream":
-                    return True
-    return False
+        raise e

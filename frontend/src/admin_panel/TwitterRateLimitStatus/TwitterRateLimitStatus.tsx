@@ -55,6 +55,14 @@ class TwitterRateLimitStatus extends React.PureComponent<TComponentProps, IState
   public render() {
     const { rateLimitResources, classes } = this.props
 
+    if (Object.keys(rateLimitResources).length === 0) {
+      return (
+        <Typography variant="subtitle1" gutterBottom>
+          We haven&lsquo;t used any of our rate limit allowances with Twitter yet.
+        </Typography>
+      )
+    }
+
     return (
       <React.Fragment>
         {Object.keys(rateLimitResources).map((resourceGroupName: string) => (
