@@ -308,7 +308,10 @@ def fill_in_missing_tweets(since_id, max_id):
     for column in get_social_columns(SocialPlatformChoice.TWITTER):
         tweets_added = 0
         q = column_search_phrase_to_twitter_search_query(column)
+        logger.debug(f"fill_in_missing_tweets column searching for {column}")
+        logger.debug(f"since_id = {since_id}, max_id = {max_id}")
         for status in tweepy_rate_limit_handled(tweepy.Cursor(api.search_tweets, q=q, result_type="recent", tweet_mode="extended", include_entities=True, since_id=since_id, max_id=max_id).items()):
+            logger.debug(f"fill_in_missing_tweets column found tweet {status.id}")
             tweet, created = save_tweet(status._json, source=TweetSource.BACKFILL, status=TweetStatus.OK)
             tweets.append(tweet)
 
@@ -320,6 +323,7 @@ def fill_in_missing_tweets(since_id, max_id):
     # Sort all of our backfilled tweets by their id (i.e. newest tweets first) so our thread resolution code can maximise use of the local database
     tweetsByAge = sorted(tweets, key=lambda t: t.tweet_id, reverse=True)
 
+    logger.info(f"fill_in_missing_tweets is processing {len(tweetsByAge)} tweets from backfill and, where required, for thread resolution")
     for tweet in tweetsByAge:
         if is_a_reply(tweet.data) is False:
             save_tweet(tweet.data, source=TweetSource.BACKFILL, status=TweetStatus.OK)

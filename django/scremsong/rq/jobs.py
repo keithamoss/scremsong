@@ -177,7 +177,7 @@ def task_collect_twitter_rate_limit_info():
                 "state": TwitterRateLimitState.RATE_LIMITED,
             })
 
-            logger.info("We've been rate limited by Twitter for {}.".format(", ".join(resourceNames)))
+            logger.warning("We've been rate limited by Twitter for {}.".format(", ".join(resourceNames)))
 
         else:
             rateLimitedResources = are_we_rate_limited(resources, bufferPercentage=0.20)
