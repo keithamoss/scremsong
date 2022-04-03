@@ -606,6 +606,8 @@ class TaskAdminViewset(viewsets.ViewSet):
 
     @action(detail=False, methods=['get'])
     def tasks(self, request, format=None):
+        import collections
+
         from rq import Queue
 
         tasks_by_queue = {}
@@ -615,7 +617,10 @@ class TaskAdminViewset(viewsets.ViewSet):
                 "running": get_started_tasks(queue.name),
                 "scheduled": get_queued_tasks(queue.name),
             }
-        return Response(tasks_by_queue)
+
+        return Response(
+            collections.OrderedDict(sorted(tasks_by_queue.items()))
+        )
 
     @action(detail=False, methods=['get'])
     def restart_rate_limit_collection_task(self, request, format=None):

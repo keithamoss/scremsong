@@ -32,6 +32,8 @@ class RealTimeTweetStreamingContainer extends React.PureComponent<TComponentProp
 
   private launchTaskFillMissingTweets: any
 
+  private refreshTasksInfo: any
+
   public constructor(props: TComponentProps) {
     super(props)
 
@@ -43,6 +45,7 @@ class RealTimeTweetStreamingContainer extends React.PureComponent<TComponentProp
       window.api.get('/0.1/task_admin/kill_and_restart_streaming_tasks/', null, {})
     this.launchTaskFillMissingTweets = () =>
       window.api.get('/0.1/task_admin/launch_task_fill_missing_tweets_task/', null, {})
+    this.refreshTasksInfo = async () => this.setState({ tasks: await getTasks() })
   }
 
   public async componentDidMount() {
@@ -62,6 +65,7 @@ class RealTimeTweetStreamingContainer extends React.PureComponent<TComponentProp
         restartRateLimitCollection={this.restartRateLimitCollection}
         killAndRestartTweetStreaming={this.killAndRestartTweetStreaming}
         launchTaskFillMissingTweets={this.launchTaskFillMissingTweets}
+        refreshTasksInfo={this.refreshTasksInfo}
       />
     )
   }

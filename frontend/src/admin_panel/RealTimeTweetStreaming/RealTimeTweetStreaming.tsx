@@ -41,6 +41,7 @@ export interface IProps {
   restartRateLimitCollection: any
   killAndRestartTweetStreaming: any
   launchTaskFillMissingTweets: any
+  refreshTasksInfo: any
 }
 
 export interface IState {}
@@ -49,8 +50,14 @@ type TComponentProps = IProps & WithStyles
 
 class RealTimeTweetStreaming extends React.PureComponent<TComponentProps, IState> {
   public render() {
-    const { tasks, restartRateLimitCollection, killAndRestartTweetStreaming, launchTaskFillMissingTweets, classes } =
-      this.props
+    const {
+      tasks,
+      restartRateLimitCollection,
+      killAndRestartTweetStreaming,
+      launchTaskFillMissingTweets,
+      refreshTasksInfo,
+      classes,
+    } = this.props
 
     return (
       <React.Fragment>
@@ -62,11 +69,11 @@ class RealTimeTweetStreaming extends React.PureComponent<TComponentProps, IState
             onClick={restartRateLimitCollection}
           >
             <Refresh className={classNames(classes.leftIcon, classes.iconSmall)} />
-            Restart tweet streaming
+            Restart the rate limit collection task
           </Button>
         </Tooltip>
 
-        <Tooltip title="Kill the restart tweet streaming tasks">
+        <Tooltip title="Kill and restart tweet streaming tasks">
           <Button
             variant="contained"
             color="primary"
@@ -74,7 +81,7 @@ class RealTimeTweetStreaming extends React.PureComponent<TComponentProps, IState
             onClick={killAndRestartTweetStreaming}
           >
             <Refresh className={classNames(classes.leftIcon, classes.iconSmall)} />
-            Kill tweet streaming tasks
+            Kill and restart tweet streaming tasks
           </Button>
         </Tooltip>
 
@@ -87,6 +94,18 @@ class RealTimeTweetStreaming extends React.PureComponent<TComponentProps, IState
           >
             <Refresh className={classNames(classes.leftIcon, classes.iconSmall)} />
             Run the fill missing tweets task
+          </Button>
+        </Tooltip>
+
+        <Tooltip title="Refresh tasks info">
+          <Button
+            variant="contained"
+            color="primary"
+            className={classNames(classes.button, classes.taskControlButtons)}
+            onClick={refreshTasksInfo}
+          >
+            <Refresh className={classNames(classes.leftIcon, classes.iconSmall)} />
+            Refresh tasks info
           </Button>
         </Tooltip>
 

@@ -51,6 +51,7 @@ def task_restart_tweet_streaming():
     logger.info("Waiting to start tweet streaming")
     sleep(10)
 
+    logger.info("Starting tweet stream")
     job1 = task_open_tweet_stream.delay()
 
     logger.info("Starting Twitter rate limit info collection")
