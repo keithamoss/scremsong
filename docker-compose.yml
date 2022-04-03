@@ -54,18 +54,6 @@ services:
     depends_on:
       - db
       - redis
-  # celery_worker:
-  #   build: django/
-  #   entrypoint: /app/docker-entrypoint.sh
-  #   command: celery_worker
-  #   volumes:
-  #     - ./django/:/app:delegated
-  #   env_file:
-  #     - secrets/scremsong-web.dev.env
-  #     - secrets/scremsong-db.env
-  #   depends_on:
-  #     - db
-  #     - redis
   python_rq_worker:
     build: django/
     entrypoint: /app/docker-entrypoint.sh
