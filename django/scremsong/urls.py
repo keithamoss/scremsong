@@ -17,5 +17,6 @@ from django.urls import include, path
 
 urlpatterns = [
     path('api/', include('social_django.urls', namespace='social')),
+    path('api/django-rq/', include('django_rq.urls')),
     path('', include('scremsong.app.urls')),
 ]

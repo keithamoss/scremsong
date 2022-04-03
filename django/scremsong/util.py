@@ -3,11 +3,28 @@ import os
 import time
 
 
+class TopMostCallerScremsong(logging.Filter):
+    def filter(self, record):
+        # https://stackoverflow.com/a/26682142
+        import traceback
+        record.stack = ""
+
+        for row in traceback.extract_stack():
+            # Find the top most caller
+            if "/app/scremsong" in row.filename and "custom_classes.py" not in row.filename:
+                record.stack = f"{row.filename} {row.name}"
+                break
+        return True
+
+
 def make_logger(name):
     logger = logging.getLogger(name)
+    logger.addFilter(TopMostCallerScremsong())
+
     logger.setLevel(logging.DEBUG)
     handler = logging.StreamHandler()
-    fmt = logging.Formatter("%(asctime)s [%(levelname)s] [P:%(process)d] [%(threadName)s] %(message)s (%(pathname)s %(funcName)s() line=%(lineno)d)")
+    # fmt = logging.Formatter("%(asctime)s [%(levelname)s] [P:%(process)d] [%(threadName)s] [%(stack)s] %(message)s (%(pathname)s %(funcName)s() line=%(lineno)d)")
+    fmt = logging.Formatter("%(asctime)s [%(levelname)s] [P:%(process)d] %(message)s (%(pathname)s %(funcName)s() line=%(lineno)d) (%(stack)s)")
     handler.setFormatter(fmt)
     logger.addHandler(handler)
     return logger
@@ -54,10 +71,3 @@ def get_or_none(classmodel, **kwargs):
         return classmodel.objects.get(**kwargs)
     except classmodel.DoesNotExist:
         return None
-
-
-# Workaround until Celery supports async natively
-# Ref: https://stackoverflow.com/a/43325237/7368493
-def async_hacky_fix(item):
-    import json
-    return json.loads(json.dumps(item))

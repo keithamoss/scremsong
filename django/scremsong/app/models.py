@@ -9,7 +9,8 @@ from scremsong.app.enums import (ProfileOfflineReason,
                                  ProfileSettingQueueSortBy, ProfileSettings,
                                  SocialAssignmentCloseReason,
                                  SocialAssignmentState, SocialPlatformChoice,
-                                 TweetReplyCategories, TweetState, TweetStatus)
+                                 TaskStatus, TweetReplyCategories, TweetState,
+                                 TweetStatus)
 from scremsong.app.social.twitter_utils import apply_tweet_filter_criteria
 from scremsong.util import make_logger
 
@@ -202,6 +203,23 @@ class AllowedUsers(models.Model):
 
 
 class TaskFillMissingTweets(models.Model):
-    "Our instructions for the task_fill_missing_tweets() Celery task"
+    "Our instructions for the task_fill_missing_tweets() task"
 
     since_id = models.TextField(editable=False, unique=True)
+
+
+class TaskResults(models.Model):
+    "The result store for our task queue"
+
+    job_id = models.TextField()
+    job_name = models.TextField()
+    job_func_name = models.TextField()
+    queue = models.TextField()
+    worker = models.TextField()
+    status = models.TextField(choices=[(tag, tag.value) for tag in TaskStatus])
+    result = JSONField(default=None, blank=True, null=True)
+    meta = JSONField(default=None, blank=True, null=True)
+    job_args = JSONField(default=None, blank=True, null=True)
+    job_kwargs = JSONField(default=None, blank=True, null=True)
+    date_enqueued = models.DateTimeField()
+    date_done = models.DateTimeField()

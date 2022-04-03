@@ -14,6 +14,9 @@ import os
 
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.redis import RedisIntegration
+from sentry_sdk.integrations.rq import RqIntegration
+from sentry_sdk.transport import HttpTransport
 
 from scremsong.util import get_env
 
@@ -25,10 +28,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = get_env("SECRET_KEY")
-
-# Workaround until Celery supports async natively
-# Ref: https://stackoverflow.com/a/43325237/7368493
-os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
 # Security
 SECURE_SSL_REDIRECT = True
@@ -114,7 +113,7 @@ INSTALLED_APPS = [
     'scremsong.app',
     'rest_framework',
     'corsheaders',
-    'django_celery_results',
+    'django_rq'
 ]
 
 MIDDLEWARE = [
@@ -267,28 +266,44 @@ USE_TZ = True
 
 STATIC_URL = '/api/static/'
 
-# Celery
-
-CELERY_BROKER_URL = get_env("CELERY_BROKER_URL")
-CELERY_TIMEZONE = TIME_ZONE
-CELERY_RESULT_BACKEND = "django-db"
-CELERY_TASK_IGNORE_RESULT = True
-# Fixes "Connection reset by peer" errors. At the time of writing (July 2018) this was an open issue in Celery 4.2.1
-# https://github.com/celery/celery/issues/4226
-CELERY_BROKER_POOL_LIMIT = None
-CELERY_BROKER_TRANSPORT_OPTIONS = {
-    "fanout_prefix": True,
-    "fanout_patterns": True
+# RQ and Django-RQ
+RQ = {
+    "DEFAULT_RESULT_TTL": 60 * 60 * 24,
+    'QUEUE_CLASS': 'scremsong.rq.custom_classes.ScremsongQueue',
+    'WORKER_CLASS': 'scremsong.rq.custom_classes.ScremsongWorker',
+    'JOB_CLASS': 'scremsong.rq.custom_classes.ScremsongJob',
 }
-CELERY_TASK_DEFAULT_QUEUE = "celery-scremsong"
+
+RQ_QUEUES = {
+    'high': {
+        'URL': get_env("RQ_REDIS_URL"),
+        'DEFAULT_TIMEOUT': 500,
+    },
+    'default': {
+        'URL': get_env("RQ_REDIS_URL"),
+        'DEFAULT_TIMEOUT': 500,
+    },
+    'low': {
+        'URL': get_env("RQ_REDIS_URL"),
+        'DEFAULT_TIMEOUT': 500,
+    }
+}
+
+RQ_API_TOKEN = get_env("RQ_API_KEY")
 
 # Sentry SDK
 
 sentry_sdk.init(
     dsn=get_env("RAVEN_URL"),
-    integrations=[DjangoIntegration()],
+    integrations=[RedisIntegration(), RqIntegration(), DjangoIntegration()],
     send_default_pii=True,
-    environment=get_env("ENVIRONMENT")
+    environment=get_env("ENVIRONMENT"),
+    # Because apparently this is the way to do synchronous logging now in a way that doesn't upset RQ
+    # Had to dig through the Sentry SDK source code to find it though, so who knows if it actually works,
+    # or if the problem that Django-RQ talked about still exists.
+    # https://github.com/rq/django-rq#configuring-sentry
+    # Relevant: https://github.com/rq/rq/issues/353 and suggests they might have fixed it in RQ a while ago?
+    transport=HttpTransport
 )
 
 with sentry_sdk.configure_scope() as scope:

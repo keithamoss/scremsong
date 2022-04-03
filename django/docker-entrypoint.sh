@@ -22,23 +22,45 @@ waitfordb()
 
   >&2 echo "Postgres is up - continuing..."
 
-  sleep 8
+  sleep 4
+}
+
+redis_ready()
+{
+python << END
+import sys
+from redis import Redis
+try:
+  Redis.from_url("$RQ_REDIS_URL")
+except redis.exceptions.BusyLoadingError:
+  sys.exit(-1)
+sys.exit(0)
+END
+}
+
+waitforredis()
+{
+  until redis_ready; do
+    >&2 echo "Redis is unavailable - sleeping"
+    sleep 1
+  done
+
+  >&2 echo "Redis is up - continuing..."
+
+  sleep 4
 }
 
 CMD="$1"
 
-# celery_worker entrypoint
-if [ "$1" = "celery_worker" ]; then
+# python_rq_worker entrypoint
+if [ "$CMD" = "python_rq_supervisord" ]; then
     waitfordb
-    echo "[Run] Starting celery_worker"
+    waitforredis
+    echo "[Run] Starting python_rq_supervisord"
 
-    # Print all executed commands to the terminal
-    set -x
-
-    # Concurrency: 1 for streaming, 1 for Twitter rate limit collection, 1 for tweet backfill + processing tweets, and 3 for solely processing tweets
-    exec celery -A scremsong worker -n scremworker@%h -l info --concurrency=6 --pool gevent
-    # exec celery -A scremsong worker -n scremworker@%h -l info --concurrency=6 --logfile=logs/celery-worker.log
-    exit
+   python /app/scremsong/rq/init.py
+   /usr/bin/supervisord -c /app/scremsong/rq/supervisord.conf
+   exit
 fi
 
 if [ "$CMD" = "supervisord" ]; then

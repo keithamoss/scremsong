@@ -54,10 +54,22 @@ services:
     depends_on:
       - db
       - redis
-  celery_worker:
+  # celery_worker:
+  #   build: django/
+  #   entrypoint: /app/docker-entrypoint.sh
+  #   command: celery_worker
+  #   volumes:
+  #     - ./django/:/app:delegated
+  #   env_file:
+  #     - secrets/scremsong-web.dev.env
+  #     - secrets/scremsong-db.env
+  #   depends_on:
+  #     - db
+  #     - redis
+  python_rq_worker:
     build: django/
     entrypoint: /app/docker-entrypoint.sh
-    command: celery_worker
+    command: python_rq_supervisord
     volumes:
       - ./django/:/app:delegated
     env_file:
@@ -65,6 +77,14 @@ services:
       - secrets/scremsong-db.env
     depends_on:
       - db
+      - redis
+  rq_dashboard:
+    build: rq-dashboard/
+    ports:
+      - "9181:9181"
+    env_file:
+      - secrets/scremsong-rq-dashboard.dev.env
+    depends_on:
       - redis
   nginx:
     build: nginx/
