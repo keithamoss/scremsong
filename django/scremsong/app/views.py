@@ -510,7 +510,7 @@ class SocialPlatformsAuthViewset(viewsets.ViewSet):
     permission_classes = (IsAuthenticated,)
 
     @action(detail=False, methods=['get'])
-    def set_muzzled(self, request):
+    def toggle_muzzled_mode(self, request):
         qp = request.query_params
         muzzled = True if "muzzled" in qp and qp["muzzled"] == "1" else False
 
@@ -519,6 +519,7 @@ class SocialPlatformsAuthViewset(viewsets.ViewSet):
             if t is None:
                 raise ScremsongException("We haven't authenticated against Twitter yet.")
 
+            muzzled = True if t.settings["muzzled"] is False else False
             t.settings = {**t.settings, "muzzled": muzzled}
             t.save()
 
@@ -530,11 +531,17 @@ class SocialPlatformsAuthViewset(viewsets.ViewSet):
             })
 
             # Send a notification to all connected clients
-            message = "We've been muzzled by Twitter! Replying, favouriting, and retweeting will now open tweets in a new tab. See WhatsApp for more information. **And please reload Scremsong!**" if muzzled is True else "It's all good. We've been unmuzzled by Twitter. Scremsong is returning to normal operations 🎉 **And please reload Scremsong!**"
+            if muzzled is True:
+                message = "We've been muzzled by Twitter! Replying, favouriting, and retweeting will now open tweets in a new tab. See WhatsApp for more information. ⚠️ **Please reload Scremsong! now**"
+                notificationVariant = NotificationVariants.WARNING
+            else:
+                message = "It's all good. We've been unmuzzled by Twitter. Scremsong is returning to normal operations 🎉 **Please reload Scremsong!**"
+                notificationVariant = NotificationVariants.SUCCESS
+
             websockets.send_channel_message("notifications.send", {
                 "message": message,
                 "options": {
-                    "variant": NotificationVariants.WARNING
+                    "variant": notificationVariant
                 }
             })
 

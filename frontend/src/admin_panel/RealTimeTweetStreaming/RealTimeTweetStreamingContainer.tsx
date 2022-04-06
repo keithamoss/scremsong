@@ -11,7 +11,9 @@ declare var window: IMyWindow
 
 export interface IProps {}
 
-export interface IStoreProps {}
+export interface IStoreProps {
+  isMuzzled: boolean
+}
 
 export interface IDispatchProps {}
 
@@ -34,6 +36,8 @@ class RealTimeTweetStreamingContainer extends React.PureComponent<TComponentProp
 
   private refreshTasksInfo: any
 
+  private toggleMuzzledMode: any
+
   public constructor(props: TComponentProps) {
     super(props)
 
@@ -46,6 +50,7 @@ class RealTimeTweetStreamingContainer extends React.PureComponent<TComponentProp
     this.launchTaskFillMissingTweets = () =>
       window.api.get('/0.1/task_admin/launch_task_fill_missing_tweets_task/', null, {})
     this.refreshTasksInfo = async () => this.setState({ tasks: await getTasks() })
+    this.toggleMuzzledMode = () => window.api.get('/0.1/social_auth/toggle_muzzled_mode/', null, {})
   }
 
   public async componentDidMount() {
@@ -53,6 +58,7 @@ class RealTimeTweetStreamingContainer extends React.PureComponent<TComponentProp
   }
 
   public render() {
+    const { isMuzzled } = this.props
     const { tasks } = this.state
 
     if (tasks === null) {
@@ -66,17 +72,24 @@ class RealTimeTweetStreamingContainer extends React.PureComponent<TComponentProp
         killAndRestartTweetStreaming={this.killAndRestartTweetStreaming}
         launchTaskFillMissingTweets={this.launchTaskFillMissingTweets}
         refreshTasksInfo={this.refreshTasksInfo}
+        isMuzzled={isMuzzled}
+        toggleMuzzledMode={this.toggleMuzzledMode}
       />
     )
   }
 }
 
-const mapStateToProps = (_state: IStore, _ownProps: TComponentProps): IStoreProps => {
-  return {}
+const mapStateToProps = (state: IStore, _ownProps: IProps): IStoreProps => {
+  const { app } = state
+
+  return { isMuzzled: app.socialplatform_settings['SocialPlatformChoice.TWITTER'].muzzled }
 }
 
 const mapDispatchToProps = (_dispatch: Function): IDispatchProps => {
   return {}
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(RealTimeTweetStreamingContainer)
+export default connect<IStoreProps, IDispatchProps, IProps, IStore>(
+  mapStateToProps,
+  mapDispatchToProps
+)(RealTimeTweetStreamingContainer)

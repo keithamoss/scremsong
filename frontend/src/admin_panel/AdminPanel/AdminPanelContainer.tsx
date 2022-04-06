@@ -33,7 +33,7 @@ class AdminPanelContainer extends React.PureComponent<TComponentProps, {}> {
   }
 }
 
-const mapStateToProps = (state: IStore, _ownProps: TComponentProps): IStoreProps => {
+const mapStateToProps = (state: IStore, _ownProps: IProps): IStoreProps => {
   const { app } = state
 
   return {

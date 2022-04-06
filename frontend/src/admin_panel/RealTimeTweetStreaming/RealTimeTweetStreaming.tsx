@@ -10,7 +10,10 @@ import {
   withStyles,
   WithStyles,
 } from '@material-ui/core'
+import Autorenew from '@material-ui/icons/Autorenew'
+import PlayArrow from '@material-ui/icons/PlayArrow'
 import Refresh from '@material-ui/icons/Refresh'
+import ToggleOn from '@material-ui/icons/ToggleOn'
 import classNames from 'classnames'
 import * as React from 'react'
 import { ITaskInfo, ITaskQueueInfo } from './types'
@@ -42,6 +45,8 @@ export interface IProps {
   killAndRestartTweetStreaming: any
   launchTaskFillMissingTweets: any
   refreshTasksInfo: any
+  isMuzzled: boolean
+  toggleMuzzledMode: any
 }
 
 export interface IState {}
@@ -56,6 +61,8 @@ class RealTimeTweetStreaming extends React.PureComponent<TComponentProps, IState
       killAndRestartTweetStreaming,
       launchTaskFillMissingTweets,
       refreshTasksInfo,
+      isMuzzled,
+      toggleMuzzledMode,
       classes,
     } = this.props
 
@@ -68,7 +75,7 @@ class RealTimeTweetStreaming extends React.PureComponent<TComponentProps, IState
             className={classNames(classes.button, classes.taskControlButtons)}
             onClick={restartRateLimitCollection}
           >
-            <Refresh className={classNames(classes.leftIcon, classes.iconSmall)} />
+            <Autorenew className={classNames(classes.leftIcon, classes.iconSmall)} />
             Restart the rate limit collection task
           </Button>
         </Tooltip>
@@ -80,7 +87,7 @@ class RealTimeTweetStreaming extends React.PureComponent<TComponentProps, IState
             className={classNames(classes.button, classes.taskControlButtons)}
             onClick={killAndRestartTweetStreaming}
           >
-            <Refresh className={classNames(classes.leftIcon, classes.iconSmall)} />
+            <Autorenew className={classNames(classes.leftIcon, classes.iconSmall)} />
             Kill and restart tweet streaming tasks
           </Button>
         </Tooltip>
@@ -92,7 +99,7 @@ class RealTimeTweetStreaming extends React.PureComponent<TComponentProps, IState
             className={classNames(classes.button, classes.taskControlButtons)}
             onClick={launchTaskFillMissingTweets}
           >
-            <Refresh className={classNames(classes.leftIcon, classes.iconSmall)} />
+            <PlayArrow className={classNames(classes.leftIcon, classes.iconSmall)} />
             Run the fill missing tweets task
           </Button>
         </Tooltip>
@@ -106,6 +113,18 @@ class RealTimeTweetStreaming extends React.PureComponent<TComponentProps, IState
           >
             <Refresh className={classNames(classes.leftIcon, classes.iconSmall)} />
             Refresh tasks info
+          </Button>
+        </Tooltip>
+
+        <Tooltip title="Toggle muzzled mode">
+          <Button
+            variant="contained"
+            color={isMuzzled ? 'secondary' : 'default'}
+            className={classNames(classes.button, classes.taskControlButtons)}
+            onClick={toggleMuzzledMode}
+          >
+            <ToggleOn className={classNames(classes.leftIcon, classes.iconSmall)} />
+            Toggle muzzled mode
           </Button>
         </Tooltip>
 
