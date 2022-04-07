@@ -21,7 +21,8 @@ from scremsong.app.enums import (NotificationVariants, ProfileOfflineReason,
                                  TweetState, TweetStatus)
 from scremsong.app.exceptions import ScremsongException
 from scremsong.app.models import (Profile, SocialAssignments, SocialColumns,
-                                  SocialPlatforms, Tweets)
+                                  SocialPlatforms, Tweets,
+                                  TwitterRateLimitInfo)
 from scremsong.app.reviewers import getCreationDateOfNewestTweetInAssignment
 from scremsong.app.serializers import (
     SocialAssignmentSerializer,
@@ -648,6 +649,43 @@ class TaskAdminViewset(viewsets.ViewSet):
         else:
             logger.warning("Got sinceId of None when trying to manually start task_fill_missing_tweets")
         return Response({"OK": True})
+
+    @action(detail=False, methods=['get'])
+    def analyse_rate_limit_data(self, request, format=None):
+        import csv
+        import json
+
+        used_rate_limits = []
+        # for row in TwitterRateLimitInfo.objects.filter(collected_on__range=["2022-03-18", "2022-03-20"]):
+        # for row in TwitterRateLimitInfo.objects.filter(collected_on__range=["2010-01-01", "2022-03-31"]):
+        for row in TwitterRateLimitInfo.objects.all():
+            for rate_limit_category, rate_limits in row.data.items():
+                for rate_limit_name, rate_limit_data in rate_limits.items():
+                    if rate_limit_data["remaining"] != rate_limit_data["limit"]:
+                        pct_diff = rate_limit_data["remaining"] / rate_limit_data["limit"]
+                        # if pct_diff <= 0.8:
+                        #     pass
+                        used_rate_limits.append({
+                            "collected_on": row.collected_on,
+                            "rate_limit_category": rate_limit_category,
+                            "rate_limit_name": rate_limit_name,
+                            "remaining": rate_limit_data["remaining"],
+                            "limit": rate_limit_data["limit"],
+                        })
+
+        with open("/app/rate-limit-data-all.json", "w") as f:
+            json.dump(used_rate_limits, f, indent=4, sort_keys=True, default=str)
+
+        with open("/app/rate-limit-data-all.csv", "w", newline="") as f:
+            dict_writer = csv.DictWriter(f, used_rate_limits[0].keys())
+            dict_writer.writeheader()
+            dict_writer.writerows(used_rate_limits)
+
+        print("len = ", len(used_rate_limits))
+
+        return Response(
+
+        )
 
 
 class LogsAdminViewset(viewsets.ViewSet):
