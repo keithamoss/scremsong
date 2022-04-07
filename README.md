@@ -252,3 +252,5 @@ poetry show --outdated
 ## Logs
 
 scp -r scremsong-big:/apps/digitalocean-stack/logs/ .
+
+docker-compose -f docker-compose-prod-scremsong.yml logs service_name
