@@ -40,11 +40,11 @@ class Notifier extends Component<TComponentProps, IStateProps> {
           return
         }
 
-        // Display notification using notistack
-        enqueueSnackbar(notification.message, notification.options)
-
         // Add notification's key to the local state
         this.storeDisplayed(notification.key)
+
+        // Display notification using notistack
+        enqueueSnackbar(notification.message, { preventDuplicate: true, ...notification.options })
 
         // Dispatch action to remove the notification from the redux store
         onRemoveSnackbar(notification.key)

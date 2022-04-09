@@ -67,20 +67,20 @@ ReactDOM.render(
       {/* For Google Analytics, add the onUpdate prop to <Router> */}
       {/* <Router history={history as any} onUpdate={"REACT_APP_GOOGLE_ANALYTICS_UA" in process.env ? fireAnalyticsTracking : undefined}> */}
 
-      <BrowserRouter>
-        <SnackbarProvider
-          maxSnack={3}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'right',
-          }}
-        >
+      <SnackbarProvider
+        maxSnack={3}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+      >
+        <BrowserRouter>
           {/* To deal with TypeScript complaining about React being included but not used */}
           <React.Fragment>
             <AppContainer />
           </React.Fragment>
-        </SnackbarProvider>
-      </BrowserRouter>
+        </BrowserRouter>
+      </SnackbarProvider>
     </Provider>
   </React.StrictMode>,
   document.getElementById('root')
