@@ -8,3 +8,40 @@
 div.ReactVirtualized__Grid__innerScrollContainer > div {
   width: 420px !important;
 }
+
+
+/* 
+Source: https://www.filamentgroup.com/lab/scrollbars/
+
+Alternatives
+https://github.com/Grsmto/simplebar/tree/master/packages/simplebar
+And more under "macos scrollbars javascript library"
+*/
+:root {
+  --scrollbar-size: .375rem;
+  --scrollbar-minlength: 1.5rem; /* Minimum length of scrollbar thumb (width of horizontal, height of vertical) */
+  --scrollbar-ff-width: thin; /* FF-only accepts auto, thin, none */
+  --scrollbar-track-color: transparent;
+  --scrollbar-color: rgba(149,149,149);
+  --scrollbar-color-hover: rgba(0,0,0,.3);
+  --scrollbar-color-active: rgb(0,0,0);
+}
+
+
+.layout-scrollbar-obtrusive div.ReactVirtualized__Grid.ReactVirtualized__List::-webkit-scrollbar {
+  height: var(--scrollbar-size);
+  width: var(--scrollbar-size);
+}
+div.ReactVirtualized__Grid.ReactVirtualized__List::-webkit-scrollbar-track {
+  background-color: var(--scrollbar-track-color);
+}
+div.ReactVirtualized__Grid.ReactVirtualized__List::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-color);
+  /* Add :hover, :active as needed */
+}
+div.ReactVirtualized__Grid.ReactVirtualized__List::-webkit-scrollbar-thumb:vertical {
+  min-height: var(--scrollbar-minlength);
+}
+div.ReactVirtualized__Grid.ReactVirtualized__List::-webkit-scrollbar-thumb:horizontal {
+  min-width: var(--scrollbar-minlength);
+}

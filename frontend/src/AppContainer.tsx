@@ -81,6 +81,38 @@ const canPlayAudio = (audio: HTMLMediaElement) => {
   return audio && 'play' in audio && audio.canPlayType && audio.canPlayType('audio/mpeg;').replace(/no/, '') !== ''
 }
 
+const setObtrusiveScrollbarsClass = () => {
+  /*
+   * Scrollbar Width Test
+   * Adds `layout-scrollbar-obtrusive` class to body
+   * if scrollbars use up screen real estate.
+   */
+  // Source: https://www.filamentgroup.com/lab/scrollbars/
+  // c.f. App.css
+  const parent = document.createElement('div')
+  parent.setAttribute('style', 'width:30px;height:30px;')
+  parent.classList.add('scrollbar-test')
+
+  const child = document.createElement('div')
+  child.setAttribute('style', 'width:100%;height:40px')
+  parent.appendChild(child)
+  document.body.appendChild(parent)
+
+  // Measure the child element, if it is not
+  // 30px wide the scrollbars are obtrusive.
+  // const firstChild = parent.firstChild as HTMLElement
+  // const clientWidth = parent.firstChild !== null ? firstChild.clientWidth : 0
+  // const scrollbarWidth = 30 - clientWidth
+
+  // Note: Hacky OS detection was our addition, because this didn't seem to work
+  // if (scrollbarWidth) {
+  if (navigator.appVersion.indexOf('Mac') === -1) {
+    document.body.classList.add('layout-scrollbar-obtrusive')
+  }
+
+  document.body.removeChild(parent)
+}
+
 function fetchInitialAppState() {
   // return async (dispatch: Function, _getState: Function, { api, emit }: IThunkExtras) => {
   return async (dispatch: Function, _getState: Function) => {
@@ -100,6 +132,7 @@ function fetchInitialAppState() {
 type TComponentProps = IProps & IStoreProps & IDispatchProps & IRouteProps & WithStyles
 export class AppContainer extends React.Component<TComponentProps, {}> {
   public componentDidMount() {
+    setObtrusiveScrollbarsClass()
     this.props.fetchInitialAppState()
   }
 
