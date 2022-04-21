@@ -53,8 +53,9 @@ export default function reducer(state: IModule = initialState, action: IAction) 
         // Merge and then sort column tweetIds to maintain the correct order chronological order
         // tslint:disable-next-line:no-shadowed-variable
         const val = uniq([...state.column_tweets[column.id], ...column.tweet_ids])
+        const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' })
         // tslint:disable-next-line:no-shadowed-variable
-        const sorted = val.sort().reverse()
+        const sorted = val.sort(collator.compare).reverse()
         state = dotProp.set(state, `column_tweets.${column.id}`, sorted)
 
         if (action.type === WS_TWEETS_LOAD_TWEETS) {
@@ -96,7 +97,8 @@ export default function reducer(state: IModule = initialState, action: IAction) 
       // NB: This relies solely on tweetIds being a number that increments with each new tweet
       // that we can use to infer the chronological order of a set of tweets.
       const val = uniq([...state.column_tweets[action.columnId], ...state.column_tweets_buffered[action.columnId]])
-      const sorted = val.sort().reverse()
+      const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' })
+      const sorted = val.sort(collator.compare).reverse()
       state = dotProp.set(state, `column_tweets.${action.columnId}`, sorted)
       state = dotProp.set(state, `column_tweets_buffered.${action.columnId}`, [])
       return state
