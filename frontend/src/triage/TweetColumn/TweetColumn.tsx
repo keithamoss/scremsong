@@ -156,25 +156,28 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
       return true
     }
 
-    if (this.props.tweet_ids !== nextProps.tweet_ids) {
+    if (isEqual(this.props.tweet_ids, nextProps.tweet_ids) === false) {
       // console.log(`shouldComponentUpdate ${this.props.column.id}`, 'tweet_ids')
       return true
     }
 
-    // if (this.props.tweet_assignments !== nextProps.tweet_assignments) {
     if (isEqual(this.props.tweet_assignments, nextProps.tweet_assignments) === false) {
       // console.log(`shouldComponentUpdate ${this.props.column.id}`, 'tweet_assignments')
       return true
     }
 
-    // if (this.props.assignments !== nextProps.assignments) {
     if (isEqual(this.props.assignments, nextProps.assignments) === false) {
       // console.log(`shouldComponentUpdate ${this.props.column.id}`, 'assignments')
       return true
     }
 
-    if (this.props.column !== nextProps.column) {
+    if (isEqual(this.props.column, nextProps.column) === false) {
       // console.log(`shouldComponentUpdate ${this.props.column.id}`, 'column')
+      return true
+    }
+
+    if (isEqual(this.props.tweets, nextProps.tweets) === false) {
+      // console.log(`shouldComponentUpdate ${this.props.column.id}`, 'tweets')
       return true
     }
 
