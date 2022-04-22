@@ -112,6 +112,18 @@ export const getReviewersAcceptingAssignments = createSelector(
   }
 )
 
+export const getAssignmentsByIds = createSelector([getAssignments], (assignments): any =>
+  memoize((assignmentIds: number[]) => {
+    return Object.keys(assignments)
+      .filter((assignmentId: string) => assignmentIds.includes(parseInt(assignmentId, 10)))
+      .reduce((obj, assignmentId) => {
+        // eslint-disable-next-line no-param-reassign
+        obj[assignmentId] = assignments[assignmentId]
+        return obj
+      }, {})
+  })
+)
+
 export const getActiveAssignments = createSelector([getAssignments], (assignments: IReviewerAssignment[]): any => {
   return Object.values(assignments).filter(
     (assignment: IReviewerAssignment, _index: number) => assignment.state === ESocialAssignmentState.PENDING

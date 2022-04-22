@@ -7,6 +7,7 @@ import BlockOutlinedIcon from '@material-ui/icons/BlockOutlined'
 import BrightnessAutoIcon from '@material-ui/icons/BrightnessAuto'
 import CheckCircleOutlinedIcon from '@material-ui/icons/CheckCircleOutlined'
 import LiveTvOutlinedIcon from '@material-ui/icons/LiveTvOutlined'
+import { isEqual } from 'lodash-es'
 import * as React from 'react'
 import { AutoSizer, CellMeasurer, CellMeasurerCache, InfiniteLoader, List } from 'react-virtualized'
 import 'react-virtualized/styles.css'
@@ -136,47 +137,49 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
     }
   }
 
-  public shouldComponentUpdate(_nextProps: TComponentProps, _nextState: object, _nextContext: any): boolean {
+  public shouldComponentUpdate(nextProps: TComponentProps, nextState: object, _nextContext: any): boolean {
     // Now that we need to reflect changes to tweet.state we always need to re-render the component
-    return true
+    // return true
 
-    // if (this.state !== nextState) {
-    //     // console.log(`shouldComponentUpdate ${this.props.column.id}`, "State differs")
-    //     return true
-    // }
+    if (this.state !== nextState) {
+      // console.log(`shouldComponentUpdate ${this.props.column.id}`, 'State differs')
+      return true
+    }
 
-    // if (this.props.tweet_ids.length !== nextProps.tweet_ids.length) {
-    //     // console.log(`shouldComponentUpdate ${this.props.column.id}`, "tweet_ids.length")
-    //     return true
-    // }
+    if (this.props.tweet_ids.length !== nextProps.tweet_ids.length) {
+      // console.log(`shouldComponentUpdate ${this.props.column.id}`, 'tweet_ids.length')
+      return true
+    }
 
-    // if (this.props.tweet_assignments.length !== nextProps.tweet_assignments.length) {
-    //     // console.log(`shouldComponentUpdate ${this.props.column.id}`, "tweet_assignments.length")
-    //     return true
-    // }
+    if (this.props.tweet_assignments.length !== nextProps.tweet_assignments.length) {
+      // console.log(`shouldComponentUpdate ${this.props.column.id}`, 'tweet_assignments.length')
+      return true
+    }
 
-    // if (this.props.tweet_ids !== nextProps.tweet_ids) {
-    //     // console.log(`shouldComponentUpdate ${this.props.column.id}`, "tweet_ids")
-    //     return true
-    // }
+    if (this.props.tweet_ids !== nextProps.tweet_ids) {
+      // console.log(`shouldComponentUpdate ${this.props.column.id}`, 'tweet_ids')
+      return true
+    }
 
     // if (this.props.tweet_assignments !== nextProps.tweet_assignments) {
-    //     // console.log(`shouldComponentUpdate ${this.props.column.id}`, "tweet_assignments")
-    //     return true
-    // }
+    if (isEqual(this.props.tweet_assignments, nextProps.tweet_assignments) === false) {
+      // console.log(`shouldComponentUpdate ${this.props.column.id}`, 'tweet_assignments')
+      return true
+    }
 
     // if (this.props.assignments !== nextProps.assignments) {
-    //     // console.log(`shouldComponentUpdate ${this.props.column.id}`, "assignments")
-    //     return true
-    // }
+    if (isEqual(this.props.assignments, nextProps.assignments) === false) {
+      // console.log(`shouldComponentUpdate ${this.props.column.id}`, 'assignments')
+      return true
+    }
 
-    // if (this.props.column !== nextProps.column) {
-    //     // console.log(`shouldComponentUpdate ${this.props.column.id}`, "column")
-    //     return true
-    // }
+    if (this.props.column !== nextProps.column) {
+      // console.log(`shouldComponentUpdate ${this.props.column.id}`, 'column')
+      return true
+    }
 
-    // // console.log(`shouldComponentUpdate ${this.props.column.id}`, "All checks exhausted, don't update")
-    // return false
+    // console.log(`shouldComponentUpdate ${this.props.column.id}`, "All checks exhausted, don't update")
+    return false
   }
 
   public getSnapshotBeforeUpdate(_prevProps: TComponentProps, _prevState: IState): ISnapshot | null {

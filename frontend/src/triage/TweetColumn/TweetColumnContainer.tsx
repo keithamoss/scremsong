@@ -4,11 +4,12 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import { IReviewerAssignment } from '../../redux/modules/interfaces.reviewers'
 import { IStore } from '../../redux/modules/reducer'
-import { automaticallyAssignReviewer } from '../../redux/modules/reviewers'
+import { automaticallyAssignReviewer, getAssignmentsByIds } from '../../redux/modules/reviewers'
 import {
   ESocialTweetState,
   fetchTweets,
   getTweetAssignmentsForColumn,
+  getTweetsForColumn,
   ISocialTweetAssignments,
   ISocialTweetList,
   setTweetState,
@@ -121,15 +122,20 @@ class TweetColumnContainer extends React.Component<TComponentProps, {}> {
 }
 
 const mapStateToProps = (state: IStore, ownProps: IProps): IStoreProps => {
-  const { triage, social, reviewers } = state
+  const { triage } = state
+
+  const getTweetsForColumnFilter = getTweetsForColumn(state)
 
   const getTweetAssignmentsForColumnFilter = getTweetAssignmentsForColumn(state)
+  const tweetAssignmentsForColumn = getTweetAssignmentsForColumnFilter(triage.column_tweets[ownProps.column.id])
+
+  const getAssignmentsForColumn = getAssignmentsByIds(state)
 
   return {
     tweet_ids: triage.column_tweets[ownProps.column.id],
-    tweets: social.tweets, // No need to have a selector here as shouldComponentUpdate in TweetColumn re-renders all changes to tweets
-    tweet_assignments: getTweetAssignmentsForColumnFilter(triage.column_tweets[ownProps.column.id]),
-    assignments: reviewers.assignments,
+    tweets: getTweetsForColumnFilter(triage.column_tweets[ownProps.column.id]),
+    tweet_assignments: tweetAssignmentsForColumn,
+    assignments: getAssignmentsForColumn(Object.values(tweetAssignmentsForColumn)),
   }
 }
 
