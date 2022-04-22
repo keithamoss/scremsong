@@ -234,7 +234,7 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
   }
 
   // private _rowRenderer = ({ index, isScrolling, isVisible, key, parent, style }: any) => {
-  private _rowRenderer = ({ index, key, parent, style }: any) => {
+  private _rowRenderer = ({ index, isScrolling, isVisible, key, parent, style }: any) => {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     const { column, tweet_ids, tweets, tweet_assignments, assignments, classes } = this.props
 
@@ -246,8 +246,15 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
       )
     } else if (index >= tweet_ids.length && tweet_ids.length < column.total_tweets) {
       return null
+    } else if (isScrolling === true && isVisible === false) {
+      return <div key={key} style={style} />
     } else {
       const tweetId = tweet_ids[index]
+
+      if (tweets[tweetId] === undefined) {
+        return <div key={key} style={style} />
+      }
+
       const tweet = tweets[tweetId]
       const assignmentId = tweet_assignments[tweetId]
       const assignment = tweetId in tweet_assignments ? assignments[assignmentId] : null
@@ -362,7 +369,7 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
   }
 
   private _isRowLoaded = ({ index }: any) => {
-    return index < this.props.tweet_ids.length
+    return this.props.tweet_ids[index] !== undefined && this.props.tweets[this.props.tweet_ids[index]] !== undefined
   }
 
   public render() {

@@ -18,9 +18,9 @@ import { IProfileColumnPosition, wsChangeUserProfileSettings } from '../../redux
 import TweetColumn from './TweetColumn'
 
 // Ref. https://github.com/bvaughn/react-virtualized/blob/master/docs/InfiniteLoader.md
-const preFetchThreshold = 5
-const minBatchSize = 20
-const overscanRowCount = 1
+const preFetchThreshold = 15
+const minBatchSize = 40
+const overscanRowCount = 10
 
 export interface IProps {
   column: ITriageColumn

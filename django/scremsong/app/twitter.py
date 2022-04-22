@@ -114,6 +114,10 @@ def fetch_tweets_for_columns(columnPositions, columnIds=[]):
     tweets = {}
 
     for social_column in get_social_columns(SocialPlatformChoice.TWITTER, columnIds):
+        # Get all tweet_ids for this column so triage view knows how many tweets are really above and below the current viewport
+        column_tweet_ids = get_tweet_ids_for_column(social_column)
+
+        # Now fetch the actual tweet objects for the tweets in the viewport
         hasColumnPosition = columnPositions is not None and str(social_column.id) in columnPositions
         if hasColumnPosition is True:
             sinceId = int(columnPositions[str(social_column.id)]["stopTweet"]) - 1
@@ -121,16 +125,14 @@ def fetch_tweets_for_columns(columnPositions, columnIds=[]):
         else:
             column_tweets = get_tweets_for_column(social_column, startIndex=0, stopIndex=20)
 
-        column_tweet_ids = []
         column_tweet_ids_buffered = []
 
         for tweet in column_tweets:
             tweets[tweet["tweet_id"]] = TweetsSerializer(tweet).data
 
+            # Buffered = "This column has new tweets that aren't yet shown"
             if hasColumnPosition is True and int(tweet["tweet_id"]) > int(columnPositions[str(social_column.id)]["firstTweet"]):
                 column_tweet_ids_buffered.append(tweet["tweet_id"])
-            else:
-                column_tweet_ids.append(tweet["tweet_id"])
 
         columns.append({
             "id": social_column.id,
@@ -162,7 +164,7 @@ def get_tweets_for_column_by_tweet_ids(social_column, since_id=None, max_id=None
     return queryset.order_by("-tweet_id_bigint").values()
 
 
-def get_tweets_for_column(social_column, since_id=None, max_id=None, startIndex=None, stopIndex=None, limit=None):
+def get_tweets_for_column(social_column, since_id=None, max_id=None, startIndex=None, stopIndex=None, limit=None, tweetIdOnly=False):
     queryset = Tweets.objects.annotate(tweet_id_bigint=Cast("tweet_id", BigIntegerField()))
 
     if since_id is not None:
@@ -175,9 +177,9 @@ def get_tweets_for_column(social_column, since_id=None, max_id=None, startIndex=
         logger.warning("since_id {} is out of range of max_id {} in get_tweets_for_column - it should be a lower number!")
         return None
 
-    queryset = apply_tweet_filter_criteria(social_column, queryset)
+    queryset = apply_tweet_filter_criteria(social_column, queryset).order_by("-tweet_id_bigint")
 
-    tweets = queryset.order_by("-tweet_id_bigint").values()
+    tweets = queryset.values() if tweetIdOnly is False else list(queryset.values_list('tweet_id', flat=True))
 
     if limit is not None:
         return tweets[:int(limit)]
@@ -187,6 +189,10 @@ def get_tweets_for_column(social_column, since_id=None, max_id=None, startIndex=
         return tweets[int(startIndex):int(stopIndex) + 1]
     else:
         return tweets
+
+
+def get_tweet_ids_for_column(social_column, since_id=None, max_id=None, startIndex=None, stopIndex=None, limit=None):
+    return get_tweets_for_column(social_column, since_id=since_id, max_id=max_id, startIndex=startIndex, stopIndex=stopIndex, limit=limit, tweetIdOnly=True)
 
 
 def get_latest_tweet_id_for_streaming():
