@@ -65,6 +65,7 @@ class TweetState(str, EnumBase):
 class TweetStatus(EnumBase):
     OK = "Ok"
     DIRTY = "Dirty"  # e.g. Part of a thread be we couldn't resolve relationships for it
+    ARCHIVED = "Archived"
 
 
 class TweetSource(str, EnumBase):
