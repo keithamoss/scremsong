@@ -84,7 +84,7 @@ class TweetColumnContainer extends React.Component<TComponentProps, {}> {
       (columnId: number, opts: any) =>
         this.props.onPositionUpdate(columnId, mapColumnListPropsToTweetPosition(opts, this.props.tweet_ids)),
       2500,
-      { maxWait: 5000 }
+      { maxWait: 2000 }
     )
   }
 
