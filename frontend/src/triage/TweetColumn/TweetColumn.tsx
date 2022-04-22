@@ -3,10 +3,10 @@
 import { Button, Theme, Tooltip, withStyles, WithStyles } from '@material-ui/core'
 import AssignmentIndIcon from '@material-ui/icons/AssignmentInd'
 import AssignmentOutlinedIcon from '@material-ui/icons/AssignmentOutlined'
-import BlockOutlinedIcon from '@material-ui/icons/BlockOutlined'
 import BrightnessAutoIcon from '@material-ui/icons/BrightnessAuto'
 import CheckCircleOutlinedIcon from '@material-ui/icons/CheckCircleOutlined'
-import LiveTvOutlinedIcon from '@material-ui/icons/LiveTvOutlined'
+import VisibilityOffOutlinedIcon from '@material-ui/icons/VisibilityOffOutlined'
+import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined'
 import { isEqual } from 'lodash-es'
 import * as React from 'react'
 import { AutoSizer, CellMeasurer, CellMeasurerCache, InfiniteLoader, List } from 'react-virtualized'
@@ -321,7 +321,7 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
                         aria-label="Ignore tweet"
                         onClick={this.onSetTweetState(tweetId, ESocialTweetState.DISMISSED)}
                       >
-                        <BlockOutlinedIcon />
+                        <VisibilityOffOutlinedIcon />
                       </Button>
                     </Tooltip>
 
@@ -352,7 +352,7 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
                         aria-label="Set active"
                         onClick={this.onSetTweetState(tweetId, ESocialTweetState.ACTIVE)}
                       >
-                        <LiveTvOutlinedIcon />
+                        <VisibilityOutlinedIcon />
                       </Button>
                     </Tooltip>
                   )}
