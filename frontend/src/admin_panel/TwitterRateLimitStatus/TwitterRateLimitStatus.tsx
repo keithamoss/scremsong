@@ -80,7 +80,7 @@ class TwitterRateLimitStatus extends React.PureComponent<TComponentProps, IState
                       </div>
                       <div className={classes.progressBar}>
                         <Tooltip title={`${resource.remaining} API calls remaining`}>
-                          <LinearProgress variant="determinate" value={rateLimitConsumed} />
+                          <LinearProgress variant="determinate" value={rateLimitConsumed} color="secondary" />
                         </Tooltip>
                       </div>
                       <div className={classes.timeUntilReset}>
