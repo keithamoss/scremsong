@@ -1,6 +1,6 @@
 /* eslint-disable no-else-return */
 /* eslint-disable no-underscore-dangle */
-import { Button, Theme, Tooltip, withStyles, WithStyles } from '@material-ui/core'
+import { Button, LinearProgress, Theme, Tooltip, withStyles, WithStyles } from '@material-ui/core'
 import AssignmentIndIcon from '@material-ui/icons/AssignmentInd'
 import AssignmentOutlinedIcon from '@material-ui/icons/AssignmentOutlined'
 import BrightnessAutoIcon from '@material-ui/icons/BrightnessAuto'
@@ -111,7 +111,7 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
     this._noRowsRenderer = () => {
       const { ready } = this.state
       if (ready === false) {
-        return <div>Loading...</div>
+        return <LinearProgress />
       }
       this.props.onPositionUpdate(this.props.column.id, null)
       return <div>This column has no tweets!</div>
