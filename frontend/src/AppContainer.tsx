@@ -1,4 +1,4 @@
-import { createMuiTheme, LinearProgress, Theme, ThemeProvider, withStyles, WithStyles } from '@material-ui/core'
+import { createTheme, LinearProgress, Theme, ThemeProvider, withStyles, WithStyles } from '@material-ui/core'
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
@@ -12,7 +12,7 @@ import { fetchUser, ISelf } from './redux/modules/user'
 
 // const Config: IConfig = require("Config") as any
 
-const theme = createMuiTheme({
+const theme = createTheme({
   // palette: {
   //     primary: purple,
   //     secondary: green,
