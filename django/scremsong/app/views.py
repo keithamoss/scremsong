@@ -770,7 +770,7 @@ class ScremsongDebugViewset(viewsets.ViewSet):
 
         rateLimited = {}
 
-        for info in TwitterRateLimitInfo.objects.filter(collected_on__gte="2019-03-22 16:00:00+00").filter(collected_on__lte="2019-03-23 16:00:00+00").all():
+        for info in TwitterRateLimitInfo.objects.filter(collected_on__gte="2022-03-18 16:00:00+00").filter(collected_on__lte="2022-03-20 16:00:00+00").all():
             for group_name, group_info in info.data.items():
                 for item_name, item_info in group_info.items():
                     if item_info["remaining"] < item_info["limit"]:
