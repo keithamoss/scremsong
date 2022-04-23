@@ -154,13 +154,13 @@ class App extends React.Component<IProps & WithStyles, {}> {
             <ListItem
               button={false}
               component={Link}
-              to="/admin"
-              className={location.pathname === '/admin' ? classes.selectedListItem : classes.listItem}
+              to="/admin/rate-limits"
+              className={location.pathname.startsWith('/admin/') ? classes.selectedListItem : classes.listItem}
             >
               <Tooltip title="Go to the admin panel" enterDelay={1000}>
                 <IconButton
                   aria-label="Admin panel"
-                  className={location.pathname === '/admin' ? classes.selectedIcon : undefined}
+                  className={location.pathname.startsWith('/admin/') ? classes.selectedIcon : undefined}
                 >
                   {somethingIsBroken === true && (
                     <Badge badgeContent="!" color="secondary" className={classes.disconnectedBadge}>
@@ -214,7 +214,9 @@ class App extends React.Component<IProps & WithStyles, {}> {
           <Route exact path="/" component={DashboardViewContainer} />
           <Route path="/queue" component={UserReviewQueueViewContainer} />
           <Route path="/triage" component={TriageViewContainer} />
-          <Route path="/admin" component={AdminPanelContainer} />
+          <Route path="/admin/rate-limits" component={AdminPanelContainer} />
+          <Route path="/admin/streaming" component={AdminPanelContainer} />
+          <Route path="/admin/log-viewer" component={AdminPanelContainer} />
         </main>
         <Notifier />
         <AppDisconnectedDialog />

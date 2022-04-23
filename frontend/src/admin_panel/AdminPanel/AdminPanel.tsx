@@ -23,6 +23,8 @@ const styles = (theme: Theme) => ({
 export interface IProps {
   tweetStreamingConnected: boolean
   twitterRateLimitState: ESocialTwitterRateLimitState
+  pathname: string
+  history: any
 }
 
 export interface IState {
@@ -37,12 +39,34 @@ class AdminPanel extends React.PureComponent<TComponentProps, IState> {
   public constructor(props: TComponentProps) {
     super(props)
 
+    const getActiveTab = () => {
+      switch (props.pathname) {
+        case '/admin/log-viewer':
+          return 2
+        case '/admin/streaming':
+          return 1
+        case '/admin/rate-limits':
+          return 0
+        default:
+          return 0
+      }
+    }
     this.state = {
-      activeTab: 0,
+      activeTab: getActiveTab(),
     }
 
     this.handleChange = (_event: React.MouseEvent<HTMLElement>, value: number) => {
-      this.setState({ activeTab: value })
+      switch (value) {
+        case 2:
+          props.history.push('/admin/log-viewer')
+          break
+        case 1:
+          props.history.push('/admin/streaming')
+          break
+        case 0:
+          props.history.push('/admin/rate-limits')
+          break
+      }
     }
   }
 

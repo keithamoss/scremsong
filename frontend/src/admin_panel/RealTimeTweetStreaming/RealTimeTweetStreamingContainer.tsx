@@ -12,7 +12,7 @@ declare var window: IMyWindow
 export interface IProps {}
 
 export interface IStoreProps {
-  isMuzzled: boolean
+  isMuzzled: boolean | undefined
 }
 
 export interface IDispatchProps {}
@@ -61,7 +61,7 @@ class RealTimeTweetStreamingContainer extends React.PureComponent<TComponentProp
     const { isMuzzled } = this.props
     const { tasks } = this.state
 
-    if (tasks === null) {
+    if (tasks === null || isMuzzled === undefined) {
       return <LinearProgress />
     }
 
@@ -82,7 +82,12 @@ class RealTimeTweetStreamingContainer extends React.PureComponent<TComponentProp
 const mapStateToProps = (state: IStore, _ownProps: IProps): IStoreProps => {
   const { app } = state
 
-  return { isMuzzled: app.socialplatform_settings['SocialPlatformChoice.TWITTER'].muzzled }
+  return {
+    isMuzzled:
+      app.socialplatform_settings['SocialPlatformChoice.TWITTER'] !== undefined
+        ? app.socialplatform_settings['SocialPlatformChoice.TWITTER'].muzzled
+        : undefined,
+  }
 }
 
 const mapDispatchToProps = (_dispatch: Function): IDispatchProps => {

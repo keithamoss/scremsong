@@ -22,7 +22,7 @@ class TwitterRateLimitStatusContainer extends React.Component<TComponentProps, {
     if (rateLimitResources === null || Object.keys(rateLimitResources).length === 0) {
       return (
         <Typography variant="subtitle1" gutterBottom>
-          We haven&lsquo;t used any of our rate limit allowances with Twitter yet.
+          We haven&lsquo;t used any of our rate limit allowances with Twitter yet 🥳
         </Typography>
       )
     }

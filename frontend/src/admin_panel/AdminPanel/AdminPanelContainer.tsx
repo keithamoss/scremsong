@@ -22,13 +22,24 @@ export interface IDispatchProps {
   // onToggleUserOnlineStatus: Function
 }
 
-type TComponentProps = IProps & IStoreProps & IDispatchProps
+export interface IRouteProps {
+  content: any
+  location: any
+  history: any
+}
+
+type TComponentProps = IProps & IStoreProps & IDispatchProps & IRouteProps
 class AdminPanelContainer extends React.PureComponent<TComponentProps, {}> {
   public render() {
-    const { tweetStreamingConnected, twitterRateLimitState } = this.props
+    const { tweetStreamingConnected, twitterRateLimitState, location, history } = this.props
 
     return (
-      <AdminPanel tweetStreamingConnected={tweetStreamingConnected} twitterRateLimitState={twitterRateLimitState} />
+      <AdminPanel
+        tweetStreamingConnected={tweetStreamingConnected}
+        twitterRateLimitState={twitterRateLimitState}
+        pathname={location.pathname}
+        history={history}
+      />
     )
   }
 }
