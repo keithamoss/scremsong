@@ -284,7 +284,10 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
         <CellMeasurer key={key} cache={this._cache} columnIndex={0} parent={parent} rowIndex={index}>
           {({ measure }) => (
             <div style={style}>
-              <div className={classes.actionBar} style={{ borderRight: `6px solid ${backgroundColor}` }}>
+              <div
+                className={classes.actionBar}
+                style={{ borderRight: `6px solid ${backgroundColor}`, backgroundColor: 'white' }}
+              >
                 {showActionBarButtons === true && tweet.state === ESocialTweetState.ACTIVE && (
                   <Tooltip
                     title="Automatically assign this tweet to the reviewer who has the smallest queue"

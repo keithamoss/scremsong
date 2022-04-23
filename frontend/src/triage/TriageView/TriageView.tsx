@@ -1,5 +1,6 @@
 /* eslint-disable react/no-access-state-in-setstate */
 import { withStyles, WithStyles } from '@material-ui/core'
+import { grey } from '@material-ui/core/colors'
 import * as React from 'react'
 import { ITriageColumn } from '../../redux/modules/triage'
 import TweetColumnContainer from '../TweetColumn/TweetColumnContainer'
@@ -13,6 +14,7 @@ const styles = () =>
     columnContainerContainer: {
       display: 'inline-block',
       height: '100%',
+      backgroundColor: grey[200],
       '& .tweet': {
         width: '370px !important',
         minHeight: '123px !important', // Height of the ActionBar
