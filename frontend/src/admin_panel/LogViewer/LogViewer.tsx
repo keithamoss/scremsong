@@ -1,5 +1,6 @@
 import { Button, FormControl, InputLabel, MenuItem, Select, Theme, withStyles, WithStyles } from '@material-ui/core'
 import CloudDownload from '@material-ui/icons/CloudDownload'
+import Refresh from '@material-ui/icons/Refresh'
 import classNames from 'classnames'
 import * as React from 'react'
 import { LazyLog } from 'react-lazylog'
@@ -35,6 +36,7 @@ export interface IProps {
   availableLogs: string[]
   currentFilename: string | null
   onChooseLogfile: any
+  onRefreshLogfile: any
 }
 
 export interface IState {}
@@ -43,9 +45,12 @@ type TComponentProps = IProps & WithStyles
 
 class LogViewer extends React.PureComponent<TComponentProps, IState> {
   public render() {
-    const { availableLogs, currentFilename, onChooseLogfile, classes } = this.props
+    const { availableLogs, currentFilename, onChooseLogfile, onRefreshLogfile, classes } = this.props
 
     const logfileURL = `${getAPIBaseURL()}/0.1/logs_admin/get_log/?format=json&log_filename=${currentFilename}`
+
+    // Split off the "&s=xxx" part of the filename we use to force refreshing
+    const currentFilenameActual = currentFilename !== null ? currentFilename?.split('&')[0] : null
 
     return (
       <React.Fragment>
@@ -53,7 +58,7 @@ class LogViewer extends React.PureComponent<TComponentProps, IState> {
           <FormControl classes={{ root: classes.formControl }}>
             <InputLabel htmlFor="view-logfile-control">Choose a log file</InputLabel>
             <Select
-              value={currentFilename !== null ? currentFilename : ''}
+              value={currentFilenameActual !== null ? currentFilenameActual : ''}
               onChange={onChooseLogfile}
               inputProps={{
                 name: 'view-logfile',
@@ -72,16 +77,36 @@ class LogViewer extends React.PureComponent<TComponentProps, IState> {
             <Button
               variant="contained"
               color="primary"
-              className={classNames(classes.button, classes.restartStreamingButton)}
-              disabled={currentFilename === null}
+              className={classNames(classes.button)}
+              disabled={currentFilenameActual === null}
             >
               <CloudDownload className={classNames(classes.leftIcon, classes.iconSmall)} />
               Download
             </Button>
           </a>
 
-          {currentFilename !== null && (
-            <LazyLog url={logfileURL} fetchOptions={{ credentials: 'include' }} follow selectableLines />
+          <Button
+            variant="contained"
+            color="primary"
+            className={classNames(classes.button)}
+            disabled={currentFilenameActual === null}
+            onClick={onRefreshLogfile}
+          >
+            <Refresh className={classNames(classes.leftIcon, classes.iconSmall)} />
+            Rerfesh
+          </Button>
+
+          {currentFilenameActual !== null && (
+            <LazyLog
+              extraLines={1}
+              enableSearch={true}
+              caseInsensitive={true}
+              url={logfileURL}
+              fetchOptions={{ credentials: 'include' }}
+              stream={true}
+              follow={true}
+              selectableLines={true}
+            />
           )}
         </div>
       </React.Fragment>

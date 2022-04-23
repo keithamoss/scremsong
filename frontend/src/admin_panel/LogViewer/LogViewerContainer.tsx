@@ -27,6 +27,8 @@ type TComponentProps = IProps & IStoreProps & IDispatchProps
 class LogViewerContainer extends React.PureComponent<TComponentProps, IState> {
   private onChooseLogfile: any
 
+  private onRefreshLogfile: any
+
   public constructor(props: TComponentProps) {
     super(props)
 
@@ -35,6 +37,10 @@ class LogViewerContainer extends React.PureComponent<TComponentProps, IState> {
     this.onChooseLogfile = (event: React.ChangeEvent<HTMLSelectElement>) => {
       // eslint-disable-next-line react/no-access-state-in-setstate
       this.setState({ ...this.state, currentFilename: event.target.value })
+    }
+
+    this.onRefreshLogfile = () => {
+      this.setState((prevState) => ({ ...prevState, currentFilename: `${prevState.currentFilename}&s=${Date.now()}` }))
     }
   }
 
@@ -54,6 +60,7 @@ class LogViewerContainer extends React.PureComponent<TComponentProps, IState> {
         availableLogs={availableLogs}
         currentFilename={currentFilename}
         onChooseLogfile={this.onChooseLogfile}
+        onRefreshLogfile={this.onRefreshLogfile}
       />
     )
   }
