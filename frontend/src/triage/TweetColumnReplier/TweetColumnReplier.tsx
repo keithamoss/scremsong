@@ -160,6 +160,12 @@ class TweetColumnReplier extends React.Component<TComponentProps, IState> {
               characterLimit={280}
               onFieldValid={this.onFieldValid}
               onFieldInvalid={this.onFieldInvalid}
+              onKeyDown={(ev) => {
+                if (replyButtonDisabled === false && ev.key === 'Enter' && (ev.ctrlKey || ev.metaKey)) {
+                  ev.preventDefault()
+                  this.onReply()
+                }
+              }}
             />
             <Button variant="contained" color="primary" disabled={replyButtonDisabled} onClick={this.onReply}>
               Reply
