@@ -76,6 +76,10 @@ type TComponentProps = IProps & IStoreProps & IDispatchProps
 class TweetColumnContainer extends React.Component<TComponentProps, {}> {
   private onPositionUpdate: any
 
+  private onLoadMoreRows: any
+
+  // private rowsLoaderTimeoutId: any
+
   public constructor(props: TComponentProps) {
     super(props)
 
@@ -83,6 +87,29 @@ class TweetColumnContainer extends React.Component<TComponentProps, {}> {
     this.onPositionUpdate = debounce(
       (columnId: number, opts: any) =>
         this.props.onPositionUpdate(columnId, mapColumnListPropsToTweetPosition(opts, this.props.tweet_ids)),
+      2500,
+      { maxWait: 2000 }
+    )
+
+    // this.onLoadMoreRows = debounce((indexes: IReactVirtualizedIndexes) => this.props.loadMoreRows(indexes), 2500, {
+    //   maxWait: 2000,
+    // })
+
+    this.onLoadMoreRows = debounce(
+      (indexes: IReactVirtualizedIndexes) => {
+        this.props.loadMoreRows(indexes)
+
+        // console.log(`this.rowsLoaderTimeoutId was ${this.rowsLoaderTimeoutId}`)
+        // if (this.rowsLoaderTimeoutId !== undefined) {
+        //   clearTimeout(this.rowsLoaderTimeoutId)
+        // }
+
+        // this.rowsLoaderTimeoutId = setTimeout(() => {
+        //   delete this.rowsLoaderTimeoutId
+        //   this.props.loadMoreRows(indexes)
+        // }, 2000)
+        // console.log(`this.rowsLoaderTimeoutId is ${this.rowsLoaderTimeoutId}`)
+      },
       2500,
       { maxWait: 2000 }
     )
@@ -96,7 +123,6 @@ class TweetColumnContainer extends React.Component<TComponentProps, {}> {
       tweets,
       tweet_assignments,
       assignments,
-      loadMoreRows,
       onAutomaticallyAssignTweet,
       onSetTweetState,
     } = this.props
@@ -112,7 +138,7 @@ class TweetColumnContainer extends React.Component<TComponentProps, {}> {
         preFetchThreshold={preFetchThreshold}
         minBatchSize={minBatchSize}
         overscanRowCount={overscanRowCount}
-        loadMoreRows={loadMoreRows}
+        loadMoreRows={this.onLoadMoreRows}
         onPositionUpdate={this.onPositionUpdate}
         onAutomaticallyAssignTweet={onAutomaticallyAssignTweet}
         onSetTweetState={onSetTweetState}
@@ -142,6 +168,7 @@ const mapStateToProps = (state: IStore, ownProps: IProps): IStoreProps => {
 const mapDispatchToProps = (dispatch: Function, ownProps: IProps): IDispatchProps => {
   return {
     loadMoreRows: (indexes: IReactVirtualizedIndexes) => {
+      console.log('loadMoreRows')
       return dispatch(fetchTweets(indexes.startIndex, indexes.stopIndex, [ownProps.column.id]))
     },
     onPositionUpdate: (columnId: number, positions: IProfileColumnPosition | null) => {
