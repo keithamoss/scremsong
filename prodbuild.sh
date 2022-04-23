@@ -29,8 +29,8 @@ if [ "$CMD" = "frontend" ] || [ "$CMD" = "all" ]; then
   # For local testing with docker-compose-prod.yml only
   echo "building prod nginx container for local testing"
   # @TODO Resolve django.tgz already being mv to django-[VERSION].tgz
-  (cd nginx-prod && docker build -t scremsong/nginx-prod:latest .)
-  (cd nginx-prod && docker build --no-cache -t scremsong/nginx-prod:latest . && cd ..)
+  # (cd nginx-prod && docker build -t scremsong/nginx-prod:latest .)
+  # (cd nginx-prod && docker build --no-cache -t scremsong/nginx-prod:latest . && cd ..)
 fi
 
 if [ "$CMD" = "django" ] || [ "$CMD" = "all" ]; then
