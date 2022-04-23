@@ -17,6 +17,7 @@ services:
 
     #         # Enable this to store the PostgreSQL data on the host
     #         - ./db/data:/var/lib/postgresql/data
+    django:
         build: django/
         entrypoint: /app/docker-entrypoint.sh
         command: build
