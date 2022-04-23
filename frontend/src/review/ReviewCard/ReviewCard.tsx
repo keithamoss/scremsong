@@ -13,9 +13,9 @@ import {
   WithStyles,
 } from '@material-ui/core'
 import AssignmentInd from '@material-ui/icons/AssignmentInd'
-import AssignmentTurnedIn from '@material-ui/icons/AssignmentTurnedIn'
 import ExpandLess from '@material-ui/icons/ExpandLess'
 import ExpandMore from '@material-ui/icons/ExpandMore'
+import MoreVert from '@material-ui/icons/MoreVert'
 import OpenInNew from '@material-ui/icons/OpenInNew'
 import classNames from 'classnames'
 import * as React from 'react'
@@ -248,8 +248,8 @@ class ReviewCard extends React.PureComponent<TComponentProps, IState> {
                     className={classes.button}
                     onClick={this.handleOpenCloseReasonMenu}
                   >
-                    <AssignmentTurnedIn className={classNames(classes.leftIcon, classes.iconSmall)} />
-                    Close
+                    <MoreVert className={classNames(classes.leftIcon, classes.iconSmall)} />
+                    Options
                   </Button>
                 </Tooltip>
                 <Menu anchorEl={anchorEl} open={anchorEl !== null} onClose={this.handleCloseCloseReasonMenu}>
