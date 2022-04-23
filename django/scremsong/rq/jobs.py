@@ -12,7 +12,7 @@ from rq import Retry, get_current_job
 logger = make_logger(__name__)
 
 
-@job("high", timeout=30, retry=Retry(max=3, interval=[10, 30, 60]))
+@job("high", timeout=30, retry=Retry(max=3, interval=[10, 30, 60]), meta={"_ensure_task_is_unique": True})
 def task_cancel_and_restart_tweet_streaming():
     logger.info(f"Starting task_cancel_and_restart_tweet_streaming")
 
