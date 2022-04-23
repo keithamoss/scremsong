@@ -1,5 +1,7 @@
 import {
   Avatar,
+  Badge,
+  createStyles,
   Paper,
   Table,
   TableBody,
@@ -35,6 +37,48 @@ const styles = (theme: Theme) =>
     },
   } as any)
 
+const StyledBadgeOffline = withStyles((theme: Theme) =>
+  createStyles({
+    badge: {
+      backgroundColor: '#d22727',
+      color: '#d22727',
+      boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+      '&::after': {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        borderRadius: '50%',
+        border: '1px solid currentColor',
+        content: '""',
+      },
+    },
+  })
+)(Badge)
+
+const StyledBadgeOnline = withStyles(() =>
+  createStyles({
+    badge: {
+      backgroundColor: '#44b700',
+      color: '#44b700',
+      '&::after': {
+        animation: '$ripple 1.2s infinite ease-in-out',
+      },
+    },
+    '@keyframes ripple': {
+      '0%': {
+        transform: 'scale(.8)',
+        opacity: 1,
+      },
+      '100%': {
+        transform: 'scale(2.4)',
+        opacity: 0,
+      },
+    },
+  })
+)(StyledBadgeOffline)
+
 export interface IProps {
   stats: IDashboardStats
   users: IReviewerUser[]
@@ -69,6 +113,7 @@ class DashboardView extends React.Component<TComponentProps, IState> {
               <TableHead>
                 <TableRow>
                   <TableCell />
+                  <TableCell />
                   <TableCell align="right">In Progress</TableCell>
                   <TableCell align="right">Awaiting Reply</TableCell>
                   <TableCell align="right">Map Updated</TableCell>
@@ -82,12 +127,23 @@ class DashboardView extends React.Component<TComponentProps, IState> {
                   const userStats = stats.assignments.past_week[userId]
                   const user = users.find((u: IReviewerUser) => u.id === parseInt(userId, 10))!
 
+                  const StyledBadge = user.is_accepting_assignments ? StyledBadgeOnline : StyledBadgeOffline
+
                   return (
                     <TableRow key={userId}>
-                      <TableCell component="th" scope="row">
-                        <Avatar className={classes.avatar} src={user.profile_image_url} />
-                        {user.name}
+                      <TableCell>
+                        <StyledBadge
+                          overlap="circular"
+                          anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'right',
+                          }}
+                          variant="dot"
+                        >
+                          <Avatar className={classes.avatar} src={user.profile_image_url} />
+                        </StyledBadge>
                       </TableCell>
+                      <TableCell>{user.name}</TableCell>
                       <TableCell align="right">{userStats.Pending}</TableCell>
                       <TableCell align="right">{userStats['Awaiting Reply']}</TableCell>
                       <TableCell align="right">{userStats['Map Updated']}</TableCell>
