@@ -1,6 +1,9 @@
+import json
 import logging
 import os
+import sys
 import time
+import traceback
 
 
 class TopMostCallerScremsong(logging.Filter):
@@ -71,3 +74,42 @@ def get_or_none(classmodel, **kwargs):
         return classmodel.objects.get(**kwargs)
     except classmodel.DoesNotExist:
         return None
+
+
+def is_jsonable(obj):
+    try:
+        json.dumps(obj)
+        return True
+    except:
+        return False
+
+
+def is_iterable(obj):
+    # https://stackoverflow.com/a/1952655
+
+    try:
+        iterator = iter(obj)
+    except TypeError:
+        # not iterable
+        return False
+    else:
+        # iterable
+        return True
+
+
+def get_stracktrace_string_for_current_exception():
+    # https://stackoverflow.com/a/49613561
+
+    # Get current system exception
+    ex_type, ex_value, ex_traceback = sys.exc_info()
+
+    # Extract unformatter stack traces as tuples
+    trace_back = traceback.extract_tb(ex_traceback)
+
+    # Format stacktrace
+    stack_trace = list()
+
+    for trace in trace_back:
+        stack_trace.append("File \"%s\", line : %d, in \"%s\", message: %s" % (trace[0], trace[1], trace[2], trace[3]))
+
+    return "\r\n".join(stack_trace)

@@ -2,7 +2,9 @@ from django.utils.timezone import make_aware
 from pytz import timezone
 from redis import Redis
 from scremsong.app.enums import TaskStatus
-from scremsong.util import get_env, make_logger
+from scremsong.util import (get_env,
+                            get_stracktrace_string_for_current_exception,
+                            is_iterable, is_jsonable, make_logger)
 
 from rq import Queue
 from rq.command import send_stop_job_command
@@ -192,14 +194,23 @@ def report_job_success(job, connection, result, *args, **kwargs):
 
 def report_job_failure(job, connection, result, *args, **kwargs):
     logger.debug(f"report_job_failure for job {job.func_name} ({job.id})")
+
     report_job_result(TaskStatus.FAILED, job, connection, result, *args, **kwargs)
 
 
 def report_job_result(status, job, connection, result, *args, **kwargs):
     logger.debug("_report_job_result starting")
 
+    def _format_complex_parameter(result):
+        if is_jsonable(result):
+            return result
+        elif is_iterable(result) and __name__ in result and "Exception" in result.__name__:
+            # Without is_iterable() checking this would fail on types like 'type'
+            return get_stracktrace_string_for_current_exception()
+        return f"{result}"
+
     from scremsong.app.models import TaskResults
-    task = TaskResults(job_id=job.id, job_name=get_job_name_from_meta_or_none(job), job_func_name=job.func_name, queue=job.origin, worker="", status=status, result=result, meta=job.meta, job_args=job.args, job_kwargs=job.kwargs, date_enqueued=make_aware(job.enqueued_at, timezone=timezone("UTC")), date_done=make_aware(job.ended_at, timezone=timezone("UTC")))
+    task = TaskResults(job_id=job.id, job_name=get_job_name_from_meta_or_none(job), job_func_name=job.func_name, queue=job.origin, worker="", status=status, result=_format_complex_parameter(result), meta=job.meta, job_args=_format_complex_parameter(job.args), job_kwargs=_format_complex_parameter(job.kwargs), date_enqueued=make_aware(job.enqueued_at, timezone=timezone("UTC")), date_done=make_aware(job.ended_at, timezone=timezone("UTC")))
     task.save()
 
 
