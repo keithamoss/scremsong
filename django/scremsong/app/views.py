@@ -212,7 +212,7 @@ class TweetsViewset(viewsets.ViewSet):
             return Response({"error": "Error sending reply. It looks like we've been rate limited for replying to / favouriting tweets. Try again in a little while."}, status=status.HTTP_403_FORBIDDEN)
 
         except TweepyException as e:
-            if e.api_code == 403:
+            if 403 in e.api_codes:
                 return Response({"error": "Error sending reply. It looks like that exactly reply recently got sent. Change the reply text and try again."}, status=status.HTTP_403_FORBIDDEN)
             else:
                 # Uh oh, some other error code was returned

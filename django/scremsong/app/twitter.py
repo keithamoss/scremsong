@@ -411,12 +411,12 @@ def get_status_from_api(tweetId):
         status = api.get_status(tweetId, tweet_mode="extended", include_entities=True)
         return status._json
     except tweepy.TweepyException as e:
-        if e.api_code == 144:
+        if 144 in e.api_codes:
             # No status found with that ID.
             # Corresponds with HTTP 404. The requested Tweet ID is not found (if it existed, it was probably deleted)
             logger.info("Does not exist remotely in get_status_from_api! ({})".format(tweetId))
             raise ScremsongException("Does not exist remotely in get_status_from_api! ({})".format(tweetId))
-        elif e.api_code == 179:
+        elif 179 in e.api_codes:
             # Sorry, you are not authorized to see this status
             # Corresponds with HTTP 403. Thrown when a Tweet cannot be viewed by the authenticating user, usually due to the Tweet’s author having protected their Tweets.
             logger.info("Not authorised to retrieve tweet in get_status_from_api! ({})".format(tweetId))
@@ -620,7 +620,8 @@ def favourite_tweet(tweetId):
         ws_send_updated_tweet(tweet)
 
     except tweepy.TweepyException as e:
-        if e.api_code == 139:
+        # https://docs.tweepy.org/en/stable/exceptions.html#tweepy.errors.HTTPException
+        if 139 in e.api_codes:
             # The tweet was already favourited somewhere else (e.g. another Twitter client). Update local state tweet and respond as if we succeeded.
             tweet.data["favorited"] = True
             tweet.save()
@@ -656,7 +657,7 @@ def unfavourite_tweet(tweetId):
         ws_send_updated_tweet(tweet)
 
     except tweepy.TweepyException as e:
-        if e.api_code == 144:
+        if 144 in e.api_codes:
             # The tweet was already unfavourited somewhere else (e.g. another Twitter client). Update local state tweet and respond as if we succeeded.
             # NB: No idea why they use 144 as the response code. 144 is supposed to be "No status found with that ID"
             tweet.data["favorited"] = False
@@ -697,7 +698,7 @@ def retweet_tweet(tweetId):
         })
 
     except tweepy.TweepyException as e:
-        if e.api_code == 327:
+        if 327 in e.api_codes:
             # The tweet was already retweeted somewhere else (e.g. another Twitter client). Update local state tweet and respond as if we succeeded.
             tweet.data["retweeted"] = True
             tweet.save()
@@ -735,7 +736,7 @@ def unretweet_tweet(tweetId):
     except tweepy.TweepyException as e:
         raise e
 
-        if e.api_code == 327:
+        if 327 in e.api_codes:
             # The tweet was already retweeted somewhere else (e.g. another Twitter client). Update local state tweet and respond as if we succeeded.
             tweet.data["retweeted"] = False
             tweet.save()
