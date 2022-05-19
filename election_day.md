@@ -13,5 +13,6 @@ Tasks to do after election day:
 
 - [ ] Put together the stats report for the day (below)
 - [ ] Disable `task_collect_twitter_rate_limit_info()` in jobs.py
+- [ ] Remove volunteer access from Scremsong and DemSausage (is_active=False)
 
 > Scremsong pulled in 8,739 tweets and replies to tweets. Our triagers processed 2,110 tweets, assigning 686 tweet threads (H 412, K 135, D 130, A 6, and D 3) from which we sent 222 replies. Ki dealt with the most assignments (169), closed followed by K (157), C (145), D (45), D (16), H (10), N (10), and A (5).
