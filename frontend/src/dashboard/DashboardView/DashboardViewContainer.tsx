@@ -5,7 +5,7 @@ import { IDashboardStats } from '../../redux/modules/app'
 import { IThunkExtras } from '../../redux/modules/interfaces'
 import { IReviewerUser } from '../../redux/modules/interfaces.reviewers'
 import { IStore } from '../../redux/modules/reducer'
-import { getReviewers } from '../../redux/modules/reviewers'
+import { getActiveReviewers } from '../../redux/modules/reviewers'
 import { ITriageColumn } from '../../redux/modules/triage'
 import DashboardView from './DashboardView'
 
@@ -64,7 +64,7 @@ const mapStateToProps = (state: IStore, _ownProps: IProps): IStoreProps => {
   const { triage } = state
 
   return {
-    users: getReviewers(state),
+    users: getActiveReviewers(state),
     columns: triage.columns,
   }
 }

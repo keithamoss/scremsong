@@ -595,7 +595,7 @@ class DashboardViewset(viewsets.ViewSet):
             }
         }
 
-        for user in User.objects.all():
+        for user in User.objects.filter(is_active=True):
             # stats["assignments"]["all_time"][user.id] = get_social_assignment_stats_for_user(user)
             stats["assignments"]["past_week"][user.id] = get_social_assignment_stats_for_user(user, sincePastNDays=7)
 
