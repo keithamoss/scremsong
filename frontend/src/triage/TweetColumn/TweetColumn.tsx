@@ -261,6 +261,18 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
         return <div key={key} style={style} />
       }
 
+      // NOTE: The logic here is a bit wonky and needs work.
+      // Once an assignment has state=Closed, it shows a grey bar on any of its tweets...
+      // because `assignment` is set here
+      // BUT, when the user refreshes `assignment` is null, so we show a green bar because
+      // the tweet.state='Dealt With'
+      // This doesn't affect the actions the user can take (the buttons), but it is a logic hole
+      // and other areas of the application may be making similar assumptions.
+      // How could we fix this?
+      // Well, loading all of the closed assignments is out of the question (waaaay too many)
+      // Ultimately, I guess we could give tweets a second state field that is the state from their assignment.
+      // But then that's duplicating information and more state to maintain 🤷‍♂️
+      // Eh, work it out later.
       const tweet = tweets[tweetId]
       const assignmentId = tweet_assignments[tweetId]
       const assignment = tweetId in tweet_assignments ? assignments[assignmentId] : null

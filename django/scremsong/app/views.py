@@ -413,16 +413,14 @@ class SocialAssignmentsViewset(viewsets.ViewSet):
                 "assignment": SocialAssignmentSerializer(assignment).data,
             })
 
-            tweetId = assignment.social_id
-            tweet = Tweets.objects.get(tweet_id=tweetId)
-            tweet.state = TweetState.DEALT_WITH
-            tweet.save()
+            all_tweets_in_thread = [assignment.social_id] + assignment.thread_tweets
+            Tweets.objects.filter(tweet_id__in=all_tweets_in_thread).update(state=TweetState.DEALT_WITH)
 
             websockets.send_channel_message("tweets.set_state", {
                 "tweetStates": [{
-                    "tweetId": tweetId,
+                    "tweetId": t,
                     "tweetState": TweetState.DEALT_WITH,
-                }]
+                } for t in all_tweets_in_thread]
             })
 
         return Response({"OK": True})
@@ -441,16 +439,14 @@ class SocialAssignmentsViewset(viewsets.ViewSet):
             "assignment": SocialAssignmentSerializer(assignment).data,
         })
 
-        tweetId = assignment.social_id
-        tweet = Tweets.objects.get(tweet_id=tweetId)
-        tweet.state = TweetState.ASSIGNED
-        tweet.save()
+        all_tweets_in_thread = [assignment.social_id] + assignment.thread_tweets
+        Tweets.objects.filter(tweet_id__in=all_tweets_in_thread).update(state=TweetState.ASSIGNED)
 
         websockets.send_channel_message("tweets.set_state", {
             "tweetStates": [{
-                "tweetId": tweetId,
+                "tweetId": t,
                 "tweetState": TweetState.ASSIGNED,
-            }]
+            } for t in all_tweets_in_thread]
         })
 
         return Response({"OK": True})
