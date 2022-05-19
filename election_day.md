@@ -7,6 +7,7 @@ Tasks to do just before election day:
 - [ ] Close all existing assignments as not actioned `UPDATE scremsong.app_socialassignments SET state = 'Closed', close_reason = 'Not Actioned' WHERE state = 'Pending';`
 - [ ] Close all old (>= 3 days) existing tweets as not actioned `UPDATE scremsong.app_tweets SET state = 'Not Actioned' WHERE state = 'Active' AND EXTRACT(EPOCH FROM CURRENT_TIMESTAMP - to_timestamp(data->>'created_at', 'Dy Mon DD HH24:MI:SS +0000 YYYY')) / 86400 >= 3;`
 - [ ] Archive all tweets from the last election `UPDATE scremsong.app_tweets SET status = 'TweetStatus.Archived' WHERE to_timestamp(data->>'created_at', 'Dy Mon DD HH24:MI:SS +0000 YYYY') < '2022-03-01 00:00:00+00';`
+- [ ] Reset people's column position settings `UPDATE scremsong.app_profile SET settings = jsonb_set(settings, '{column_positions}', '{}', FALSE);`
 
 Tasks to do after election day:
 
