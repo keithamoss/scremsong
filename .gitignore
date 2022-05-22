@@ -74,3 +74,6 @@ UPGRADE_NOTES.md
 django/supervisord.pid
 TODOs_from_SA2022.md
 rate-limit-data-all.*
+scremsong-logs-federal-2022/
+instagram.py
+instagram_example.json
