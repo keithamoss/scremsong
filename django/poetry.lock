@@ -201,7 +201,7 @@ tests = ["pytest", "pytest-django", "pytest-asyncio", "async-timeout", "coverage
 
 [[package]]
 name = "channels-redis"
-version = "3.4.0"
+version = "3.4.1"
 description = "Redis-backed ASGI channel layer implementation"
 category = "main"
 optional = false
@@ -1002,7 +1002,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "f6ada69ad73fec5115ec3140bab398f1f77203f9339603f7f803d07e22a49681"
+content-hash = "12faa4db1dddf272b9874ae96f7ea8fd9b86c5f0fe787f89fb739ccb86b2d0f8"
 
 [metadata.files]
 aioredis = [
@@ -1119,8 +1119,8 @@ channels = [
     {file = "channels-3.0.5.tar.gz", hash = "sha256:a3dc3339cc033e7c2afe083fb3dedf74fc5009815967e317e080e7bfdc92ea26"},
 ]
 channels-redis = [
-    {file = "channels_redis-3.4.0-py3-none-any.whl", hash = "sha256:6e4565b7c11c6bcde5d48556cb83bd043779697ff03811867d2f895aa6170d56"},
-    {file = "channels_redis-3.4.0.tar.gz", hash = "sha256:5dffd4cc16174125bd4043fc8fe7462ca7403cf801d59a9fa7410ed101fa6a57"},
+    {file = "channels_redis-3.4.1-py3-none-any.whl", hash = "sha256:ba7e2ad170f273c372812dd32aaac102d68d4e508172abb1cfda3160b7333890"},
+    {file = "channels_redis-3.4.1.tar.gz", hash = "sha256:78e4a2f2b2a744fe5a87848ec36b5ee49f522c6808cefe6c583663d0d531faa8"},
 ]
 charset-normalizer = [
     {file = "charset-normalizer-2.0.12.tar.gz", hash = "sha256:2857e29ff0d34db842cd7ca3230549d1a697f96ee6d3fb071cfa6c7393832597"},
