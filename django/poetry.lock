@@ -757,7 +757,7 @@ tests = ["coverage[toml] (>=5.0.2)", "pytest"]
 
 [[package]]
 name = "sh"
-version = "1.14.2"
+version = "1.14.3"
 description = "Python subprocess replacement"
 category = "main"
 optional = false
@@ -1004,7 +1004,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "bdeaeb173bd37ac60f2ce5cf6ca5d5a58d0809df8fc03df518d6510074a314fa"
+content-hash = "0634529925d654aea92e39fde42adafc76a8392457042da1c6e0115791a49f26"
 
 [metadata.files]
 aioredis = [
@@ -1538,8 +1538,7 @@ service-identity = [
     {file = "service_identity-21.1.0-py2.py3-none-any.whl", hash = "sha256:f0b0caac3d40627c3c04d7a51b6e06721857a0e10a8775f2d1d7e72901b3a7db"},
 ]
 sh = [
-    {file = "sh-1.14.2-py2.py3-none-any.whl", hash = "sha256:4921ac9c1a77ec8084bdfaf152fe14138e2b3557cc740002c1a97076321fce8a"},
-    {file = "sh-1.14.2.tar.gz", hash = "sha256:9d7bd0334d494b2a4609fe521b2107438cdb21c0e469ffeeb191489883d6fe0d"},
+    {file = "sh-1.14.3.tar.gz", hash = "sha256:e4045b6c732d9ce75d571c79f5ac2234edd9ae4f5fa9d59b09705082bdca18c7"},
 ]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
