@@ -21,7 +21,7 @@ django-celery-results = "2.4.0"
 daphne = "3.0.2"
 sh = "1.14.3"
 channels = "3.0.5"
-channels-redis = "3.4.1"
+channels-redis = "4.0.0"
 celery = "5.2.7"
 gevent = "21.12.0"
 
