@@ -43,7 +43,7 @@
     "@types/jest": "^28.1.8",
     "@types/js-cookie": "^3.0.2",
     "@types/lodash-es": "^4.17.6",
-    "@types/luxon": "^3.0.1",
+    "@types/luxon": "^3.0.2",
     "@types/node": "^18.11.0",
     "@types/qs": "^6.9.7",
     "@types/raven": "^2.5.4",
