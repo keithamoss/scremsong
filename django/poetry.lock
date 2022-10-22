@@ -174,18 +174,18 @@ pycparser = "*"
 
 [[package]]
 name = "channels"
-version = "3.0.5"
-description = "Brings async, event-driven capabilities to Django. Django 2.2 and up only."
+version = "4.0.0"
+description = "Brings async, event-driven capabilities to Django 3.2 and up."
 category = "main"
 optional = false
 python-versions = ">=3.7"
 
 [package.dependencies]
 asgiref = ">=3.5.0,<4"
-daphne = ">=3.0,<4"
-Django = ">=2.2"
+Django = ">=3.2"
 
 [package.extras]
+daphne = ["daphne (>=4.0.0)"]
 tests = ["async-timeout", "coverage (>=4.5,<5.0)", "pytest", "pytest-asyncio", "pytest-django"]
 
 [[package]]
@@ -1005,7 +1005,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "edecce45e6514a572c3e202d5844b5dc50795284a798fced126b307d13a852bd"
+content-hash = "07a10585f11c9e299c515ab2159e1f0f040c751a741d552eba3266014d8297aa"
 
 [metadata.files]
 amqp = [
@@ -1114,8 +1114,8 @@ cffi = [
     {file = "cffi-1.15.0.tar.gz", hash = "sha256:920f0d66a896c2d99f0adbb391f990a84091179542c205fa53ce5787aff87954"},
 ]
 channels = [
-    {file = "channels-3.0.5-py3-none-any.whl", hash = "sha256:3813b8025bf85509769793aca720e6c3b1c5bde1cb253a961252bf0242b60a26"},
-    {file = "channels-3.0.5.tar.gz", hash = "sha256:a3dc3339cc033e7c2afe083fb3dedf74fc5009815967e317e080e7bfdc92ea26"},
+    {file = "channels-4.0.0-py3-none-any.whl", hash = "sha256:2253334ac76f67cba68c2072273f7e0e67dbdac77eeb7e318f511d2f9a53c5e4"},
+    {file = "channels-4.0.0.tar.gz", hash = "sha256:0ce53507a7da7b148eaa454526e0e05f7da5e5d1c23440e4886cf146981d8420"},
 ]
 channels-redis = [
     {file = "channels_redis-4.0.0-py3-none-any.whl", hash = "sha256:81b59d68f53313e1aa891f23591841b684abb936b42e4d1a966d9e4dc63a95ec"},
