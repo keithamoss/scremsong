@@ -843,7 +843,7 @@ python-versions = ">=3.5"
 
 [[package]]
 name = "tweepy"
-version = "4.10.1"
+version = "4.12.0"
 description = "Twitter library for Python"
 category = "main"
 optional = false
@@ -1005,7 +1005,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "54bce91d975ed0860c7db0bda48385c9d934cb8eddf3d13246b77c2fc5d83d7d"
+content-hash = "f6e6bd2a04931d79b83d2f576110802ec3c3104bb689defc68b8338fd8fe7d28"
 
 [metadata.files]
 amqp = [
@@ -1555,8 +1555,8 @@ sqlparse = [
     {file = "sqlparse-0.4.2.tar.gz", hash = "sha256:0c00730c74263a94e5a9919ade150dfc3b19c574389985446148402998287dae"},
 ]
 tweepy = [
-    {file = "tweepy-4.10.1-py3-none-any.whl", hash = "sha256:0a21396b646af4fcee69762d2908c104e1fe2e2c4e1dfd6e6078a41b38771382"},
-    {file = "tweepy-4.10.1.tar.gz", hash = "sha256:310193775d7fc381abd6f37021a9af27f7e9edfcce5ec51bd73ea5f30c21fa61"},
+    {file = "tweepy-4.12.0-py3-none-any.whl", hash = "sha256:c463fa147f75016e3a5ed3713580c7339a301b58f90895e696bfae068556d7cc"},
+    {file = "tweepy-4.12.0.tar.gz", hash = "sha256:274f91dfee6d4aed83d9178fbe338bbfd3c06a4220cfe14438159685db7569b7"},
 ]
 twisted = [
     {file = "Twisted-22.4.0-py3-none-any.whl", hash = "sha256:f9f7a91f94932477a9fc3b169d57f54f96c6e74a23d78d9ce54039a7f48928a2"},
