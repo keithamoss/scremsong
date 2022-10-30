@@ -1,5 +1,5 @@
 import { Button } from '@material-ui/core'
-import * as Cookies from 'js-cookie'
+import Cookies from 'js-cookie'
 import * as qs from 'qs'
 import * as Raven from 'raven-js'
 import * as React from 'react'
