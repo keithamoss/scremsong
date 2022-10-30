@@ -254,3 +254,25 @@ poetry show --outdated
 scp -r scremsong-big:/apps/digitalocean-stack/logs/ .
 
 docker-compose -f docker-compose-prod-scremsong.yml logs service_name
+
+# Maintenance
+
+## PostgreSQL upgrades
+
+The lazy "Eh, just dump everything and reload it rather than trying to upgrade it" approach.
+
+1. Navigate to the shared scripts directory `/var/lib/postgresql/scripts`
+2. Dump the current database with `pg_dumpall -U postgres > dumpfile`
+3. Stop the old container
+4. Rename the old `data` directory
+5. Start the new container
+6. Import the dump into the new container with `psql -U postgres < dumpfile`
+7. Follow any specific steps for this upgrade (e.g. the `PostgreSQL 10.7 to 15 upgrade` section below)
+8. ...
+9. Profit!
+
+### PostgreSQL 10.7 to 15 upgrade
+
+Performed on 30 October, 2022.
+
+Had to run through [these steps](https://www.crunchydata.com/blog/how-to-upgrade-postgresql-passwords-to-scram) to change the password authentication method being used.
