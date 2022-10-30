@@ -30,7 +30,7 @@ class AppDisconnectedDialog extends React.PureComponent<TComponentProps, {}> {
     return (
       <Dialog aria-labelledby="app-disconnected-title" open={disconnected}>
         <DialogTitle id="app-disconnected-title">
-          <IconButton className={classes.disconnectedButton}>
+          <IconButton className={classes.disconnectedButton} size="large">
             <SyncProblemIcon color="error" fontSize="large" />
           </IconButton>
           Connection lost. Reconnecting...
@@ -39,7 +39,7 @@ class AppDisconnectedDialog extends React.PureComponent<TComponentProps, {}> {
           <img src="/disconnected.jpg" />
         </DialogContent>
       </Dialog>
-    )
+    );
   }
 }
 

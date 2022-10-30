@@ -104,7 +104,7 @@ class App extends React.Component<React.PropsWithChildren<IProps & WithStyles<ty
                 <IconButton
                   aria-label="Your queue"
                   className={location.pathname === '/queue' ? classes.selectedIcon : undefined}
-                >
+                  size="large">
                   <Badge badgeContent={userAssignmentCount} color="primary">
                     <AssignmentIndIcon />
                   </Badge>
@@ -121,7 +121,7 @@ class App extends React.Component<React.PropsWithChildren<IProps & WithStyles<ty
                 <IconButton
                   aria-label="Triage view"
                   className={location.pathname === '/triage' ? classes.selectedIcon : undefined}
-                >
+                  size="large">
                   <ViewColumnIcon />
                 </IconButton>
               </Tooltip>
@@ -136,7 +136,7 @@ class App extends React.Component<React.PropsWithChildren<IProps & WithStyles<ty
                 <IconButton
                   aria-label="Dashboard view"
                   className={location.pathname === '/' ? classes.selectedIcon : undefined}
-                >
+                  size="large">
                   <DashboardIcon />
                 </IconButton>
               </Tooltip>
@@ -151,7 +151,7 @@ class App extends React.Component<React.PropsWithChildren<IProps & WithStyles<ty
                 <IconButton
                   aria-label="Admin panel"
                   className={location.pathname.startsWith('/admin/') ? classes.selectedIcon : undefined}
-                >
+                  size="large">
                   {somethingIsBroken === true && (
                     <Badge badgeContent="!" color="secondary" className={classes.disconnectedBadge}>
                       <DNSIcon />
@@ -163,7 +163,7 @@ class App extends React.Component<React.PropsWithChildren<IProps & WithStyles<ty
             </ListItem>
             <ListItem button={false} onClick={onOpenSettingsDialog}>
               <Tooltip title="Change your settings" enterDelay={1000}>
-                <IconButton aria-label="Change settings">
+                <IconButton aria-label="Change settings" size="large">
                   <SettingsIcon />
                 </IconButton>
               </Tooltip>
@@ -176,7 +176,7 @@ class App extends React.Component<React.PropsWithChildren<IProps & WithStyles<ty
               rel="noreferrer"
             >
               <Tooltip title="Scremsong Tour & User Guide" enterDelay={1000}>
-                <IconButton aria-label="Help">
+                <IconButton aria-label="Help" size="large">
                   <HelpIcon />
                 </IconButton>
               </Tooltip>
@@ -189,7 +189,7 @@ class App extends React.Component<React.PropsWithChildren<IProps & WithStyles<ty
               rel="noreferrer"
             >
               <Tooltip title="Find out what's new and shiny in Scremsong" enterDelay={1000}>
-                <IconButton aria-label="Help">
+                <IconButton aria-label="Help" size="large">
                   <NewReleases />
                 </IconButton>
               </Tooltip>
@@ -212,7 +212,7 @@ class App extends React.Component<React.PropsWithChildren<IProps & WithStyles<ty
         <AppDisconnectedDialog />
         <SettingsDialogContainer />
       </div>
-    )
+    );
   }
 }
 

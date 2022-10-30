@@ -55,7 +55,7 @@ class TweetColumnBar extends React.PureComponent<TComponentProps, IState> {
             {isDevEnvironment() && ` (#${column.id})`}
           </Typography>
           {hasBufferedTweets === false && (
-            <IconButton className={classes.newTweetsButton} disabled={true}>
+            <IconButton className={classes.newTweetsButton} disabled={true} size="large">
               <NewReleasesOutlined />
             </IconButton>
           )}
@@ -68,14 +68,14 @@ class TweetColumnBar extends React.PureComponent<TComponentProps, IState> {
                 className={classes.newTweetsButton}
                 onClick={onLoadNewTweetsForColumn}
                 data-columnid={column.id}
-              >
+                size="large">
                 <NewReleases />
               </IconButton>
             </Tooltip>
           )}
         </Toolbar>
       </AppBar>
-    )
+    );
   }
 }
 

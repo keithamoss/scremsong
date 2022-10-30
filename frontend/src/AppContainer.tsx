@@ -1,4 +1,5 @@
-import { createTheme, LinearProgress, Theme, ThemeProvider } from '@mui/material'
+import { createTheme, LinearProgress, Theme, ThemeProvider, StyledEngineProvider } from '@mui/material';
+import { adaptV4Theme } from '@mui/material/styles';
 import { withStyles, WithStyles } from '@mui/styles'
 import * as React from 'react'
 import { connect } from 'react-redux'
@@ -11,9 +12,16 @@ import { changeCurrentReviewer, getPendingUserAssignments } from './redux/module
 import { ESocialTwitterRateLimitState } from './redux/modules/social'
 import { fetchUser, ISelf } from './redux/modules/user'
 
+
+declare module '@mui/styles/defaultTheme' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface DefaultTheme extends Theme {}
+}
+
+
 // const Config: IConfig = require("Config") as any
 
-const theme = createTheme({
+const theme = createTheme(adaptV4Theme({
   // palette: {
   //     primary: purple,
   //     secondary: green,
@@ -21,7 +29,7 @@ const theme = createTheme({
   // status: {
   //     danger: "orange",
   // },
-})
+}))
 
 // eslint-disable-next-line @typescript-eslint/no-shadow
 const styles = (theme: Theme) =>
@@ -79,7 +87,7 @@ export interface IRouteProps {
 
 const canPlayAudio = (audio: HTMLMediaElement) => {
   // https://stackoverflow.com/a/8469184/7368493
-  return audio && 'play' in audio && audio.canPlayType && audio.canPlayType('audio/mpeg;').replace(/no/, '') !== ''
+  return audio && 'play' in audio && audio.canPlayType && audio.canPlayType('audio/mpeg;').replace(/no/, '') !== '';
 }
 
 const setObtrusiveScrollbarsClass = () => {
@@ -200,7 +208,11 @@ export class AppContainer extends React.Component<TComponentProps, {}> {
       )
     }
 
-    return <ThemeProvider theme={theme}>{component}</ThemeProvider>
+    return (
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>{component}</ThemeProvider>
+      </StyledEngineProvider>
+    );
   }
 }
 
