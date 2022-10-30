@@ -1,12 +1,13 @@
 /* eslint-disable no-else-return */
 /* eslint-disable no-underscore-dangle */
-import { Button, LinearProgress, Theme, Tooltip, withStyles, WithStyles } from '@material-ui/core'
 import AssignmentIndIcon from '@material-ui/icons/AssignmentInd'
 import AssignmentOutlinedIcon from '@material-ui/icons/AssignmentOutlined'
 import BrightnessAutoIcon from '@material-ui/icons/BrightnessAuto'
 import CheckCircleOutlinedIcon from '@material-ui/icons/CheckCircleOutlined'
 import VisibilityOffOutlinedIcon from '@material-ui/icons/VisibilityOffOutlined'
 import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined'
+import { Button, LinearProgress, Theme, Tooltip } from '@mui/material'
+import { withStyles, WithStyles } from '@mui/styles'
 import { isEqual } from 'lodash-es'
 import * as React from 'react'
 import { AutoSizer, CellMeasurer, CellMeasurerCache, InfiniteLoader, List } from 'react-virtualized'
@@ -49,7 +50,7 @@ export interface ISnapshot {
   lastStartTweet: string
 }
 
-type TComponentProps = IProps & WithStyles
+type TComponentProps = IProps & WithStyles<typeof styles>
 class TweetColumn extends React.Component<TComponentProps, IState> {
   private onOpenAssigner: Function
 

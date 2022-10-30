@@ -1,3 +1,7 @@
+import AssignmentIcon from '@material-ui/icons/Assignment'
+import AssignmentReturnIcon from '@material-ui/icons/AssignmentReturn'
+import PersonIcon from '@material-ui/icons/Person'
+import PowerOff from '@material-ui/icons/PowerOff'
 import {
   Avatar,
   Badge,
@@ -10,16 +14,11 @@ import {
   ListItemSecondaryAction,
   ListItemText,
   Theme,
-  withStyles,
-  WithStyles,
-} from '@material-ui/core'
-import { yellow } from '@material-ui/core/colors'
-import blue from '@material-ui/core/colors/blue'
-import red from '@material-ui/core/colors/red'
-import AssignmentIcon from '@material-ui/icons/Assignment'
-import AssignmentReturnIcon from '@material-ui/icons/AssignmentReturn'
-import PersonIcon from '@material-ui/icons/Person'
-import PowerOff from '@material-ui/icons/PowerOff'
+} from '@mui/material'
+import { yellow } from '@mui/material/colors'
+import blue from '@mui/material/colors/blue'
+import red from '@mui/material/colors/red'
+import { withStyles, WithStyles } from '@mui/styles'
 import { sortBy } from 'lodash-es'
 import * as React from 'react'
 import { IReviewerAssignment, IReviewerAssignmentCounts, IReviewerUser } from '../../redux/modules/interfaces.reviewers'
@@ -59,7 +58,7 @@ export interface IProps {
   onBulkReassign: any
 }
 
-type TComponentProps = IProps & WithStyles
+type TComponentProps = IProps & WithStyles<typeof styles>
 class TweetColumnAssigner extends React.Component<TComponentProps, {}> {
   private onAssignTweet: any
 

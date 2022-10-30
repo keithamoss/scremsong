@@ -1,4 +1,5 @@
-import { AppBar, Badge, Tab, Tabs, Theme, withStyles, WithStyles } from '@material-ui/core'
+import { AppBar, Badge, Tab, Tabs, Theme } from '@mui/material'
+import { withStyles, WithStyles } from '@mui/styles'
 import * as React from 'react'
 import { ESocialTwitterRateLimitState } from '../../redux/modules/social'
 import LogViewerContainer from '../LogViewer/LogViewerContainer'
@@ -31,7 +32,7 @@ export interface IState {
   activeTab: number
 }
 
-type TComponentProps = IProps & WithStyles
+type TComponentProps = IProps & WithStyles<typeof styles>
 
 class AdminPanel extends React.PureComponent<TComponentProps, IState> {
   private handleChange: any

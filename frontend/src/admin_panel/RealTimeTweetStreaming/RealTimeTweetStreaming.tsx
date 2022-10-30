@@ -1,19 +1,9 @@
-import {
-  Button,
-  List,
-  ListItem,
-  ListItemText,
-  ListSubheader,
-  Theme,
-  Tooltip,
-  Typography,
-  withStyles,
-  WithStyles,
-} from '@material-ui/core'
 import Autorenew from '@material-ui/icons/Autorenew'
 import PlayArrow from '@material-ui/icons/PlayArrow'
 import Refresh from '@material-ui/icons/Refresh'
 import ToggleOn from '@material-ui/icons/ToggleOn'
+import { Button, List, ListItem, ListItemText, ListSubheader, Theme, Tooltip, Typography } from '@mui/material'
+import { withStyles, WithStyles } from '@mui/styles'
 import classNames from 'classnames'
 import * as React from 'react'
 import { ITaskInfo, ITaskQueueInfo } from './types'
@@ -51,7 +41,7 @@ export interface IProps {
 
 export interface IState {}
 
-type TComponentProps = IProps & WithStyles
+type TComponentProps = IProps & WithStyles<typeof styles>
 
 class RealTimeTweetStreaming extends React.PureComponent<TComponentProps, IState> {
   public render() {
@@ -119,7 +109,7 @@ class RealTimeTweetStreaming extends React.PureComponent<TComponentProps, IState
         <Tooltip title="Toggle muzzled mode">
           <Button
             variant="contained"
-            color={isMuzzled ? 'secondary' : 'default'}
+            color={isMuzzled ? 'secondary' : 'primary'}
             className={classNames(classes.button, classes.taskControlButtons)}
             onClick={toggleMuzzledMode}
           >
@@ -140,7 +130,7 @@ class RealTimeTweetStreaming extends React.PureComponent<TComponentProps, IState
                     <List
                       component="ul"
                       subheader={<ListSubheader component="div">{registryName}</ListSubheader>}
-                      className={classes.root}
+                      // className={classes.root}
                     >
                       {tasks[queueName][registryName].map((task: ITaskInfo) => (
                         <ListItem key={task.id}>

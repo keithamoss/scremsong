@@ -1,6 +1,6 @@
 /* eslint-disable no-else-return */
 /* eslint-disable no-param-reassign */
-import { blueGrey, green, red, yellow } from '@material-ui/core/colors'
+import { blueGrey, green, red, yellow } from '@mui/material/colors'
 import * as dotProp from 'dot-prop-immutable'
 import { uniq } from 'lodash-es'
 import { Action } from 'redux'

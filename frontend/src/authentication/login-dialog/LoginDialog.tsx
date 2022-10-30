@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogTitle } from '@material-ui/core'
+import { Dialog, DialogContent, DialogTitle } from '@mui/material'
 import * as React from 'react'
 import { getAPIBaseURL } from '../../redux/modules/app'
 import { SocialLoginButton } from '../social-login-button/SocialLoginButton'

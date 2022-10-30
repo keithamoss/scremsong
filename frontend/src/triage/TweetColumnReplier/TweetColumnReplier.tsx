@@ -1,4 +1,5 @@
-import { Button, Dialog, DialogContent, Theme, withStyles, WithStyles } from '@material-ui/core'
+import { Button, Dialog, DialogContent, Theme } from '@mui/material'
+import { withStyles, WithStyles } from '@mui/styles'
 import * as React from 'react'
 import Tweet from 'react-tweet'
 import { ISocialPrecannedTweetReplies, ISocialTweet, ISocialTweetDataUserMention } from '../../redux/modules/social'
@@ -46,7 +47,7 @@ const getMentions = (mentions: string[]) => mentions.map((mention: string) => `@
 
 const getLengthOfMentions = (mentions: string[]) => getMentions(mentions).length + 1 // + 1 to account for the space between the replies and the text
 
-type TComponentProps = IProps & WithStyles
+type TComponentProps = IProps & WithStyles<typeof styles>
 class TweetColumnReplier extends React.Component<TComponentProps, IState> {
   private onFieldChange: Function
 

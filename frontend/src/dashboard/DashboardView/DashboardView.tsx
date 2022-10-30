@@ -10,9 +10,8 @@ import {
   TableRow,
   Theme,
   Typography,
-  withStyles,
-  WithStyles,
-} from '@material-ui/core'
+} from '@mui/material'
+import { withStyles, WithStyles } from '@mui/styles'
 import * as React from 'react'
 import { IDashboardStats } from '../../redux/modules/app'
 import { IReviewerUser } from '../../redux/modules/interfaces.reviewers'
@@ -87,7 +86,7 @@ export interface IProps {
 
 export interface IState {}
 
-type TComponentProps = IProps & WithStyles
+type TComponentProps = IProps & WithStyles<typeof styles>
 class DashboardView extends React.Component<TComponentProps, IState> {
   public constructor(props: TComponentProps) {
     super(props)

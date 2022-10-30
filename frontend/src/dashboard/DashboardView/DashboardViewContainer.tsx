@@ -1,4 +1,4 @@
-import { LinearProgress } from '@material-ui/core'
+import { LinearProgress } from '@mui/material'
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { IDashboardStats } from '../../redux/modules/app'

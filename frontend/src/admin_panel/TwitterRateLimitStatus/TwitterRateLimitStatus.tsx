@@ -1,4 +1,5 @@
-import { LinearProgress, Paper, Theme, Tooltip, Typography, withStyles, WithStyles } from '@material-ui/core'
+import { LinearProgress, Paper, Theme, Tooltip, Typography } from '@mui/material'
+import { withStyles, WithStyles } from '@mui/styles'
 import { DateTime } from 'luxon'
 import * as React from 'react'
 import { IRateLimitResources, IResourceRateLimit } from './types'
@@ -11,7 +12,12 @@ const styles = (theme: Theme) =>
       marginBottom: 25,
     },
     paper: {
-      ...theme.mixins.gutters(),
+      paddingLeft: theme.spacing(2),
+      paddingRight: theme.spacing(2),
+      [theme.breakpoints.up('sm')]: {
+        paddingLeft: theme.spacing(3),
+        paddingRight: theme.spacing(3),
+      },
       paddingTop: theme.spacing(1),
       paddingBottom: theme.spacing(1),
       margin: 13,
@@ -49,7 +55,7 @@ export interface IProps {
 
 export interface IState {}
 
-type TComponentProps = IProps & WithStyles
+type TComponentProps = IProps & WithStyles<typeof styles>
 
 class TwitterRateLimitStatus extends React.PureComponent<TComponentProps, IState> {
   public render() {

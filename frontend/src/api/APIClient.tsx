@@ -1,4 +1,4 @@
-import { Button } from '@material-ui/core'
+import { Button } from '@mui/material'
 import Cookies from 'js-cookie'
 import * as qs from 'qs'
 import * as Raven from 'raven-js'

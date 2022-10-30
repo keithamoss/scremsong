@@ -1,6 +1,7 @@
-import { Button, FormControl, InputLabel, MenuItem, Select, Theme, withStyles, WithStyles } from '@material-ui/core'
 import CloudDownload from '@material-ui/icons/CloudDownload'
 import Refresh from '@material-ui/icons/Refresh'
+import { Button, FormControl, InputLabel, MenuItem, Select, Theme } from '@mui/material'
+import { withStyles, WithStyles } from '@mui/styles'
 import classNames from 'classnames'
 import * as React from 'react'
 import { LazyLog } from 'react-lazylog'
@@ -41,7 +42,7 @@ export interface IProps {
 
 export interface IState {}
 
-type TComponentProps = IProps & WithStyles
+type TComponentProps = IProps & WithStyles<typeof styles>
 
 class LogViewer extends React.PureComponent<TComponentProps, IState> {
   public render() {

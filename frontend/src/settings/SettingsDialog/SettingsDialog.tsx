@@ -1,3 +1,5 @@
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
+import VisibilityIcon from '@material-ui/icons/Visibility'
 import {
   Accordion,
   AccordionDetails,
@@ -15,11 +17,8 @@ import {
   Switch,
   Theme,
   Typography,
-  withStyles,
-  WithStyles,
-} from '@material-ui/core'
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
-import VisibilityIcon from '@material-ui/icons/Visibility'
+} from '@mui/material'
+import { withStyles, WithStyles } from '@mui/styles'
 import * as React from 'react'
 import { IProfileSettings } from '../../redux/modules/user'
 
@@ -56,7 +55,7 @@ const styles = (theme: Theme) =>
     },
   } as any)
 
-type TComponentProps = IProps & WithStyles
+type TComponentProps = IProps & WithStyles<typeof styles>
 class SettingsDialog extends React.PureComponent<TComponentProps, IState> {
   private handleChange: any
 

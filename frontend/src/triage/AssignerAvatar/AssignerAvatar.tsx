@@ -1,5 +1,6 @@
-import { Avatar, Button, Menu, MenuItem, Theme, withStyles, WithStyles } from '@material-ui/core'
 import { Person } from '@material-ui/icons'
+import { Avatar, Button, Menu, MenuItem, Theme } from '@mui/material'
+import { withStyles, WithStyles } from '@mui/styles'
 import * as React from 'react'
 import { IReviewerUser } from '../../redux/modules/interfaces.reviewers'
 
@@ -27,7 +28,7 @@ export interface IState {
   anchorEl: HTMLElement | null
 }
 
-type TComponentProps = IProps & WithStyles
+type TComponentProps = IProps & WithStyles<typeof styles>
 class AssignerAvatar extends React.PureComponent<TComponentProps, IState> {
   private handleOpenMenu: any
 

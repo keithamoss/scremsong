@@ -1,5 +1,6 @@
-import { Avatar, Chip, Theme, withStyles, WithStyles } from '@material-ui/core'
 import FaceIcon from '@material-ui/icons/Face'
+import { Avatar, Chip, Theme } from '@mui/material'
+import { withStyles, WithStyles } from '@mui/styles'
 import ChipInput from 'material-ui-chip-input'
 import * as React from 'react'
 
@@ -25,7 +26,7 @@ export interface IState {
   errored: boolean
 }
 
-type TComponentProps = IProps & WithStyles
+type TComponentProps = IProps & WithStyles<typeof styles>
 class TweetReplyChipInput extends React.Component<TComponentProps, IState> {
   private chipRenderer: any
 

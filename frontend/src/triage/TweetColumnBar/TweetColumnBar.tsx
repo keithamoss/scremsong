@@ -1,7 +1,8 @@
-import { AppBar, IconButton, Theme, Toolbar, Tooltip, Typography, withStyles, WithStyles } from '@material-ui/core'
-import { lightBlue } from '@material-ui/core/colors'
 import NewReleases from '@material-ui/icons/NewReleases'
 import NewReleasesOutlined from '@material-ui/icons/NewReleasesOutlined'
+import { AppBar, IconButton, Theme, Toolbar, Tooltip, Typography } from '@mui/material'
+import { lightBlue } from '@mui/material/colors'
+import { withStyles, WithStyles } from '@mui/styles'
 import * as React from 'react'
 import { isDevEnvironment } from '../../redux/modules/app'
 import { IReviewerUser } from '../../redux/modules/interfaces.reviewers'
@@ -28,7 +29,7 @@ export interface IProps {
 
 export interface IState {}
 
-type TComponentProps = IProps & WithStyles
+type TComponentProps = IProps & WithStyles<typeof styles>
 class TweetColumnBar extends React.PureComponent<TComponentProps, IState> {
   public render() {
     const {

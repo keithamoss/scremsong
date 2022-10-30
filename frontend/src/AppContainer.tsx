@@ -1,4 +1,5 @@
-import { createTheme, LinearProgress, Theme, ThemeProvider, withStyles, WithStyles } from '@material-ui/core'
+import { createTheme, LinearProgress, Theme, ThemeProvider } from '@mui/material'
+import { withStyles, WithStyles } from '@mui/styles'
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
@@ -129,7 +130,7 @@ function fetchInitialAppState() {
   }
 }
 
-type TComponentProps = IProps & IStoreProps & IDispatchProps & IRouteProps & WithStyles
+type TComponentProps = IProps & IStoreProps & IDispatchProps & IRouteProps & WithStyles<typeof styles>
 export class AppContainer extends React.Component<TComponentProps, {}> {
   public componentDidMount() {
     setObtrusiveScrollbarsClass()

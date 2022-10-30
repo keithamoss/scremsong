@@ -1,7 +1,7 @@
-import { FormControl, FormHelperText, TextField, Typography } from '@material-ui/core'
-import { amber } from '@material-ui/core/colors'
-import red from '@material-ui/core/colors/red'
-import { TextFieldProps } from '@material-ui/core/TextField'
+import { FormControl, FormHelperText, TextField, Typography } from '@mui/material'
+import { amber } from '@mui/material/colors'
+import red from '@mui/material/colors/red'
+import { TextFieldProps } from '@mui/material/TextField'
 import * as React from 'react'
 
 export interface IProps {

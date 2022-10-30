@@ -1,4 +1,4 @@
-import { Typography } from '@material-ui/core'
+import { Typography } from '@mui/material'
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { getConsumedTwitterRateLimitResources } from '../../redux/modules/app'

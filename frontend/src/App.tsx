@@ -1,17 +1,4 @@
 /* eslint-disable react/prefer-stateless-function */
-import {
-  Badge,
-  CssBaseline,
-  Drawer,
-  IconButton,
-  List,
-  ListItem,
-  Theme,
-  Tooltip,
-  withStyles,
-  WithStyles,
-} from '@material-ui/core'
-import blue from '@material-ui/core/colors/blue'
 import AssignmentIndIcon from '@material-ui/icons/AssignmentInd'
 import DashboardIcon from '@material-ui/icons/Dashboard'
 import DNSIcon from '@material-ui/icons/Dns'
@@ -19,6 +6,9 @@ import HelpIcon from '@material-ui/icons/Help'
 import NewReleases from '@material-ui/icons/NewReleases'
 import SettingsIcon from '@material-ui/icons/Settings'
 import ViewColumnIcon from '@material-ui/icons/ViewColumn'
+import { Badge, CssBaseline, Drawer, IconButton, List, ListItem, Theme, Tooltip } from '@mui/material'
+import blue from '@mui/material/colors/blue'
+import { withStyles, WithStyles } from '@mui/styles'
 import classNames from 'classnames'
 import * as React from 'react'
 import { Link, Route } from 'react-router-dom'
@@ -87,7 +77,7 @@ export interface IProps {
   onOpenSettingsDialog: any
 }
 
-class App extends React.Component<IProps & WithStyles, {}> {
+class App extends React.Component<React.PropsWithChildren<IProps & WithStyles<typeof styles>>, {}> {
   public render() {
     const { userAssignmentCount, somethingIsBroken, onOpenSettingsDialog, location, classes } = this.props
 

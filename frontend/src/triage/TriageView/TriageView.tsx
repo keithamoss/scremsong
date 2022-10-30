@@ -1,6 +1,6 @@
 /* eslint-disable react/no-access-state-in-setstate */
-import { withStyles, WithStyles } from '@material-ui/core'
-import { grey } from '@material-ui/core/colors'
+import { grey } from '@mui/material/colors'
+import { withStyles, WithStyles } from '@mui/styles'
 import * as React from 'react'
 import { ITriageColumn } from '../../redux/modules/triage'
 import TweetColumnContainer from '../TweetColumn/TweetColumnContainer'
@@ -45,7 +45,7 @@ export interface IState {
   assignmentId: number | null
 }
 
-type TComponentProps = IProps & WithStyles
+type TComponentProps = IProps & WithStyles<typeof styles>
 class TriageView extends React.Component<TComponentProps, IState> {
   private onOpenAssigner: any
 

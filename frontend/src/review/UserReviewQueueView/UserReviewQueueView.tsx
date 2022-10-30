@@ -1,22 +1,12 @@
-import {
-  AppBar,
-  Button,
-  FormControl,
-  Input,
-  InputLabel,
-  Theme,
-  Tooltip,
-  Typography,
-  withStyles,
-  WithStyles,
-} from '@material-ui/core'
-import { deepOrange } from '@material-ui/core/colors'
-import MenuItem from '@material-ui/core/MenuItem'
-import Select from '@material-ui/core/Select'
-import Toolbar from '@material-ui/core/Toolbar'
 import AssignmentInd from '@material-ui/icons/AssignmentInd'
 import Power from '@material-ui/icons/Power'
 import PowerOff from '@material-ui/icons/PowerOff'
+import { AppBar, Button, FormControl, Input, InputLabel, Theme, Tooltip, Typography } from '@mui/material'
+import { deepOrange } from '@mui/material/colors'
+import MenuItem from '@mui/material/MenuItem'
+import Select from '@mui/material/Select'
+import Toolbar from '@mui/material/Toolbar'
+import { withStyles, WithStyles } from '@mui/styles'
 import classNames from 'classnames'
 import * as React from 'react'
 import { IReviewerAssignment, IReviewerUser } from '../../redux/modules/interfaces.reviewers'
@@ -88,7 +78,7 @@ export interface IState {
   assignerOpen: boolean
 }
 
-type TComponentProps = IProps & WithStyles
+type TComponentProps = IProps & WithStyles<typeof styles>
 
 class UserReviewQueueView extends React.PureComponent<TComponentProps, IState> {
   private onOpenAssigner: any
@@ -154,7 +144,8 @@ class UserReviewQueueView extends React.PureComponent<TComponentProps, IState> {
                   name: 'queue-user',
                   id: 'queue-user-control',
                 }}
-                classes={{ root: classes.white, icon: classes.white }}
+                // classes={{ root: classes.white, icon: classes.white }}
+                classes={{ icon: classes.white }}
                 input={
                   <Input
                     classes={{
@@ -185,7 +176,8 @@ class UserReviewQueueView extends React.PureComponent<TComponentProps, IState> {
                   name: 'queue-sort-order',
                   id: 'queue-sort-order-control',
                 }}
-                classes={{ root: classes.white, icon: classes.white }}
+                // classes={{ root: classes.white, icon: classes.white }}
+                classes={{ icon: classes.white }}
                 input={
                   <Input
                     classes={{

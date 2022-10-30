@@ -1,22 +1,11 @@
 /* eslint-disable react/no-access-state-in-setstate */
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  Collapse,
-  Menu,
-  MenuItem,
-  Theme,
-  Tooltip,
-  withStyles,
-  WithStyles,
-} from '@material-ui/core'
 import AssignmentInd from '@material-ui/icons/AssignmentInd'
 import ExpandLess from '@material-ui/icons/ExpandLess'
 import ExpandMore from '@material-ui/icons/ExpandMore'
 import MoreVert from '@material-ui/icons/MoreVert'
 import OpenInNew from '@material-ui/icons/OpenInNew'
+import { Badge, Button, Card, CardContent, Collapse, Menu, MenuItem, Theme, Tooltip } from '@mui/material'
+import { withStyles, WithStyles } from '@mui/styles'
 import classNames from 'classnames'
 import * as React from 'react'
 import { ENotificationVariant } from '../../redux/modules/app'
@@ -81,7 +70,7 @@ export interface IState {
   anchorEl: HTMLElement | null
 }
 
-type TComponentProps = IProps & WithStyles
+type TComponentProps = IProps & WithStyles<typeof styles>
 class ReviewCard extends React.PureComponent<TComponentProps, IState> {
   private onOpenAssigner: any
 

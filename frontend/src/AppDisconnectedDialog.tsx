@@ -1,5 +1,6 @@
-import { Dialog, DialogContent, DialogTitle, IconButton, Theme, withStyles, WithStyles } from '@material-ui/core'
 import SyncProblemIcon from '@material-ui/icons/SyncProblem'
+import { Dialog, DialogContent, DialogTitle, IconButton, Theme } from '@mui/material'
+import { withStyles, WithStyles } from '@mui/styles'
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { IStore } from './redux/modules/reducer'
@@ -21,7 +22,7 @@ const styles = (theme: Theme) =>
     },
   } as any)
 
-type TComponentProps = IProps & IStoreProps & IDispatchProps & WithStyles
+type TComponentProps = IProps & IStoreProps & IDispatchProps & WithStyles<typeof styles>
 class AppDisconnectedDialog extends React.PureComponent<TComponentProps, {}> {
   public render() {
     const { disconnected, classes } = this.props
