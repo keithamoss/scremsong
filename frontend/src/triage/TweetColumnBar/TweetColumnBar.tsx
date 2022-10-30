@@ -1,5 +1,5 @@
-import NewReleases from '@material-ui/icons/NewReleases'
-import NewReleasesOutlined from '@material-ui/icons/NewReleasesOutlined'
+import NewReleases from '@mui/icons-material/NewReleases'
+import NewReleasesOutlined from '@mui/icons-material/NewReleasesOutlined'
 import { AppBar, IconButton, Theme, Toolbar, Tooltip, Typography } from '@mui/material'
 import { lightBlue } from '@mui/material/colors'
 import { withStyles, WithStyles } from '@mui/styles'

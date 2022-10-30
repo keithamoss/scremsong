@@ -1,4 +1,4 @@
-import SyncProblemIcon from '@material-ui/icons/SyncProblem'
+import SyncProblemIcon from '@mui/icons-material/SyncProblem'
 import { Dialog, DialogContent, DialogTitle, IconButton, Theme } from '@mui/material'
 import { withStyles, WithStyles } from '@mui/styles'
 import * as React from 'react'

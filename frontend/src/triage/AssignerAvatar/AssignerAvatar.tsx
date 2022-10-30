@@ -1,4 +1,4 @@
-import { Person } from '@material-ui/icons'
+import { Person } from '@mui/icons-material'
 import { Avatar, Button, Menu, MenuItem, Theme } from '@mui/material'
 import { withStyles, WithStyles } from '@mui/styles'
 import * as React from 'react'

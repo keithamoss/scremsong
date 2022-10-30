@@ -1,5 +1,5 @@
-import CloudDownload from '@material-ui/icons/CloudDownload'
-import Refresh from '@material-ui/icons/Refresh'
+import CloudDownload from '@mui/icons-material/CloudDownload'
+import Refresh from '@mui/icons-material/Refresh'
 import { Button, FormControl, InputLabel, MenuItem, Select, Theme } from '@mui/material'
 import { withStyles, WithStyles } from '@mui/styles'
 import classNames from 'classnames'

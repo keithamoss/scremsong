@@ -1,5 +1,5 @@
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
-import VisibilityIcon from '@material-ui/icons/Visibility'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import VisibilityIcon from '@mui/icons-material/Visibility'
 import {
   Accordion,
   AccordionDetails,

@@ -1,11 +1,11 @@
 /* eslint-disable no-else-return */
 /* eslint-disable no-underscore-dangle */
-import AssignmentIndIcon from '@material-ui/icons/AssignmentInd'
-import AssignmentOutlinedIcon from '@material-ui/icons/AssignmentOutlined'
-import BrightnessAutoIcon from '@material-ui/icons/BrightnessAuto'
-import CheckCircleOutlinedIcon from '@material-ui/icons/CheckCircleOutlined'
-import VisibilityOffOutlinedIcon from '@material-ui/icons/VisibilityOffOutlined'
-import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined'
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd'
+import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined'
+import BrightnessAutoIcon from '@mui/icons-material/BrightnessAuto'
+import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined'
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined'
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
 import { Button, LinearProgress, Theme, Tooltip } from '@mui/material'
 import { withStyles, WithStyles } from '@mui/styles'
 import { isEqual } from 'lodash-es'

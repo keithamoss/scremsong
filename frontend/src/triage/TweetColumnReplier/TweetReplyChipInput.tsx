@@ -1,4 +1,4 @@
-import FaceIcon from '@material-ui/icons/Face'
+import FaceIcon from '@mui/icons-material/Face'
 import { Avatar, Chip, Theme } from '@mui/material'
 import { withStyles, WithStyles } from '@mui/styles'
 import ChipInput from 'material-ui-chip-input'

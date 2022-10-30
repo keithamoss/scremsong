@@ -1,7 +1,7 @@
-import AssignmentIcon from '@material-ui/icons/Assignment'
-import AssignmentReturnIcon from '@material-ui/icons/AssignmentReturn'
-import PersonIcon from '@material-ui/icons/Person'
-import PowerOff from '@material-ui/icons/PowerOff'
+import AssignmentIcon from '@mui/icons-material/Assignment'
+import AssignmentReturnIcon from '@mui/icons-material/AssignmentReturn'
+import PersonIcon from '@mui/icons-material/Person'
+import PowerOff from '@mui/icons-material/PowerOff'
 import {
   Avatar,
   Badge,
