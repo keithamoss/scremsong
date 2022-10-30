@@ -31,9 +31,10 @@ WORKDIR /app
 # Python deps management
 RUN pip install --upgrade pip
 RUN apt-get install -y curl
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+RUN curl -sSL https://install.python-poetry.org | python -
+# Even though Dependabot takes care of updating packages for us, we still need this for poetry to install without complaining about some packages "not being available at [version]". Whatever!
 RUN poetry update
-RUN poetry install --no-dev
+RUN poetry install --only main
 
 RUN apt-get remove -y --purge curl && \
     apt-get autoremove -y && \
