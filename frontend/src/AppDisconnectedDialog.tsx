@@ -39,7 +39,7 @@ class AppDisconnectedDialog extends React.PureComponent<TComponentProps, {}> {
           <img src="/disconnected.jpg" />
         </DialogContent>
       </Dialog>
-    );
+    )
   }
 }
 

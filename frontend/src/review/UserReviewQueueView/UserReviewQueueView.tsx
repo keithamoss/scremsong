@@ -31,7 +31,7 @@ const styles = (theme: Theme) => ({
     '&:before': {
       borderBottomColor: 'rgba(255, 255, 255, 0.4)',
     },
-    '&:hover:not($disabled)::before': {
+    '&.Mui-active:hover::before': {
       borderBottomColor: 'rgba(255, 255, 255, 0.87) !important',
     },
     '&:after': {
@@ -48,7 +48,7 @@ const styles = (theme: Theme) => ({
   buttonOffline: {
     margin: theme.spacing(1),
     backgroundColor: deepOrange[500],
-    '&:hover:not($disabled)': {
+    '&.Mui-active:hover': {
       backgroundColor: deepOrange[700],
     },
   },

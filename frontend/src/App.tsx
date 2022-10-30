@@ -104,7 +104,8 @@ class App extends React.Component<React.PropsWithChildren<IProps & WithStyles<ty
                 <IconButton
                   aria-label="Your queue"
                   className={location.pathname === '/queue' ? classes.selectedIcon : undefined}
-                  size="large">
+                  size="large"
+                >
                   <Badge badgeContent={userAssignmentCount} color="primary">
                     <AssignmentIndIcon />
                   </Badge>
@@ -121,7 +122,8 @@ class App extends React.Component<React.PropsWithChildren<IProps & WithStyles<ty
                 <IconButton
                   aria-label="Triage view"
                   className={location.pathname === '/triage' ? classes.selectedIcon : undefined}
-                  size="large">
+                  size="large"
+                >
                   <ViewColumnIcon />
                 </IconButton>
               </Tooltip>
@@ -136,7 +138,8 @@ class App extends React.Component<React.PropsWithChildren<IProps & WithStyles<ty
                 <IconButton
                   aria-label="Dashboard view"
                   className={location.pathname === '/' ? classes.selectedIcon : undefined}
-                  size="large">
+                  size="large"
+                >
                   <DashboardIcon />
                 </IconButton>
               </Tooltip>
@@ -151,7 +154,8 @@ class App extends React.Component<React.PropsWithChildren<IProps & WithStyles<ty
                 <IconButton
                   aria-label="Admin panel"
                   className={location.pathname.startsWith('/admin/') ? classes.selectedIcon : undefined}
-                  size="large">
+                  size="large"
+                >
                   {somethingIsBroken === true && (
                     <Badge badgeContent="!" color="secondary" className={classes.disconnectedBadge}>
                       <DNSIcon />
@@ -212,7 +216,7 @@ class App extends React.Component<React.PropsWithChildren<IProps & WithStyles<ty
         <AppDisconnectedDialog />
         <SettingsDialogContainer />
       </div>
-    );
+    )
   }
 }
 

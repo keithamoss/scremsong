@@ -76,8 +76,8 @@ class SettingsDialog extends React.PureComponent<TComponentProps, IState> {
       })
     }
 
-    this.onChangeSetting = (settingName: string) => (_event: React.MouseEvent<HTMLElement>, value: any) => {
-      this.props.onChangeSetting(settingName, value)
+    this.onChangeSetting = (settingName: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+      this.props.onChangeSetting(settingName, event.target.checked)
     }
 
     this.handleClose = (_event: React.MouseEvent<HTMLElement>) => {

@@ -56,7 +56,7 @@ class AdminPanel extends React.PureComponent<TComponentProps, IState> {
       activeTab: getActiveTab(),
     }
 
-    this.handleChange = (_event: React.MouseEvent<HTMLElement>, value: number) => {
+    this.handleChange = (_event: React.SyntheticEvent<HTMLElement>, value: number) => {
       switch (value) {
         case 2:
           props.history.push('/admin/log-viewer')
