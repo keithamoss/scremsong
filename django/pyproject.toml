@@ -23,7 +23,7 @@ sh = "1.14.3"
 channels = "4.0.0"
 channels-redis = "4.0.0"
 celery = "5.2.7"
-gevent = "22.10.1"
+gevent = "22.10.2"
 
 [tool.poetry.dev-dependencies]
 
