@@ -1,6 +1,5 @@
-import { createTheme, LinearProgress, StyledEngineProvider, Theme } from '@mui/material'
-import { adaptV4Theme, ThemeProvider } from '@mui/material/styles'
-import { withStyles, WithStyles } from '@mui/styles'
+import { createTheme, LinearProgress, StyledEngineProvider } from '@mui/material'
+import { styled, ThemeProvider } from '@mui/material/styles'
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
@@ -12,59 +11,45 @@ import { changeCurrentReviewer, getPendingUserAssignments } from './redux/module
 import { ESocialTwitterRateLimitState } from './redux/modules/social'
 import { fetchUser, ISelf } from './redux/modules/user'
 
-declare module '@mui/styles/defaultTheme' {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface DefaultTheme extends Theme {}
-}
-
 // const Config: IConfig = require("Config") as any
 
-const theme = createTheme(
-  adaptV4Theme({
-    // palette: {
-    //     primary: purple,
-    //     secondary: green,
-    // },
-    // status: {
-    //     danger: "orange",
-    // },
-  })
-)
+const appTheme = createTheme()
 
-// eslint-disable-next-line @typescript-eslint/no-shadow
-const styles = (theme: Theme) =>
-  ({
-    loaderBackground: {
-      backgroundColor: theme.palette.primary.main,
-      width: '100%',
-      height: '100%',
-    },
-    flexboxCentredContainer: {
-      display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'center',
-      alignItems: 'center',
-      height: '100%',
-    },
-    flexboxCentredBox: {
-      width: '70%',
-      maxWidth: '300px',
-      textAlign: 'center',
-      alignItems: 'start',
-      '& > div:last-child': {
-        marginTop: '-25px',
-      },
-      '& img': {
-        width: '100%',
-        height: '100%',
-        mixBlendMode: 'luminosity',
-      },
-      '& h1': {
-        fontSize: '38px',
-        color: 'white',
-      },
-    },
-  } as any)
+const DivLoaderBackground = styled('div')(({ theme }) => ({
+  backgroundColor: theme.palette.primary.main,
+  width: '100%',
+  height: '100%',
+}))
+
+const DivFlexboxCentredContainer = styled('div')(() => ({
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'center',
+  alignItems: 'center',
+  height: '100%',
+}))
+
+const DivFlexboxCentredBox = styled('div')(() => ({
+  width: '70%',
+  maxWidth: '300px',
+  textAlign: 'center',
+  alignItems: 'start',
+
+  '& > div:last-child': {
+    marginTop: '-25px',
+  },
+
+  '& img': {
+    width: '100%',
+    height: '100%',
+    mixBlendMode: 'luminosity',
+  },
+
+  '& h1': {
+    fontSize: '38px',
+    color: 'white',
+  },
+}))
 
 export interface IProps {}
 
@@ -138,7 +123,7 @@ function fetchInitialAppState() {
   }
 }
 
-type TComponentProps = IProps & IStoreProps & IDispatchProps & IRouteProps & WithStyles<typeof styles>
+type TComponentProps = IProps & IStoreProps & IDispatchProps & IRouteProps
 export class AppContainer extends React.Component<TComponentProps, {}> {
   public componentDidMount() {
     setObtrusiveScrollbarsClass()
@@ -170,16 +155,15 @@ export class AppContainer extends React.Component<TComponentProps, {}> {
       onOpenSettingsDialog,
       location,
       children,
-      classes,
     } = this.props
 
     let component
     if (isAppLoading === true) {
       component = (
-        <div className={classes.loaderBackground}>
+        <DivLoaderBackground>
           <LinearProgress />
-          <div className={classes.flexboxCentredContainer}>
-            <div className={classes.flexboxCentredBox}>
+          <DivFlexboxCentredContainer>
+            <DivFlexboxCentredBox>
               <div>
                 {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
                 <img src="/alex.jpg" onMouseDown={this.playAudio} onMouseUp={this.stopAudio} onBlur={this.stopAudio} />
@@ -190,9 +174,9 @@ export class AppContainer extends React.Component<TComponentProps, {}> {
               <audio preload="auto" id="scremsong-sound">
                 <source src="dominic_screm_song.mp3" />
               </audio>
-            </div>
-          </div>
-        </div>
+            </DivFlexboxCentredBox>
+          </DivFlexboxCentredContainer>
+        </DivLoaderBackground>
       )
     } else if (userLoggedIn === false) {
       component = <LoginDialog open />
@@ -210,7 +194,7 @@ export class AppContainer extends React.Component<TComponentProps, {}> {
 
     return (
       <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={theme}>{component}</ThemeProvider>
+        <ThemeProvider theme={appTheme}>{component}</ThemeProvider>
       </StyledEngineProvider>
     )
   }
@@ -249,8 +233,6 @@ const mapDispatchToProps = (dispatch: Function): IDispatchProps => {
   }
 }
 
-const AppContainerWrapped = withRouter(
+export default withRouter(
   connect<IStoreProps, IDispatchProps, IProps, IStore>(mapStateToProps, mapDispatchToProps)(AppContainer) as any
 )
-
-export default withStyles(styles)(AppContainerWrapped)
