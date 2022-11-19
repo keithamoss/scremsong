@@ -32,7 +32,7 @@
     "redux-form": "^8.3.8",
     "redux-thunk": "^2.4.2",
     "reselect": "^4.1.7",
-    "web-vitals": "^3.0.4"
+    "web-vitals": "^3.1.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.5",
