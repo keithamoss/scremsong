@@ -1,17 +1,6 @@
-import { Theme } from '@mui/material'
-import { withStyles, WithStyles } from '@mui/styles'
-// import ChipInput from 'material-ui-chip-input'
-import * as React from 'react'
-
-const styles = (theme: Theme) => ({
-  root: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-  },
-  chip: {
-    marginRight: theme.spacing(1),
-  },
-})
+import FaceIcon from '@mui/icons-material/Face'
+import { Autocomplete, TextField } from '@mui/material'
+import React from 'react'
 
 export interface IProps {
   defaultValue: string[]
@@ -21,79 +10,46 @@ export interface IProps {
   onFieldInvalid: Function
 }
 
-export interface IState {
-  // errored: boolean
+type TComponentProps = IProps
+
+export default function TweetReplyChipInput(props: TComponentProps) {
+  const { defaultValue, onChipChange, onFieldValid, onFieldInvalid } = props
+
+  const [errored, setErrored] = React.useState<boolean>(false)
+
+  return (
+    <Autocomplete
+      multiple
+      freeSolo
+      defaultValue={defaultValue}
+      options={[]}
+      limitTags={4}
+      ChipProps={{ icon: <FaceIcon /> }}
+      sx={{ width: '588px' }}
+      // Can't make the typings work on value for some reason *shrugs*
+      onChange={(_e, value: any) => {
+        const isErrored = value !== null && value.length === 0
+
+        if (errored === true && isErrored === false) {
+          onFieldValid()
+        } else if (errored === false && isErrored === true) {
+          onFieldInvalid()
+        }
+
+        setErrored(isErrored)
+
+        if (value !== null && Array.isArray(value)) {
+          onChipChange(value)
+        }
+      }}
+      renderInput={(params: any) => (
+        <TextField
+          {...params}
+          error={errored}
+          label={errored === true ? 'You need to reply to at least one person' : 'Replying to'}
+          placeholder="@"
+        />
+      )}
+    />
+  )
 }
-
-type TComponentProps = IProps & WithStyles<typeof styles>
-class TweetReplyChipInput extends React.Component<TComponentProps, IState> {
-  // private chipRenderer: any
-
-  // private handleChipChange: any
-
-  public constructor(props: TComponentProps) {
-    super(props)
-
-    // this.state = { errored: false }
-
-    // this.chipRenderer = (
-    //   { value, isFocused, isDisabled, handleClick, handleDelete, defaultStyle }: any,
-    //   key: string
-    // ) => (
-    //   <Chip
-    //     key={key}
-    //     style={{
-    //       ...defaultStyle,
-    //       pointerEvents: isDisabled ? 'none' : undefined,
-    //     }}
-    //     color={isFocused ? 'secondary' : undefined}
-    //     className={props.classes.chip}
-    //     onClick={handleClick}
-    //     onDelete={handleDelete}
-    //     label={value}
-    //     avatar={
-    //       <Avatar color={isFocused ? 'secondary' : undefined}>
-    //         <FaceIcon />
-    //       </Avatar>
-    //     }
-    //   />
-    // )
-    // this.handleChipChange = (chips: string[]) => {
-    //   const errored = chips.length === 0
-    //   if (this.state.errored === true && errored === false) {
-    //     this.props.onFieldValid()
-    //   } else if (this.state.errored === false && errored === true) {
-    //     this.props.onFieldInvalid()
-    //   }
-
-    //   this.setState({ errored })
-    //   this.props.onChipChange(chips)
-    // }
-  }
-
-  public render() {
-    // const { defaultValue, classes } = this.props
-    // const { errored } = this.state
-
-    return (
-      // <ChipInput
-      //   defaultValue={defaultValue}
-      //   placeholder="@"
-      //   fullWidth={true}
-      //   fullWidthInput={true}
-      //   variant="filled"
-      //   chipRenderer={this.chipRenderer}
-      //   newChipKeyCodes={[13, 32]}
-      //   label="Replying to"
-      //   InputLabelProps={{ shrink: true }}
-      //   onChange={this.handleChipChange}
-      //   classes={classes}
-      //   error={errored}
-      //   helperText={errored === true ? 'You need to reply to at least one person' : undefined}
-      // />
-      <div />
-    )
-  }
-}
-
-export default withStyles(styles)(TweetReplyChipInput)
