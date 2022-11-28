@@ -13,35 +13,35 @@ import {
   ListItemAvatar,
   ListItemSecondaryAction,
   ListItemText,
-  Theme,
 } from '@mui/material'
 import { yellow } from '@mui/material/colors'
 import blue from '@mui/material/colors/blue'
 import red from '@mui/material/colors/red'
-import { withStyles, WithStyles } from '@mui/styles'
+import { styled } from '@mui/material/styles'
 import { sortBy } from 'lodash-es'
 import * as React from 'react'
 import { IReviewerAssignment, IReviewerAssignmentCounts, IReviewerUser } from '../../redux/modules/interfaces.reviewers'
 import { ETweetColumnAssignerMode } from './TweetColumnAssignerContainer'
 
-const styles = (theme: Theme) => ({
-  assignedAvatar: {
-    backgroundColor: blue[100],
-    color: blue[600],
-  },
-  offlineAvatar: {
-    backgroundColor: red[100],
-    color: red[600],
-  },
-  assignedAndOfflineAvatar: {
-    backgroundColor: red[100],
-    color: red[600],
-    backgroundImage: 'linear-gradient(135deg, #bbdefb 50%, #ffcdd2 50%)',
-  },
-  badgeMargin: {
-    margin: theme.spacing(2),
-  },
-})
+const StyledAssignedAvatar = styled(Avatar)(() => ({
+  backgroundColor: blue[100],
+  color: blue[600],
+}))
+
+const StyledOfflineAvatar = styled(Avatar)(() => ({
+  backgroundColor: red[100],
+  color: red[600],
+}))
+
+const StyledAssignedAndOfflineAvatar = styled(Avatar)(() => ({
+  backgroundColor: red[100],
+  color: red[600],
+  backgroundImage: 'linear-gradient(135deg, #bbdefb 50%, #ffcdd2 50%)',
+}))
+
+const StyledBadge = styled(Badge)(({ theme }) => ({
+  margin: theme.spacing(2),
+}))
 
 export interface IProps {
   open: boolean
@@ -58,7 +58,7 @@ export interface IProps {
   onBulkReassign: any
 }
 
-type TComponentProps = IProps & WithStyles<typeof styles>
+type TComponentProps = IProps
 class TweetColumnAssigner extends React.Component<TComponentProps, {}> {
   private onAssignTweet: any
 
@@ -80,17 +80,8 @@ class TweetColumnAssigner extends React.Component<TComponentProps, {}> {
   }
 
   public render() {
-    const {
-      open,
-      assignment,
-      tweetId,
-      currentReviewer,
-      reviewers,
-      reviewerAssignmentCounts,
-      mode,
-      onCloseAssigner,
-      classes,
-    } = this.props
+    const { open, assignment, tweetId, currentReviewer, reviewers, reviewerAssignmentCounts, mode, onCloseAssigner } =
+      this.props
 
     const filterOutCurrentReviewer = (reviewer: IReviewerUser) => {
       if (mode === ETweetColumnAssignerMode.ASSIGN) {
@@ -145,7 +136,6 @@ class TweetColumnAssigner extends React.Component<TComponentProps, {}> {
                 const isAssigned = assignment !== null && reviewer.id === assignment.user_id
 
                 const secondaryText = isAssigned ? 'Assigned' : undefined
-                const className = isAssigned ? classes.assignedAvatar : undefined
 
                 let onClick
                 if (mode === ETweetColumnAssignerMode.ASSIGN) {
@@ -164,19 +154,22 @@ class TweetColumnAssigner extends React.Component<TComponentProps, {}> {
                     style={isAssigned === true ? { backgroundColor: yellow[200] } : undefined}
                   >
                     <ListItemAvatar>
-                      <Avatar className={className}>
-                        <PersonIcon />
-                      </Avatar>
+                      {isAssigned === false && (
+                        <Avatar>
+                          <PersonIcon />
+                        </Avatar>
+                      )}
+                      {isAssigned === true && (
+                        <StyledAssignedAvatar>
+                          <PersonIcon />
+                        </StyledAssignedAvatar>
+                      )}
                     </ListItemAvatar>
                     <ListItemText primary={reviewer.name} secondary={secondaryText} />
                     <ListItemSecondaryAction>
-                      <Badge
-                        color="primary"
-                        badgeContent={reviewerAssignmentCounts[reviewer.id]}
-                        className={classes.badgeMargin}
-                      >
+                      <StyledBadge color="primary" badgeContent={reviewerAssignmentCounts[reviewer.id]}>
                         <AssignmentIcon />
-                      </Badge>
+                      </StyledBadge>
                     </ListItemSecondaryAction>
                   </ListItem>
                 )
@@ -186,7 +179,6 @@ class TweetColumnAssigner extends React.Component<TComponentProps, {}> {
                 const isAssigned = assignment !== null && reviewer.id === assignment.user_id
 
                 const secondaryText = isAssigned ? 'Assigned - Offline' : 'Offline'
-                const className = isAssigned ? classes.assignedAndOfflineAvatar : classes.offlineAvatar
 
                 let onClick
                 if (mode === ETweetColumnAssignerMode.ASSIGN) {
@@ -208,19 +200,22 @@ class TweetColumnAssigner extends React.Component<TComponentProps, {}> {
                     }}
                   >
                     <ListItemAvatar>
-                      <Avatar className={className}>
-                        <PowerOff />
-                      </Avatar>
+                      {isAssigned === false && (
+                        <StyledOfflineAvatar>
+                          <PowerOff />
+                        </StyledOfflineAvatar>
+                      )}
+                      {isAssigned === true && (
+                        <StyledAssignedAndOfflineAvatar>
+                          <PowerOff />
+                        </StyledAssignedAndOfflineAvatar>
+                      )}
                     </ListItemAvatar>
                     <ListItemText primary={reviewer.name} secondary={secondaryText} />
                     <ListItemSecondaryAction>
-                      <Badge
-                        color="primary"
-                        badgeContent={reviewerAssignmentCounts[reviewer.id]}
-                        className={classes.badgeMargin}
-                      >
+                      <StyledBadge color="primary" badgeContent={reviewerAssignmentCounts[reviewer.id]}>
                         <AssignmentIcon />
-                      </Badge>
+                      </StyledBadge>
                     </ListItemSecondaryAction>
                   </ListItem>
                 )
@@ -233,4 +228,4 @@ class TweetColumnAssigner extends React.Component<TComponentProps, {}> {
   }
 }
 
-export default withStyles(styles)(TweetColumnAssigner)
+export default TweetColumnAssigner

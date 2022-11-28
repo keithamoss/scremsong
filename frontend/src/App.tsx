@@ -6,10 +6,9 @@ import HelpIcon from '@mui/icons-material/Help'
 import NewReleases from '@mui/icons-material/NewReleases'
 import SettingsIcon from '@mui/icons-material/Settings'
 import ViewColumnIcon from '@mui/icons-material/ViewColumn'
-import { Badge, CssBaseline, Drawer, IconButton, List, ListItem, Theme, Tooltip } from '@mui/material'
+import { Badge, CssBaseline, Drawer, IconButton, List, ListItem, Tooltip } from '@mui/material'
 import blue from '@mui/material/colors/blue'
-import { withStyles, WithStyles } from '@mui/styles'
-import classNames from 'classnames'
+import { styled } from '@mui/material/styles'
 import * as React from 'react'
 import { Link, Route } from 'react-router-dom'
 import AdminPanelContainer from './admin_panel/AdminPanel/AdminPanelContainer'
@@ -23,52 +22,32 @@ import TriageViewContainer from './triage/TriageView/TriageViewContainer'
 
 const drawerWidth = 82
 
-const styles = (theme: Theme) =>
-  ({
-    root: {
-      display: 'flex',
-      height: '100%',
-    },
-    drawer: {
-      width: drawerWidth,
-      flexShrink: 0,
-    },
-    drawerPaper: {
-      width: drawerWidth,
-    },
-    list: {
-      paddingTop: 0,
-    },
-    listItem: {
-      borderRight: '2px solid white',
-    },
-    selectedListItem: {
-      borderRight: '2px solid #2196f3',
-      // backgroundColor: lightBlue[50],
-    },
-    selectedIcon: {
-      color: blue[600],
-    },
-    disconnectedBadge: {
-      fontWeight: 700,
-    },
-    content: {
-      flexGrow: 1,
-      // padding: theme.spacing(3),
-      transition: theme.transitions.create('margin', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
-      }),
-      marginLeft: -drawerWidth,
-    },
-    contentShift: {
-      transition: theme.transitions.create('margin', {
-        easing: theme.transitions.easing.easeOut,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
-      marginLeft: 0,
-    },
-  } as any)
+const StyledRootContainerDiv = styled('div')(() => ({
+  display: 'flex',
+  height: '100%',
+}))
+
+const StyledDrawer = styled(Drawer)(() => ({
+  width: drawerWidth,
+  flexShrink: 0,
+  '& .paper': {
+    width: drawerWidth,
+  },
+}))
+
+const StyledList = styled(List)(() => ({
+  paddingTop: 0,
+}))
+
+const StyledDisconnectedBadge = styled(Badge)(() => ({
+  fontWeight: 700,
+}))
+
+const StyledContentMain = styled('main')(() => ({
+  flexGrow: 1,
+  // marginLeft: -drawerWidth,
+  marginLeft: 0,
+}))
 
 export interface IProps {
   userAssignmentCount: number
@@ -77,33 +56,25 @@ export interface IProps {
   onOpenSettingsDialog: any
 }
 
-class App extends React.Component<React.PropsWithChildren<IProps & WithStyles<typeof styles>>, {}> {
+class App extends React.Component<React.PropsWithChildren<IProps>, {}> {
   public render() {
-    const { userAssignmentCount, somethingIsBroken, onOpenSettingsDialog, location, classes } = this.props
+    const { userAssignmentCount, somethingIsBroken, onOpenSettingsDialog, location } = this.props
 
     return (
-      <div className={classes.root}>
+      <StyledRootContainerDiv>
         <CssBaseline />
-        <Drawer
-          className={classes.drawer}
-          variant="persistent"
-          anchor="left"
-          open
-          classes={{
-            paper: classes.drawerPaper,
-          }}
-        >
-          <List className={classes.list}>
+        <StyledDrawer variant="persistent" anchor="left" open>
+          <StyledList>
             <ListItem
               button={false}
               component={Link}
               to="/queue"
-              className={location.pathname === '/queue' ? classes.selectedListItem : classes.listItem}
+              sx={{ borderRight: location.pathname === '/queue' ? '2px solid #2196f3' : '2px solid white' }}
             >
               <Tooltip title="Go to your queue" enterDelay={1000}>
                 <IconButton
                   aria-label="Your queue"
-                  className={location.pathname === '/queue' ? classes.selectedIcon : undefined}
+                  sx={{ color: location.pathname === '/queue' ? blue[600] : undefined }}
                   size="large"
                 >
                   <Badge badgeContent={userAssignmentCount} color="primary">
@@ -116,12 +87,12 @@ class App extends React.Component<React.PropsWithChildren<IProps & WithStyles<ty
               button={false}
               component={Link}
               to="/triage"
-              className={location.pathname === '/triage' ? classes.selectedListItem : classes.listItem}
+              sx={{ borderRight: location.pathname === '/triage' ? '2px solid #2196f3' : '2px solid white' }}
             >
               <Tooltip title="Go to triage view" enterDelay={1000}>
                 <IconButton
                   aria-label="Triage view"
-                  className={location.pathname === '/triage' ? classes.selectedIcon : undefined}
+                  sx={{ color: location.pathname === '/triage' ? blue[600] : undefined }}
                   size="large"
                 >
                   <ViewColumnIcon />
@@ -132,12 +103,12 @@ class App extends React.Component<React.PropsWithChildren<IProps & WithStyles<ty
               button={false}
               component={Link}
               to="/"
-              className={location.pathname === '/' ? classes.selectedListItem : classes.listItem}
+              sx={{ borderRight: location.pathname === '/' ? '2px solid #2196f3' : '2px solid white' }}
             >
               <Tooltip title="Go to dashboard view" enterDelay={1000}>
                 <IconButton
                   aria-label="Dashboard view"
-                  className={location.pathname === '/' ? classes.selectedIcon : undefined}
+                  sx={{ color: location.pathname === '/' ? blue[600] : undefined }}
                   size="large"
                 >
                   <DashboardIcon />
@@ -148,18 +119,18 @@ class App extends React.Component<React.PropsWithChildren<IProps & WithStyles<ty
               button={false}
               component={Link}
               to="/admin/rate-limits"
-              className={location.pathname.startsWith('/admin/') ? classes.selectedListItem : classes.listItem}
+              sx={{ borderRight: location.pathname.startsWith('/admin/') ? '2px solid #2196f3' : '2px solid white' }}
             >
               <Tooltip title="Go to the admin panel" enterDelay={1000}>
                 <IconButton
                   aria-label="Admin panel"
-                  className={location.pathname.startsWith('/admin/') ? classes.selectedIcon : undefined}
+                  sx={{ color: location.pathname.startsWith('/admin/') ? blue[600] : undefined }}
                   size="large"
                 >
                   {somethingIsBroken === true && (
-                    <Badge badgeContent="!" color="secondary" className={classes.disconnectedBadge}>
+                    <StyledDisconnectedBadge badgeContent="!" color="secondary">
                       <DNSIcon />
-                    </Badge>
+                    </StyledDisconnectedBadge>
                   )}
                   {somethingIsBroken === false && <DNSIcon />}
                 </IconButton>
@@ -198,26 +169,22 @@ class App extends React.Component<React.PropsWithChildren<IProps & WithStyles<ty
                 </IconButton>
               </Tooltip>
             </ListItem>
-          </List>
-        </Drawer>
-        <main
-          className={classNames(classes.content, {
-            [classes.contentShift]: true,
-          })}
-        >
+          </StyledList>
+        </StyledDrawer>
+        <StyledContentMain>
           <Route exact path="/" component={DashboardViewContainer} />
           <Route path="/queue" component={UserReviewQueueViewContainer} />
           <Route path="/triage" component={TriageViewContainer} />
           <Route path="/admin/rate-limits" component={AdminPanelContainer} />
           <Route path="/admin/streaming" component={AdminPanelContainer} />
           <Route path="/admin/log-viewer" component={AdminPanelContainer} />
-        </main>
+        </StyledContentMain>
         <Notifier />
         <AppDisconnectedDialog />
         <SettingsDialogContainer />
-      </div>
+      </StyledRootContainerDiv>
     )
   }
 }
 
-export default withStyles(styles)(App)
+export default App

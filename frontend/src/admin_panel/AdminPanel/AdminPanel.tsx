@@ -1,25 +1,21 @@
-import { AppBar, Badge, Tab, Tabs, Theme } from '@mui/material'
-import { withStyles, WithStyles } from '@mui/styles'
+import { AppBar, Badge, Tab, Tabs } from '@mui/material'
+import { styled } from '@mui/material/styles'
 import * as React from 'react'
 import { ESocialTwitterRateLimitState } from '../../redux/modules/social'
 import LogViewerContainer from '../LogViewer/LogViewerContainer'
 import RealTimeTweetStreamingContainer from '../RealTimeTweetStreaming/RealTimeTweetStreamingContainer'
 import TwitterRateLimitStatusContainer from '../TwitterRateLimitStatus/TwitterRateLimitStatusContainer'
 
-const styles = (theme: Theme) => ({
-  root: {
-    flexGrow: 1,
-    height: '95%',
-    backgroundColor: theme.palette.background.paper,
-  },
-  tabContainer: {
-    height: '100%',
-    padding: theme.spacing(3),
-  },
-  disconnectedBadge: {
-    fontWeight: 700,
-  },
-})
+const StyledRootDiv = styled('div')(({ theme }) => ({
+  flexGrow: 1,
+  height: '95%',
+  backgroundColor: theme.palette.background.paper,
+}))
+
+const StyledTabContainerDiv = styled('div')(({ theme }) => ({
+  height: '100%',
+  padding: theme.spacing(3),
+}))
 
 export interface IProps {
   tweetStreamingConnected: boolean
@@ -32,7 +28,7 @@ export interface IState {
   activeTab: number
 }
 
-type TComponentProps = IProps & WithStyles<typeof styles>
+type TComponentProps = IProps
 
 class AdminPanel extends React.PureComponent<TComponentProps, IState> {
   private handleChange: any
@@ -72,20 +68,18 @@ class AdminPanel extends React.PureComponent<TComponentProps, IState> {
   }
 
   public render() {
-    const { tweetStreamingConnected, twitterRateLimitState, classes } = this.props
+    const { tweetStreamingConnected, twitterRateLimitState } = this.props
     const { activeTab } = this.state
-
-    const TabContainer = (props: any) => <div className={classes.tabContainer}>{props.children}</div>
 
     return (
       <React.Fragment>
-        <div className={classes.root}>
+        <StyledRootDiv>
           <AppBar position="static">
-            <Tabs value={activeTab} onChange={this.handleChange}>
+            <Tabs value={activeTab} onChange={this.handleChange} textColor="inherit" indicatorColor="secondary">
               {twitterRateLimitState === ESocialTwitterRateLimitState.RATE_LIMITED && (
                 <Tab
                   label={
-                    <Badge badgeContent="!" color="secondary" className={classes.disconnectedBadge}>
+                    <Badge badgeContent="!" color="secondary">
                       Twitter rate limits
                     </Badge>
                   }
@@ -98,7 +92,7 @@ class AdminPanel extends React.PureComponent<TComponentProps, IState> {
               {tweetStreamingConnected === false && (
                 <Tab
                   label={
-                    <Badge badgeContent="!" color="secondary" className={classes.disconnectedBadge}>
+                    <Badge badgeContent="!" color="secondary">
                       Real-time Tweet Streaming
                     </Badge>
                   }
@@ -111,24 +105,24 @@ class AdminPanel extends React.PureComponent<TComponentProps, IState> {
           </AppBar>
 
           {activeTab === 0 && (
-            <TabContainer>
+            <StyledTabContainerDiv>
               <TwitterRateLimitStatusContainer />
-            </TabContainer>
+            </StyledTabContainerDiv>
           )}
           {activeTab === 1 && (
-            <TabContainer>
+            <StyledTabContainerDiv>
               <RealTimeTweetStreamingContainer />
-            </TabContainer>
+            </StyledTabContainerDiv>
           )}
           {activeTab === 2 && (
-            <TabContainer>
+            <StyledTabContainerDiv>
               <LogViewerContainer />
-            </TabContainer>
+            </StyledTabContainerDiv>
           )}
-        </div>
+        </StyledRootDiv>
       </React.Fragment>
     )
   }
 }
 
-export default withStyles(styles)(AdminPanel)
+export default AdminPanel

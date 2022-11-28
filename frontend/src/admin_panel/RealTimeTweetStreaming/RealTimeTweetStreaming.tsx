@@ -1,33 +1,25 @@
+import { ToggleOff } from '@mui/icons-material'
 import Autorenew from '@mui/icons-material/Autorenew'
 import PlayArrow from '@mui/icons-material/PlayArrow'
 import Refresh from '@mui/icons-material/Refresh'
 import ToggleOn from '@mui/icons-material/ToggleOn'
-import { Button, List, ListItem, ListItemText, ListSubheader, Theme, Tooltip, Typography } from '@mui/material'
-import { withStyles, WithStyles } from '@mui/styles'
-import classNames from 'classnames'
+import { Button, List, ListItem, ListItemText, ListSubheader, Tooltip, Typography } from '@mui/material'
+import { styled } from '@mui/material/styles'
 import * as React from 'react'
 import { ITaskInfo, ITaskQueueInfo } from './types'
 
-const styles = (theme: Theme) => ({
-  flexGrid: {
-    display: 'flex',
-  },
-  flexCol: {
-    flex: 1,
-  },
-  button: {
-    margin: theme.spacing(1),
-  },
-  taskControlButtons: {
-    marginBottom: theme.spacing(3),
-  },
-  leftIcon: {
-    marginRight: theme.spacing(1),
-  },
-  iconSmall: {
-    fontSize: 20,
-  },
-})
+const StyledFlexGrid = styled('div')(() => ({
+  display: 'flex',
+}))
+
+const StyledFlexCol = styled('div')(() => ({
+  flex: 1,
+}))
+
+const StyledTaskControlButton = styled(Button)(({ theme }) => ({
+  margin: theme.spacing(1),
+  marginBottom: theme.spacing(3),
+}))
 
 export interface IProps {
   tasks: ITaskQueueInfo
@@ -41,7 +33,7 @@ export interface IProps {
 
 export interface IState {}
 
-type TComponentProps = IProps & WithStyles<typeof styles>
+type TComponentProps = IProps
 
 class RealTimeTweetStreaming extends React.PureComponent<TComponentProps, IState> {
   public render() {
@@ -53,85 +45,55 @@ class RealTimeTweetStreaming extends React.PureComponent<TComponentProps, IState
       refreshTasksInfo,
       isMuzzled,
       toggleMuzzledMode,
-      classes,
     } = this.props
 
     return (
       <React.Fragment>
         <Tooltip title="Restart the rate limit collection task">
-          <Button
-            variant="contained"
-            color="primary"
-            className={classNames(classes.button, classes.taskControlButtons)}
-            onClick={restartRateLimitCollection}
-          >
-            <Autorenew className={classNames(classes.leftIcon, classes.iconSmall)} />
+          <StyledTaskControlButton variant="contained" startIcon={<Autorenew />} onClick={restartRateLimitCollection}>
             Restart the rate limit collection task
-          </Button>
+          </StyledTaskControlButton>
         </Tooltip>
 
         <Tooltip title="Kill and restart tweet streaming tasks">
-          <Button
-            variant="contained"
-            color="primary"
-            className={classNames(classes.button, classes.taskControlButtons)}
-            onClick={killAndRestartTweetStreaming}
-          >
-            <Autorenew className={classNames(classes.leftIcon, classes.iconSmall)} />
+          <StyledTaskControlButton variant="contained" startIcon={<Autorenew />} onClick={killAndRestartTweetStreaming}>
             Kill and restart tweet streaming tasks
-          </Button>
+          </StyledTaskControlButton>
         </Tooltip>
 
         <Tooltip title="Run the fill missing tweets task">
-          <Button
-            variant="contained"
-            color="primary"
-            className={classNames(classes.button, classes.taskControlButtons)}
-            onClick={launchTaskFillMissingTweets}
-          >
-            <PlayArrow className={classNames(classes.leftIcon, classes.iconSmall)} />
+          <StyledTaskControlButton variant="contained" startIcon={<PlayArrow />} onClick={launchTaskFillMissingTweets}>
             Run the fill missing tweets task
-          </Button>
+          </StyledTaskControlButton>
         </Tooltip>
 
         <Tooltip title="Refresh tasks info">
-          <Button
-            variant="contained"
-            color="primary"
-            className={classNames(classes.button, classes.taskControlButtons)}
-            onClick={refreshTasksInfo}
-          >
-            <Refresh className={classNames(classes.leftIcon, classes.iconSmall)} />
+          <StyledTaskControlButton variant="contained" startIcon={<Refresh />} onClick={refreshTasksInfo}>
             Refresh tasks info
-          </Button>
+          </StyledTaskControlButton>
         </Tooltip>
 
-        <Tooltip title="Toggle muzzled mode">
-          <Button
+        <Tooltip title={isMuzzled ? 'Turn muzzled mode off' : 'Turn muzzled mode on'}>
+          <StyledTaskControlButton
             variant="contained"
             color={isMuzzled ? 'secondary' : 'primary'}
-            className={classNames(classes.button, classes.taskControlButtons)}
+            startIcon={isMuzzled ? <ToggleOn /> : <ToggleOff />}
             onClick={toggleMuzzledMode}
           >
-            <ToggleOn className={classNames(classes.leftIcon, classes.iconSmall)} />
             Toggle muzzled mode
-          </Button>
+          </StyledTaskControlButton>
         </Tooltip>
 
-        <div className={classes.flexGrid}>
+        <StyledFlexGrid>
           {Object.keys(tasks).map((queueName: string) => (
-            <div key={queueName} className={classes.flexCol}>
+            <StyledFlexCol key={queueName}>
               <Typography variant="h5" gutterBottom>
                 {queueName}
               </Typography>
               {tasks[queueName] !== null &&
                 Object.keys(tasks[queueName]).map((registryName: string) => (
                   <React.Fragment key={registryName}>
-                    <List
-                      component="ul"
-                      subheader={<ListSubheader component="div">{registryName}</ListSubheader>}
-                      // className={classes.root}
-                    >
+                    <List component="ul" subheader={<ListSubheader component="div">{registryName}</ListSubheader>}>
                       {tasks[queueName][registryName].map((task: ITaskInfo) => (
                         <ListItem key={task.id}>
                           <ListItemText primary={task.name} secondary={task.id} />
@@ -140,12 +102,12 @@ class RealTimeTweetStreaming extends React.PureComponent<TComponentProps, IState
                     </List>
                   </React.Fragment>
                 ))}
-            </div>
+            </StyledFlexCol>
           ))}
-        </div>
+        </StyledFlexGrid>
       </React.Fragment>
     )
   }
 }
 
-export default withStyles(styles)(RealTimeTweetStreaming)
+export default RealTimeTweetStreaming

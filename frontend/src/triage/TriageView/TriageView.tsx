@@ -1,6 +1,6 @@
 /* eslint-disable react/no-access-state-in-setstate */
 import { grey } from '@mui/material/colors'
-import { withStyles, WithStyles } from '@mui/styles'
+import { styled } from '@mui/material/styles'
 import * as React from 'react'
 import { ITriageColumn } from '../../redux/modules/triage'
 import TweetColumnContainer from '../TweetColumn/TweetColumnContainer'
@@ -9,29 +9,28 @@ import TweetColumnAssignerContainer, {
 } from '../TweetColumnAssigner/TweetColumnAssignerContainer'
 import TweetColumnBarContainer from '../TweetColumnBar/TweetColumnBarContainer'
 
-const styles = () =>
-  ({
-    columnContainerContainer: {
-      display: 'inline-block',
-      height: '100%',
-      backgroundColor: grey[200],
-      '& .tweet': {
-        width: '370px !important',
-        minHeight: '123px !important', // Height of the ActionBar
-        display: 'inline-block !important',
-      },
-    },
-    columnContainer: {
-      display: 'flex',
-      flexDirection: 'row',
-      height: '100%',
-    },
-    column: {
-      width: '420px',
-      height: '100%',
-      marginRight: '5px',
-    },
-  } as any)
+const StyledColumnContainerContainer = styled('div')(() => ({
+  display: 'inline-block',
+  height: '100%',
+  backgroundColor: grey[200],
+  '& .tweet': {
+    width: '370px !important',
+    minHeight: '123px !important', // Height of the ActionBar
+    display: 'inline-block !important',
+  },
+}))
+
+const StyledColumnContainer = styled('div')(() => ({
+  display: 'flex',
+  flexDirection: 'row',
+  height: '100%',
+}))
+
+const StyledColumn = styled('div')(() => ({
+  width: '420px',
+  height: '100%',
+  marginRight: '5px',
+}))
 
 export interface IProps {
   columns: ITriageColumn[]
@@ -45,7 +44,7 @@ export interface IState {
   assignmentId: number | null
 }
 
-type TComponentProps = IProps & WithStyles<typeof styles>
+type TComponentProps = IProps
 class TriageView extends React.Component<TComponentProps, IState> {
   private onOpenAssigner: any
 
@@ -65,7 +64,7 @@ class TriageView extends React.Component<TComponentProps, IState> {
   }
 
   public render() {
-    const { columns, onlyShowAssignedColumns, userId, classes } = this.props
+    const { columns, onlyShowAssignedColumns, userId } = this.props
     const { assignerOpen, assignmentId, tweetId } = this.state
 
     return (
@@ -77,27 +76,27 @@ class TriageView extends React.Component<TComponentProps, IState> {
           mode={ETweetColumnAssignerMode.ASSIGN}
           onCloseAssigner={this.onCloseAssigner}
         />
-        <div className={classes.columnContainerContainer}>
-          <div className={classes.columnContainer}>
+        <StyledColumnContainerContainer>
+          <StyledColumnContainer>
             {columns.map((column: ITriageColumn, _key: number) => {
               if (
                 onlyShowAssignedColumns === false ||
                 (onlyShowAssignedColumns === true && column.assigned_to === userId)
               ) {
                 return (
-                  <div key={column.id} className={classes.column}>
+                  <StyledColumn key={column.id}>
                     <TweetColumnBarContainer column={column} />
                     <TweetColumnContainer column={column} onOpenAssigner={this.onOpenAssigner} />
-                  </div>
+                  </StyledColumn>
                 )
               }
               return null
             })}
-          </div>
-        </div>
+          </StyledColumnContainer>
+        </StyledColumnContainerContainer>
       </React.Fragment>
     )
   }
 }
 
-export default withStyles(styles)(TriageView)
+export default TriageView

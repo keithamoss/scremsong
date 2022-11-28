@@ -1,22 +1,21 @@
 import NewReleases from '@mui/icons-material/NewReleases'
 import NewReleasesOutlined from '@mui/icons-material/NewReleasesOutlined'
-import { AppBar, IconButton, Theme, Toolbar, Tooltip, Typography } from '@mui/material'
+import { AppBar, IconButton, Toolbar, Tooltip, Typography } from '@mui/material'
 import { lightBlue } from '@mui/material/colors'
-import { withStyles, WithStyles } from '@mui/styles'
+import { styled } from '@mui/material/styles'
 import * as React from 'react'
 import { isDevEnvironment } from '../../redux/modules/app'
 import { IReviewerUser } from '../../redux/modules/interfaces.reviewers'
 import { ITriageColumn } from '../../redux/modules/triage'
 import AssignerAvatarContainer from '../AssignerAvatar/AssignerAvatarContainer'
 
-const styles = (_theme: Theme) => ({
-  grow: {
-    flexGrow: 1,
-  },
-  newTweetsButton: {
-    color: lightBlue[500],
-  },
-})
+const StyledTypography = styled(Typography)(() => ({
+  flexGrow: 1,
+}))
+
+const StyledIconButton = styled(IconButton)(() => ({
+  color: lightBlue[500],
+}))
 
 export interface IProps {
   column: ITriageColumn
@@ -29,18 +28,11 @@ export interface IProps {
 
 export interface IState {}
 
-type TComponentProps = IProps & WithStyles<typeof styles>
+type TComponentProps = IProps
 class TweetColumnBar extends React.PureComponent<TComponentProps, IState> {
   public render() {
-    const {
-      column,
-      hasBufferedTweets,
-      assignedToUser,
-      onLoadNewTweetsForColumn,
-      onAssignTriager,
-      onUnassignTriager,
-      classes,
-    } = this.props
+    const { column, hasBufferedTweets, assignedToUser, onLoadNewTweetsForColumn, onAssignTriager, onUnassignTriager } =
+      this.props
 
     return (
       <AppBar position="static">
@@ -50,12 +42,12 @@ class TweetColumnBar extends React.PureComponent<TComponentProps, IState> {
             onAssign={onAssignTriager}
             onUnassign={onUnassignTriager}
           />
-          <Typography variant="h6" color="inherit" className={classes.grow}>
+          <StyledTypography variant="h6" color="inherit">
             {column.search_phrases.join(', ')}
             {isDevEnvironment() && ` (#${column.id})`}
-          </Typography>
+          </StyledTypography>
           {hasBufferedTweets === false && (
-            <IconButton className={classes.newTweetsButton} disabled={true} size="large">
+            <IconButton disabled={true} size="large">
               <NewReleasesOutlined />
             </IconButton>
           )}
@@ -64,14 +56,9 @@ class TweetColumnBar extends React.PureComponent<TComponentProps, IState> {
               title="There are new tweets in this column - click to show them"
               aria-label="This column has new tweets"
             >
-              <IconButton
-                className={classes.newTweetsButton}
-                onClick={onLoadNewTweetsForColumn}
-                data-columnid={column.id}
-                size="large"
-              >
+              <StyledIconButton onClick={onLoadNewTweetsForColumn} data-columnid={column.id} size="large">
                 <NewReleases />
-              </IconButton>
+              </StyledIconButton>
             </Tooltip>
           )}
         </Toolbar>
@@ -80,4 +67,4 @@ class TweetColumnBar extends React.PureComponent<TComponentProps, IState> {
   }
 }
 
-export default withStyles(styles)(TweetColumnBar)
+export default TweetColumnBar

@@ -6,8 +6,8 @@ import BrightnessAutoIcon from '@mui/icons-material/BrightnessAuto'
 import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined'
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined'
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
-import { Button, LinearProgress, Theme, Tooltip } from '@mui/material'
-import { withStyles, WithStyles } from '@mui/styles'
+import { Button, LinearProgress, Tooltip } from '@mui/material'
+import { styled } from '@mui/material/styles'
 import { isEqual } from 'lodash-es'
 import * as React from 'react'
 import { AutoSizer, CellMeasurer, CellMeasurerCache, InfiniteLoader, List } from 'react-virtualized'
@@ -18,12 +18,16 @@ import { getActionBarBackgroundColour, ITriageColumn } from '../../redux/modules
 import { getColumnPosition } from '../../redux/modules/user'
 import TweetCardContainer from '../../twitter/TweetCard/TweetCardContainer'
 
-const styles = (_theme: Theme) => ({
-  actionBar: { width: 50, height: '100%', display: 'inline-block', verticalAlign: 'top' },
-  button: {
-    minWidth: 50,
-  },
-})
+const StyledActionBarDiv = styled('div')(() => ({
+  width: 50,
+  height: '100%',
+  display: 'inline-block',
+  verticalAlign: 'top',
+}))
+
+const StyledButton = styled(Button)(() => ({
+  minWidth: 50,
+}))
 
 export interface IProps {
   column: ITriageColumn
@@ -50,7 +54,7 @@ export interface ISnapshot {
   lastStartTweet: string
 }
 
-type TComponentProps = IProps & WithStyles<typeof styles>
+type TComponentProps = IProps
 class TweetColumn extends React.Component<TComponentProps, IState> {
   private onOpenAssigner: Function
 
@@ -243,7 +247,7 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
   // private _rowRenderer = ({ index, isScrolling, isVisible, key, parent, style }: any) => {
   private _rowRenderer = ({ index, isScrolling, isVisible, key, parent, style }: any) => {
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    const { column, tweet_ids, tweets, tweet_assignments, assignments, classes } = this.props
+    const { column, tweet_ids, tweets, tweet_assignments, assignments } = this.props
 
     if (index >= column.total_tweets) {
       return (
@@ -297,62 +301,51 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
         <CellMeasurer key={key} cache={this._cache} columnIndex={0} parent={parent} rowIndex={index}>
           {({ measure }) => (
             <div style={style}>
-              <div
-                className={classes.actionBar}
-                style={{ borderRight: `6px solid ${backgroundColor}`, backgroundColor: 'white' }}
-              >
+              <StyledActionBarDiv sx={{ borderRight: `6px solid ${backgroundColor}`, backgroundColor: 'white' }}>
                 {showActionBarButtons === true && tweet.state === ESocialTweetState.ACTIVE && (
                   <Tooltip
                     title="Automatically assign this tweet to the reviewer who has the smallest queue"
                     aria-label="Assign tweet automatically"
                   >
-                    <Button
-                      size="small"
-                      className={classes.button}
+                    <StyledButton
+                      size="large"
+                      startIcon={<BrightnessAutoIcon />}
                       aria-label="Assign tweet automatically"
                       onClick={this.onAutomaticallyAssignTweet(tweetId)}
-                    >
-                      <BrightnessAutoIcon />
-                    </Button>
+                    />
                   </Tooltip>
                 )}
 
                 {showActionBarButtons === true &&
                   (tweet.state === ESocialTweetState.ACTIVE || tweet.state === ESocialTweetState.ASSIGNED) && (
                     <Tooltip title="Assign this tweet to someone" aria-label="Assign tweet">
-                      <Button
-                        size="small"
-                        className={classes.button}
+                      <StyledButton
+                        size="large"
+                        startIcon={assignmentId === undefined ? <AssignmentOutlinedIcon /> : <AssignmentIndIcon />}
                         aria-label="Assign tweet"
                         onClick={this.onOpenAssigner(tweetId, assignmentId)}
-                      >
-                        {assignmentId === undefined ? <AssignmentOutlinedIcon /> : <AssignmentIndIcon />}
-                      </Button>
+                      />
                     </Tooltip>
                   )}
 
                 {showActionBarButtons === true && tweet.state === ESocialTweetState.ACTIVE && (
                   <React.Fragment>
                     <Tooltip title="Ignore this tweet" aria-label="Ignore tweet">
-                      <Button
-                        size="small"
-                        className={classes.button}
+                      <StyledButton
+                        size="large"
+                        startIcon={<VisibilityOffOutlinedIcon />}
                         aria-label="Ignore tweet"
                         onClick={this.onSetTweetState(tweetId, ESocialTweetState.DISMISSED)}
-                      >
-                        <VisibilityOffOutlinedIcon />
-                      </Button>
+                      />
                     </Tooltip>
 
                     <Tooltip title="Mark this tweet as dealt with" aria-label="Deal with tweet">
-                      <Button
-                        size="small"
-                        className={classes.button}
+                      <StyledButton
+                        size="large"
+                        startIcon={<CheckCircleOutlinedIcon />}
                         aria-label="Deal with tweet"
                         onClick={this.onSetTweetState(tweetId, ESocialTweetState.DEALT_WITH)}
-                      >
-                        <CheckCircleOutlinedIcon />
-                      </Button>
+                      />
                     </Tooltip>
                   </React.Fragment>
                 )}
@@ -365,17 +358,15 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
                       title="Make this tweet active again (i.e. unignore it, mark it as 'not dealt with')"
                       aria-label="Set active"
                     >
-                      <Button
-                        size="small"
-                        className={classes.button}
+                      <StyledButton
+                        size="large"
+                        startIcon={<VisibilityOutlinedIcon />}
                         aria-label="Set active"
                         onClick={this.onSetTweetState(tweetId, ESocialTweetState.ACTIVE)}
-                      >
-                        <VisibilityOutlinedIcon />
-                      </Button>
+                      />
                     </Tooltip>
                   )}
-              </div>
+              </StyledActionBarDiv>
 
               <TweetCardContainer
                 tweetId={tweetId}
@@ -440,4 +431,4 @@ class TweetColumn extends React.Component<TComponentProps, IState> {
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-export default withStyles(styles)(TweetColumn as any)
+export default TweetColumn

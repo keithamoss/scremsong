@@ -1,21 +1,12 @@
 import { Person } from '@mui/icons-material'
-import { Avatar, Button, Menu, MenuItem, Theme } from '@mui/material'
-import { withStyles, WithStyles } from '@mui/styles'
+import { Avatar, Button, Menu, MenuItem } from '@mui/material'
+import { styled } from '@mui/material/styles'
 import * as React from 'react'
 import { IReviewerUser } from '../../redux/modules/interfaces.reviewers'
 
-const styles = (_theme: Theme) => ({
-  button: {
-    backgroundColor: 'transparent !important',
-  },
-  avatar: {
-    marginRight: 10,
-  },
-  menuItem: {
-    paddingTop: 16,
-    paddingBottom: 16,
-  },
-})
+const StyledAvatar = styled(Avatar)(() => ({
+  marginRight: 10,
+}))
 
 export interface IProps {
   assignedToUser: IReviewerUser | undefined
@@ -28,7 +19,7 @@ export interface IState {
   anchorEl: HTMLElement | null
 }
 
-type TComponentProps = IProps & WithStyles<typeof styles>
+type TComponentProps = IProps
 class AssignerAvatar extends React.PureComponent<TComponentProps, IState> {
   private handleOpenMenu: any
 
@@ -69,39 +60,29 @@ class AssignerAvatar extends React.PureComponent<TComponentProps, IState> {
   }
 
   public render() {
-    const { assignedToUser, triagers, classes } = this.props
+    const { assignedToUser, triagers } = this.props
     const { anchorEl } = this.state
 
     return (
       <React.Fragment>
         {assignedToUser === undefined && (
-          <Button
-            aria-owns={anchorEl ? 'simple-menu' : undefined}
-            aria-haspopup="true"
-            className={classes.button}
-            onClick={this.handleOpenMenu}
-          >
-            <Avatar className={classes.avatar}>
+          <Button aria-owns={anchorEl ? 'simple-menu' : undefined} aria-haspopup="true" onClick={this.handleOpenMenu}>
+            <Avatar>
               <Person fontSize="large" />
             </Avatar>
           </Button>
         )}
         {assignedToUser !== undefined && (
-          <Button
-            aria-owns={anchorEl ? 'simple-menu' : undefined}
-            aria-haspopup="true"
-            className={classes.button}
-            onClick={this.handleOpenMenu}
-          >
-            <Avatar className={classes.avatar} src={assignedToUser.profile_image_url} />
+          <Button aria-owns={anchorEl ? 'simple-menu' : undefined} aria-haspopup="true" onClick={this.handleOpenMenu}>
+            <StyledAvatar src={assignedToUser.profile_image_url} />
           </Button>
         )}
         <Menu id="simple-menu" anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={this.handleClose}>
           {triagers.map((user: IReviewerUser) => {
             if (assignedToUser === undefined || assignedToUser.id !== user.id) {
               return (
-                <MenuItem key={user.id} className={classes.menuItem} onClick={this.handleChooseItem(user.id)}>
-                  <Avatar className={classes.avatar} src={user.profile_image_url} />
+                <MenuItem key={user.id} onClick={this.handleChooseItem(user.id)}>
+                  <StyledAvatar src={user.profile_image_url} />
                   {user.name}
                 </MenuItem>
               )
@@ -109,10 +90,10 @@ class AssignerAvatar extends React.PureComponent<TComponentProps, IState> {
             return null
           })}
           {assignedToUser !== undefined && (
-            <MenuItem className={classes.menuItem} onClick={this.handleUnassign}>
-              <Avatar className={classes.avatar}>
+            <MenuItem onClick={this.handleUnassign}>
+              <StyledAvatar>
                 <Person fontSize="large" />
-              </Avatar>
+              </StyledAvatar>
               Unassign
             </MenuItem>
           )}
@@ -122,4 +103,4 @@ class AssignerAvatar extends React.PureComponent<TComponentProps, IState> {
   }
 }
 
-export default withStyles(styles)(AssignerAvatar)
+export default AssignerAvatar

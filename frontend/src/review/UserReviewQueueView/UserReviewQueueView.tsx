@@ -1,13 +1,12 @@
 import AssignmentInd from '@mui/icons-material/AssignmentInd'
 import Power from '@mui/icons-material/Power'
 import PowerOff from '@mui/icons-material/PowerOff'
-import { AppBar, Button, FormControl, Input, InputLabel, Theme, Tooltip, Typography } from '@mui/material'
+import { AppBar, Button, FormControl, Input, InputLabel, Tooltip, Typography } from '@mui/material'
 import { deepOrange } from '@mui/material/colors'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
+import { styled } from '@mui/material/styles'
 import Toolbar from '@mui/material/Toolbar'
-import { withStyles, WithStyles } from '@mui/styles'
-import classNames from 'classnames'
 import * as React from 'react'
 import { IReviewerAssignment, IReviewerUser } from '../../redux/modules/interfaces.reviewers'
 import { EQueueSortBy, IProfileSettings } from '../../redux/modules/user'
@@ -16,53 +15,40 @@ import TweetColumnAssignerContainer, {
 } from '../../triage/TweetColumnAssigner/TweetColumnAssignerContainer'
 import ReviewCardContainer from '../ReviewCard/ReviewCardContainer'
 
-const styles = (theme: Theme) => ({
-  white: {
-    color: theme.palette.common.white,
+const StyledInputLabel = styled(InputLabel)(() => ({
+  color: 'white',
+}))
+
+const StyledSelect = styled(Select)(() => ({
+  '&': { color: 'white' },
+  '&::before': {
+    borderBottomColor: 'rgba(255, 255, 255, 0.4)',
   },
-  formControl: {
-    minWidth: 165,
-    paddingRight: theme.spacing(3),
+  '&:hover::before': {
+    borderColor: 'white !important',
   },
-  focusedInputLabel: {
-    color: 'white !important',
+  '.MuiSelect-icon': {
+    fill: 'white',
   },
-  underline: {
-    '&:before': {
-      borderBottomColor: 'rgba(255, 255, 255, 0.4)',
-    },
-    '&.Mui-active:hover::before': {
-      borderBottomColor: 'rgba(255, 255, 255, 0.87) !important',
-    },
-    '&:after': {
-      borderBottomColor: 'rgba(255, 255, 255, 0.4)',
-    },
-  },
-  disabled: {},
-  grow: {
-    flexGrow: 1,
-  },
-  button: {
-    margin: theme.spacing(1),
-  },
-  buttonOffline: {
-    margin: theme.spacing(1),
-    backgroundColor: deepOrange[500],
-    '&.Mui-active:hover': {
-      backgroundColor: deepOrange[700],
-    },
-  },
-  leftIcon: {
-    marginRight: theme.spacing(1),
-  },
-  iconSmall: {
-    fontSize: 20,
-  },
-  reviewerContainer: {
-    display: 'inline-block',
-    padding: 10,
-  },
-})
+}))
+
+const StyledFormControl = styled(FormControl)(({ theme }) => ({
+  minWidth: 165,
+  paddingRight: theme.spacing(3),
+}))
+
+const StyledTypography = styled(Typography)(() => ({
+  flexGrow: 1,
+}))
+
+const StyledButton = styled(Button)(({ theme }) => ({
+  margin: theme.spacing(1),
+}))
+
+const StyledReviewContainerDiv = styled('div')(() => ({
+  display: 'inline-block',
+  padding: 10,
+}))
 
 export interface IProps {
   assignments: IReviewerAssignment[]
@@ -78,7 +64,7 @@ export interface IState {
   assignerOpen: boolean
 }
 
-type TComponentProps = IProps & WithStyles<typeof styles>
+type TComponentProps = IProps
 
 class UserReviewQueueView extends React.PureComponent<TComponentProps, IState> {
   private onOpenAssigner: any
@@ -116,7 +102,7 @@ class UserReviewQueueView extends React.PureComponent<TComponentProps, IState> {
   }
 
   public render() {
-    const { assignments, reviewers, currentReviewer, userSettings, classes } = this.props
+    const { assignments, reviewers, currentReviewer, userSettings } = this.props
     const { assignerOpen } = this.state
 
     return (
@@ -130,103 +116,89 @@ class UserReviewQueueView extends React.PureComponent<TComponentProps, IState> {
         />
         <AppBar position="static">
           <Toolbar>
-            <FormControl classes={{ root: classes.formControl }}>
-              <InputLabel
-                htmlFor="queue-user-control"
-                classes={{ root: classes.white, focused: classes.focusedInputLabel }}
-              >
+            <StyledFormControl>
+              <StyledInputLabel htmlFor="queue-user-control" variant="standard">
                 Viewing the queue for
-              </InputLabel>
-              <Select
+              </StyledInputLabel>
+              <StyledSelect
                 value={currentReviewer.id}
                 onChange={this.onChangeQueueUser}
                 inputProps={{
                   name: 'queue-user',
                   id: 'queue-user-control',
                 }}
-                // classes={{ root: classes.white, icon: classes.white }}
-                classes={{ icon: classes.white }}
-                input={
-                  <Input
-                    classes={{
-                      underline: classes.underline,
-                    }}
-                  />
-                }
+                input={<Input />}
               >
                 {reviewers.map((reviewer: IReviewerUser) => (
                   <MenuItem key={reviewer.id} value={reviewer.id}>
                     {reviewer.name}
                   </MenuItem>
                 ))}
-              </Select>
-            </FormControl>
+              </StyledSelect>
+            </StyledFormControl>
 
-            <FormControl classes={{ root: classes.formControl }}>
-              <InputLabel
-                htmlFor="queue-sort-order-control"
-                classes={{ root: classes.white, focused: classes.focusedInputLabel }}
-              >
+            <StyledFormControl>
+              <StyledInputLabel htmlFor="queue-sort-order-control" variant="standard">
                 Sort queue by
-              </InputLabel>
-              <Select
+              </StyledInputLabel>
+              <StyledSelect
                 value={userSettings.queue_sort_by}
                 onChange={this.onChangeQueueSortOrder}
                 inputProps={{
                   name: 'queue-sort-order',
                   id: 'queue-sort-order-control',
                 }}
-                // classes={{ root: classes.white, icon: classes.white }}
-                classes={{ icon: classes.white }}
-                input={
-                  <Input
-                    classes={{
-                      underline: classes.underline,
-                    }}
-                  />
-                }
+                input={<Input />}
               >
                 <MenuItem value={EQueueSortBy.ByCreation}>When they were assigned</MenuItem>
                 <MenuItem value={EQueueSortBy.ByModified}>When they were last updated</MenuItem>
-              </Select>
-            </FormControl>
+              </StyledSelect>
+            </StyledFormControl>
 
-            <Typography variant="h6" color="inherit" className={classes.grow} />
+            <StyledTypography variant="h6" color="inherit" />
+
             {assignments.length > 0 && (
               <Tooltip title="Reassign all of your tweets to somebody else">
-                <Button variant="contained" color="primary" className={classes.button} onClick={this.onOpenAssigner}>
-                  <AssignmentInd className={classNames(classes.leftIcon, classes.iconSmall)} />
+                <StyledButton
+                  variant="contained"
+                  color="info"
+                  startIcon={<AssignmentInd />}
+                  onClick={this.onOpenAssigner}
+                >
                   Bulk reassign
-                </Button>
+                </StyledButton>
               </Tooltip>
             )}
 
             <Tooltip title="Let us know if you're available to receive tweets">
-              <Button
+              <StyledButton
                 variant="contained"
-                color="primary"
-                className={currentReviewer.is_accepting_assignments === true ? classes.button : classes.buttonOffline}
+                color="info"
+                startIcon={currentReviewer.is_accepting_assignments ? <Power /> : <PowerOff />}
+                sx={[
+                  { backgroundColor: currentReviewer.is_accepting_assignments === true ? '' : deepOrange[500] },
+                  {
+                    '&:hover': {
+                      backgroundColor: deepOrange[700],
+                    },
+                  },
+                ]}
                 onClick={this.onToggleUserOnlineStatus}
               >
-                {currentReviewer.is_accepting_assignments ? (
-                  <Power className={classNames(classes.leftIcon, classes.iconSmall)} />
-                ) : (
-                  <PowerOff className={classNames(classes.leftIcon, classes.iconSmall)} />
-                )}
                 {currentReviewer.is_accepting_assignments ? 'Online' : 'Offline'}
-              </Button>
+              </StyledButton>
             </Tooltip>
           </Toolbar>
         </AppBar>
 
-        <div className={classes.reviewerContainer}>
+        <StyledReviewContainerDiv>
           {assignments.map((assignment: IReviewerAssignment) => (
             <ReviewCardContainer key={assignment.id} assignment={assignment} />
           ))}
-        </div>
+        </StyledReviewContainerDiv>
       </React.Fragment>
     )
   }
 }
 
-export default withStyles(styles)(UserReviewQueueView)
+export default UserReviewQueueView

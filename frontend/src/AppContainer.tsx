@@ -13,7 +13,17 @@ import { fetchUser, ISelf } from './redux/modules/user'
 
 // const Config: IConfig = require("Config") as any
 
-const appTheme = createTheme()
+const appTheme = createTheme({
+  palette: {
+    mode: 'light',
+    primary: {
+      main: '#3f51b5',
+    },
+    secondary: {
+      main: '#f50057',
+    },
+  },
+})
 
 const DivLoaderBackground = styled('div')(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,

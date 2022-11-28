@@ -4,9 +4,8 @@ import ExpandLess from '@mui/icons-material/ExpandLess'
 import ExpandMore from '@mui/icons-material/ExpandMore'
 import MoreVert from '@mui/icons-material/MoreVert'
 import OpenInNew from '@mui/icons-material/OpenInNew'
-import { Badge, Button, Card, CardContent, Collapse, Menu, MenuItem, Theme, Tooltip } from '@mui/material'
-import { withStyles, WithStyles } from '@mui/styles'
-import classNames from 'classnames'
+import { Badge, Button, Card, CardContent, Collapse, Menu, MenuItem, Tooltip } from '@mui/material'
+import { styled } from '@mui/material/styles'
 import * as React from 'react'
 import { ENotificationVariant } from '../../redux/modules/app'
 import { ESocialAssignmentCloseReason, IReviewerAssignment } from '../../redux/modules/interfaces.reviewers'
@@ -17,39 +16,35 @@ import TweetColumnAssignerContainer, {
 import TweetCardContainer from '../../twitter/TweetCard/TweetCardContainer'
 import TweetThread from '../TweetThread/TweetThread'
 
-const styles = (theme: Theme) =>
-  ({
-    card: {
-      marginBottom: theme.spacing(1),
-      minHeight: 145,
-    },
-    cardContent: {
-      paddingBottom: theme.spacing(1),
-      display: 'flex',
-      flexDirection: 'row',
-    },
-    tweetColumn: {
-      flexGrow: 1,
-      minWidth: 600,
-    },
-    actionsColumn: {
-      display: 'flex',
-      flexDirection: 'column',
-      marginLeft: 10,
-    },
-    newTweetsBadge: {
-      marginRight: 23,
-    },
-    button: {
-      justifyContent: 'start',
-    },
-    leftIcon: {
-      marginRight: theme.spacing(1),
-    },
-    iconSmall: {
-      fontSize: 20,
-    },
-  } as any)
+const StyledCard = styled(Card)(({ theme }) => ({
+  marginBottom: theme.spacing(1),
+  minHeight: 145,
+}))
+
+const StyledCardContent = styled(CardContent)(({ theme }) => ({
+  paddingBottom: theme.spacing(1),
+  display: 'flex',
+  flexDirection: 'row',
+}))
+
+const StyledTweetColumnDiv = styled('div')(() => ({
+  flexGrow: 1,
+  minWidth: 600,
+}))
+
+const StyledActionsColumnDiv = styled('div')(() => ({
+  display: 'flex',
+  flexDirection: 'column',
+  marginLeft: 10,
+}))
+
+const StyledButton = styled(Button)(() => ({
+  justifyContent: 'flex-start',
+}))
+
+const StyledNewTweetsBadge = styled(Badge)(() => ({
+  marginRight: 23,
+}))
 
 export interface IProps {
   assignment: IReviewerAssignment
@@ -70,7 +65,7 @@ export interface IState {
   anchorEl: HTMLElement | null
 }
 
-type TComponentProps = IProps & WithStyles<typeof styles>
+type TComponentProps = IProps
 class ReviewCard extends React.PureComponent<TComponentProps, IState> {
   private onOpenAssigner: any
 
@@ -178,7 +173,7 @@ class ReviewCard extends React.PureComponent<TComponentProps, IState> {
   }
 
   public render() {
-    const { assignment, tweets, unreadTweetIds, classes } = this.props
+    const { assignment, tweets, unreadTweetIds } = this.props
     const { assignerOpen, assignmentId, tweetShown, threadShown, anchorEl } = this.state
 
     const tweetIdToDisplay =
@@ -206,9 +201,9 @@ class ReviewCard extends React.PureComponent<TComponentProps, IState> {
           onBeforeReassign={this.onBeforeReassign}
         />
         <Collapse in={this.state.shown}>
-          <Card className={classes.card}>
-            <CardContent className={classes.cardContent}>
-              <div className={classes.tweetColumn}>
+          <StyledCard>
+            <StyledCardContent>
+              <StyledTweetColumnDiv>
                 <Collapse in={tweetShown} timeout={500} onExited={this.handleExpandThread}>
                   <TweetCardContainer
                     tweetId={tweetIdToDisplay}
@@ -223,23 +218,21 @@ class ReviewCard extends React.PureComponent<TComponentProps, IState> {
                     assignment={assignment}
                   />
                 </Collapse>
-              </div>
-              <div
-                className={classes.actionsColumn}
-                style={{
+              </StyledTweetColumnDiv>
+              <StyledActionsColumnDiv
+                sx={{
                   justifyContent: threadShown === false ? 'end' : 'end',
                 }}
               >
                 <Tooltip title="Mark this assignment as closed and remove it from your queue" enterDelay={1500}>
-                  <Button
+                  <StyledButton
                     color="primary"
                     variant="text"
-                    className={classes.button}
+                    startIcon={<MoreVert />}
                     onClick={this.handleOpenCloseReasonMenu}
                   >
-                    <MoreVert className={classNames(classes.leftIcon, classes.iconSmall)} />
                     Options
-                  </Button>
+                  </StyledButton>
                 </Tooltip>
                 <Menu anchorEl={anchorEl} open={anchorEl !== null} onClose={this.handleCloseCloseReasonMenu}>
                   {Object.keys(ESocialAssignmentCloseReason).map((key: string) => {
@@ -253,70 +246,55 @@ class ReviewCard extends React.PureComponent<TComponentProps, IState> {
                     return null
                   })}
                 </Menu>
-                <Button
+                <StyledButton
                   color="primary"
                   variant="text"
-                  className={classes.button}
+                  fullWidth
+                  startIcon={<AssignmentInd />}
                   onClick={this.onOpenAssigner(assignment.id)}
                 >
-                  <AssignmentInd className={classNames(classes.leftIcon, classes.iconSmall)} />
                   Reassign
-                </Button>
+                </StyledButton>
                 {assignment.thread_tweets.length > 0 && unreadTweetIds.length > 1 && (
                   <Tooltip title={`This thread has ${unreadTweetIds.length - 1} more unread tweets`} enterDelay={1500}>
-                    <Badge
-                      badgeContent={unreadTweetIds.length - 1}
-                      color="secondary"
-                      className={classes.newTweetsBadge}
-                    >
-                      <Button
+                    <StyledNewTweetsBadge badgeContent={unreadTweetIds.length - 1} color="secondary">
+                      <StyledButton
                         color="primary"
                         variant="text"
-                        className={classes.button}
+                        startIcon={threadShown === true ? <ExpandLess /> : <ExpandMore />}
                         onClick={threadShown === false ? this.handleShowThread : this.handleCollapseThread}
                       >
-                        {threadShown === true ? (
-                          <ExpandLess className={classNames(classes.leftIcon, classes.iconSmall)} />
-                        ) : (
-                          <ExpandMore className={classNames(classes.leftIcon, classes.iconSmall)} />
-                        )}
                         {threadShown === true ? 'Close thread' : 'Show thread'}
-                      </Button>
-                    </Badge>
+                      </StyledButton>
+                    </StyledNewTweetsBadge>
                   </Tooltip>
                 )}
                 {assignment.thread_tweets.length > 0 && unreadTweetIds.length === 0 && (
-                  <Button
+                  <StyledButton
                     color="primary"
                     variant="text"
-                    className={classes.button}
+                    startIcon={threadShown === true ? <ExpandLess /> : <ExpandMore />}
                     onClick={threadShown === false ? this.handleShowThread : this.handleCollapseThread}
                   >
-                    {threadShown === true ? (
-                      <ExpandLess className={classNames(classes.leftIcon, classes.iconSmall)} />
-                    ) : (
-                      <ExpandMore className={classNames(classes.leftIcon, classes.iconSmall)} />
-                    )}
                     {threadShown === true ? 'Close thread' : 'Show thread'}
-                  </Button>
+                  </StyledButton>
                 )}
                 <Button
                   color="primary"
                   variant="text"
-                  className={classes.button}
+                  startIcon={<OpenInNew />}
                   component={TwitterLink}
                   data-tweetid={assignment.social_id}
                 >
-                  <OpenInNew className={classNames(classes.leftIcon, classes.iconSmall)} />
                   View on Twitter
                 </Button>
-              </div>
-            </CardContent>
-          </Card>
+              </StyledActionsColumnDiv>
+            </StyledCardContent>
+          </StyledCard>
         </Collapse>
       </React.Fragment>
     )
   }
 }
 
-export default withStyles(styles)(ReviewCard)
+export default ReviewCard

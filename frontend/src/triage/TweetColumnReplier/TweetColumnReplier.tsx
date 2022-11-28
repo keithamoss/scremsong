@@ -1,25 +1,24 @@
-import { Button, Dialog, DialogContent, Theme } from '@mui/material'
-import { withStyles, WithStyles } from '@mui/styles'
+import { Button, Dialog, DialogContent } from '@mui/material'
+import { styled } from '@mui/material/styles'
 import * as React from 'react'
 import Tweet from 'react-tweet'
 import { ISocialPrecannedTweetReplies, ISocialTweet, ISocialTweetDataUserMention } from '../../redux/modules/social'
 import TextFieldWithCharacterCount from './TextFieldWithCharacterCount'
 import TweetReplyChipInput from './TweetReplyChipInput'
 
-const styles = (theme: Theme) => ({
-  replyTextField: {
-    marginTop: theme.spacing(1),
-  },
-  precannedRepliesList: {
-    marginTop: theme.spacing(1),
-  },
-  listItemIconToggleState: {
-    paddingRight: 15,
-  },
-  nestedListItem: {
-    paddingLeft: theme.spacing(1),
-  },
-})
+//   precannedRepliesList: {
+//     marginTop: theme.spacing(1),
+//   },
+//   listItemIconToggleState: {
+//     paddingRight: 15,
+//   },
+//   nestedListItem: {
+//     paddingLeft: theme.spacing(1),
+//   },
+
+const StyledTextFieldWithCharacterCount = styled(TextFieldWithCharacterCount)(({ theme }) => ({
+  marginTop: theme.spacing(1),
+}))
 
 export interface IProps {
   open: boolean
@@ -47,7 +46,7 @@ const getMentions = (mentions: string[]) => mentions.map((mention: string) => `@
 
 const getLengthOfMentions = (mentions: string[]) => getMentions(mentions).length + 1 // + 1 to account for the space between the replies and the text
 
-type TComponentProps = IProps & WithStyles<typeof styles>
+type TComponentProps = IProps
 class TweetColumnReplier extends React.Component<TComponentProps, IState> {
   private onFieldChange: Function
 
@@ -124,7 +123,7 @@ class TweetColumnReplier extends React.Component<TComponentProps, IState> {
   }
 
   public render() {
-    const { open, tweet, onCloseReplier, classes } = this.props
+    const { open, tweet, onCloseReplier } = this.props
     const { replyFieldValue, characterPrefixLength, replyButtonDisabled } = this.state
 
     return (
@@ -145,7 +144,7 @@ class TweetColumnReplier extends React.Component<TComponentProps, IState> {
               onFieldValid={this.onFieldValid}
               onFieldInvalid={this.onFieldInvalid}
             />
-            <TextFieldWithCharacterCount
+            <StyledTextFieldWithCharacterCount
               value={replyFieldValue}
               label="Tweet your reply"
               required={true}
@@ -155,7 +154,6 @@ class TweetColumnReplier extends React.Component<TComponentProps, IState> {
               rows="5"
               margin="normal"
               variant="filled"
-              className={classes.replyTextField}
               onFieldChange={this.onFieldChange}
               characterPrefixLength={characterPrefixLength}
               characterLimit={280}
@@ -225,4 +223,4 @@ class TweetColumnReplier extends React.Component<TComponentProps, IState> {
   }
 }
 
-export default withStyles(styles)(TweetColumnReplier)
+export default TweetColumnReplier

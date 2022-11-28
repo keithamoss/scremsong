@@ -1,6 +1,6 @@
 import SyncProblemIcon from '@mui/icons-material/SyncProblem'
-import { Dialog, DialogContent, DialogTitle, IconButton, Theme } from '@mui/material'
-import { withStyles, WithStyles } from '@mui/styles'
+import { Dialog, DialogContent, DialogTitle, IconButton } from '@mui/material'
+import { styled } from '@mui/material/styles'
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { IStore } from './redux/modules/reducer'
@@ -13,26 +13,23 @@ export interface IStoreProps {
 
 export interface IDispatchProps {}
 
-const styles = (theme: Theme) =>
-  ({
-    disconnectedButton: {
-      position: 'absolute',
-      right: theme.spacing(1),
-      top: theme.spacing(1),
-    },
-  } as any)
+const StyledIconButton = styled(IconButton)(({ theme }) => ({
+  position: 'absolute',
+  right: theme.spacing(1),
+  top: theme.spacing(1),
+}))
 
-type TComponentProps = IProps & IStoreProps & IDispatchProps & WithStyles<typeof styles>
+type TComponentProps = IProps & IStoreProps & IDispatchProps
 class AppDisconnectedDialog extends React.PureComponent<TComponentProps, {}> {
   public render() {
-    const { disconnected, classes } = this.props
+    const { disconnected } = this.props
 
     return (
       <Dialog aria-labelledby="app-disconnected-title" open={disconnected}>
         <DialogTitle id="app-disconnected-title">
-          <IconButton className={classes.disconnectedButton} size="large">
+          <StyledIconButton size="large">
             <SyncProblemIcon color="error" fontSize="large" />
-          </IconButton>
+          </StyledIconButton>
           Connection lost. Reconnecting...
         </DialogTitle>
         <DialogContent>
@@ -56,4 +53,4 @@ const mapDispatchToProps = (_dispatch: Function): IDispatchProps => {
 export default connect<IStoreProps, IDispatchProps, IProps, IStore>(
   mapStateToProps,
   mapDispatchToProps
-)(withStyles(styles)(AppDisconnectedDialog))
+)(AppDisconnectedDialog)

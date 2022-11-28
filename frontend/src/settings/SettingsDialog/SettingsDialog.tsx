@@ -15,10 +15,8 @@ import {
   ListItemSecondaryAction,
   ListItemText,
   Switch,
-  Theme,
   Typography,
 } from '@mui/material'
-import { withStyles, WithStyles } from '@mui/styles'
 import * as React from 'react'
 import { IProfileSettings } from '../../redux/modules/user'
 
@@ -33,29 +31,7 @@ export interface IState {
   expanded: string | null
 }
 
-const styles = (theme: Theme) =>
-  ({
-    disconnectedButton: {
-      position: 'absolute',
-      right: theme.spacing(1),
-      top: theme.spacing(1),
-    },
-    root: {
-      width: '100%',
-      backgroundColor: theme.palette.background.paper,
-    },
-    heading: {
-      fontSize: theme.typography.pxToRem(15),
-      flexBasis: '33.33%',
-      flexShrink: 0,
-    },
-    secondaryHeading: {
-      fontSize: theme.typography.pxToRem(15),
-      color: theme.palette.text.secondary,
-    },
-  } as any)
-
-type TComponentProps = IProps & WithStyles<typeof styles>
+type TComponentProps = IProps
 class SettingsDialog extends React.PureComponent<TComponentProps, IState> {
   private handleChange: any
 
@@ -86,7 +62,7 @@ class SettingsDialog extends React.PureComponent<TComponentProps, IState> {
   }
 
   public render() {
-    const { settings, open, classes } = this.props
+    const { settings, open } = this.props
     const { expanded } = this.state
 
     return (
@@ -101,11 +77,10 @@ class SettingsDialog extends React.PureComponent<TComponentProps, IState> {
         <DialogContent>
           <Accordion expanded={expanded === 'triage_panel'} onChange={this.handleChange('triage_panel')}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography className={classes.heading}>Triage</Typography>
-              <Typography className={classes.secondaryHeading}>Settings for folks on triage duty</Typography>
+              <Typography>Settings for folks on triage duty</Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <List className={classes.root}>
+              <List>
                 <ListItem>
                   <ListItemIcon>
                     <VisibilityIcon />
@@ -135,4 +110,4 @@ class SettingsDialog extends React.PureComponent<TComponentProps, IState> {
   }
 }
 
-export default withStyles(styles)(SettingsDialog)
+export default SettingsDialog

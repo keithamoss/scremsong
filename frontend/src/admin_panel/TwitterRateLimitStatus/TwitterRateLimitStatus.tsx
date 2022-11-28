@@ -1,53 +1,55 @@
-import { LinearProgress, Paper, Theme, Tooltip, Typography } from '@mui/material'
-import { withStyles, WithStyles } from '@mui/styles'
+import { LinearProgress, Paper, Tooltip, Typography } from '@mui/material'
+import { styled } from '@mui/material/styles'
 import { DateTime } from 'luxon'
 import * as React from 'react'
 import { IRateLimitResources, IResourceRateLimit } from './types'
 
-const styles = (theme: Theme) =>
-  ({
-    flexContainerTileWrap: {
-      display: 'flex',
-      flexFlow: 'row wrap',
-      marginBottom: 25,
-    },
-    paper: {
-      paddingLeft: theme.spacing(2),
-      paddingRight: theme.spacing(2),
-      [theme.breakpoints.up('sm')]: {
-        paddingLeft: theme.spacing(3),
-        paddingRight: theme.spacing(3),
-      },
-      paddingTop: theme.spacing(1),
-      paddingBottom: theme.spacing(1),
-      margin: 13,
-    },
-    flexTable: {
-      display: 'flex',
-      flexFlow: 'row wrap',
-      maxWidth: 300,
-    },
-    resourceName: {
-      display: 'flex',
-      flex: '1 1 100%',
-      width: 300,
-      height: 30,
-      verticalAlign: 'top',
-      textOverflow: 'ellipsis',
-      whiteSpace: 'nowrap',
-      overflow: 'hidden',
-    },
-    progressBar: {
-      width: 175,
-      alignSelf: 'flex-end',
-    },
-    timeUntilReset: {
-      marginLeft: 10,
-      fontSize: 14,
-      flexGrow: 1,
-      textAlign: 'right',
-    },
-  } as any)
+const StyledFlexContainerTileWrap = styled('div')(() => ({
+  display: 'flex',
+  flexFlow: 'row wrap',
+  marginBottom: 25,
+}))
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  paddingLeft: theme.spacing(2),
+  paddingRight: theme.spacing(2),
+  [theme.breakpoints.up('sm')]: {
+    paddingLeft: theme.spacing(3),
+    paddingRight: theme.spacing(3),
+  },
+  paddingTop: theme.spacing(1),
+  paddingBottom: theme.spacing(1),
+  margin: 13,
+}))
+
+const StyledFlexTable = styled('div')(() => ({
+  display: 'flex',
+  flexFlow: 'row wrap',
+  maxWidth: 300,
+}))
+
+const StyledResourceName = styled('div')(() => ({
+  display: 'flex',
+  flex: '1 1 100%',
+  width: 300,
+  height: 30,
+  verticalAlign: 'top',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+}))
+
+const StyledProgressBar = styled('div')(() => ({
+  width: 175,
+  alignSelf: 'flex-end',
+}))
+
+const StyledTimeUntilReset = styled('div')(() => ({
+  marginLeft: 10,
+  fontSize: 14,
+  flexGrow: 1,
+  textAlign: 'right',
+}))
 
 export interface IProps {
   rateLimitResources: IRateLimitResources
@@ -55,11 +57,11 @@ export interface IProps {
 
 export interface IState {}
 
-type TComponentProps = IProps & WithStyles<typeof styles>
+type TComponentProps = IProps
 
 class TwitterRateLimitStatus extends React.PureComponent<TComponentProps, IState> {
   public render() {
-    const { rateLimitResources, classes } = this.props
+    const { rateLimitResources } = this.props
 
     return (
       <React.Fragment>
@@ -68,7 +70,7 @@ class TwitterRateLimitStatus extends React.PureComponent<TComponentProps, IState
             <Typography variant="h4" gutterBottom>
               {resourceGroupName}
             </Typography>
-            <div className={classes.flexContainerTileWrap}>
+            <StyledFlexContainerTileWrap>
               {Object.keys(rateLimitResources[resourceGroupName]).map((resourceName: string) => {
                 const resource: IResourceRateLimit = rateLimitResources[resourceGroupName][resourceName]
 
@@ -77,26 +79,26 @@ class TwitterRateLimitStatus extends React.PureComponent<TComponentProps, IState
                 const rateLimitConsumed = ((resource.limit - resource.remaining) / resource.limit) * 100
 
                 return (
-                  <Paper key={resourceName} className={classes.paper} elevation={1}>
-                    <div className={classes.flexTable}>
-                      <div className={classes.resourceName}>
+                  <StyledPaper key={resourceName} elevation={1}>
+                    <StyledFlexTable>
+                      <StyledResourceName>
                         <Tooltip title={resourceName}>
                           <span>{resourceName}</span>
                         </Tooltip>
-                      </div>
-                      <div className={classes.progressBar}>
+                      </StyledResourceName>
+                      <StyledProgressBar>
                         <Tooltip title={`${resource.remaining} API calls remaining`}>
                           <LinearProgress variant="determinate" value={rateLimitConsumed} color="secondary" />
                         </Tooltip>
-                      </div>
-                      <div className={classes.timeUntilReset}>
+                      </StyledProgressBar>
+                      <StyledTimeUntilReset>
                         resets {resetDateTime.toRelative({ padding: 1000, style: 'narrow' })}
-                      </div>
-                    </div>
-                  </Paper>
+                      </StyledTimeUntilReset>
+                    </StyledFlexTable>
+                  </StyledPaper>
                 )
               })}
-            </div>
+            </StyledFlexContainerTileWrap>
           </React.Fragment>
         ))}
       </React.Fragment>
@@ -104,4 +106,4 @@ class TwitterRateLimitStatus extends React.PureComponent<TComponentProps, IState
   }
 }
 
-export default withStyles(styles)(TwitterRateLimitStatus)
+export default TwitterRateLimitStatus

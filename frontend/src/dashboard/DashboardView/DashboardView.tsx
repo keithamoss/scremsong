@@ -1,82 +1,73 @@
-import {
-  Avatar,
-  Badge,
-  createStyles,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Theme,
-  Typography,
-} from '@mui/material'
-import { withStyles, WithStyles } from '@mui/styles'
+import { Avatar, Badge, Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material'
+import { styled } from '@mui/material/styles'
 import * as React from 'react'
 import { IDashboardStats } from '../../redux/modules/app'
 import { IReviewerUser } from '../../redux/modules/interfaces.reviewers'
 import { ITriageColumn } from '../../redux/modules/triage'
 
-const styles = (theme: Theme) =>
-  ({
-    root: {
-      padding: 10,
-    },
-    paper: {
-      maxWidth: 1100,
-      marginTop: theme.spacing(3),
-      overflowX: 'auto',
-    },
-    table: {
-      // maxWidth: 700,
-    },
-    avatar: {
-      float: 'left',
-      marginRight: 10,
-    },
-  } as any)
+const StyledRootDiv = styled('div')(() => ({
+  padding: 10,
+}))
 
-const StyledBadgeOffline = withStyles((theme: Theme) =>
-  createStyles({
-    badge: {
-      backgroundColor: '#d22727',
-      color: '#d22727',
-      boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
-      '&::after': {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        borderRadius: '50%',
-        border: '1px solid currentColor',
-        content: '""',
-      },
-    },
-  })
-)(Badge)
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  maxWidth: 1100,
+  marginTop: theme.spacing(3),
+  overflowX: 'auto',
+}))
 
-const StyledBadgeOnline = withStyles(() =>
-  createStyles({
-    badge: {
-      backgroundColor: '#44b700',
-      color: '#44b700',
-      '&::after': {
-        animation: '$ripple 1.2s infinite ease-in-out',
-      },
+const StyledTable = styled(Table)(() => ({
+  // maxWidth: 700,
+}))
+
+const StyledAvatar = styled(Avatar)(() => ({
+  float: 'left',
+  marginRight: 10,
+}))
+
+const StyledBadgeOffline = styled(Badge)(() => ({
+  '.MuiBadge-badge': {
+    backgroundColor: '#d22727',
+    color: '#d22727',
+    '&::after': {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      borderRadius: '50%',
+      border: '1px solid currentColor',
+      content: '""',
     },
-    '@keyframes ripple': {
-      '0%': {
-        transform: 'scale(.8)',
-        opacity: 1,
-      },
-      '100%': {
-        transform: 'scale(2.4)',
-        opacity: 0,
-      },
+  },
+}))
+
+const StyledBadgeOnline = styled(Badge)(() => ({
+  '& .MuiBadge-badge': {
+    backgroundColor: '#44b700',
+    color: '#44b700',
+    '&::after': {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      borderRadius: '50%',
+      border: '1px solid currentColor',
+      content: '""',
+      animation: 'ripple 1.2s infinite ease-in-out',
     },
-  })
-)(StyledBadgeOffline)
+  },
+  '@keyframes ripple': {
+    '0%': {
+      transform: 'scale(.8)',
+      opacity: 1,
+    },
+    '100%': {
+      transform: 'scale(2.4)',
+      opacity: 0,
+    },
+  },
+}))
 
 export interface IProps {
   stats: IDashboardStats
@@ -86,7 +77,7 @@ export interface IProps {
 
 export interface IState {}
 
-type TComponentProps = IProps & WithStyles<typeof styles>
+type TComponentProps = IProps
 class DashboardView extends React.Component<TComponentProps, IState> {
   public constructor(props: TComponentProps) {
     super(props)
@@ -99,16 +90,16 @@ class DashboardView extends React.Component<TComponentProps, IState> {
   }
 
   public render() {
-    const { stats, users, columns, classes } = this.props
+    const { stats, users, columns } = this.props
 
     return (
       <React.Fragment>
-        <div className={classes.root}>
+        <StyledRootDiv>
           <Typography variant="h6" gutterBottom={true}>
             Assignments
           </Typography>
-          <Paper className={classes.paper}>
-            <Table className={classes.table}>
+          <StyledPaper>
+            <StyledTable>
               <TableHead>
                 <TableRow>
                   <TableCell />
@@ -132,14 +123,15 @@ class DashboardView extends React.Component<TComponentProps, IState> {
                     <TableRow key={userId}>
                       <TableCell>
                         <StyledBadge
+                          color="primary"
                           overlap="circular"
+                          variant="dot"
                           anchorOrigin={{
                             vertical: 'bottom',
                             horizontal: 'right',
                           }}
-                          variant="dot"
                         >
-                          <Avatar className={classes.avatar} src={user.profile_image_url} />
+                          <Avatar src={user.profile_image_url} />
                         </StyledBadge>
                       </TableCell>
                       <TableCell>{user.name}</TableCell>
@@ -153,15 +145,15 @@ class DashboardView extends React.Component<TComponentProps, IState> {
                   )
                 })}
               </TableBody>
-            </Table>
-          </Paper>
+            </StyledTable>
+          </StyledPaper>
           <br />
           <br />
           <Typography variant="h6" gutterBottom={true}>
             Triage
           </Typography>
-          <Paper className={classes.paper}>
-            <Table className={classes.table}>
+          <StyledPaper>
+            <StyledTable>
               <TableHead>
                 <TableRow>
                   <TableCell />
@@ -186,7 +178,7 @@ class DashboardView extends React.Component<TComponentProps, IState> {
                       <TableCell>
                         {assignedTo !== undefined ? (
                           <React.Fragment>
-                            <Avatar className={classes.avatar} src={assignedTo.profile_image_url} />
+                            <StyledAvatar src={assignedTo.profile_image_url} />
                             {assignedTo.name}
                           </React.Fragment>
                         ) : (
@@ -202,12 +194,12 @@ class DashboardView extends React.Component<TComponentProps, IState> {
                   )
                 })}
               </TableBody>
-            </Table>
-          </Paper>
-        </div>
+            </StyledTable>
+          </StyledPaper>
+        </StyledRootDiv>
       </React.Fragment>
     )
   }
 }
 
-export default withStyles(styles)(DashboardView)
+export default DashboardView

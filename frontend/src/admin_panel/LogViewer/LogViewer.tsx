@@ -1,37 +1,26 @@
 import CloudDownload from '@mui/icons-material/CloudDownload'
 import Refresh from '@mui/icons-material/Refresh'
-import { Button, FormControl, InputLabel, MenuItem, Select, Theme } from '@mui/material'
-import { withStyles, WithStyles } from '@mui/styles'
-import classNames from 'classnames'
+import { Button, FormControl, InputLabel, MenuItem, Select } from '@mui/material'
+import { styled } from '@mui/material/styles'
 import * as React from 'react'
 import { LazyLog } from 'react-lazylog'
 import { getAPIBaseURL } from '../../redux/modules/app'
 
-const styles = (theme: Theme) => ({
-  flexGrid: {
-    // display: "flex",
-    minHeight: '95%',
-  },
-  flexCol: {
-    flex: 1,
-  },
-  formControl: {
-    minWidth: 165,
-    paddingRight: theme.spacing(3),
-  },
-  anchor: {
-    textDecoration: 'none',
-  },
-  button: {
-    margin: theme.spacing(1),
-  },
-  leftIcon: {
-    marginRight: theme.spacing(1),
-  },
-  iconSmall: {
-    fontSize: 20,
-  },
-})
+const StyledFlexGrid = styled('div')(() => ({
+  // display: "flex",
+  minHeight: '95%',
+}))
+
+const StyledFormControl = styled(FormControl)(({ theme }) => ({
+  minWidth: 165,
+  maxWidth: 240,
+  paddingRight: theme.spacing(3),
+}))
+
+const StyledAnchor = styled('a')(() => ({
+  textDecoration: 'none',
+  marginRight: '20px',
+}))
 
 export interface IProps {
   availableLogs: string[]
@@ -42,11 +31,11 @@ export interface IProps {
 
 export interface IState {}
 
-type TComponentProps = IProps & WithStyles<typeof styles>
+type TComponentProps = IProps
 
 class LogViewer extends React.PureComponent<TComponentProps, IState> {
   public render() {
-    const { availableLogs, currentFilename, onChooseLogfile, onRefreshLogfile, classes } = this.props
+    const { availableLogs, currentFilename, onChooseLogfile, onRefreshLogfile } = this.props
 
     const logfileURL = `${getAPIBaseURL()}/0.1/logs_admin/get_log/?format=json&log_filename=${currentFilename}`
 
@@ -55,16 +44,15 @@ class LogViewer extends React.PureComponent<TComponentProps, IState> {
 
     return (
       <React.Fragment>
-        <div className={classes.flexGrid}>
-          <FormControl classes={{ root: classes.formControl }}>
+        <StyledFlexGrid>
+          <StyledFormControl fullWidth>
             <InputLabel htmlFor="view-logfile-control">Choose a log file</InputLabel>
             <Select
+              labelId="view-logfile-control"
+              name="view-logfile"
               value={currentFilenameActual !== null ? currentFilenameActual : ''}
+              label="Choose a log file"
               onChange={onChooseLogfile}
-              inputProps={{
-                name: 'view-logfile',
-                id: 'view-logfile-control',
-              }}
             >
               {availableLogs.map((filename: string) => (
                 <MenuItem key={filename} value={filename}>
@@ -72,28 +60,20 @@ class LogViewer extends React.PureComponent<TComponentProps, IState> {
                 </MenuItem>
               ))}
             </Select>
-          </FormControl>
+          </StyledFormControl>
 
-          <a href={`${logfileURL}&download=1`} className={classes.anchor}>
-            <Button
-              variant="contained"
-              color="primary"
-              className={classNames(classes.button)}
-              disabled={currentFilenameActual === null}
-            >
-              <CloudDownload className={classNames(classes.leftIcon, classes.iconSmall)} />
+          <StyledAnchor href={`${logfileURL}&download=1`}>
+            <Button variant="contained" startIcon={<CloudDownload />} disabled={currentFilenameActual === null}>
               Download
             </Button>
-          </a>
+          </StyledAnchor>
 
           <Button
             variant="contained"
-            color="primary"
-            className={classNames(classes.button)}
+            startIcon={<Refresh />}
             disabled={currentFilenameActual === null}
             onClick={onRefreshLogfile}
           >
-            <Refresh className={classNames(classes.leftIcon, classes.iconSmall)} />
             Rerfesh
           </Button>
 
@@ -109,10 +89,10 @@ class LogViewer extends React.PureComponent<TComponentProps, IState> {
               selectableLines={true}
             />
           )}
-        </div>
+        </StyledFlexGrid>
       </React.Fragment>
     )
   }
 }
 
-export default withStyles(styles)(LogViewer)
+export default LogViewer
