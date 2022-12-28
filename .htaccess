@@ -1,5 +1,0 @@
-<IfModule mod_rewrite.c>
-   RewriteEngine on
-   RewriteRule ^$ backend/     [L]
-   RewriteRule (.*) backend/$1 [L]
-</IfModule>
