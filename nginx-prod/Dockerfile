@@ -10,7 +10,5 @@ EXPOSE 443
 CMD ["nginx", "-g", "daemon off;"]
 
 # ADD automatically uncompresses the tgz files for us
-ADD build/public.tgz /frontend/demsausage/
-ADD build/public-redesign.tgz /frontend/demsausage-redesign/
-ADD build/admin.tgz /frontend/demsausage-admin/
-ADD build/django.tgz /frontend/demsausage-api/
+ADD build/frontend.tgz /frontend/scremsong/
+ADD build/django.tgz /frontend/scremsong-api/

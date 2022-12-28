@@ -24,7 +24,7 @@ fi
 
 if [ "$CMD" = "frontend-only" ] || [ "$CMD" = "full-run" ]; then
     echo -e "\n\n Frontend - Build"
-    docker compose --file build_production.yml run public
+    docker compose --file build_production.yml run frontend
 
     echo -e "\n\n Containers - Build Nginx"
     cd nginx-prod && docker build -t keithmoss/scremsong-nginx:$LATEST_IMAGE_TAG . && cd ../
