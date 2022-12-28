@@ -71,13 +71,12 @@ if [ "$CMD" = "supervisord" ]; then
 fi
 
 if [ "$CMD" = "build" ]; then
-   export ENVIRONMENT=PRODUCTION
+  rm -rf /app/static
+  mkdir -p /app/static
+  
+  django-admin collectstatic --noinput
 
-   rm -rf /app/static
-   mkdir -p /app/static
-
-   django-admin collectstatic --noinput
-   cd /app/static && tar czvf /build/django.tgz . && rm -rf /app/static
+  cd /app/static && tar czvf /build/django.tgz .
    exit
 fi
 

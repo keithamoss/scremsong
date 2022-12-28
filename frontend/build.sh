@@ -1,14 +1,14 @@
-cd frontend/
+#!/bin/bash
 
-if [[ "$(pwd)" == */frontend ]]; then
+rm -rf ./build
+mkdir -p ./build
+
+# For GitHub actions
+if [ ! -d "node_modules" ]; then
     yarn
-
-    rm -rf build
-    mkdir -p build
-
-    cp ../secrets/scremsong-frontend.prod.env .env.production
-    yarn run build
-    rm .env.production
-
-    cd build && tar czvf ../../build/frontend.tgz .
 fi
+
+yarn run lint
+
+yarn run build
+cd ./build && tar czvf /build/frontend.tgz .
