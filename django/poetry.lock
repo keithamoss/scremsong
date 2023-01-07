@@ -327,7 +327,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "django"
-version = "4.1.4"
+version = "4.1.5"
 description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
 category = "main"
 optional = false
@@ -964,7 +964,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "df0880b75700913e6a0f73547a4d3b8f1cf3dac7397db5094e81410600f3e476"
+content-hash = "7d1f3248a8f268c8b63c0493282cf705480d5691015934fe3cee84719a0903ab"
 
 [metadata.files]
 amqp = [
@@ -1139,8 +1139,8 @@ defusedxml = [
     {file = "defusedxml-0.7.1.tar.gz", hash = "sha256:1bb3032db185915b62d7c6209c5a8792be6a32ab2fedacc84e01b52c51aa3e69"},
 ]
 django = [
-    {file = "Django-4.1.4-py3-none-any.whl", hash = "sha256:0b223bfa55511f950ff741983d408d78d772351284c75e9f77d2b830b6b4d148"},
-    {file = "Django-4.1.4.tar.gz", hash = "sha256:d38a4e108d2386cb9637da66a82dc8d0733caede4c83c4afdbda78af4214211b"},
+    {file = "Django-4.1.5-py3-none-any.whl", hash = "sha256:4b214a05fe4c99476e99e2445c8b978c8369c18d4dea8e22ec412862715ad763"},
+    {file = "Django-4.1.5.tar.gz", hash = "sha256:ff56ebd7ead0fd5dbe06fe157b0024a7aaea2e0593bb3785fb594cf94dad58ef"},
 ]
 django-celery-results = [
     {file = "django_celery_results-2.4.0-py3-none-any.whl", hash = "sha256:be91307c02fbbf0dda21993c3001c60edb74595444ccd6ad696552fe3689e85b"},
