@@ -27,7 +27,7 @@
     "react-tweet": "https://github.com/keithamoss/react-tweet.git#1.8.5",
     "react-virtualized": "^9.22.3",
     "reconnecting-websocket": "^4.4.0",
-    "redux": "^4.2.0",
+    "redux": "^4.2.1",
     "redux-devtools-extension": "^2.13.9",
     "redux-form": "^8.3.9",
     "redux-thunk": "^2.4.2",
