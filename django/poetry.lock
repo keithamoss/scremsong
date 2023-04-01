@@ -1258,14 +1258,14 @@ social-auth-core = ">=4.1.0"
 
 [[package]]
 name = "social-auth-core"
-version = "4.4.0"
+version = "4.4.1"
 description = "Python social authentication made simple."
 category = "main"
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "social-auth-core-4.4.0.tar.gz", hash = "sha256:359f6be5bb2d4caef6500eb6e1b40821a40dde9add8d339d539b1adbba2c9bf7"},
-    {file = "social_auth_core-4.4.0-py3-none-any.whl", hash = "sha256:89536f218fa1a769caeaa56ef90f965ea50a81b9a7e3e5a2c5a61b832df11bde"},
+    {file = "social-auth-core-4.4.1.tar.gz", hash = "sha256:29f5ea3174162797ccb9b849f7a38a9490bfb920304ecd9b7f63c6c3a5ceb7a3"},
+    {file = "social_auth_core-4.4.1-py3-none-any.whl", hash = "sha256:cff78e0707ed0f6bdd3beec6ce713591875492b98272ea6298cc173912e3234b"},
 ]
 
 [package.dependencies]
@@ -1635,4 +1635,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "94e81af33a45311a5630d49904e4732857362750479adc2c32083bb12251a81a"
+content-hash = "21be98dcc5656f88e3e54d83f1d367b3a0683cd3d9ec8827b0cd68b5c8089845"
