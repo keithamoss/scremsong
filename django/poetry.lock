@@ -527,14 +527,14 @@ bcrypt = ["bcrypt"]
 
 [[package]]
 name = "django-celery-results"
-version = "2.5.0"
+version = "2.5.1"
 description = "Celery result backends for Django."
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "django_celery_results-2.5.0-py3-none-any.whl", hash = "sha256:efb68932bde8938794068a9d0929bea8601ec5f6a4150a7f7ab6e2a83a735938"},
-    {file = "django_celery_results-2.5.0.tar.gz", hash = "sha256:8631fd68158c41afddfc378840ecee2f10ddd7d4879e964f2597f483e4203269"},
+    {file = "django_celery_results-2.5.1-py3-none-any.whl", hash = "sha256:0da4cd5ecc049333e4524a23fcfc3460dfae91aa0a60f1fae4b6b2889c254e01"},
+    {file = "django_celery_results-2.5.1.tar.gz", hash = "sha256:3ecb7147f773f34d0381bac6246337ce4cf88a2ea7b82774ed48e518b67bb8fd"},
 ]
 
 [package.dependencies]
@@ -1633,4 +1633,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "21623a8637377e7db4e8208e104ad193522c2b83a5eeecee9b5ee0968b529c79"
+content-hash = "72d01a0ae14e39e050502553973b7b741b4f47efa29ec2933e2b3808279b384a"
