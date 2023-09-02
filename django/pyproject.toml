@@ -22,7 +22,7 @@ daphne = "4.0.0"
 sh = "1.14.3"
 channels = "4.0.0"
 channels-redis = "4.1.0"
-celery = "5.3.1"
+celery = "5.3.3"
 gevent = "23.7.0"
 
 [tool.poetry.dev-dependencies]
