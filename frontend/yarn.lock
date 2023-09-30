@@ -2031,10 +2031,10 @@
   dependencies:
     raven-js "*"
 
-"@types/raven@^2.5.4":
-  version "2.5.4"
-  resolved "https://registry.yarnpkg.com/@types/raven/-/raven-2.5.4.tgz#16bdb39066bf67223965625daf9d9034f3cf9f2d"
-  integrity sha512-CaZ41pANsA/s/IWXfzDzMDsBIrIiR/19cAzz6Ng8ByEzaeMEBnMXpJVUv9DNYak4w8HXLGU24wyIqRK4oy9BNg==
+"@types/raven@^2.5.5":
+  version "2.5.5"
+  resolved "https://registry.yarnpkg.com/@types/raven/-/raven-2.5.5.tgz#cf06267cb0b0f98107f22ebd789c35aedaabbc30"
+  integrity sha512-6Zby3yc45V6W6lf9ZVwvrMrqtqtsILQ9aiG6PLGb5IDc7mPfXb4WIyexhY8rbNwydU87ravdCV5Bket93//Sww==
   dependencies:
     "@types/node" "*"
 
