@@ -47,7 +47,7 @@
     "@types/node": "^20.6.3",
     "@types/qs": "^6.9.7",
     "@types/raven": "^2.5.5",
-    "@types/raven-for-redux": "^1.1.2",
+    "@types/raven-for-redux": "^1.1.3",
     "@types/raven-js": "^3.10.0",
     "@types/react": "^17.0.43",
     "@types/react-dom": "^18.0.3",
