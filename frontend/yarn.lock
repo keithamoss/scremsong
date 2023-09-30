@@ -2052,10 +2052,10 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-lazylog@^4.5.1":
-  version "4.5.1"
-  resolved "https://registry.yarnpkg.com/@types/react-lazylog/-/react-lazylog-4.5.1.tgz#babb5d814f7035b5434518769975e12f299356a8"
-  integrity sha512-g4yeosa1zYhu2BUJmuu2H2o0dsdRj0o8Omw3pBiVHdLHJaeYIyArvyMRR3bI/MxZxG4EaiRl8AOQ6zeM8P46jA==
+"@types/react-lazylog@^4.5.2":
+  version "4.5.2"
+  resolved "https://registry.yarnpkg.com/@types/react-lazylog/-/react-lazylog-4.5.2.tgz#1e8d0d140e50c7292621382015f250275c1f317f"
+  integrity sha512-jHSjyazHJbpBbdWnhVj8qEcZeigTIJxu/UfQdFyBTVsAuBVYrrc24giuGfLYID8PHiATnHL+IvfJ9l6YTgBKaA==
   dependencies:
     "@types/react" "*"
     immutable ">=3.8.2"
