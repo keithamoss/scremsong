@@ -15,7 +15,7 @@
     "luxon": "^3.4.3",
     "material-ui-chip-input": "^1.1.0",
     "notistack": "^1.0.10",
-    "qs": "^6.11.0",
+    "qs": "^6.11.2",
     "raven": "^2.6.4",
     "raven-for-redux": "^1.4.0",
     "raven-js": "^3.27.2",
