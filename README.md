@@ -2,6 +2,10 @@
 
 ![Alex the parrot](https://github.com/keithamoss/scremsong/raw/master/frontend/public/alex.jpg)
 
+The Twitter crowdsaucing software formerly used by [Democracy Sausage](https://democracysausage.org/).
+
+Another project killed by Elon.
+
 # Development
 
 [TypeScript-React-Starter](https://github.com/Microsoft/TypeScript-React-Starter)
